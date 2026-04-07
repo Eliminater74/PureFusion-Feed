@@ -40,18 +40,33 @@ class PF_Predictor {
         if (!this.settings.predictions.enabled) return;
 
         nodes.forEach(node => {
-            // 1. Analyze text for trend mapping
-            this._analyzeForTrends(node);
-
-            // 2. Score the post based on history
-            const score = this._scorePost(node);
-
-            // 3. Apply Visual Badges 
-            this._injectBadge(node, score);
-
-            // 4. Attach Engagement Listeners (so we can learn)
-            this._bindInteractionListeners(node);
+            // Ensure we ONLY process actual posts, or search inside injected wrappers
+            if (!node.matches || !node.matches(PF_SELECTOR_MAP.postContainer)) {
+                if (node.querySelectorAll) {
+                    const innerPosts = node.querySelectorAll(PF_SELECTOR_MAP.postContainer);
+                    innerPosts.forEach(innerNode => this._processSingleNode(innerNode));
+                }
+                return;
+            }
+            this._processSingleNode(node);
         });
+    }
+
+    _processSingleNode(node) {
+        if (node.dataset.pfPredictProcessed) return;
+        node.dataset.pfPredictProcessed = "true";
+
+        // 1. Analyze text for trend mapping
+        this._analyzeForTrends(node);
+
+        // 2. Score the post based on history
+        const score = this._scorePost(node);
+
+        // 3. Apply Visual Badges 
+        this._injectBadge(node, score);
+
+        // 4. Attach Engagement Listeners (so we can learn)
+        this._bindInteractionListeners(node);
     }
 
     // =========================================================================
