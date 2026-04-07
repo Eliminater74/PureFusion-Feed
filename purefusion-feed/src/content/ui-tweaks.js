@@ -206,17 +206,20 @@ class PF_UiTweaks {
         
         buttons.forEach(btn => {
             const text = btn.textContent.trim().toLowerCase();
+            const ariaLabel = (btn.getAttribute('aria-label') || '').trim().toLowerCase();
+            const combinedText = text + " " + ariaLabel;
             
             // Scenario 1: The main "12 comments" trigger on the post body.
             // Avoid clicking the raw "Comment" action button or "View more" buttons here.
-            if (/[0-9]+.*comment/i.test(text) && !text.includes('view') && !text.includes('previous')) {
+            // Some UI layouts use a speech bubble SVG next to "6" and hide the "comments" word in the aria-label!
+            if (/[0-9]+.*comment/i.test(combinedText) && !combinedText.includes('view') && !combinedText.includes('previous')) {
                 btn.dataset.pfExpanded = "true";
                 btn.click();
             }
 
             // Scenario 2: The "View 4 more comments" or "View previous comments" trigger inside the thread.
             // This satisfies the user's request to "see more than 1 or 2 comments"
-            if (text.includes('view ') && text.includes('comment')) {
+            if (combinedText.includes('view ') && combinedText.includes('comment')) {
                 // To prevent loading 5,000 comments and crashing the browser, we only click "View more" once per post.
                 const post = PF_Helpers.getClosest(btn, PF_SELECTOR_MAP.postContainer);
                 if (post && !post.dataset.pfDeepExpanded) {
