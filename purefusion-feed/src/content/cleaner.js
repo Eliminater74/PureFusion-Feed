@@ -104,20 +104,19 @@ class PF_Cleaner {
         this.hideTarget(rootNode, PF_SELECTOR_MAP.reelsTray, "Reels Target Array");
 
         // 2. Text Heuristic Check
-        const feedWrapper = rootNode.matches('[role="feed"]') ? rootNode : rootNode.querySelector('[role="feed"]');
-        if (feedWrapper) {
-            const textNodes = PF_Helpers.findContains(feedWrapper, 'span, h2, h3, div', 'Reels');
-            textNodes.forEach(node => {
-                const text = node.textContent.trim();
-                // Match "Reels", "Reels and short videos", etc., ignoring long sentences
-                if (text === 'Reels' || text.includes('Reels and short videos')) {
-                    const postWrapper = PF_Helpers.getClosest(node, PF_SELECTOR_MAP.postContainer);
-                    if (postWrapper && !postWrapper.dataset.pfHidden) {
-                        PF_Helpers.hideElement(postWrapper, "Reels Tray Heuristic");
-                    }
+        // The rootNode is usually the feed post itself during dynamic injection
+        const textNodes = PF_Helpers.findContains(rootNode, 'span, h2, h3, div', 'Reels');
+        textNodes.forEach(node => {
+            const text = node.textContent.trim();
+            // Match "Reels", "Reels and short videos", etc., ignoring long sentences
+            if (text === 'Reels' || text.includes('Reels and short videos')) {
+                // Try to find the specific post wrapper enclosing this element
+                const postWrapper = PF_Helpers.getClosest(node, PF_SELECTOR_MAP.postContainer) || node.parentElement.parentElement.parentElement.parentElement;
+                if (postWrapper && !postWrapper.dataset.pfHidden) {
+                    PF_Helpers.hideElement(postWrapper, "Reels Tray Heuristic");
                 }
-            });
-        }
+            }
+        });
     }
 
     /**
