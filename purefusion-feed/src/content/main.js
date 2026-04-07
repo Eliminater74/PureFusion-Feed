@@ -24,6 +24,7 @@ class PureFusionApp {
             this.cleaner = new window.PF_Cleaner(this.settings);
             this.uiTweaks = new window.PF_UiTweaks(this.settings);
             this.feedManager = new window.PF_FeedManager(this.settings);
+            this.predictor = new window.PF_Predictor(this.settings);
             this.observer = new window.PF_Observer();
 
             // Set up our centralized event bus listeners
@@ -54,8 +55,9 @@ class PureFusionApp {
             // Pass to cleaner and UI components
             if (this.cleaner) this.cleaner.sweepNodes(addedNodes);
             if (this.uiTweaks) this.uiTweaks.applyToNodes(addedNodes);
-
-            // TODO: In Phase 5 (Predictor), that instance will also connect here.
+            
+            // Pass to AI Engine for learning and scoring
+            if (this.predictor) this.predictor.applyToNodes(addedNodes);
         });
 
         // Listen for message passing from Popup/Options panel to hot-reload settings
