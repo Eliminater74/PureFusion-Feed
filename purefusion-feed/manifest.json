@@ -35,6 +35,8 @@
         "src/content/predictor.js",
         "src/content/feed-manager.js",
         "src/content/ui-tweaks.js",
+        "src/content/social-tools.js",
+        "src/content/notifications.js",
         "src/content/main.js"
       ],
       "run_at": "document_idle"

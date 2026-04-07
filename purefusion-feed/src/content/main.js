@@ -25,6 +25,8 @@ class PureFusionApp {
             this.uiTweaks = new window.PF_UiTweaks(this.settings);
             this.feedManager = new window.PF_FeedManager(this.settings);
             this.predictor = new window.PF_Predictor(this.settings);
+            this.socialTools = new window.PF_SocialTools(this.settings);
+            this.notifControls = new window.PF_NotificationControls(this.settings);
             this.observer = new window.PF_Observer();
 
             // Set up our centralized event bus listeners
@@ -58,6 +60,9 @@ class PureFusionApp {
             
             // Pass to AI Engine for learning and scoring
             if (this.predictor) this.predictor.applyToNodes(addedNodes);
+            
+            // Pass to notification rules engine to filter drop-down menus
+            if (this.notifControls) this.notifControls.applyToNodes(addedNodes);
         });
 
         // Listen for message passing from Popup/Options panel to hot-reload settings
