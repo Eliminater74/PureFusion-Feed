@@ -50,6 +50,9 @@ class PF_UiTweaks {
             if (this.settings.uiMode.commentSortDefault !== 'Most relevant') {
                 this._enforceCommentSortResilient();
             }
+            if (this.settings.uiMode.autoExpandComments) {
+                this._autoExpandCommentsResilient();
+            }
         }, 1500);
     }
 
@@ -192,6 +195,41 @@ class PF_UiTweaks {
                         document.body.click(); 
                     }
                 }, 400); 
+            }
+        });
+    }
+
+    _autoExpandCommentsResilient() {
+        const buttons = document.querySelectorAll('[role="button"]:not([data-pf-expanded]), a:not([data-pf-expanded])');
+        
+        buttons.forEach(btn => {
+            const text = btn.textContent.trim().toLowerCase();
+            
+            // SCENARIO 1: The Safe Inline Action Row Button.
+            // We strictly demand the text to be ONLY "comment".
+            // We DO NOT evaluate aria-labels here, because stats buttons have "View X comments" in aria-labels, and stats buttons trigger Modals!
+            // If the post only has a stats button and no text action row, Facebook physically cannot expand it inline, so we safely ignore it.
+            if (text === 'comment' || text === 'leave a comment') {
+                // One final safety check to ensure it's sitting next to a "Like" or "Share" button to prove it's the action row
+                const parent = btn.parentElement.parentElement; 
+                if (parent && (parent.textContent.toLowerCase().includes('like') || parent.textContent.toLowerCase().includes('share'))) {
+                    btn.dataset.pfExpanded = "true";
+                    btn.click(); // This cleanly drops Facebook's inline React component (focus grab is blocked by _disableAutofocus)
+                }
+            }
+
+            // SCENARIO 2: Deep Thread "View More" Trigger.
+            if (text.includes('view ') && (text.includes('comment') || text.includes('repl'))) {
+                // Must be exact physical text to avoid aria-label modal traps
+                const post = PF_Helpers.getClosest(btn, PF_SELECTOR_MAP.postContainer);
+                if (post && !post.dataset.pfDeepExpanded) {
+                    post.dataset.pfDeepExpanded = "true";
+                    btn.dataset.pfExpanded = "true";
+                    btn.click();
+                } else if (!post) {
+                    btn.dataset.pfExpanded = "true";
+                    btn.click();
+                }
             }
         });
     }

@@ -78,6 +78,7 @@ const DEFAULT_SETTINGS = {
         fixTimestamps: true,
         showLinkPreviews: true,
         disableCommentAutofocus: true,
+        autoExpandComments: false,
         widescreenMode: false,
         // Right Col
         hideRightTrending: true,
