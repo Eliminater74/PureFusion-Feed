@@ -31,12 +31,17 @@ class PF_Cleaner {
     _applyAllFilters(rootNode) {
         if (!rootNode || !rootNode.querySelectorAll) return;
 
-        if (this.settings.filters.removeAds) this.removeSponsored(rootNode);
+        if (this.settings.filters.removeAds) {
+            this.removeSponsored(rootNode);
+            this.removeRightRailAds(rootNode);
+        }
         if (this.settings.filters.removeSuggested) this.removeSuggestedPosts(rootNode); // Shared logic for suggested, pymk, groups
         
         if (this.settings.filters.removeColoredBackgrounds) this.removeColoredBackgrounds(rootNode);
         
-        if (this.settings.sidebar.hideRightTrending) this.hideTarget(rootNode, PF_SELECTOR_MAP.rightSidebarSponsored, "Right Sidebar Ad");
+        if (this.settings.sidebar.hideRightTrending) {
+            this.hideTarget(rootNode, PF_SELECTOR_MAP.rightSidebarTrending || '[data-pagelet="RightRail"]', "Right Sidebar Trending");
+        }
         
         // Hide features like Reels, Marketplace, Stories if toggled
         if (this.settings.filters.hideReels) this.hideTarget(rootNode, PF_SELECTOR_MAP.reelsTray, "Reels Tray");
@@ -61,6 +66,33 @@ class PF_Cleaner {
 
         // Apply keyword sweeping
         this.applyKeywordFilters(rootNode);
+    }
+
+    /**
+     * Hunt for side-rail specific ads which Facebook generates using different logic than Feed units.
+     * @param {HTMLElement} rootNode 
+     */
+    removeRightRailAds(rootNode) {
+        // Find the right column container
+        const rightCol = rootNode.matches('[role="complementary"]') ? rootNode : rootNode.querySelector('[role="complementary"]');
+        if (!rightCol) return;
+
+        // 1. Static known containers
+        const staticAds = rightCol.querySelectorAll('[data-pagelet="RightRailAdUnits"], [data-pagelet="EgoPane"]');
+        staticAds.forEach(ad => PF_Helpers.hideElement(ad, "Right Rail Target"));
+
+        // 2. Deep traverse for obfuscated text injection
+        // FB injects "Sponsored" as literal text nodes in the sidebar
+        const adSpans = PF_Helpers.findContains(rightCol, 'span, div, h2, h3', 'Sponsored');
+        adSpans.forEach(el => {
+            // Verify exact match to prevent false positives if someone's name contains the word
+            if (el.textContent.trim() === "Sponsored") {
+                const targetWrap = PF_Helpers.getClosest(el, 'div[data-pagelet]') || el.parentElement.parentElement;
+                if (targetWrap && !targetWrap.dataset.pfHidden) {
+                    PF_Helpers.hideElement(targetWrap, "Right Rail Heuristics");
+                }
+            }
+        });
     }
 
     /**
