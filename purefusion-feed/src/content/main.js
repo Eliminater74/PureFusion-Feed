@@ -22,6 +22,8 @@ class PureFusionApp {
 
             // Initialize Modules
             this.cleaner = new window.PF_Cleaner(this.settings);
+            this.uiTweaks = new window.PF_UiTweaks(this.settings);
+            this.feedManager = new window.PF_FeedManager(this.settings);
             this.observer = new window.PF_Observer();
 
             // Set up our centralized event bus listeners
@@ -29,6 +31,10 @@ class PureFusionApp {
 
             // Initial manual sweep to clean anything already rendered
             this.cleaner.sweepDocument();
+            
+            // Apply root-level structural changes
+            this.feedManager.applyDocumentLevelTweaks();
+            this.uiTweaks.applyDocumentLevelTweaks();
 
             // Start MutationObserver for dynamically injected feed elements
             this.observer.start();
@@ -45,13 +51,11 @@ class PureFusionApp {
         document.addEventListener('pf:nodes_added', (e) => {
             const addedNodes = e.detail.nodes;
             
-            // Pass to cleaner
-            if (this.cleaner) {
-                this.cleaner.sweepNodes(addedNodes);
-            }
+            // Pass to cleaner and UI components
+            if (this.cleaner) this.cleaner.sweepNodes(addedNodes);
+            if (this.uiTweaks) this.uiTweaks.applyToNodes(addedNodes);
 
-            // TODO: In Phase 5 (Predictor) and Phase 3 (UI Tweaks), 
-            // those instances will also connect their processing here.
+            // TODO: In Phase 5 (Predictor), that instance will also connect here.
         });
 
         // Listen for message passing from Popup/Options panel to hot-reload settings
