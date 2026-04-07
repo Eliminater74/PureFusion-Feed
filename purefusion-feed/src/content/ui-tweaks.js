@@ -209,19 +209,16 @@ class PF_UiTweaks {
             const ariaLabel = (btn.getAttribute('aria-label') || '').trim().toLowerCase();
             const combinedText = text + " " + ariaLabel;
             
-            // Scenario 1: The Action Row "Comment" button.
-            // We MUST click this instead of the "12 Comments" statistics button. 
-            // Facebook recently tied the statistics button to open a massive Theater Modal popup over the feed.
-            // Clicking the action row forces the comments to drop down seamlessly inline!
-            // (Note: This triggers auto-focus, but our pf_mouseIsDown trap perfectly blocks the screen jump).
-            if (text === 'comment' || combinedText === 'leave a comment' || combinedText === 'comment') {
-                btn.dataset.pfExpanded = "true";
-                btn.click();
-            }
+            // Note: We completely removed Scenario 1 (Auto-clicking the action-row 'Comment' button).
+            // Facebook's modern React architecture aggressively forces Theater Modals for
+            // almost all Videos, Suggested Posts, and Page Image posts when interacting with the comment button.
+            // There is no safe DOM heuristic to bypass this, so auto-clicking the root feed is permanently disabled
+            // to prevent violent scroll hijacking.
 
             // Scenario 2: The "View 4 more comments" or "View previous comments" trigger inside the thread.
-            // This satisfies the user's request to "see more than 1 or 2 comments"
-            if (combinedText.includes('view ') && combinedText.includes('comment')) {
+            // We use EXACT text matching here (no aria-label) because Facebook's statistics buttons use 
+            // aria-labels like "View 15 Comments", which was accidentally triggering this inside the root feed!
+            if (text.includes('view ') && (text.includes('comment') || text.includes('repl'))) {
                 // To prevent loading 5,000 comments and crashing the browser, we only click "View more" once per post.
                 const post = PF_Helpers.getClosest(btn, PF_SELECTOR_MAP.postContainer);
                 if (post && !post.dataset.pfDeepExpanded) {
@@ -229,7 +226,6 @@ class PF_UiTweaks {
                     btn.dataset.pfExpanded = "true";
                     btn.click();
                 } else if (!post) {
-                    // Modal edge-case
                     btn.dataset.pfExpanded = "true";
                     btn.click();
                 }
