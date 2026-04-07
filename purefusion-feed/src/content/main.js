@@ -28,6 +28,7 @@ class PureFusionApp {
             this.socialTools = new window.PF_SocialTools(this.settings);
             this.notifControls = new window.PF_NotificationControls(this.settings);
             this.wellbeing = new window.PF_Wellbeing(this.settings);
+            this.llmFeatures = new window.PF_LLMFeatures(this.settings);
             this.inpageUI = new window.PF_InPageUI(this.settings);
             this.observer = new window.PF_Observer();
 
@@ -67,6 +68,9 @@ class PureFusionApp {
             
             // Pass to AI Engine for learning and scoring
             if (this.predictor) this.predictor.applyToNodes(addedNodes);
+            
+            // Pass to LLM features
+            if (this.llmFeatures) this.llmFeatures.applyToNodes(addedNodes);
             
             // Pass to notification rules engine to filter drop-down menus
             if (this.notifControls) this.notifControls.applyToNodes(addedNodes);

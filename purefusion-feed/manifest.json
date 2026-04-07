@@ -39,6 +39,7 @@
         "src/content/social-tools.js",
         "src/content/notifications.js",
         "src/content/wellbeing.js",
+        "src/content/llm-features.js",
         "src/content/inpage-ui.js",
         "src/content/main.js"
       ],
