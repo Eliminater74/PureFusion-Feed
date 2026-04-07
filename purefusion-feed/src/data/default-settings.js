@@ -92,6 +92,18 @@ const DEFAULT_SETTINGS = {
         blockNotifGames: true,
         blockNotifBirthdays: false,
         blockNotifMarketplace: true,
+    },
+
+    // ------------------------------------------------------------------------
+    // DIGITAL WELLBEING (Phase 10)
+    // ------------------------------------------------------------------------
+    wellbeing: {
+        grayscaleMode: false,           // Break addictive bright colors
+        infiniteScrollStopper: false,   // Pause observer rendering after X posts
+        scrollLimitPosts: 20,           // Number of posts before showing "Take a break" button
+        sessionTimer: false,            // Render floating clock representing time on FB
+        clickbaitBlocker: true,         // Automatically collapse known clickbait phrases
+        ragebaitDetector: true,         // Uses AI Predictor to negative-score intentionally inflammatory posts
     }
 };
 

@@ -48,6 +48,11 @@ class PF_Cleaner {
             marketplaceNodes.forEach(node => PF_Helpers.hideElement(PF_Helpers.getClosest(node, PF_SELECTOR_MAP.postContainer), "Marketplace Unit"));
         }
 
+        // Apply advanced Clickbait filtering (Phase 10)
+        if (this.settings.wellbeing && this.settings.wellbeing.clickbaitBlocker) {
+            this.removeClickbait(rootNode);
+        }
+
         // Apply keyword sweeping
         this.applyKeywordFilters(rootNode);
     }
@@ -103,6 +108,22 @@ class PF_Cleaner {
             bg.style.backgroundColor = 'transparent';
             bg.style.color = 'var(--primary-text)';
             // Note: Facebook uses complex nested DOM, so this will strip styles but text may need sizing fixed which we handle in UI tweaks.
+        });
+    }
+
+    removeClickbait(rootNode) {
+        // Regex patterns matching traditional high-volume viral clickbait
+        const clickbaitRegex = /(you won.?t believe|this one trick|what happens next|will shock you|leave you speechless|reason why|this is why)/i;
+        
+        // Headlines on shared links are typically inside anchor tags or header blocks within the post body
+        // But to be thorough we'll just check the base text payload
+        const textNodes = rootNode.querySelectorAll(PF_SELECTOR_MAP.postTextBody);
+        textNodes.forEach(textContainer => {
+            const textContent = textContainer.textContent;
+            if (clickbaitRegex.test(textContent)) {
+                const postWrapper = PF_Helpers.getClosest(textContainer, PF_SELECTOR_MAP.postContainer);
+                if (postWrapper) this._collapsePost(postWrapper, "Clickbait Blocked");
+            }
         });
     }
 

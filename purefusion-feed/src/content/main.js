@@ -27,6 +27,7 @@ class PureFusionApp {
             this.predictor = new window.PF_Predictor(this.settings);
             this.socialTools = new window.PF_SocialTools(this.settings);
             this.notifControls = new window.PF_NotificationControls(this.settings);
+            this.wellbeing = new window.PF_Wellbeing(this.settings);
             this.observer = new window.PF_Observer();
 
             // Set up our centralized event bus listeners
@@ -53,7 +54,12 @@ class PureFusionApp {
         // Listen to batched DOM injections from our custom observer
         document.addEventListener('pf:nodes_added', (e) => {
             const addedNodes = e.detail.nodes;
-            
+
+            // Phase 10: Digital Wellbeing Infinite Scroll Break
+            let blockProcessing = false;
+            if (this.wellbeing) blockProcessing = this.wellbeing.applyScrollStopper(addedNodes);
+            if (blockProcessing) return; // Drop processing payload
+
             // Pass to cleaner and UI components
             if (this.cleaner) this.cleaner.sweepNodes(addedNodes);
             if (this.uiTweaks) this.uiTweaks.applyToNodes(addedNodes);

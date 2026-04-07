@@ -141,6 +141,24 @@ class PF_Predictor {
         if (textContent.length > 500) score += 5; // Long form text
         else if (textContent.length < 20) score -= 5; // Low effort text
 
+        // --- Model D: Rage-Bait Detection (Phase 10) ---
+        if (this.settings.wellbeing && this.settings.wellbeing.ragebaitDetector) {
+            const rageWords = ['outrage', 'disgusting', 'furious', 'ban', 'cancel', 'boycott', 'destroy', 'stupid', 'idiot', 'libs', 'maga', 'woke', 'fake', 'hypocrite', 'exposed', 'aggress'];
+            let rageHits = 0;
+            const tLower = textContent.toLowerCase();
+            
+            for (let word of rageWords) {
+                if (tLower.includes(word)) rageHits++;
+            }
+
+            if (rageHits >= 2) {
+                // High outrage vocabulary found directly in the text! 
+                // Severely penalize it to break engagement farming.
+                score -= 40; 
+                postNode.dataset.pfRagebait = "true";
+            }
+        }
+
         // Clamp 0 to 100
         return Math.max(0, Math.min(100, Math.round(score)));
     }
@@ -149,10 +167,14 @@ class PF_Predictor {
         if (!this.settings.predictions.showBadge) return;
         if (postNode.dataset.pfScored) return; // already injected
 
-        let scoreColor = '#aaaaaa';
-        let flair = '';
-
-        if (score >= this.settings.predictions.highThreshold) {
+        if (postNode.dataset.pfRagebait === "true") {
+            scoreColor = '#ff4444'; 
+            flair = '⚠️ Rage-Bait Predicted';
+            PF_Helpers.dimElement(postNode);
+            // Deeply blur rage bait
+            postNode.style.filter = 'blur(4px)';
+            postNode.addEventListener('mouseenter', () => postNode.style.filter = 'none', { once: true });
+        } else if (score >= this.settings.predictions.highThreshold) {
             scoreColor = '#00D4FF'; // Cyan
             flair = '🔥 ';
             if (this.settings.predictions.highlightHighInterest) {

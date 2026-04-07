@@ -37,6 +37,7 @@
         "src/content/ui-tweaks.js",
         "src/content/social-tools.js",
         "src/content/notifications.js",
+        "src/content/wellbeing.js",
         "src/content/main.js"
       ],
       "run_at": "document_idle"
