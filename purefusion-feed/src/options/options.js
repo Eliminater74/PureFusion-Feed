@@ -74,6 +74,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Social
         'opt_social_trackUnfriends': { obj: 'social', prop: 'trackUnfriends', type: 'checkbox' },
         'opt_social_notificationDigestMode': { obj: 'social', prop: 'notificationDigestMode', type: 'checkbox' },
+
+        // LLM
+        'opt_llm_provider': { obj: 'llm', prop: 'provider', type: 'select' },
+        'opt_llm_openAIApiKey': { obj: 'llm', prop: 'openAIApiKey', type: 'text' },
+        'opt_llm_geminiApiKey': { obj: 'llm', prop: 'geminiApiKey', type: 'text' },
+        'opt_llm_tldr': { obj: 'llm', prop: 'tldrEnabled', type: 'checkbox' },
+        'opt_llm_smartcomment': { obj: 'llm', prop: 'smartCommentEnabled', type: 'checkbox' },
+        'opt_llm_clickbaitdecode': { obj: 'llm', prop: 'clickbaitDecoder', type: 'checkbox' },
     };
 
     function loadUIFromSettings() {
@@ -86,6 +94,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (mapping.type === 'checkbox') el.checked = val;
             else if (mapping.type === 'select') el.value = val;
             else if (mapping.type === 'number') el.value = val;
+            else if (mapping.type === 'text') el.value = val;
         }
 
         // Handle Keywords Mapping
@@ -105,6 +114,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 currentSettings[mapping.obj][mapping.prop] = el.value;
             } else if (mapping.type === 'number') {
                 currentSettings[mapping.obj][mapping.prop] = parseInt(el.value, 10) || 100;
+            } else if (mapping.type === 'text') {
+                currentSettings[mapping.obj][mapping.prop] = el.value.trim();
             }
         }
 

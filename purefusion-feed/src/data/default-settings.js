@@ -104,6 +104,18 @@ const DEFAULT_SETTINGS = {
         sessionTimer: false,            // Render floating clock representing time on FB
         clickbaitBlocker: true,         // Automatically collapse known clickbait phrases
         ragebaitDetector: true,         // Uses AI Predictor to negative-score intentionally inflammatory posts
+    },
+
+    // ------------------------------------------------------------------------
+    // LLM INTEGRATION (Phase 12)
+    // ------------------------------------------------------------------------
+    llm: {
+        provider: 'none',               // 'none', 'openai', 'gemini', 'windowai'
+        openAIApiKey: '',               // Secure local storage only
+        geminiApiKey: '',               // Secure local storage only
+        tldrEnabled: true,              // Inject summarize buttons
+        smartCommentEnabled: true,      // Inject Co-Pilot into comment boxes
+        clickbaitDecoder: true          // Rewrite headlines instead of just blocking
     }
 };
 

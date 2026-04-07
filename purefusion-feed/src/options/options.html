@@ -138,8 +138,53 @@
                     <input type="checkbox" id="opt_pred_highlightHighInterest" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
+                    <label>Highlight High Interest Posts</label>
+                    <input type="checkbox" id="opt_pred_highlightHighInterest" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row">
                     <label>Analyze Local Trends & Keywords</label>
                     <input type="checkbox" id="opt_pred_showTrending" class="pf-toggle">
+                </div>
+            </div>
+
+            <!-- BYOK LLM Settings -->
+            <div class="pf-card mt-4" style="border-color: #00D4FF;">
+                <h3 style="color: #00D4FF;">Deep Intelligence Server (BYOK API)</h3>
+                <p class="pf-desc">Bring-Your-Own-Key. Unlock LLM capabilities like TL;DRs and Comment AI. Your keys are saved exclusively taking advantage of local machine storage.</p>
+                
+                <div class="pf-setting-row mb-2">
+                    <label>Active Provider</label>
+                    <select id="opt_llm_provider" class="pf-input-text w-50">
+                        <option value="none">Disabled</option>
+                        <option value="openai">OpenAI (ChatGPT)</option>
+                        <option value="gemini">Google Gemini</option>
+                        <option value="windowai">Chrome Native (window.ai)</option>
+                    </select>
+                </div>
+
+                <div class="pf-setting-row mb-2">
+                    <label>OpenAI API Key</label>
+                    <input type="password" id="opt_llm_openAIApiKey" class="pf-input-text w-50" placeholder="sk-proj-...">
+                </div>
+
+                <div class="pf-setting-row">
+                    <label>Google Gemini API Key</label>
+                    <input type="password" id="opt_llm_geminiApiKey" class="pf-input-text w-50" placeholder="AIzaSy...">
+                </div>
+
+                <hr style="border-color: #3E4042; margin: 15px 0;">
+
+                <div class="pf-setting-row">
+                    <label>Inject "TL;DR" Summarize buttons on long posts</label>
+                    <input type="checkbox" id="opt_llm_tldr" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row">
+                    <label>Smart Comment Co-Pilot (Wand icon)</label>
+                    <input type="checkbox" id="opt_llm_smartcomment" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row">
+                    <label>Clickbait Decoder (Rewrite sensational headlines with facts)</label>
+                    <input type="checkbox" id="opt_llm_clickbaitdecode" class="pf-toggle">
                 </div>
             </div>
         </section>
