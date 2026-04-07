@@ -87,8 +87,9 @@ class PF_LLMFeatures {
     injectCommentCopilot(rootNode) {
         if (!rootNode.querySelectorAll) return;
         
-        // Find comment input boxes
-        const commentBoxes = rootNode.querySelectorAll(window.PF_SELECTOR_MAP.commentInputBox);
+        // Handle cases where the mutated node is the actual text box, or contains it
+        const isMatch = rootNode.matches && rootNode.matches(window.PF_SELECTOR_MAP.commentInputBox);
+        const commentBoxes = isMatch ? [rootNode] : Array.from(rootNode.querySelectorAll(window.PF_SELECTOR_MAP.commentInputBox));
         
         commentBoxes.forEach(box => {
             // Because React replaces this element often, we hook into the parent wrapper safely

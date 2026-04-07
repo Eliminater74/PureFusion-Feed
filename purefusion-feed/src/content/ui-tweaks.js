@@ -145,8 +145,13 @@ class PF_UiTweaks {
         if (!rootNode.querySelectorAll) return;
         const targetSort = this.settings.uiMode.commentSortDefault; // e.g. "All Comments"
         
-        // Find the sort dropdown trigger button
-        const triggers = rootNode.querySelectorAll(PF_SELECTOR_MAP.commentFilterTrigger + ', div[role="button"]');
+        // Handle cases where rootNode IS the trigger itself
+        let triggers = [];
+        if (rootNode.matches && (rootNode.matches(PF_SELECTOR_MAP.commentFilterTrigger) || rootNode.matches('div[role="button"]'))) {
+            triggers.push(rootNode);
+        }
+        rootNode.querySelectorAll(PF_SELECTOR_MAP.commentFilterTrigger + ', div[role="button"]').forEach(n => triggers.push(n));
+        
         triggers.forEach(trigger => {
             // Check if this button actually controls comment sorting
             const textContent = trigger.textContent.trim();
@@ -157,24 +162,28 @@ class PF_UiTweaks {
                 trigger.dataset.pfSortEnforced = "true"; 
                 PF_Logger.info(`PF_UiTweaks: Auto-clicking to change sort from ${textContent} to ${targetSort}`);
                 
-                // Emphasize visually that PF is taking control
                 trigger.style.borderBottom = "2px dashed #00D4FF";
 
                 // 1. Click to open the React Portal menu
                 trigger.click();
 
-                // 2. Wait for the Portal to mount at document level
+                // 2. Wait longer for the Portal to mount at document level
                 setTimeout(() => {
-                    const menuItems = Array.from(document.querySelectorAll('div[role="menuitem"], div[role="menuitemradio"]'));
+                    const menuItems = Array.from(document.body.querySelectorAll('span[dir="auto"], span'));
                     
                     let clicked = false;
                     for (const item of menuItems) {
                         if (item.textContent.trim().toLowerCase() === targetSort.toLowerCase()) {
-                            item.click();
-                            clicked = true;
-                            // Clean up visual indicator on success
-                            trigger.style.borderBottom = "none";
-                            break;
+                            const clickable = item.closest('[role="menuitem"]') || item.closest('[role="menuitemradio"]') || item;
+                            
+                            // Prevent clicking on random UI components by checking if its inside the active menu portal
+                            const menu = item.closest('[role="menu"]');
+                            if (menu) {
+                                clickable.click();
+                                clicked = true;
+                                trigger.style.borderBottom = "none";
+                                break;
+                            }
                         }
                     }
 
@@ -183,7 +192,7 @@ class PF_UiTweaks {
                         trigger.style.borderBottom = "2px solid red"; // Warning flag
                         document.body.click(); 
                     }
-                }, 200);
+                }, 400); // 400ms is safer for heavy React portals
             }
         });
     }
