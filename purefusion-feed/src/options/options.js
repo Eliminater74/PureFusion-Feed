@@ -59,6 +59,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_widescreen': { obj: 'uiMode', prop: 'widescreenMode', type: 'checkbox' },
         'opt_uiMode_compactMode': { obj: 'uiMode', prop: 'compactMode', type: 'checkbox' },
         'opt_uiMode_disableCommentAutofocus': { obj: 'uiMode', prop: 'disableCommentAutofocus', type: 'checkbox' },
+        'opt_uiMode_enforceChronologicalFeed': { obj: 'uiMode', prop: 'enforceChronologicalFeed', type: 'checkbox' },
         'opt_uiMode_showLinkPreviews': { obj: 'uiMode', prop: 'showLinkPreviews', type: 'checkbox' },
         'opt_uiMode_fixTimestamps': { obj: 'uiMode', prop: 'fixTimestamps', type: 'checkbox' },
         'opt_uiMode_theme': { obj: 'uiMode', prop: 'theme', type: 'select' },

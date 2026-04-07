@@ -45,10 +45,27 @@ class PureFusionApp {
             // Start MutationObserver for dynamically injected feed elements
             this.observer.start();
 
+            PF_Logger.info("PureFusion Main initialized.", this.settings);
+
+            this._checkChronologicalEnforcement();
+
             PF_Logger.info("PureFusion is active and monitoring.");
 
         } catch (error) {
             PF_Logger.error("Failed to initialize PureFusion app: ", error);
+        }
+    }
+
+    _checkChronologicalEnforcement() {
+        if (!this.settings.uiMode.enforceChronologicalFeed) return;
+
+        // Force redirect to Recent feed if we land on the bare algorithmic feed
+        const isBareNewsfeed = (window.location.pathname === '/' || window.location.pathname === '/home.php') 
+                            && !window.location.search.includes('sk=h_chr');
+                            
+        if (isBareNewsfeed) {
+            PF_Logger.info("PureFusion: Chronological enforcement active. Redirecting feed...");
+            window.location.replace('/?filter=all&sk=h_chr');
         }
     }
 

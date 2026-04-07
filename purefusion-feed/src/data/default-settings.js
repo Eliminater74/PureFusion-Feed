@@ -79,6 +79,7 @@ const DEFAULT_SETTINGS = {
         showLinkPreviews: true,
         disableCommentAutofocus: true,
         widescreenMode: false,
+        enforceChronologicalFeed: false,
         // Right Col
         hideRightTrending: true,
         hideRightContacts: false,
