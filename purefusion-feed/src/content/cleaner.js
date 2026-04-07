@@ -45,7 +45,7 @@ class PF_Cleaner {
         
         // Hide features like Reels, Marketplace, Stories if toggled
         if (this.settings.filters.hideReels) this.removeReelsTray(rootNode);
-        if (this.settings.filters.hideStories) this.hideTarget(rootNode, PF_SELECTOR_MAP.storiesTray, "Stories Tray");
+        if (this.settings.filters.hideStories) this.removeStoriesTray(rootNode);
         if (this.settings.filters.hideMarketplace) this.hideTarget(rootNode, PF_SELECTOR_MAP.marketplaceTray || '[data-pagelet*="Marketplace"]', "Marketplace Tray");
         if (this.settings.filters.hideMarketplace) {
             // General marketplace injections in the feed often share the 'suggested' wrappers or a specific aria-label
@@ -118,6 +118,28 @@ class PF_Cleaner {
                 }
             });
         }
+    }
+
+    /**
+     * Aggressively hunts the Stories bar which lacks distinct wrapper names.
+     */
+    removeStoriesTray(rootNode) {
+        // 1. Map Check
+        this.hideTarget(rootNode, PF_SELECTOR_MAP.storiesTray, "Stories Target Array");
+
+        // 2. Text Heuristic Check
+        // Stories bar almost always contains exactly "Create story"
+        const spans = PF_Helpers.findContains(rootNode, 'span, div', 'Create story');
+        spans.forEach(node => {
+            if (node.textContent.trim() === 'Create story') {
+                // Find the main horizontal scrolling wrapper
+                // FB uses many nested divs, we want to find the one bounding the entire strip.
+                const storyWrap = PF_Helpers.getClosest(node, 'div[data-pagelet]') || node.parentElement.parentElement.parentElement.parentElement.parentElement;
+                if (storyWrap && !storyWrap.dataset.pfHidden) {
+                    PF_Helpers.hideElement(storyWrap, "Stories Tray Heuristic");
+                }
+            }
+        });
     }
 
     /**

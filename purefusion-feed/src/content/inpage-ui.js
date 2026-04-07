@@ -142,6 +142,10 @@ class PF_InPageUI {
                     <input type="checkbox" id="pfm_sugg" class="pf-modal-toggle" ${this.settings.filters.removeSuggested ? 'checked' : ''}>
                 </div>
                 <div class="pf-modal-row">
+                    <span>Hide Stories Bar</span>
+                    <input type="checkbox" id="pfm_stor" class="pf-modal-toggle" ${this.settings.filters.hideStories ? 'checked' : ''}>
+                </div>
+                <div class="pf-modal-row">
                     <span>AI Rage/Clickbait Filter</span>
                     <input type="checkbox" id="pfm_ai" class="pf-modal-toggle" ${this.settings.wellbeing.ragebaitDetector ? 'checked' : ''}>
                 </div>
@@ -170,6 +174,7 @@ class PF_InPageUI {
         const toggles = [
             { id: 'pfm_ads', obj: 'filters', prop: 'removeAds' },
             { id: 'pfm_sugg', obj: 'filters', prop: 'removeSuggested' },
+            { id: 'pfm_stor', obj: 'filters', prop: 'hideStories' },
             { id: 'pfm_ai', obj: 'wellbeing', prop: 'ragebaitDetector' },
             { id: 'pfm_gray', obj: 'wellbeing', prop: 'grayscaleMode' }
         ];
