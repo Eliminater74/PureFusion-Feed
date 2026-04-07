@@ -50,7 +50,7 @@ const SELECTOR_MAP = {
     suggestedForYouWrapper: '[data-pagelet="FeedUnit_Suggested_For_You"]',
     peopleYouMayKnow: '[data-pagelet="NetEgo_PeopleYouMayKnow"]',
     suggestedGroups: '[data-pagelet="NetEgo_SuggestedGroups"]',
-    reelsTray: '[data-pagelet="FeedUnit_Reels_Tray"]',
+    reelsTray: '[data-pagelet="FeedUnit_Reels_Tray"], [data-pagelet^="ShortsAndReels"], [data-pagelet*="Reels"]',
     storiesTray: '[data-pagelet="Stories"]',
 
     // ------------------------------------------------------------------------

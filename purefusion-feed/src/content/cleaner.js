@@ -44,8 +44,9 @@ class PF_Cleaner {
         }
         
         // Hide features like Reels, Marketplace, Stories if toggled
-        if (this.settings.filters.hideReels) this.hideTarget(rootNode, PF_SELECTOR_MAP.reelsTray, "Reels Tray");
+        if (this.settings.filters.hideReels) this.removeReelsTray(rootNode);
         if (this.settings.filters.hideStories) this.hideTarget(rootNode, PF_SELECTOR_MAP.storiesTray, "Stories Tray");
+        if (this.settings.filters.hideMarketplace) this.hideTarget(rootNode, PF_SELECTOR_MAP.marketplaceTray || '[data-pagelet*="Marketplace"]', "Marketplace Tray");
         if (this.settings.filters.hideMarketplace) {
             // General marketplace injections in the feed often share the 'suggested' wrappers or a specific aria-label
             // For safety we catch strings here
@@ -93,6 +94,30 @@ class PF_Cleaner {
                 }
             }
         });
+    }
+
+    /**
+     * More aggressive hunt for the Reels Tray since Facebook constantly changes the data-pagelet names.
+     */
+    removeReelsTray(rootNode) {
+        // 1. Map Check
+        this.hideTarget(rootNode, PF_SELECTOR_MAP.reelsTray, "Reels Target Array");
+
+        // 2. Text Heuristic Check
+        const feedWrapper = rootNode.matches('[role="feed"]') ? rootNode : rootNode.querySelector('[role="feed"]');
+        if (feedWrapper) {
+            const textNodes = PF_Helpers.findContains(feedWrapper, 'span, h2, h3, div', 'Reels');
+            textNodes.forEach(node => {
+                const text = node.textContent.trim();
+                // Match "Reels", "Reels and short videos", etc., ignoring long sentences
+                if (text === 'Reels' || text.includes('Reels and short videos')) {
+                    const postWrapper = PF_Helpers.getClosest(node, PF_SELECTOR_MAP.postContainer);
+                    if (postWrapper && !postWrapper.dataset.pfHidden) {
+                        PF_Helpers.hideElement(postWrapper, "Reels Tray Heuristic");
+                    }
+                }
+            });
+        }
     }
 
     /**
