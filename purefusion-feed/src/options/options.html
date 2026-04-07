@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PureFusion Feed - Settings</title>
+    <link rel="stylesheet" href="options.css">
+</head>
+<body>
+
+<div class="pf-dashboard">
+    
+    <!-- Sidebar Navigation -->
+    <nav class="pf-sidebar">
+        <div class="pf-brand">
+            <div class="pf-logo">PF</div>
+            <h2>PureFusion</h2>
+            <span>Settings Panel</span>
+        </div>
+        <ul class="pf-nav-links">
+            <li class="active" data-tab="tab-filters">🚫 Core Filters</li>
+            <li data-tab="tab-ai">🤖 AI Engine</li>
+            <li data-tab="tab-ui">🎨 UI Tweaks</li>
+            <li data-tab="tab-keywords">🔤 Keyword Filters</li>
+            <li data-tab="tab-social">📊 Social Tools</li>
+            <li data-tab="tab-data">💾 Data & Backup</li>
+        </ul>
+        <div class="pf-sidebar-footer">
+            <button id="btnSaveBottom" class="pf-btn pf-btn-primary">Save Changes</button>
+            <div id="saveStatus" class="save-toast"></div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="pf-content">
+        <header class="pf-content-header">
+            <h1 id="currentTabTitle">Core Filters</h1>
+            <button id="btnSaveTop" class="pf-btn pf-btn-primary">Save Settings</button>
+        </header>
+
+        <!-- TAB: FILTERS -->
+        <section id="tab-filters" class="pf-tab-content active">
+            <div class="pf-card">
+                <h3>Ad & Spam Removal</h3>
+                <p class="pf-desc">Toggle the primary DOM removal targets.</p>
+                
+                <div class="pf-setting-row">
+                    <label>Block Sponsored Content (Ads)</label>
+                    <input type="checkbox" id="opt_filters_removeAds" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row">
+                    <label>Hide "Suggested For You"</label>
+                    <input type="checkbox" id="opt_filters_removeSuggested" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row">
+                    <label>Hide "People You May Know"</label>
+                    <input type="checkbox" id="opt_filters_removePYMK" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row">
+                    <label>Hide Group / Page Suggestions</label>
+                    <input type="checkbox" id="opt_filters_removePageSuggestions" class="pf-toggle">
+                </div>
+            </div>
+
+            <div class="pf-card mt-4">
+                <h3>Clutter & Injections</h3>
+                <div class="pf-setting-row">
+                    <label>Hide Reels Tray in Feed</label>
+                    <input type="checkbox" id="opt_filters_hideReels" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row">
+                    <label>Hide Stories Bar</label>
+                    <input type="checkbox" id="opt_filters_hideStories" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row">
+                    <label>Remove Colored Background Posts</label>
+                    <input type="checkbox" id="opt_filters_removeColoredBackgrounds" class="pf-toggle">
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB: AI -->
+        <section id="tab-ai" class="pf-tab-content">
+            <div class="pf-card">
+                <h3>Local Prediction Engine</h3>
+                <p class="pf-desc">Scores feed items locally based on your interaction history. Data never leaves your device.</p>
+                <div class="pf-setting-row header-row">
+                    <label>Enable AI Predictions</label>
+                    <input type="checkbox" id="opt_pred_enabled" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row">
+                    <label>Show "PF Score" Badge on posts</label>
+                    <input type="checkbox" id="opt_pred_showBadge" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row">
+                    <label>Dim/Collapse Low Interest Posts (Score < 20)</label>
+                    <input type="checkbox" id="opt_pred_dimLowInterest" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row">
+                    <label>Highlight High Interest Posts (Score > 80)</label>
+                    <input type="checkbox" id="opt_pred_highlightHighInterest" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row">
+                    <label>Analyze Local Trends & Keywords</label>
+                    <input type="checkbox" id="opt_pred_showTrending" class="pf-toggle">
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB: UI TWEAKS -->
+        <section id="tab-ui" class="pf-tab-content">
+            <div class="pf-card">
+                <h3>Interface Restructuring</h3>
+                
+                <div class="pf-setting-row">
+                    <label>Force "Most Recent" Feed Sort</label>
+                    <input type="checkbox" id="opt_uiMode_forceMostRecent" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row">
+                    <label>Compact Mode (Reduce Margins/Padding)</label>
+                    <input type="checkbox" id="opt_uiMode_compactMode" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row">
+                    <label>Disable Comment Box Autofocus Stealing</label>
+                    <input type="checkbox" id="opt_uiMode_disableCommentAutofocus" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row">
+                    <label>Show True Destination Outbound Links</label>
+                    <input type="checkbox" id="opt_uiMode_showLinkPreviews" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row">
+                    <label>Convert Timestamps into Absolute Dates</label>
+                    <input type="checkbox" id="opt_uiMode_fixTimestamps" class="pf-toggle">
+                </div>
+
+                <hr class="pf-hr">
+                
+                <div class="pf-setting-row auto-height">
+                    <div>
+                        <label>Application Theme</label>
+                        <p class="pf-desc">Requires page reload.</p>
+                    </div>
+                    <select id="opt_uiMode_theme" class="pf-select">
+                        <option value="default">Facebook Default</option>
+                        <option value="darkPro">Dark Pro</option>
+                        <option value="amoled">AMOLED Pitch Black</option>
+                        <option value="classicBlue">Classic Blue</option>
+                    </select>
+                </div>
+                
+                <div class="pf-setting-row auto-height">
+                    <label>Font Size Scaling (%)</label>
+                    <input type="number" id="opt_uiMode_fontSizeScale" min="80" max="150" class="pf-input-number">
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB: KEYWORDS -->
+        <section id="tab-keywords" class="pf-tab-content">
+            <div class="pf-card">
+                <h3>Text Keyword Filter</h3>
+                <p class="pf-desc">Separate keywords by commas.</p>
+                
+                <div class="pf-form-group">
+                    <label>Blocklist (Collapses posts with a "Show anyway" button)</label>
+                    <textarea id="opt_keywords_blocklist" class="pf-textarea" rows="4" placeholder="politics, spoilers, etc..."></textarea>
+                </div>
+
+                <div class="pf-form-group mt-4">
+                    <label>Auto-hide (Silently nukes posts containing these strings)</label>
+                    <textarea id="opt_keywords_autohide" class="pf-textarea" rows="4" placeholder="spam buzzword..."></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB: SOCIAL / NOTIFICATIONS -->
+        <section id="tab-social" class="pf-tab-content">
+            <div class="pf-card">
+                <h3>Social Tools</h3>
+                <div class="pf-setting-row">
+                    <label>Track Unfriends (Locally compares friend lists over time)</label>
+                    <input type="checkbox" id="opt_social_trackUnfriends" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row">
+                    <label>Notification Digest Mode (Batch alerts every hour)</label>
+                    <input type="checkbox" id="opt_social_notificationDigestMode" class="pf-toggle">
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB: DATA -->
+        <section id="tab-data" class="pf-tab-content">
+            <div class="pf-card">
+                <h3>Configuration Backup</h3>
+                <p class="pf-desc">Export your settings & blocklists as JSON to sync to another machine.</p>
+                <div class="pf-btn-group">
+                    <button id="btnExport" class="pf-btn pf-btn-secondary">Export to File</button>
+                    <input type="file" id="btnImportFile" style="display: none;" accept=".json">
+                    <button id="btnImport" class="pf-btn pf-btn-secondary">Import from File</button>
+                </div>
+                
+                <hr class="pf-hr">
+                
+                <h3>Factory Reset</h3>
+                <p class="pf-desc pf-warn-text">This will wipe all preferences and local AI learning data.</p>
+                <button id="btnReset" class="pf-btn pf-btn-danger">Wipe Everything</button>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- Scripts -->
+<script src="../utils/storage.js"></script>
+<script src="../data/default-settings.js"></script>
+<script src="options.js"></script>
+
+</body>
+</html>
