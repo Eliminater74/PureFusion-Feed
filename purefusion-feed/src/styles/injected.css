@@ -78,3 +78,32 @@ html.pf-compact-mode [role="article"] {
     /* Safe padding adjustments only */
     padding-bottom: 12px !important;
 }
+
+/* ==========================================================================
+   WIDESCREEN MODE OVERRIDES
+   Expands the central column constraints 
+   ========================================================================== */
+
+html.pf-widescreen-mode [role="main"] {
+    max-width: 1400px !important;
+    width: 100% !important;
+}
+
+html.pf-widescreen-mode [role="main"] > div {
+    max-width: 100% !important;
+}
+
+html.pf-widescreen-mode [role="feed"] {
+    width: 100% !important;
+    max-width: 1400px !important;
+}
+
+/* Let the inner containers stretch out */
+html.pf-widescreen-mode [data-pagelet^="FeedUnit"] {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+html.pf-widescreen-mode [data-pagelet^="FeedUnit"] [dir="auto"] {
+    max-width: 100% !important;
+}

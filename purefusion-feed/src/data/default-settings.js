@@ -30,6 +30,7 @@ const DEFAULT_SETTINGS = {
     uiMode: {
         forceMostRecent: true,          // Automatically redirect/force chronological feed
         compactMode: false,             // Reduce whitespace and margins
+        widescreenMode: false,          // Expand feed width for ultrawide monitors
         fontSizeScale: 100,             // Numeric percentage (80 - 140)
         theme: 'default',               // 'default', 'darkPro', 'amoled', 'classicBlue'
         commentSortDefault: 'All Comments', // 'All Comments', 'Newest', 'Top Comments'

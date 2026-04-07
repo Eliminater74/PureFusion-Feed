@@ -34,18 +34,17 @@ class PF_InPageUI {
         const style = document.createElement('style');
         style.textContent = `
             #pf-inpage-container {
-                position: fixed; z-index: 2147483647; /* Absolute max z-index */
-                bottom: 20px; left: 20px;
-                font-family: -apple-system, system-ui, sans-serif;
+                /* Deprecated container, we now anchor directly to FB Document */
+                display: none;
             }
             .pf-fab {
-                width: 50px; height: 50px; border-radius: 25px;
+                width: 40px; height: 40px; border-radius: 20px;
                 background: linear-gradient(135deg, #6C3FC5, #00D4FF);
-                box-shadow: 0 4px 15px rgba(108,63,197,0.6);
+                box-shadow: 0 2px 10px rgba(108,63,197,0.5);
                 display: flex; align-items: center; justify-content: center;
-                color: white; font-weight: 900; font-size: 18px;
+                color: white; font-weight: 900; font-size: 16px; margin: 0 8px;
                 cursor: pointer; transition: transform 0.2s;
-                user-select: none;
+                user-select: none; flex-shrink: 0;
             }
             .pf-fab:hover { transform: scale(1.05); }
             
@@ -105,41 +104,22 @@ class PF_InPageUI {
         this.fab.textContent = 'PF';
         this.fab.title = "Open PureFusion Dashboard";
         
-        // Simple drag logic
-        let isDragging = false;
-        let startY, startX, initialY, initialX;
-        
-        this.fab.addEventListener('mousedown', (e) => {
-            isDragging = false;
-            startX = e.clientX; startY = e.clientY;
-            initialX = this.fab.offsetLeft; initialY = this.fab.offsetTop;
+        this.fab.addEventListener('click', () => this.toggleModal());
 
-            const onMouseMove = (moveEvent) => {
-                isDragging = true;
-                const dx = moveEvent.clientX - startX;
-                const dy = moveEvent.clientY - startY;
-                const newX = initialX + dx;
-                const newY = initialY + dy;
-                // Boundaries
-                if (newX > 0 && newX < window.innerWidth - 50) this.fab.style.left = newX + 'px';
-                if (newY > 0 && newY < window.innerHeight - 50) this.fab.style.top = newY + 'px';
-            };
-
-            const onMouseUp = () => {
-                document.removeEventListener('mousemove', onMouseMove);
-                document.removeEventListener('mouseup', onMouseUp);
-            };
-
-            document.addEventListener('mousemove', onMouseMove);
-            document.addEventListener('mouseup', onMouseUp);
-        });
-
-        // Click logic (only if not dragged)
-        this.fab.addEventListener('click', (e) => {
-            if (!isDragging) this.toggleModal();
-        });
-
-        this.container.appendChild(this.fab);
+        // Self-healing injection loop to keep it docked in Facebook's header
+        setInterval(() => {
+            if (!document.contains(this.fab)) {
+                const banner = document.querySelector('[role="banner"]');
+                if (banner && banner.lastElementChild) {
+                    // Try to attach to the inner UL or flex container grouping the icons
+                    let rightGroup = banner.lastElementChild;
+                    if (rightGroup.querySelector('ul')) rightGroup = rightGroup.querySelector('ul');
+                    else if (rightGroup.firstElementChild) rightGroup = rightGroup.firstElementChild;
+                    
+                    rightGroup.prepend(this.fab);
+                }
+            }
+        }, 1500);
     }
 
     _buildDashboardModal() {
@@ -174,7 +154,7 @@ class PF_InPageUI {
             </div>
         `;
         
-        this.container.appendChild(this.modalOverlay);
+        document.body.appendChild(this.modalOverlay);
     }
 
     _bindEvents() {

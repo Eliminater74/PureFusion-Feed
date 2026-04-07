@@ -21,6 +21,12 @@ class PF_FeedManager {
             document.documentElement.classList.remove('pf-compact-mode');
         }
 
+        if (this.settings.uiMode.widescreenMode) {
+            document.documentElement.classList.add('pf-widescreen-mode');
+        } else {
+            document.documentElement.classList.remove('pf-widescreen-mode');
+        }
+
         this._applyTheme(this.settings.uiMode.theme);
     }
 
