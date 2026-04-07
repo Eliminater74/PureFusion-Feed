@@ -60,4 +60,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'PF_PING') {
         sendResponse({ status: 'alive' });
     }
+    
+    // Allow content scripts and in-page UI to request opening the full settings page
+    if (message.action === 'openOptionsPage') {
+        chrome.runtime.openOptionsPage();
+        sendResponse({ status: 'opening' });
+    }
 });

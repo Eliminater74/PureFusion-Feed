@@ -73,7 +73,7 @@ const SELECTOR_MAP = {
     // ------------------------------------------------------------------------
     
     // The clickable dropdown that says "Most relevant" or "All comments"
-    commentFilterTrigger: 'div[role="button"][aria-haspopup="menu"]:contains("comment")',
+    commentFilterTrigger: 'div[role="button"][aria-haspopup="menu"]',
     
     // The input textarea where users type comments
     commentInputBox: 'div[role="textbox"][aria-label*="comment" i]'
