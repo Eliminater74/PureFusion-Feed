@@ -24,6 +24,7 @@ class PF_UiTweaks {
         }
 
         this._setupKeyboardShortcuts();
+        this._startResilientWorkers();
     }
 
     /**
@@ -37,15 +38,22 @@ class PF_UiTweaks {
             if (this.settings.uiMode.showLinkPreviews) {
                 this._addLinkPreviews(node);
             }
+        });
+    }
+
+    /**
+     * Virtual continuous worker to handle React's asynchronous lazy-loading
+     * which often bypasses traditional MutationObserver scoping.
+     */
+    _startResilientWorkers() {
+        setInterval(() => {
             if (this.settings.uiMode.commentSortDefault !== 'Most relevant') {
-                // Facebook's default is usually "Most relevant". If user wants something else,
-                // we trigger the change when a comment payload drops in.
-                this._enforceCommentSort(node);
+                this._enforceCommentSortResilient();
             }
             if (this.settings.uiMode.autoExpandComments) {
-                this._autoExpandComments(node);
+                this._autoExpandCommentsResilient();
             }
-        });
+        }, 1500);
     }
 
     _applyFontScale(percentage) {
@@ -144,19 +152,13 @@ class PF_UiTweaks {
         });
     }
 
-    _enforceCommentSort(rootNode) {
-        if (!rootNode.querySelectorAll) return;
+    _enforceCommentSortResilient() {
         const targetSort = this.settings.uiMode.commentSortDefault; // e.g. "All Comments"
         
-        // Handle cases where rootNode IS the trigger itself
-        let triggers = [];
-        if (rootNode.matches && (rootNode.matches(PF_SELECTOR_MAP.commentFilterTrigger) || rootNode.matches('div[role="button"]'))) {
-            triggers.push(rootNode);
-        }
-        rootNode.querySelectorAll(PF_SELECTOR_MAP.commentFilterTrigger + ', div[role="button"]').forEach(n => triggers.push(n));
+        // Find ALL sort dropdown triggers currently on the page
+        const triggers = document.querySelectorAll(PF_SELECTOR_MAP.commentFilterTrigger + ', div[role="button"]');
         
         triggers.forEach(trigger => {
-            // Check if this button actually controls comment sorting
             const textContent = trigger.textContent.trim().toLowerCase();
             const targetLower = targetSort.toLowerCase();
             
@@ -169,10 +171,8 @@ class PF_UiTweaks {
                 
                 trigger.style.borderBottom = "2px dashed #00D4FF";
 
-                // 1. Click to open the React Portal menu
                 trigger.click();
 
-                // 2. Wait longer for the Portal to mount at document level
                 setTimeout(() => {
                     const menuItems = Array.from(document.body.querySelectorAll('span[dir="auto"], span'));
                     
@@ -180,8 +180,6 @@ class PF_UiTweaks {
                     for (const item of menuItems) {
                         if (item.textContent.trim().toLowerCase() === targetSort.toLowerCase()) {
                             const clickable = item.closest('[role="menuitem"]') || item.closest('[role="menuitemradio"]') || item;
-                            
-                            // Prevent clicking on random UI components by checking if its inside the active menu portal
                             const menu = item.closest('[role="menu"]');
                             if (menu) {
                                 clickable.click();
@@ -192,43 +190,44 @@ class PF_UiTweaks {
                         }
                     }
 
-                    // 3. If we failed to find it for some reason, click away to close the dropdown
                     if (!clicked) {
-                        trigger.style.borderBottom = "2px solid red"; // Warning flag
+                        trigger.style.borderBottom = "2px solid red"; 
                         document.body.click(); 
                     }
-                }, 400); // 400ms is safer for heavy React portals
+                }, 400); 
             }
         });
     }
 
-    _autoExpandComments(rootNode) {
-        if (!rootNode.querySelectorAll) return;
+    _autoExpandCommentsResilient() {
+        // Scour the entire DOM for unopened comment buttons.
+        // Extremely robust against React lazy-loading.
+        const buttons = document.querySelectorAll('[role="button"]:not([data-pf-expanded]), a:not([data-pf-expanded])');
         
-        // We look for any container acting as a button that matches the "N Comments" text format.
-        // We avoid clicking the literal "Comment" action button because that triggers auto-focus
-        // and aggressively scrolls the user's screen.
-        let buttons = [];
-        if (rootNode.matches && rootNode.matches('[role="button"]')) buttons.push(rootNode);
-        
-        if (rootNode.querySelectorAll) {
-            rootNode.querySelectorAll('[role="button"], a').forEach(btn => buttons.push(btn));
-        }
-
         buttons.forEach(btn => {
-            if (btn.dataset.pfExpanded) return;
             const text = btn.textContent.trim().toLowerCase();
             
-            // Match e.g., "12 comments", "1.2k comments", "1comment"
-            // It MUST contain a number so we don't hit the raw action button
-            if (/[0-9]+.*comment/i.test(text)) {
+            // Scenario 1: The main "12 comments" trigger on the post body.
+            // Avoid clicking the raw "Comment" action button or "View more" buttons here.
+            if (/[0-9]+.*comment/i.test(text) && !text.includes('view') && !text.includes('previous')) {
                 btn.dataset.pfExpanded = "true";
-                PF_Logger.info(`PF_UiTweaks: Auto-expanding comments thread.`);
-                
-                // Slight delay to allow post layout to finish
-                setTimeout(() => {
+                btn.click();
+            }
+
+            // Scenario 2: The "View 4 more comments" or "View previous comments" trigger inside the thread.
+            // This satisfies the user's request to "see more than 1 or 2 comments"
+            if (text.includes('view ') && text.includes('comment')) {
+                // To prevent loading 5,000 comments and crashing the browser, we only click "View more" once per post.
+                const post = PF_Helpers.getClosest(btn, PF_SELECTOR_MAP.postContainer);
+                if (post && !post.dataset.pfDeepExpanded) {
+                    post.dataset.pfDeepExpanded = "true";
+                    btn.dataset.pfExpanded = "true";
                     btn.click();
-                }, 300);
+                } else if (!post) {
+                    // Modal edge-case
+                    btn.dataset.pfExpanded = "true";
+                    btn.click();
+                }
             }
         });
     }
