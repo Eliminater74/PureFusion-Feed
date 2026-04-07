@@ -75,6 +75,11 @@ const DEFAULT_SETTINGS = {
         hideLeftWatch: false,
         hideLeftMemories: false,
         hideLeftMetaAI: true,
+        fixTimestamps: true,
+        showLinkPreviews: true,
+        disableCommentAutofocus: true,
+        autoExpandComments: false,
+        widescreenMode: false,
         // Right Col
         hideRightTrending: true,
         hideRightContacts: false,

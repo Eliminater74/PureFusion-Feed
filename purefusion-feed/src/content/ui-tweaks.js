@@ -42,6 +42,9 @@ class PF_UiTweaks {
                 // we trigger the change when a comment payload drops in.
                 this._enforceCommentSort(node);
             }
+            if (this.settings.uiMode.autoExpandComments) {
+                this._autoExpandComments(node);
+            }
         });
     }
 
@@ -193,6 +196,31 @@ class PF_UiTweaks {
                         document.body.click(); 
                     }
                 }, 400); // 400ms is safer for heavy React portals
+            }
+        });
+    }
+
+    _autoExpandComments(rootNode) {
+        if (!rootNode.querySelectorAll) return;
+        
+        // We look for div[role="button"] or spans that match the "N Comments" text format.
+        // We avoid clicking the literal "Comment" action button because that triggers auto-focus
+        // and aggressively scrolls the user's screen.
+        const buttons = rootNode.querySelectorAll('div[role="button"]');
+        buttons.forEach(btn => {
+            if (btn.dataset.pfExpanded) return;
+            const text = btn.textContent.trim().toLowerCase();
+            
+            // Match e.g., "12 comments", "1.2k comments"
+            // It MUST contain a number so we don't hit the raw action button
+            if (/[0-9]+.+comment/i.test(text)) {
+                btn.dataset.pfExpanded = "true";
+                PF_Logger.info(`PF_UiTweaks: Auto-expanding comments thread.`);
+                
+                // Slight delay to allow post layout to finish
+                setTimeout(() => {
+                    btn.click();
+                }, 300);
             }
         });
     }

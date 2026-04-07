@@ -61,6 +61,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_uiMode_disableCommentAutofocus': { obj: 'uiMode', prop: 'disableCommentAutofocus', type: 'checkbox' },
         'opt_uiMode_showLinkPreviews': { obj: 'uiMode', prop: 'showLinkPreviews', type: 'checkbox' },
         'opt_uiMode_fixTimestamps': { obj: 'uiMode', prop: 'fixTimestamps', type: 'checkbox' },
+        'opt_uiMode_autoExpandComments': { obj: 'uiMode', prop: 'autoExpandComments', type: 'checkbox' },
         'opt_uiMode_theme': { obj: 'uiMode', prop: 'theme', type: 'select' },
         'opt_uiMode_fontSizeScale': { obj: 'uiMode', prop: 'fontSizeScale', type: 'number' },
 
