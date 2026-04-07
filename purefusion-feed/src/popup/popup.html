@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PureFusion Feed</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="pf-container">
+        <!-- HEADER -->
+        <header class="pf-header">
+            <div class="pf-brand">
+                <span class="pf-logo">PF</span>
+                <div>
+                    <h1>PureFusion Feed</h1>
+                    <div class="pf-version">v1.0.0</div>
+                </div>
+            </div>
+            <!-- Master Toggle -->
+            <label class="pf-switch pf-master-switch" title="Toggle completely on/off">
+                <input type="checkbox" id="masterToggle" checked>
+                <span class="pf-slider round"></span>
+            </label>
+        </header>
+
+        <!-- STATS DASHBOARD -->
+        <section class="pf-stats">
+            <div class="stat-box">
+                <span class="stat-val" id="statAds">0</span>
+                <span class="stat-label">Ads Blocked</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-val" id="statSpam">0</span>
+                <span class="stat-label">Spam Hidden</span>
+            </div>
+        </section>
+
+        <!-- QUICK TOGGLES -->
+        <section class="pf-quick-settings">
+            <h2>Quick Filters</h2>
+            
+            <div class="pf-toggle-row">
+                <div class="pf-toggle-info">
+                    <span class="pf-toggle-title">Block Sponsored Content</span>
+                    <span class="pf-toggle-desc">Removes feed and sidebar ads</span>
+                </div>
+                <label class="pf-switch">
+                    <input type="checkbox" id="tgl_removeAds">
+                    <span class="pf-slider round"></span>
+                </label>
+            </div>
+
+            <div class="pf-toggle-row">
+                <div class="pf-toggle-info">
+                    <span class="pf-toggle-title">Hide Suggested/PYMK</span>
+                    <span class="pf-toggle-desc">Removes algortihmic suggestions</span>
+                </div>
+                <label class="pf-switch">
+                    <input type="checkbox" id="tgl_removeSuggested">
+                    <span class="pf-slider round"></span>
+                </label>
+            </div>
+
+            <div class="pf-toggle-row">
+                <div class="pf-toggle-info">
+                    <span class="pf-toggle-title">Hide Reels & Stories</span>
+                    <span class="pf-toggle-desc">Removes short-form video UI</span>
+                </div>
+                <label class="pf-switch">
+                    <input type="checkbox" id="tgl_hideReelsStories">
+                    <span class="pf-slider round"></span>
+                </label>
+            </div>
+            
+            <div class="pf-toggle-row">
+                <div class="pf-toggle-info">
+                    <span class="pf-toggle-title">Force Most Recent</span>
+                    <span class="pf-toggle-desc">Always load chronological feed</span>
+                </div>
+                <label class="pf-switch">
+                    <input type="checkbox" id="tgl_forceChronological">
+                    <span class="pf-slider round"></span>
+                </label>
+            </div>
+        </section>
+
+        <!-- QUICK KEYWORD -->
+        <section class="pf-quick-keyword">
+            <h2>Fast Keyword Block</h2>
+            <div class="keyword-input-wrapper">
+                <input type="text" id="quickKeywordInput" placeholder="Enter keyword to collapse...">
+                <button id="addKeywordBtn">+</button>
+            </div>
+            <div id="keywordStatus" class="pf-status-text"></div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="pf-footer">
+            <button id="openOptionsBtn" class="pf-btn pf-btn-primary">Open Full Settings</button>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../utils/storage.js"></script>
+    <script src="../data/default-settings.js"></script>
+    <script src="popup.js"></script>
+</body>
+</html>

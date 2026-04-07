@@ -1,0 +1,268 @@
+/* PureFusion Feed - Popup Styles */
+
+:root {
+    --pf-purple: #6C3FC5;
+    --pf-purple-hover: #5a34a5;
+    --pf-cyan: #00D4FF;
+    --pf-bg-main: #18191A;
+    --pf-bg-card: #242526;
+    --pf-text-primary: #E4E6EB;
+    --pf-text-secondary: #B0B3B8;
+    --pf-border: #3E4042;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    width: 320px;
+    background-color: var(--pf-bg-main);
+    color: var(--pf-text-primary);
+}
+
+.pf-container {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.pf-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(108,63,197,0.2) 0%, rgba(0,212,255,0.1) 100%);
+    border-bottom: 1px solid var(--pf-border);
+}
+
+.pf-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pf-logo {
+    background: linear-gradient(135deg, var(--pf-purple), var(--pf-cyan));
+    color: white;
+    font-weight: 800;
+    font-size: 16px;
+    height: 32px;
+    width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(108,63,197,0.5);
+}
+
+.pf-brand h1 {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.pf-version {
+    font-size: 10px;
+    color: var(--pf-cyan);
+}
+
+/* Stats */
+.pf-stats {
+    display: flex;
+    padding: 16px;
+    gap: 12px;
+    border-bottom: 1px solid var(--pf-border);
+}
+
+.stat-box {
+    flex: 1;
+    background: var(--pf-bg-card);
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid var(--pf-border);
+}
+
+.stat-val {
+    display: block;
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--pf-cyan);
+}
+
+.stat-label {
+    font-size: 10px;
+    color: var(--pf-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Quick Settings */
+.pf-quick-settings, .pf-quick-keyword {
+    padding: 16px;
+    border-bottom: 1px solid var(--pf-border);
+}
+
+h2 {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--pf-text-secondary);
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+}
+
+.pf-toggle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.pf-toggle-row:last-child {
+    margin-bottom: 0;
+}
+
+.pf-toggle-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.pf-toggle-title {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.pf-toggle-desc {
+    font-size: 10px;
+    color: var(--pf-text-secondary);
+    margin-top: 2px;
+}
+
+/* Quick Keyword Input */
+.keyword-input-wrapper {
+    display: flex;
+    gap: 8px;
+}
+
+.keyword-input-wrapper input {
+    flex: 1;
+    background: var(--pf-bg-card);
+    border: 1px solid var(--pf-border);
+    color: var(--pf-text-primary);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    outline: none;
+}
+
+.keyword-input-wrapper input:focus {
+    border-color: var(--pf-purple);
+}
+
+.keyword-input-wrapper button {
+    background: var(--pf-purple);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    width: 32px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.keyword-input-wrapper button:hover {
+    background: var(--pf-purple-hover);
+}
+
+.pf-status-text {
+    font-size: 11px;
+    margin-top: 6px;
+    color: #4CAF50; /* Green success */
+    min-height: 14px;
+}
+
+/* Footer / Action */
+.pf-footer {
+    padding: 16px;
+    text-align: center;
+}
+
+.pf-btn {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+}
+
+.pf-btn-primary {
+    background-color: var(--pf-bg-card);
+    color: var(--pf-cyan);
+    border: 1px solid var(--pf-border);
+}
+
+.pf-btn-primary:hover {
+    background-color: #2a2b2d;
+    border-color: var(--pf-cyan);
+}
+
+/* Toggle Switch CSS (Standard Slider) */
+.pf-switch {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 20px;
+}
+
+.pf-switch input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.pf-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #4a4d52;
+    transition: .3s;
+}
+
+.pf-slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .3s;
+}
+
+input:checked + .pf-slider {
+    background-color: var(--pf-purple);
+}
+
+input:focus + .pf-slider {
+    box-shadow: 0 0 1px var(--pf-purple);
+}
+
+input:checked + .pf-slider:before {
+    transform: translateX(16px);
+}
+
+.pf-slider.round {
+    border-radius: 20px;
+}
+
+.pf-slider.round:before {
+    border-radius: 50%;
+}
