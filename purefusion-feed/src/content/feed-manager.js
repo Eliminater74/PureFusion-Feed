@@ -28,19 +28,17 @@ class PF_FeedManager {
         const currentURL = window.location.href;
         
         // If we are on the base URL and not already sorting by recent
+        // NOTE: Redirecting to ?sk=h_chr removes Stories and 'What's on your mind', so we disable this aggressive redirect per user request.
+        /*
         if (currentURL === 'https://www.facebook.com/' || currentURL === 'https://www.facebook.com/?sk=h_chr') {
-            // Facebook's exact trigger for Most Recent changes often. Currently it's often a URL param `sk=h_chr`
-            // or hitting the dedicated `/feed/` or `/friends_mutual` routes.
             if (!currentURL.includes('sk=h_chr') && !currentURL.includes('feed=recent')) {
                 PF_Logger.warn("PF_FeedManager: Forcing chronological feed. Redirecting cleanly.");
-                
-                // Use History API replaceState if possible, or force redirect.
-                // Redirecting is the only surefire way to dump the algorithmic payload cache on Facebook's backend.
                 setTimeout(() => {
                     window.location.replace('https://www.facebook.com/?sk=h_chr');
                 }, 500); 
             }
         }
+        */
     }
 
     _applyTheme(themeName) {

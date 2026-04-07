@@ -32,7 +32,7 @@ const SELECTOR_MAP = {
     postTimestamp: 'a[role="link"] span[id] > span, a[role="link"] span[dir="auto"]',
     
     // Colored background large font wrapper within a post
-    postColoredBackground: '[style*="background-image"], [style*="background-color"] > div[dir="auto"]',
+    postColoredBackground: 'div[data-ad-preview="message"][style*="background"], div[data-ad-preview="message"] [style*="background"]',
 
     // ------------------------------------------------------------------------
     // SPAM / ADS / SPONSORED IDENTIFIERS
@@ -43,7 +43,7 @@ const SELECTOR_MAP = {
     sponsoredIndicators: [
         'a[aria-label="Sponsored"]',
         'span[aria-label="Sponsored"]',
-        'span:contains("Sponsored")' // Note: standard querySelector doesn't support :contains, we'll polyfill it in helpers
+        'span:contains("Sponsored")' // Polyfilled by helpers
     ],
 
     // Specific feed unit wrappers Facebook uses for injection

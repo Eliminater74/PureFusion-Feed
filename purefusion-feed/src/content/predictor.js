@@ -194,16 +194,24 @@ class PF_Predictor {
 
         const badge = document.createElement('div');
         badge.style.cssText = `
-            position: absolute; top: 10px; right: 20px;
+            display: inline-block; vertical-align: middle; margin-left: 8px;
             background: var(--surface-background, #fff); border: 1px solid ${scoreColor};
             border-radius: 12px; padding: 2px 8px; font-size: 11px; font-weight: bold;
-            color: ${scoreColor}; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            pointer-events: none; opacity: 0.8;
+            color: ${scoreColor}; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         `;
         badge.innerHTML = `PF <span style="margin-left:4px; font-family: monospace;">${score}</span>${flair}`;
         
-        postNode.style.position = 'relative'; // ensure absolute child positions correctly
-        postNode.appendChild(badge);
+        // Find a safe place to inject inline (Header area near Author)
+        const authorNodes = postNode.querySelectorAll('h3, h4, strong');
+        if (authorNodes && authorNodes.length > 0) {
+            let container = authorNodes[0];
+            // Walk up safely if needed, or simply append after the strong tag
+            container.parentElement.appendChild(badge);
+        } else {
+            // Fallback prepend to top of post
+            postNode.prepend(badge); 
+        }
+        
         postNode.dataset.pfScored = score;
     }
 

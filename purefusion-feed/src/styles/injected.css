@@ -75,6 +75,6 @@ html.pf-compact-mode [data-pagelet^="FeedUnit_"] {
 }
 
 html.pf-compact-mode [role="article"] {
-    padding-top: 4px !important;
-    padding-bottom: 4px !important;
+    /* Safe padding adjustments only */
+    padding-bottom: 12px !important;
 }
