@@ -167,6 +167,9 @@ class PF_Predictor {
         if (!this.settings.predictions.showBadge) return;
         if (postNode.dataset.pfScored) return; // already injected
 
+        let scoreColor = '#aaaaaa';
+        let flair = '';
+
         if (postNode.dataset.pfRagebait === "true") {
             scoreColor = '#ff4444'; 
             flair = '⚠️ Rage-Bait Predicted';

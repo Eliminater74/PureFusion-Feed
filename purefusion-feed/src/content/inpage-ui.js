@@ -215,8 +215,36 @@ class PF_InPageUI {
         });
 
         document.getElementById('pfm_opt').addEventListener('click', () => {
-            if (typeof chrome !== 'undefined' && chrome.runtime) {
-                chrome.runtime.sendMessage({ action: "openOptionsPage" });
+            // Close the quick UI modal
+            this.toggleModal();
+
+            // Check if we already created the advanced modal
+            if (!document.getElementById('pf-advanced-iframe-modal')) {
+                const bg = document.createElement('div');
+                bg.id = 'pf-advanced-iframe-modal';
+                bg.style.cssText = `
+                    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+                    background: rgba(0,0,0,0.8); z-index: 2147483647;
+                    display: flex; align-items: center; justify-content: center;
+                    backdrop-filter: blur(10px);
+                `;
+                
+                // We pull the actual Options.html packaged in our extension and embed it seamlessly
+                const optionsUrl = chrome.runtime.getURL('src/options/options.html');
+                
+                bg.innerHTML = `
+                    <div style="width: 90%; max-width: 1000px; height: 85vh; background: #1c1e21; border-radius: 12px; overflow: hidden; border: 1px solid #3E4042; display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+                        <div style="display:flex; justify-content: space-between; padding: 12px 20px; background: #242526; border-bottom: 1px solid #3E4042; align-items: center;">
+                            <h2 style="margin: 0; color: #00D4FF; font-family: sans-serif; font-size: 18px;">PureFusion Global Settings</h2>
+                            <span id="pf-close-advanced" style="cursor: pointer; color: #B0B3B8; font-size: 28px; line-height: 20px;">&times;</span>
+                        </div>
+                        <iframe src="${optionsUrl}" style="width:100%; flex-grow:1; border:none; background: #18191A;"></iframe>
+                    </div>
+                `;
+                document.body.appendChild(bg);
+                
+                // Allow closing the massive modal
+                document.getElementById('pf-close-advanced').addEventListener('click', () => bg.remove());
             }
         });
     }
