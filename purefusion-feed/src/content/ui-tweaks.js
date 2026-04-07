@@ -157,13 +157,15 @@ class PF_UiTweaks {
         
         triggers.forEach(trigger => {
             // Check if this button actually controls comment sorting
-            const textContent = trigger.textContent.trim();
-            if ((textContent.includes('Most relevant') || textContent.includes('Top comments') || textContent.includes('All comments')) 
-                && trigger.textContent !== targetSort 
+            const textContent = trigger.textContent.trim().toLowerCase();
+            const targetLower = targetSort.toLowerCase();
+            
+            if ((textContent.includes('most relevant') || textContent.includes('top comments') || textContent.includes('all comments')) 
+                && !textContent.includes(targetLower) 
                 && !trigger.dataset.pfSortEnforced) {
                 
                 trigger.dataset.pfSortEnforced = "true"; 
-                PF_Logger.info(`PF_UiTweaks: Auto-clicking to change sort from ${textContent} to ${targetSort}`);
+                PF_Logger.info(`PF_UiTweaks: Auto-clicking to change sort to ${targetSort}`);
                 
                 trigger.style.borderBottom = "2px dashed #00D4FF";
 
@@ -203,17 +205,23 @@ class PF_UiTweaks {
     _autoExpandComments(rootNode) {
         if (!rootNode.querySelectorAll) return;
         
-        // We look for div[role="button"] or spans that match the "N Comments" text format.
+        // We look for any container acting as a button that matches the "N Comments" text format.
         // We avoid clicking the literal "Comment" action button because that triggers auto-focus
         // and aggressively scrolls the user's screen.
-        const buttons = rootNode.querySelectorAll('div[role="button"]');
+        let buttons = [];
+        if (rootNode.matches && rootNode.matches('[role="button"]')) buttons.push(rootNode);
+        
+        if (rootNode.querySelectorAll) {
+            rootNode.querySelectorAll('[role="button"], a').forEach(btn => buttons.push(btn));
+        }
+
         buttons.forEach(btn => {
             if (btn.dataset.pfExpanded) return;
             const text = btn.textContent.trim().toLowerCase();
             
-            // Match e.g., "12 comments", "1.2k comments"
+            // Match e.g., "12 comments", "1.2k comments", "1comment"
             // It MUST contain a number so we don't hit the raw action button
-            if (/[0-9]+.+comment/i.test(text)) {
+            if (/[0-9]+.*comment/i.test(text)) {
                 btn.dataset.pfExpanded = "true";
                 PF_Logger.info(`PF_UiTweaks: Auto-expanding comments thread.`);
                 
