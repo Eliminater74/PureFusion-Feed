@@ -1,0 +1,80 @@
+/** 
+ * PureFusion Feed - Pre-Injection CSS 
+ * 
+ * Loaded immediately via manifest.json `css` array block.
+ * Provides zero-latency hiding for known Ad/Spam containers before JavaScript
+ * `MutationObserver` code even has time to execute.
+ * 
+ * NOTE: Facebook dynamically obfuscates class names, so we rely on 
+ * data attributes and role selectors in this static CSS block as well.
+ */
+
+/* ==========================================================================
+   Zero-Latency Hard Blocks
+   ========================================================================== */
+
+/* Hard hide anything clearly labeled as an Ad unit by Facebook's backend data attrs */
+div[data-pagelet^="AdUnit_"] {
+    display: none !important;
+}
+
+div[data-pagelet="RightRailAdUnits"] {
+    display: none !important;
+}
+
+/* ==========================================================================
+   Helper Utilities applied via JS
+   ========================================================================== */
+
+/* Used by PF_Helpers.hideElement() for items removed by Extension settings */
+[data-pf-hidden="true"] {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    pointer-events: none !important;
+}
+
+/* Base style for PF Dimmed item */
+[data-pf-dimmed="true"] {
+    opacity: 0.3 !important;
+    transition: opacity 0.2s ease-in-out !important;
+    filter: grayscale(80%) !important;
+}
+
+[data-pf-dimmed="true"]:hover {
+    opacity: 1 !important;
+    filter: grayscale(0%) !important;
+}
+
+/* ==========================================================================
+   Distraction Free Reading Mode (Alt+Shift+F)
+   ========================================================================== */
+   
+html.pf-reading-mode [role="banner"],
+html.pf-reading-mode [role="navigation"][aria-label="Facebook"],
+html.pf-reading-mode [role="complementary"] {
+    display: none !important;
+}
+
+html.pf-reading-mode [role="main"] {
+    margin: 0 auto !important;
+    max-width: 800px !important;
+}
+
+/* ==========================================================================
+   Compact Mode Additions (Toggled via options)
+   ========================================================================== */
+
+html.pf-compact-mode [data-pagelet^="FeedUnit_"] {
+    margin-bottom: 8px !important;
+    border-radius: 4px !important;
+}
+
+html.pf-compact-mode [role="article"] {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+}
