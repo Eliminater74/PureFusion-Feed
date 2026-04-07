@@ -62,11 +62,30 @@ class PF_Predictor {
         // 2. Score the post based on history
         const score = this._scorePost(node);
 
-        // 3. Apply Visual Badges 
+        // 3. Apply Visual Badges and True-Affinity Flexbox Sorting
         this._injectBadge(node, score);
+
+        if (this.settings.predictions.trueAffinitySort) {
+            this._applyNativeAffinitySort(node, score);
+        }
 
         // 4. Attach Engagement Listeners (so we can learn)
         this._bindInteractionListeners(node);
+    }
+
+    _applyNativeAffinitySort(postNode, score) {
+        // If sorting is enabled, we utilize CSS Flexbox order to visually rearrange the feed on the fly
+        // WITHOUT destroying Facebook's React Virtual DOM hooks.
+        const feedWrapper = PF_Helpers.getClosest(postNode, '[role="feed"]');
+        if (feedWrapper && !feedWrapper.dataset.pfFlexReady) {
+            feedWrapper.dataset.pfFlexReady = "true";
+            feedWrapper.style.display = "flex";
+            feedWrapper.style.flexDirection = "column"; 
+        }
+
+        // CSS flex order: lower numbers appear first. 
+        // We want score 100 at the top (order=0), score 0 at the bottom (order=100)
+        postNode.style.order = 100 - score;
     }
 
     // =========================================================================
@@ -283,9 +302,29 @@ class PF_Predictor {
             
         this.keywordFrequency = Object.fromEntries(sortedMap);
 
+        // Calculate Echo Chamber Metric (if top 2 authors represent > 80% of all interactions)
+        let totalInteractions = 0;
+        let topCounts = [];
+        for (const [author, data] of Object.entries(this.engagementProfiles)) {
+            const interactions = data.reactions + data.comments + data.clicks;
+            totalInteractions += interactions;
+            topCounts.push(interactions);
+        }
+        
+        let isEchoChamber = false;
+        if (totalInteractions > 20) {
+            topCounts.sort((a,b) => b - a);
+            const topTwo = (topCounts[0] || 0) + (topCounts[1] || 0);
+            if (topTwo / totalInteractions > 0.8) {
+                isEchoChamber = true;
+                PF_Logger.warn("PF_Predictor: ⚠️ Local Echo Chamber Detected.");
+            }
+        }
+
         PF_Storage.setLocalData('pf_prediction_history', {
             profiles: this.engagementProfiles,
             freq: this.keywordFrequency,
+            echoChamberActive: isEchoChamber,
             lastSaved: Date.now()
         });
 

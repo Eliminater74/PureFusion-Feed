@@ -48,6 +48,12 @@ class PF_Cleaner {
             marketplaceNodes.forEach(node => PF_Helpers.hideElement(PF_Helpers.getClosest(node, PF_SELECTOR_MAP.postContainer), "Marketplace Unit"));
         }
 
+        // F.B. Purity Parity Feature: Algorithmic Friend Activity (X liked this, Y commented on this)
+        // This targets Facebook's attempt to force unrelated posts into your feed based on what your friends interact with.
+        if (this.settings.filters.removeFriendActivity) {
+            this.removeFriendActivity(rootNode);
+        }
+
         // Apply advanced Clickbait filtering (Phase 10)
         if (this.settings.wellbeing && this.settings.wellbeing.clickbaitBlocker) {
             this.removeClickbait(rootNode);
@@ -98,6 +104,26 @@ class PF_Cleaner {
             const grpWrapper = rootNode.querySelectorAll(PF_SELECTOR_MAP.suggestedGroups);
             grpWrapper.forEach(node => PF_Helpers.hideElement(node, "Suggested Groups"));
         }
+    }
+
+    removeFriendActivity(rootNode) {
+        // Find headers indicating friend algorithmic activity
+        const activityPatterns = ['commented on', 'liked', 'replied to', 'was mentioned in', 'is interested in'];
+        
+        const authorHeaders = rootNode.querySelectorAll('h3, h4, span > strong');
+        authorHeaders.forEach(header => {
+            const text = header.parentElement.textContent.toLowerCase();
+            for (const pattern of activityPatterns) {
+                if (text.includes(pattern)) {
+                    // Make sure it's not the user's actual post text. These headers usually sit above the actual post content.
+                    const postWrapper = PF_Helpers.getClosest(header, PF_SELECTOR_MAP.postContainer);
+                    if (postWrapper) {
+                        PF_Helpers.hideElement(postWrapper, `Friend Activity Filter: ${pattern}`);
+                    }
+                    break;
+                }
+            }
+        });
     }
 
     removeColoredBackgrounds(rootNode) {
