@@ -209,10 +209,12 @@ class PF_UiTweaks {
             const ariaLabel = (btn.getAttribute('aria-label') || '').trim().toLowerCase();
             const combinedText = text + " " + ariaLabel;
             
-            // Scenario 1: The main "12 comments" trigger on the post body.
-            // Avoid clicking the raw "Comment" action button or "View more" buttons here.
-            // Some UI layouts use a speech bubble SVG next to "6" and hide the "comments" word in the aria-label!
-            if (/[0-9]+.*comment/i.test(combinedText) && !combinedText.includes('view') && !combinedText.includes('previous')) {
+            // Scenario 1: The Action Row "Comment" button.
+            // We MUST click this instead of the "12 Comments" statistics button. 
+            // Facebook recently tied the statistics button to open a massive Theater Modal popup over the feed.
+            // Clicking the action row forces the comments to drop down seamlessly inline!
+            // (Note: This triggers auto-focus, but our pf_mouseIsDown trap perfectly blocks the screen jump).
+            if (text === 'comment' || combinedText === 'leave a comment' || combinedText === 'comment') {
                 btn.dataset.pfExpanded = "true";
                 btn.click();
             }
