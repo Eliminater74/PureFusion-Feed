@@ -146,17 +146,44 @@ class PF_UiTweaks {
         const targetSort = this.settings.uiMode.commentSortDefault; // e.g. "All Comments"
         
         // Find the sort dropdown trigger button
-        const triggers = rootNode.querySelectorAll(PF_SELECTOR_MAP.commentFilterTrigger);
+        const triggers = rootNode.querySelectorAll(PF_SELECTOR_MAP.commentFilterTrigger + ', div[role="button"]');
         triggers.forEach(trigger => {
-            if (trigger.textContent.includes('Most relevant') && !trigger.dataset.pfSortEnforced) {
-                trigger.dataset.pfSortEnforced = "true"; // Prevent infinite loops
-                // In a true implementation, one needs to simulate click on the trigger, 
-                // wait for the Menu portal to appear in the DOM, then click the correct list item.
-                PF_Logger.info(`Enforcing comment sort to ${targetSort} mapped on unit.`);
+            // Check if this button actually controls comment sorting
+            const textContent = trigger.textContent.trim();
+            if ((textContent.includes('Most relevant') || textContent.includes('Top comments') || textContent.includes('All comments')) 
+                && trigger.textContent !== targetSort 
+                && !trigger.dataset.pfSortEnforced) {
                 
-                // TODO: Wire full virtual click chain. (Very brittle to React DOM).
-                // Temporarily we just add a visual indicator that PF is attempting to override.
-                trigger.style.borderBottom = "2px solid #00D4FF";
+                trigger.dataset.pfSortEnforced = "true"; 
+                PF_Logger.info(`PF_UiTweaks: Auto-clicking to change sort from ${textContent} to ${targetSort}`);
+                
+                // Emphasize visually that PF is taking control
+                trigger.style.borderBottom = "2px dashed #00D4FF";
+
+                // 1. Click to open the React Portal menu
+                trigger.click();
+
+                // 2. Wait for the Portal to mount at document level
+                setTimeout(() => {
+                    const menuItems = Array.from(document.querySelectorAll('div[role="menuitem"], div[role="menuitemradio"]'));
+                    
+                    let clicked = false;
+                    for (const item of menuItems) {
+                        if (item.textContent.trim().toLowerCase() === targetSort.toLowerCase()) {
+                            item.click();
+                            clicked = true;
+                            // Clean up visual indicator on success
+                            trigger.style.borderBottom = "none";
+                            break;
+                        }
+                    }
+
+                    // 3. If we failed to find it for some reason, click away to close the dropdown
+                    if (!clicked) {
+                        trigger.style.borderBottom = "2px solid red"; // Warning flag
+                        document.body.click(); 
+                    }
+                }, 200);
             }
         });
     }

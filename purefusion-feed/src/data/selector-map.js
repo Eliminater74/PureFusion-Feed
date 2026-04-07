@@ -75,8 +75,8 @@ const SELECTOR_MAP = {
     // The clickable dropdown that says "Most relevant" or "All comments"
     commentFilterTrigger: 'div[role="button"][aria-haspopup="menu"]',
     
-    // The input textarea where users type comments
-    commentInputBox: 'div[role="textbox"][aria-label*="comment" i]'
+    // The input textarea where users type comments. We broadened this to match modals.
+    commentInputBox: 'div[role="textbox"][contenteditable="true"]'
 };
 
 // Make available globally
