@@ -98,15 +98,25 @@ class PF_LLMFeatures {
 
             const wand = document.createElement('div');
             wand.style.cssText = `
-                position: absolute; right: 40px; top: 50%; transform: translateY(-50%);
-                cursor: pointer; font-size: 16px; z-index: 100; opacity: 0.7;
-                background: var(--surface-background); border-radius: 50%; padding: 4px;
+                display: flex; align-items: center; justify-content: center;
+                cursor: pointer; font-size: 20px; z-index: 100;
+                background: transparent; padding: 4px; border-radius: 50%;
+                margin-top: 4px; margin-left: 8px; transition: transform 0.2s;
             `;
             wand.innerHTML = '🪄';
             wand.title = 'Draft a smart response via AI';
+            wand.onmouseenter = () => wand.style.transform = 'scale(1.2)';
+            wand.onmouseleave = () => wand.style.transform = 'scale(1)';
 
-            parent.style.position = 'relative'; // Ensure proper absolute positioning
-            parent.appendChild(wand);
+            // Instead of absolute positioning which gets clipped, inject it safely OUTSIDE the input box
+            // For FB dialogs, the input is usually deeply wrapped. Let's find the nearest large container.
+            let safeContainer = box.closest('.x1i10hfl') || box.parentElement.parentElement;
+            if (safeContainer && safeContainer.parentNode) {
+                // Insert it as a sibling AFTER the main text input cluster
+                safeContainer.parentNode.insertBefore(wand, safeContainer.nextSibling);
+            } else {
+                parent.appendChild(wand); // Fallback
+            }
 
             wand.addEventListener('click', async () => {
                 // To generate a logical comment, we need the context of the main post
