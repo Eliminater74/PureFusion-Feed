@@ -28,6 +28,7 @@ class PureFusionApp {
             this.socialTools = new window.PF_SocialTools(this.settings);
             this.notifControls = new window.PF_NotificationControls(this.settings);
             this.wellbeing = new window.PF_Wellbeing(this.settings);
+            this.inpageUI = new window.PF_InPageUI(this.settings);
             this.observer = new window.PF_Observer();
 
             // Set up our centralized event bus listeners
@@ -80,6 +81,14 @@ class PureFusionApp {
                     sendResponse({ status: "success" });
                 }
             });
+        
+        // Listen to window postMessage for updates originating from the embedded UI
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'PF_LOCAL_SETTINGS_UDPATE') {
+                PF_Logger.log("In-Page Settings update detected. Resweeping.");
+                this.updateSettingsAndResweep();
+            }
+        });
         }
     }
 
