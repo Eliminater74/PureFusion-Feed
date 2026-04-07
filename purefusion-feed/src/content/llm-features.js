@@ -13,8 +13,9 @@ class PF_LLMFeatures {
     }
 
     applyToNodes(nodes) {
-        // Quick bypass if LLM engine has no configured provider/API key
-        if (!this.engine.isReady()) return;
+        // We do NOT bypass if the engine isn't ready. 
+        // We want the AI tools (like the wand and TL;DR) to inject visually so the user knows they exist.
+        // We will catch the 'not ready' state when they actually click the buttons.
 
         nodes.forEach(node => {
             if (this.settings.llm.tldrEnabled) {
@@ -60,6 +61,11 @@ class PF_LLMFeatures {
                 btn.onmouseleave = () => btn.style.transform = 'scale(1)';
 
                 btn.addEventListener('click', async () => {
+                    if (!this.engine.isReady()) {
+                        alert("⚠️ PureFusion AI isn't configured!\n\nOpen the PureFusion Advanced Settings panel and select an AI Provider (like OpenAI or Chrome Native window.ai) to use the Summarizer.");
+                        return;
+                    }
+                    
                     btn.innerHTML = `<span style="margin-right: 4px;">⏳</span> Analyzing...`;
                     btn.style.opacity = '0.7';
                     btn.style.pointerEvents = 'none';
@@ -120,6 +126,11 @@ class PF_LLMFeatures {
             }
 
             wand.addEventListener('click', async () => {
+                if (!this.engine.isReady()) {
+                    alert("⚠️ PureFusion AI isn't configured!\n\nOpen the PureFusion Advanced Settings panel and select an AI Provider (like OpenAI or Chrome Native window.ai) to activate your Comment Co-Pilot.");
+                    return;
+                }
+
                 // To generate a logical comment, we need the context of the main post
                 const postContainer = window.PF_Helpers.getClosest(box, window.PF_SELECTOR_MAP.postContainer);
                 const textContainer = postContainer ? postContainer.querySelector(window.PF_SELECTOR_MAP.postTextBody) : null;
@@ -170,6 +181,10 @@ class PF_LLMFeatures {
                 decodeBtn.innerText = '🤖 Decode via AI';
 
                 decodeBtn.addEventListener('click', async () => {
+                    if (!this.engine.isReady()) {
+                        alert("⚠️ PureFusion AI isn't configured to decode bait.\n\nPlease select an AI Provider in Advanced Settings.");
+                        return;
+                    }
                     decodeBtn.innerText = 'Thinking...';
                     try {
                         const textContainer = item.querySelector(window.PF_SELECTOR_MAP.postTextBody);
