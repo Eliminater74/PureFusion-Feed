@@ -9,6 +9,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let currentSettings = await PF_Storage.init();
 
+    // 0. Set Dynamic Version (Moved from inline to comply with CSP)
+    const versionEl = document.getElementById('pf-sidebar-version');
+    if (versionEl && typeof chrome !== 'undefined' && chrome.runtime.getManifest) {
+        versionEl.textContent = 'v' + chrome.runtime.getManifest().version;
+    }
+
     // =========================================================================
     // UI Navigation & Tabs
     // =========================================================================
