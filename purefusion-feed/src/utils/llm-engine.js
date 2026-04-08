@@ -41,32 +41,76 @@ class PF_LLMEngine {
             }
         } catch (error) {
             PF_Logger.error(`PF_LLMEngine Error (${provider}):`, error);
-            return "⚠️ AI Error - Check your API key or network connection.";
+
+            const rawMessage = error && error.message ? String(error.message) : 'Unknown error';
+            const isFetchFailure = /failed to fetch|networkerror|network request failed/i.test(rawMessage);
+            if (isFetchFailure) {
+                return "⚠️ AI Error - Network or permission blocked. Re-save AI provider in settings.";
+            }
+
+            const safeMessage = rawMessage.length > 110 ? `${rawMessage.slice(0, 110)}...` : rawMessage;
+            return `⚠️ AI Error - ${safeMessage}`;
         }
     }
 
     async _callGemini(system, prompt) {
-        const apiKey = this.settings.llm.geminiApiKey;
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
-        
+        const apiKey = (this.settings.llm.geminiApiKey || '').trim();
+        if (!apiKey) throw new Error('Gemini API key is missing.');
+
+        const models = [
+            'gemini-1.5-flash',
+            'gemini-1.5-pro',
+            'gemini-pro'
+        ];
+
         const payload = {
-            contents: [{ parts: [{ text: `SYSTEM INSTRUCTIONS: ${system}\n\nUSER PROMPT: ${prompt}` }] }]
-            // Note: In v1beta we combine system and user if system roles aren't strictly isolated for pure pro models
+            systemInstruction: {
+                parts: [{ text: system }]
+            },
+            contents: [{
+                role: 'user',
+                parts: [{ text: prompt }]
+            }],
+            generationConfig: {
+                temperature: 0.3
+            }
         };
 
-        const res = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        });
+        let lastError = null;
 
-        if (!res.ok) throw new Error("Gemini API HTTP Error: " + res.status);
-        const data = await res.json();
-        
-        if (data && data.candidates && data.candidates.length > 0) {
-            return data.candidates[0].content.parts[0].text;
+        for (const model of models) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-goog-api-key': apiKey
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                const errText = await this._safeErrorText(res);
+                lastError = new Error(`Gemini API ${res.status}: ${errText}`);
+
+                if (res.status === 404) {
+                    continue;
+                }
+
+                throw lastError;
+            }
+
+            const data = await res.json();
+            const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (text && text.trim()) {
+                return text.trim();
+            }
+
+            throw new Error('Gemini returned an empty response.');
         }
-        throw new Error("Invalid Gemini response format.");
+
+        throw lastError || new Error('No compatible Gemini model is available for this API key.');
     }
 
     async _callOpenAI(system, prompt) {
@@ -107,6 +151,22 @@ class PF_LLMEngine {
         const response = await session.prompt(`[SYSTEM]: ${system}\n[USER]: ${prompt}`);
         session.destroy();
         return response;
+    }
+
+    async _safeErrorText(response) {
+        try {
+            const text = await response.text();
+            if (!text) return 'Unknown error';
+
+            try {
+                const parsed = JSON.parse(text);
+                return parsed?.error?.message || text;
+            } catch {
+                return text;
+            }
+        } catch {
+            return 'Unknown error';
+        }
     }
 }
 
