@@ -151,7 +151,9 @@ class PF_InPageUI {
         }, { once: true });
         this.fab.appendChild(logo);
         
-        this.fab.title = chrome.i18n.getMessage("inpage_fab_title");
+        const fabLabel = chrome.i18n.getMessage("inpage_fab_title");
+        const version = chrome.runtime?.getManifest?.().version;
+        this.fab.title = version ? `${fabLabel} (v${version})` : fabLabel;
         
         this.fab.addEventListener('click', () => this.toggleModal());
 
