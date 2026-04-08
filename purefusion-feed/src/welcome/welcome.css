@@ -1,0 +1,224 @@
+/* PureFusion Welcome Page Styles */
+
+:root {
+    --pf-purple: #6C3FC5;
+    --pf-purple-hover: #5a34a5;
+    --pf-cyan: #00D4FF;
+    --pf-bg-main: #0B0B0C;
+    --pf-bg-card: rgba(30, 31, 33, 0.7);
+    --pf-text-primary: #FFFFFF;
+    --pf-text-secondary: #B0B3B8;
+    --pf-border: rgba(255, 255, 255, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+    background-color: var(--pf-bg-main);
+    color: var(--pf-text-primary);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+    line-height: 1.6;
+}
+
+/* Background Stars Animation */
+.stars-container {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle at center, #1b1b22 0%, #000 100%);
+    z-index: -1;
+}
+
+.welcome-container {
+    max-width: 900px;
+    width: 90%;
+    padding: 40px 20px;
+    text-align: center;
+    z-index: 1;
+}
+
+.welcome-header {
+    margin-bottom: 50px;
+    animation: fadeInDown 0.8s ease-out;
+}
+
+.logo-wrapper {
+    margin-bottom: 24px;
+}
+
+.main-logo {
+    width: 80px;
+    height: 80px;
+    filter: drop-shadow(0 0 20px rgba(108, 63, 197, 0.6));
+}
+
+.welcome-header h1 {
+    font-size: 42px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #FFF 0%, var(--pf-cyan) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.badge {
+    font-size: 14px;
+    padding: 4px 10px;
+    background: rgba(108, 63, 197, 0.2);
+    border: 1px solid var(--pf-purple);
+    border-radius: 12px;
+    color: var(--pf-cyan);
+    vertical-align: middle;
+    margin-left: 10px;
+}
+
+.subtitle {
+    font-size: 18px;
+    color: var(--pf-text-secondary);
+}
+
+/* Feature Grid */
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+    margin-bottom: 50px;
+}
+
+.feature-card {
+    background: var(--pf-bg-card);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--pf-border);
+    border-radius: 20px;
+    padding: 30px;
+    transition: transform 0.3s, border-color 0.3s;
+    animation: fadeInUp 0.6s ease-out backwards;
+}
+
+.feature-card:nth-child(1) { animation-delay: 0.2s; }
+.feature-card:nth-child(2) { animation-delay: 0.4s; }
+.feature-card:nth-child(3) { animation-delay: 0.6s; }
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--pf-purple);
+}
+
+.feature-card.highlighted {
+    border-color: var(--pf-cyan);
+    background: rgba(0, 212, 255, 0.05);
+}
+
+.feature-card .icon {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.feature-card h3 {
+    font-size: 20px;
+    margin-bottom: 12px;
+    color: var(--pf-text-primary);
+}
+
+.feature-card p {
+    font-size: 14px;
+    color: var(--pf-text-secondary);
+}
+
+/* Intro Card (Call to Action) */
+.intro-card {
+    background: linear-gradient(145deg, rgba(108, 63, 197, 0.1), rgba(0, 212, 255, 0.05));
+    border: 1px solid var(--pf-purple);
+    border-radius: 24px;
+    padding: 40px;
+    margin-bottom: 40px;
+    animation: fadeInUp 1s ease-out;
+}
+
+.intro-card h2 {
+    font-size: 28px;
+    margin-bottom: 16px;
+}
+
+.intro-card p {
+    color: var(--pf-text-secondary);
+    margin-bottom: 30px;
+    font-size: 16px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 14px 32px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: var(--pf-purple);
+    color: white;
+    box-shadow: 0 4px 15px rgba(108, 63, 197, 0.4);
+}
+
+.btn-primary:hover {
+    background: var(--pf-purple-hover);
+    transform: scale(1.05);
+}
+
+.btn-support {
+    background: transparent;
+    border: 1px solid var(--pf-border);
+    color: #FF3B6C; /* Supportive Heart Pink */
+    background: rgba(255, 59, 108, 0.05);
+}
+
+.btn-support:hover {
+    background: rgba(255, 59, 108, 0.15);
+    border-color: #FF3B6C;
+    transform: scale(1.05);
+}
+
+.welcome-footer {
+    color: var(--pf-text-secondary);
+    font-size: 12px;
+    opacity: 0.6;
+}
+
+/* Animations */
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 600px) {
+    .welcome-header h1 { font-size: 32px; }
+    .intro-card { padding: 25px; }
+    .btn { width: 100%; box-sizing: border-box; }
+}

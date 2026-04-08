@@ -8,7 +8,10 @@
 chrome.runtime.onInstalled.addListener(async (details) => {
     if (details.reason === "install") {
         console.log("PureFusion Feed Initialized");
-        // We could run an initial rule setup here if needed
+        // Open welcome page on first install
+        chrome.tabs.create({
+            url: chrome.runtime.getURL('src/welcome/welcome.html')
+        });
         await setupDNRRules();
     } else if (details.reason === "update") {
         console.log("PureFusion Feed Updated");
