@@ -162,6 +162,7 @@ class PF_InPageUI {
                 </div>
                 
                 <button class="pf-btn-full" id="pfm_opt">Advanced Settings</button>
+                <a href="${this.settings.supportUrl}" target="_blank" class="pf-btn-full pf-btn-support" style="background: rgba(255, 63, 108, 0.2); color: #ff3f6c; text-decoration: none; display: block; text-align: center; margin-top: 10px; border: 1px solid rgba(255, 63, 108, 0.4);">💖 Support the Developer</a>
             </div>
         `;
         

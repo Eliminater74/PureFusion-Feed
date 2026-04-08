@@ -125,7 +125,11 @@ const DEFAULT_SETTINGS = {
         tldrEnabled: true,              // Inject summarize buttons
         smartCommentEnabled: true,      // Inject Co-Pilot into comment boxes
         clickbaitDecoder: true          // Rewrite headlines instead of just blocking
-    }
+    },
+    // ------------------------------------------------------------------------
+    // SUPPORT & LINKS
+    // ------------------------------------------------------------------------
+    supportUrl: 'https://www.paypal.com/donate/?business=X76ZW4RHA6T9C&no_recurring=0&item_name=PureFusion+returns+feed+control+to+you.+Support+our+independent%2C+private%2C+ad-free+social+tools.+Keep+your+feed+pure%21&currency_code=USD'
 };
 
 // Make available to closure scope or ES module system

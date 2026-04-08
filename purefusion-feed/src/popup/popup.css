@@ -29,6 +29,15 @@ body {
     flex-direction: column;
 }
 
+.pf-support-btn {
+    text-decoration: none;
+    font-size: 18px;
+    margin-right: 12px;
+    transition: transform 0.2s;
+    display: inline-block;
+}
+.pf-support-btn:hover { transform: scale(1.2); }
+
 /* Header */
 .pf-header {
     display: flex;

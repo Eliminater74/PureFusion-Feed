@@ -84,7 +84,19 @@ body, html {
 .pf-sidebar-footer {
     padding: 20px;
     border-top: 1px solid var(--pf-border);
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.pf-support-footer-btn {
+    text-decoration: none;
+    background: rgba(108, 63, 197, 0.1);
+    color: var(--pf-cyan);
+    border: 1px solid rgba(108, 63, 197, 0.3) !important;
+}
+.pf-support-footer-btn:hover {
+    background: rgba(108, 63, 197, 0.2);
+    border-color: var(--pf-cyan) !important;
 }
 
 /* Main Content Wrapper */
