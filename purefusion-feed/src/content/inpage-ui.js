@@ -247,7 +247,7 @@ class PF_InPageUI {
                 
                 // Safety Check: Avoid "Extension context invalidated" on reloads
                 if (!this._isContextValid()) {
-                    alert("PureFusion was updated! Please refresh the page to access settings.");
+                    PF_Helpers.showToast('PureFusion was updated. Refresh Facebook to open settings.', 'warn');
                     return;
                 }
 

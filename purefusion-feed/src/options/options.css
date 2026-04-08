@@ -2,25 +2,29 @@
 
 :root {
     --pf-purple: #6C3FC5;
-    --pf-purple-hover: #5a34a5;
-    --pf-cyan: #00D4FF;
-    --pf-bg-main: #141415;
-    --pf-bg-sidebar: #1E1F21;
-    --pf-bg-card: #222325;
-    --pf-text-primary: #f2f3f5;
-    --pf-text-secondary: #9da0a5;
-    --pf-border: #353638;
+    --pf-purple-hover: #7a54cf;
+    --pf-cyan: #12c8dc;
+    --pf-bg-main: #141925;
+    --pf-bg-sidebar: #1a202d;
+    --pf-bg-card: #212837;
+    --pf-text-primary: #eef2fb;
+    --pf-text-secondary: #a6afc2;
+    --pf-border: #313849;
+    --pf-font-body: "Segoe UI Variable Text", "Verdana", "Tahoma", sans-serif;
+    --pf-font-display: "Segoe UI Variable Display", "Trebuchet MS", "Candara", sans-serif;
 }
 
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-family: var(--pf-font-body);
 }
 
 body, html {
-    background-color: var(--pf-bg-main);
+    background: radial-gradient(circle at 12% 0%, rgba(108, 63, 197, 0.2), transparent 36%),
+                radial-gradient(circle at 96% 8%, rgba(18, 200, 220, 0.17), transparent 32%),
+                linear-gradient(180deg, #151b27 0%, #131925 100%);
     color: var(--pf-text-primary);
     height: 100vh;
     overflow: hidden;
@@ -34,7 +38,7 @@ body, html {
 /* Sidebar */
 .pf-sidebar {
     width: 260px;
-    background-color: var(--pf-bg-sidebar);
+    background: linear-gradient(180deg, #1a212f 0%, #171d2a 100%);
     border-right: 1px solid var(--pf-border);
     display: flex;
     flex-direction: column;
@@ -51,7 +55,13 @@ body, html {
     object-fit: contain;
     border-radius: 12px;
     margin-bottom: 15px;
-    box-shadow: 0 4px 15px rgba(108,63,197,0.4);
+    box-shadow: 0 10px 24px rgba(11, 16, 27, 0.5);
+}
+
+.pf-brand h2 {
+    font-family: var(--pf-font-display);
+    letter-spacing: 0.2px;
+    margin-bottom: 4px;
 }
 
 .pf-nav-links {
@@ -63,7 +73,7 @@ body, html {
 .pf-nav-links li {
     padding: 14px 30px;
     color: var(--pf-text-secondary);
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
     font-size: 14px;
     transition: all 0.2s;
@@ -77,7 +87,7 @@ body, html {
 
 .pf-nav-links li.active {
     color: var(--pf-text-primary);
-    background: rgba(108,63,197,0.1);
+    background: linear-gradient(90deg, rgba(108,63,197,0.22) 0%, rgba(18,200,220,0.08) 100%);
     border-left: 3px solid var(--pf-purple);
 }
 
@@ -105,7 +115,7 @@ body, html {
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    background: var(--pf-bg-main);
+    background: linear-gradient(180deg, rgba(20, 26, 37, 0.92) 0%, rgba(17, 23, 33, 0.92) 100%);
 }
 
 .pf-content-header {
@@ -116,9 +126,14 @@ body, html {
     border-bottom: 1px solid var(--pf-border);
     position: sticky;
     top: 0;
-    background: rgba(20,20,21,0.9);
+    background: rgba(21, 27, 38, 0.88);
     backdrop-filter: blur(10px);
     z-index: 100;
+}
+
+#currentTabTitle {
+    font-family: var(--pf-font-display);
+    letter-spacing: 0.2px;
 }
 
 /* Tabs */
@@ -140,17 +155,27 @@ body, html {
 
 /* Base UI Elements */
 .pf-card {
-    background: var(--pf-bg-card);
-    border: 1px solid var(--pf-border);
+    background: linear-gradient(180deg, rgba(35, 42, 58, 0.94) 0%, rgba(30, 36, 50, 0.94) 100%);
+    border: 1px solid rgba(122, 132, 156, 0.28);
     border-radius: 12px;
     padding: 25px;
     margin-bottom: 25px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    box-shadow: 0 12px 26px rgba(8, 13, 22, 0.42);
 }
 
 .pf-card h3 {
     margin-bottom: 8px;
     color: var(--pf-text-primary);
+    font-family: var(--pf-font-display);
+}
+
+.pf-card-accent {
+    border-color: rgba(18, 200, 220, 0.42);
+    box-shadow: 0 12px 26px rgba(8, 13, 22, 0.42), inset 0 1px 0 rgba(18, 200, 220, 0.12);
+}
+
+.pf-accent-title {
+    color: var(--pf-cyan) !important;
 }
 
 .pf-desc {
@@ -173,6 +198,7 @@ body, html {
     justify-content: space-between;
     align-items: center;
     padding: 12px 0;
+    gap: 14px;
     border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 
@@ -181,12 +207,20 @@ body, html {
 }
 
 .pf-setting-row.header-row {
-    background: rgba(108,63,197,0.1);
+    background: linear-gradient(90deg, rgba(108,63,197,0.24) 0%, rgba(39, 48, 68, 0.4) 100%);
     padding: 12px 15px;
     border-radius: 8px;
     margin-bottom: 10px;
-    border: 1px solid var(--pf-purple);
+    border: 1px solid rgba(130, 108, 190, 0.6);
     font-weight: bold;
+}
+
+.pf-setting-row-feature {
+    background: linear-gradient(90deg, rgba(108, 63, 197, 0.2) 0%, rgba(40, 52, 74, 0.2) 100%);
+    border: 1px solid rgba(108, 63, 197, 0.45);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    padding: 12px 15px;
 }
 
 .pf-setting-row.auto-height {
@@ -223,8 +257,8 @@ body, html {
 }
 
 .pf-select, .pf-input-number {
-    background: #111;
-    border: 1px solid var(--pf-border);
+    background: #181e2a;
+    border: 1px solid rgba(122, 132, 156, 0.34);
     color: var(--pf-text-primary);
     padding: 10px;
     border-radius: 6px;
@@ -237,8 +271,8 @@ body, html {
 }
 
 .pf-input-text {
-    background: #111;
-    border: 1px solid var(--pf-border);
+    background: #181e2a;
+    border: 1px solid rgba(122, 132, 156, 0.34);
     color: var(--pf-text-primary);
     padding: 10px;
     border-radius: 6px;
@@ -276,13 +310,13 @@ body, html {
 }
 
 .pf-btn-primary {
-    background-color: var(--pf-purple);
+    background: linear-gradient(135deg, var(--pf-purple) 0%, #4f76cf 100%);
     color: white;
 }
 
 .pf-btn-primary:hover {
-    background-color: var(--pf-cyan);
-    color: black;
+    transform: translateY(-1px);
+    filter: brightness(1.08);
 }
 
 .pf-btn-secondary {
@@ -292,7 +326,7 @@ body, html {
 }
 
 .pf-btn-secondary:hover {
-    background-color: var(--pf-bg-main);
+    background-color: rgba(21, 27, 38, 0.6);
     border-color: var(--pf-text-primary);
 }
 
@@ -316,6 +350,7 @@ body, html {
     font-size: 12px;
     color: #4CAF50;
     min-height: 14px;
+    font-weight: 600;
 }
 
 /* Chrome native checkbox replacement styling */

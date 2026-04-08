@@ -67,7 +67,7 @@ class PF_LLMFeatures {
 
                 btn.addEventListener('click', async () => {
                     if (!this.engine.isReady()) {
-                        alert("⚠️ PureFusion AI isn't configured!\n\nOpen the PureFusion Advanced Settings panel and select an AI Provider (like OpenAI or Chrome Native window.ai) to use the Summarizer.");
+                        PF_Helpers.showToast('AI is not configured. Set a provider in PureFusion settings.', 'warn');
                         return;
                     }
                     
@@ -86,6 +86,7 @@ class PF_LLMFeatures {
                         btn.innerHTML = `<strong>TL;DR:</strong> ${summary}`;
                     } catch(e) {
                         btn.innerHTML = '⚠️ LLM Error. Check Key.';
+                        PF_Helpers.showToast('TL;DR request failed. Verify your AI provider key.', 'error');
                         window.PF_Logger.error(e);
                     }
                 });
@@ -142,7 +143,7 @@ class PF_LLMFeatures {
 
             wand.addEventListener('click', async (e) => {
                 if (!this.engine.isReady()) {
-                    alert("✨ PureFusion AI Assistant is almost ready!\n\nPlease open the PureFusion Options panel and paste your preferred AI Provider API key (OpenAI/ChatGPT, Gemini, or Claude) in the 'AI Comment Engine' tab to activate this feature.");
+                    PF_Helpers.showToast('AI assistant is not ready yet. Add your API key in settings.', 'warn');
                     return;
                 }
 
@@ -159,7 +160,7 @@ class PF_LLMFeatures {
                 const postContext = textContainer ? textContainer.textContent : '';
 
                 if (!postContext) {
-                    alert('PureFusion: Could not extract enough text context from this post for the AI Assistant.');
+                    PF_Helpers.showToast('Could not extract enough post text for AI reply.', 'warn');
                     return;
                 }
 
@@ -169,13 +170,14 @@ class PF_LLMFeatures {
                     const draft = await this.engine.prompt(systemContext, postContext);
                     
                     // Note: Copy to clipboard because React blocks direct innerHTML manipulation on Draft.js/Lexical inputs often
-                    navigator.clipboard.writeText(draft);
+                    await navigator.clipboard.writeText(draft);
                     wand.innerHTML = '✅';
                     setTimeout(() => wand.innerHTML = '🪄', 2000);
-                    alert(`Copilot drafted and copied to clipboard:\n\n"${draft}"\n\nPaste it into the box!`);
+                    PF_Helpers.showToast('Copilot draft copied to clipboard. Paste it into the comment box.', 'success');
 
                 } catch(e) {
                     wand.innerHTML = '⚠️';
+                    PF_Helpers.showToast('Copilot failed to generate a draft. Check your provider key.', 'error');
                     window.PF_Logger.error(e);
                 }
             });
@@ -204,7 +206,7 @@ class PF_LLMFeatures {
 
                 decodeBtn.addEventListener('click', async () => {
                     if (!this.engine.isReady()) {
-                        alert("⚠️ PureFusion AI isn't configured to decode bait.\n\nPlease select an AI Provider in Advanced Settings.");
+                        PF_Helpers.showToast('AI decode is unavailable. Select a provider in settings.', 'warn');
                         return;
                     }
                     decodeBtn.innerText = 'Thinking...';
