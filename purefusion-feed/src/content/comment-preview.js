@@ -10,7 +10,10 @@ class PF_CommentPreview {
         this.settings = settings;
         this.observedPosts = new WeakSet();
         this.processedPosts = new WeakSet();
+        this.postAttempts = new WeakMap();
+        this.retryTimers = new WeakMap();
         this.intersectionObserver = null;
+        this.maxAttemptsPerPost = 4;
 
         this._initIntersectionObserver();
     }
@@ -84,12 +87,51 @@ class PF_CommentPreview {
         if (!post || !document.contains(post)) return;
         if (this.processedPosts.has(post)) return;
 
+        const attempts = (this.postAttempts.get(post) || 0) + 1;
+        this.postAttempts.set(post, attempts);
+
         const trigger = this._findInlineCommentTrigger(post);
         if (trigger) {
             this._safeClick(trigger);
             post.dataset.pfCommentPreview = 'true';
+            this._finalizePost(post);
+            return;
         }
 
+        // If comments are not yet inlined, prime the post by opening the
+        // inline comment section first, then retry once comments hydrate.
+        const primer = this._findInlineCommentPrimer(post);
+        if (primer) {
+            this._safeClick(primer);
+            this._scheduleRetry(post, 900);
+            return;
+        }
+
+        if (attempts < this.maxAttemptsPerPost) {
+            this._scheduleRetry(post, 1200);
+        } else {
+            this._finalizePost(post);
+        }
+    }
+
+    _scheduleRetry(post, delayMs) {
+        if (!post || this.processedPosts.has(post)) return;
+        if (this.retryTimers.has(post)) return;
+
+        const timer = setTimeout(() => {
+            this.retryTimers.delete(post);
+            this._tryExpandInlineComments(post);
+        }, delayMs);
+
+        this.retryTimers.set(post, timer);
+    }
+
+    _finalizePost(post) {
+        const timer = this.retryTimers.get(post);
+        if (timer) {
+            clearTimeout(timer);
+            this.retryTimers.delete(post);
+        }
         this.processedPosts.add(post);
     }
 
@@ -114,12 +156,52 @@ class PF_CommentPreview {
         return null;
     }
 
+    _findInlineCommentPrimer(post) {
+        const candidates = post.querySelectorAll('div[role="button"], span[role="button"], button, [aria-label]');
+
+        for (const el of candidates) {
+            if (!this._isVisible(el)) continue;
+            if (el.closest('a[href]')) continue;
+            if (el.closest('[contenteditable="true"], [role="textbox"]')) continue;
+
+            const text = this._normalizeText(
+                el.innerText
+                || el.textContent
+                || el.getAttribute('aria-label')
+                || ''
+            );
+
+            if (!text) continue;
+            if (this._isLikelyInlineCommentAction(text)) continue;
+            if (this._isLikelyCommentPrimerAction(text)) return el;
+        }
+
+        return null;
+    }
+
     _isLikelyInlineCommentAction(text) {
         const patterns = [
             /(view|see|ver)\s+(more|previous|mas|más|anteriores?)\s+comments?/i,
             /(view|ver)\s+comments?/i,
             /(view|see|ver)\s+(more|previous|mas|más|anteriores?)\s+comentarios?/i,
-            /(view|ver)\s+comentarios?/i
+            /(view|ver)\s+comentarios?/i,
+            /\b\d+[\d.,]*\s+comments?\b/i,
+            /\b\d+[\d.,]*\s+comentarios?\b/i
+        ];
+
+        return patterns.some((re) => re.test(text));
+    }
+
+    _isLikelyCommentPrimerAction(text) {
+        const patterns = [
+            /^comment$/i,
+            /^comments$/i,
+            /^comentar$/i,
+            /^comentario$/i,
+            /^comentarios$/i,
+            /leave a comment/i,
+            /write a comment/i,
+            /escribe un comentario/i
         ];
 
         return patterns.some((re) => re.test(text));
