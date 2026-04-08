@@ -15,6 +15,9 @@ class PF_UiTweaks {
             this._applyFontScale(this.settings.uiMode.fontSizeScale);
         }
 
+        this._applyCompactWidescreen();
+        this._applyAnonymizer();
+
         if (this.settings.uiMode.disableCommentAutofocus) {
             this._disableAutofocus();
         }
@@ -59,6 +62,29 @@ class PF_UiTweaks {
         // We scale the main document font roughly globally via inline css var overrides
         document.documentElement.style.setProperty('--pf-font-scale', `${percentage / 100}`);
         document.body.style.fontSize = `${percentage}%`;
+    }
+
+    _applyAnonymizer() {
+        const id = 'pf-anonymizer-style';
+        let style = document.getElementById(id);
+        
+        if (this.settings.uiMode.anonymizerMode) {
+            if (!style) {
+                style = document.createElement('style');
+                style.id = id;
+                // aggressive blurring for svg profile images and anchor tags for user names (auto direction handling)
+                style.textContent = `
+                    svg image, img[src*="scontent"], a[href*="/user/"] span[dir="auto"], h3 span[dir="auto"] {
+                        filter: blur(8px) !important;
+                        pointer-events: none !important;
+                        user-select: none !important;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        } else if (style) {
+            style.remove();
+        }
     }
 
     _disableAutofocus() {

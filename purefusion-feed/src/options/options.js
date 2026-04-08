@@ -45,6 +45,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_filters_removePageSuggestions': { obj: 'filters', prop: 'removePageSuggestions', type: 'checkbox' },
         'opt_filters_hideReels': { obj: 'filters', prop: 'hideReels', type: 'checkbox' },
         'opt_filters_hideStories': { obj: 'filters', prop: 'hideStories', type: 'checkbox' },
+        'opt_filters_hideMemories': { obj: 'filters', prop: 'hideMemories', type: 'checkbox' },
+        'opt_filters_hideFundraisers': { obj: 'filters', prop: 'hideFundraisers', type: 'checkbox' },
         'opt_filters_removeColoredBackgrounds': { obj: 'filters', prop: 'removeColoredBackgrounds', type: 'checkbox' },
         
         // Predictions
@@ -60,6 +62,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_uiMode_compactMode': { obj: 'uiMode', prop: 'compactMode', type: 'checkbox' },
         'opt_uiMode_disableCommentAutofocus': { obj: 'uiMode', prop: 'disableCommentAutofocus', type: 'checkbox' },
         'opt_uiMode_enforceChronologicalFeed': { obj: 'uiMode', prop: 'enforceChronologicalFeed', type: 'checkbox' },
+        'opt_uiMode_friendsOnlyMode': { obj: 'uiMode', prop: 'friendsOnlyMode', type: 'checkbox' },
+        'opt_uiMode_anonymizerMode': { obj: 'uiMode', prop: 'anonymizerMode', type: 'checkbox' },
         'opt_uiMode_showLinkPreviews': { obj: 'uiMode', prop: 'showLinkPreviews', type: 'checkbox' },
         'opt_uiMode_fixTimestamps': { obj: 'uiMode', prop: 'fixTimestamps', type: 'checkbox' },
         'opt_uiMode_theme': { obj: 'uiMode', prop: 'theme', type: 'select' },

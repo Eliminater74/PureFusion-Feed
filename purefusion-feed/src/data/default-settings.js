@@ -20,6 +20,7 @@ const DEFAULT_SETTINGS = {
         hideMarketplace: true,          // Marketplace injected into feed
         hideStories: false,             // Stories bar top of feed
         hideMemories: false,            // "Memories" posts
+        hideFundraisers: true,          // Fundraiser posts
         removeColoredBackgrounds: true, // Giant font/colored posts -> standard text
         removeLargeReactions: true,     // Downsize large emoji reactions
     },
@@ -39,6 +40,8 @@ const DEFAULT_SETTINGS = {
         fixTimestamps: true,            // Show absolute Date/Time instead of "3 hours ago"
         hideMessengerSeen: false,       // Hide "Seen" receipts
         distractionFreeMode: false,     // Default state of 'Alt+Shift+F' reading mode
+        friendsOnlyMode: false,         // Hide Groups and Pages
+        anonymizerMode: false,          // Blur names and profile pictures
     },
 
     // ------------------------------------------------------------------------

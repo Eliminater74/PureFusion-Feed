@@ -263,6 +263,23 @@ class PF_Cleaner {
                     break; // stop at first match
                 }
             }
+
+            // 2. Friends Only Mode check
+            if (this.settings.uiMode.friendsOnlyMode) {
+                // If it contains markers of groups, pages, or suggested content.
+                if (postWrapper.querySelector('a[href*="/groups/"]') || textContent.includes('suggested for you') || textContent.includes('sponsored') || textContent.includes('join group')) {
+                    PF_Helpers.hideElement(postWrapper, "Friends Only Mode: Group/Page Hidden");
+                    return;
+                }
+            }
+
+            // 3. Fundraiser hide Check
+            if (this.settings.filters.hideFundraisers) {
+                if (textContent.includes('fundraiser') || textContent.includes('donate')) {
+                    PF_Helpers.hideElement(postWrapper, "Fundraiser Module");
+                    return;
+                }
+            }
         });
     }
 
