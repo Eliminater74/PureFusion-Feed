@@ -8,6 +8,58 @@
 class PF_Cleaner {
     constructor(settings) {
         this.settings = settings;
+        this._undoStyleInjected = false;
+        this._injectUndoChipStyles();
+    }
+
+    updateSettings(settings) {
+        this.settings = settings;
+    }
+
+    _injectUndoChipStyles() {
+        if (this._undoStyleInjected || document.getElementById('pf-undo-chip-styles')) return;
+
+        const style = document.createElement('style');
+        style.id = 'pf-undo-chip-styles';
+        style.textContent = `
+            .pf-hidden-chip {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 10px;
+                margin: 8px 0;
+                padding: 10px 12px;
+                border-radius: 10px;
+                border: 1px solid rgba(120, 132, 154, 0.3);
+                background: rgba(25, 29, 39, 0.88);
+                color: #e8edf8;
+                font: 600 12px/1.3 "Segoe UI Variable Text", "Segoe UI", sans-serif;
+            }
+
+            .pf-hidden-chip-actions {
+                display: inline-flex;
+                gap: 8px;
+                flex-wrap: wrap;
+            }
+
+            .pf-hidden-chip button {
+                border: 1px solid rgba(120, 132, 154, 0.4);
+                background: rgba(35, 41, 56, 0.9);
+                color: #dbe6fa;
+                border-radius: 999px;
+                padding: 4px 10px;
+                font-size: 11px;
+                font-weight: 700;
+                cursor: pointer;
+            }
+
+            .pf-hidden-chip button:hover {
+                border-color: rgba(18, 200, 220, 0.7);
+                color: #9deeff;
+            }
+        `;
+        document.head.appendChild(style);
+        this._undoStyleInjected = true;
     }
 
     /**
@@ -51,7 +103,7 @@ class PF_Cleaner {
             // General marketplace injections in the feed often share the 'suggested' wrappers or a specific aria-label
             // For safety we catch strings here
             const marketplaceNodes = PF_Helpers.findContains(rootNode, '[role="article"]', 'Marketplace');
-            marketplaceNodes.forEach(node => PF_Helpers.hideElement(PF_Helpers.getClosest(node, PF_SELECTOR_MAP.postContainer), "Marketplace Unit"));
+            marketplaceNodes.forEach(node => this._hidePostNode(PF_Helpers.getClosest(node, PF_SELECTOR_MAP.postContainer), "Marketplace Unit"));
         }
 
         // F.B. Purity Parity Feature: Algorithmic Friend Activity (X liked this, Y commented on this)
@@ -113,7 +165,7 @@ class PF_Cleaner {
                 // Try to find the specific post wrapper enclosing this element
                 const postWrapper = PF_Helpers.getClosest(node, PF_SELECTOR_MAP.postContainer) || node.parentElement.parentElement.parentElement.parentElement;
                 if (postWrapper && !postWrapper.dataset.pfHidden) {
-                    PF_Helpers.hideElement(postWrapper, "Reels Tray Heuristic");
+                    this._hidePostNode(postWrapper, "Reels Tray Heuristic");
                 }
             }
         });
@@ -135,7 +187,7 @@ class PF_Cleaner {
                 // FB uses many nested divs, we want to find the one bounding the entire strip.
                 const storyWrap = PF_Helpers.getClosest(node, 'div[data-pagelet]') || node.parentElement.parentElement.parentElement.parentElement.parentElement;
                 if (storyWrap && !storyWrap.dataset.pfHidden) {
-                    PF_Helpers.hideElement(storyWrap, "Stories Tray Heuristic");
+                    this._hidePostNode(storyWrap, "Stories Tray Heuristic");
                 }
             }
         });
@@ -177,7 +229,7 @@ class PF_Cleaner {
         for (const indicator of targets) {
             const postWrapper = PF_Helpers.getClosest(indicator, PF_SELECTOR_MAP.postContainer);
             if (postWrapper) {
-                PF_Helpers.hideElement(postWrapper, "Sponsored Post (Heuristic)");
+                this._hidePostNode(postWrapper, "Sponsored Post (Heuristic)");
             }
         }
     }
@@ -197,11 +249,11 @@ class PF_Cleaner {
     removeSuggestedPosts(rootNode) {
         // Suggested for you
         const suggestedWrapper = rootNode.querySelectorAll(PF_SELECTOR_MAP.suggestedForYouWrapper);
-        suggestedWrapper.forEach(node => PF_Helpers.hideElement(node, "Suggested Posts"));
+        suggestedWrapper.forEach(node => this._hidePostNode(node, "Suggested Posts"));
 
         if (this.settings.filters.removePYMK) {
             const pymkWrapper = rootNode.querySelectorAll(PF_SELECTOR_MAP.peopleYouMayKnow);
-            pymkWrapper.forEach(node => PF_Helpers.hideElement(node, "People You May Know"));
+            pymkWrapper.forEach(node => this._hidePostNode(node, "People You May Know"));
         }
 
         if (this.settings.filters.removeGroupSuggestions) {
@@ -220,7 +272,7 @@ class PF_Cleaner {
                 targets.forEach(node => {
                     // Try to find the bounding pagelet or post container
                     const wrap = PF_Helpers.getClosest(node, 'div[data-pagelet]') || node;
-                    PF_Helpers.hideElement(wrap, "Suggested Groups");
+                    this._hidePostNode(wrap, "Suggested Groups");
                 });
             }
         }
@@ -238,7 +290,7 @@ class PF_Cleaner {
                     // Make sure it's not the user's actual post text. These headers usually sit above the actual post content.
                     const postWrapper = PF_Helpers.getClosest(header, PF_SELECTOR_MAP.postContainer);
                     if (postWrapper) {
-                        PF_Helpers.hideElement(postWrapper, `Friend Activity Filter: ${pattern}`);
+                        this._hidePostNode(postWrapper, `Friend Activity Filter: ${pattern}`);
                     }
                     break;
                 }
@@ -268,7 +320,9 @@ class PF_Cleaner {
             const textContent = textContainer.textContent;
             if (clickbaitRegex.test(textContent)) {
                 const postWrapper = PF_Helpers.getClosest(textContainer, PF_SELECTOR_MAP.postContainer);
-                if (postWrapper) this._collapsePost(postWrapper, "Clickbait Blocked");
+                if (postWrapper && !this._isAllowlistedPost(postWrapper, textContent.toLowerCase(), false)) {
+                    this._collapsePost(postWrapper, "Clickbait Blocked", false);
+                }
             }
         });
     }
@@ -276,8 +330,9 @@ class PF_Cleaner {
     applyKeywordFilters(rootNode) {
         const autohide = this.settings.keywords.autohide || [];
         const blocklist = this.settings.keywords.blocklist || [];
+        const allowlist = this.settings.keywords.allowlist || [];
         
-        if (autohide.length === 0 && blocklist.length === 0) return;
+        if (autohide.length === 0 && blocklist.length === 0 && allowlist.length === 0) return;
 
         // Note: For actual post text inspection we look inside `PF_SELECTOR_MAP.postTextBody`
         const textNodes = rootNode.querySelectorAll(PF_SELECTOR_MAP.postTextBody);
@@ -287,11 +342,13 @@ class PF_Cleaner {
             const postWrapper = PF_Helpers.getClosest(textContainer, PF_SELECTOR_MAP.postContainer);
             if (!postWrapper || postWrapper.dataset.pfHidden) return;
 
+            if (this._isAllowlistedPost(postWrapper, textContent, true)) return;
+
             // Check auto-hide (Full silent deletion)
             let hidden = false;
             for (const kw of autohide) {
                 if (textContent.includes(kw.toLowerCase())) {
-                    PF_Helpers.hideElement(postWrapper, `Keyword Autohide: ${kw}`);
+                    this._hidePostNode(postWrapper, `Keyword Autohide: ${kw}`);
                     hidden = true;
                     break;
                 }
@@ -301,7 +358,7 @@ class PF_Cleaner {
             // Check blocklist (Soft hiding/collapse)
             for (const kw of blocklist) {
                 if (textContent.includes(kw.toLowerCase())) {
-                    this._collapsePost(postWrapper, kw);
+                    this._collapsePost(postWrapper, kw, true);
                     break; // stop at first match
                 }
             }
@@ -310,7 +367,7 @@ class PF_Cleaner {
             if (this.settings.uiMode.friendsOnlyMode) {
                 // If it contains markers of groups, pages, or suggested content.
                 if (postWrapper.querySelector('a[href*="/groups/"]') || textContent.includes('suggested for you') || textContent.includes('sponsored') || textContent.includes('join group')) {
-                    PF_Helpers.hideElement(postWrapper, "Friends Only Mode: Group/Page Hidden");
+                    this._hidePostNode(postWrapper, "Friends Only Mode: Group/Page Hidden");
                     return;
                 }
             }
@@ -318,16 +375,158 @@ class PF_Cleaner {
             // 3. Fundraiser hide Check
             if (this.settings.filters.hideFundraisers) {
                 if (textContent.includes('fundraiser') || textContent.includes('donate')) {
-                    PF_Helpers.hideElement(postWrapper, "Fundraiser Module");
+                    this._hidePostNode(postWrapper, "Fundraiser Module");
                     return;
                 }
             }
         });
     }
 
-    _collapsePost(postNode, matchedKeyword) {
+    _hidePostNode(node, reason) {
+        if (!node || node.dataset.pfHidden === 'true') return;
+        if (this._isAllowlistedPost(node)) return;
+
+        if (this._isUndoEligible(node)) {
+            this._insertUndoChip(node, reason);
+        }
+
+        PF_Helpers.hideElement(node, reason);
+    }
+
+    _isUndoEligible(node) {
+        if (!node || !node.matches) return false;
+        if (node.matches('[role="dialog"]')) return false;
+
+        return node.matches('[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"]')
+            || !!PF_Helpers.getClosest(node, '[role="feed"]', 8);
+    }
+
+    _insertUndoChip(node, reason) {
+        if (!node || !node.parentElement) return;
+        if (node.dataset.pfUndoChip === 'true') return;
+
+        const sourceName = this._extractPostSource(node);
+        const i18n = (key, fallback) => {
+            if (typeof chrome === 'undefined' || !chrome.i18n) return fallback;
+            return chrome.i18n.getMessage(key) || fallback;
+        };
+        const chip = document.createElement('div');
+        chip.className = 'pf-hidden-chip';
+        chip.innerHTML = `
+            <span>${i18n('content_hidden_chip_label', 'Hidden by PureFusion')}: ${reason}</span>
+            <div class="pf-hidden-chip-actions">
+                <button type="button" data-action="show">${i18n('content_hidden_chip_show_once', 'Show once')}</button>
+                <button type="button" data-action="allow">${i18n('content_hidden_chip_allow_source', 'Always allow source')}</button>
+            </div>
+        `;
+
+        chip.querySelector('[data-action="show"]').addEventListener('click', () => {
+            this._restorePost(node, chip);
+        });
+
+        chip.querySelector('[data-action="allow"]').addEventListener('click', async () => {
+            if (sourceName && sourceName !== 'Unknown') {
+                await this._addSourceToAllowlist(sourceName);
+            }
+            this._restorePost(node, chip);
+        });
+
+        node.parentElement.insertBefore(chip, node);
+        node.dataset.pfUndoChip = 'true';
+    }
+
+    _restorePost(node, chip) {
+        if (!node) return;
+
+        node.style.removeProperty('display');
+        delete node.dataset.pfHidden;
+        delete node.dataset.pfReason;
+        delete node.dataset.pfUndoChip;
+
+        if (chip && chip.remove) chip.remove();
+    }
+
+    _extractPostSource(node) {
+        if (!node || !node.querySelector) return 'Unknown';
+
+        const candidates = [
+            'h2 a[role="link"]',
+            'h3 a[role="link"]',
+            'h4 a[role="link"]',
+            'strong a[role="link"]',
+            'h2',
+            'h3',
+            'h4',
+            'strong'
+        ];
+
+        for (const selector of candidates) {
+            const found = node.querySelector(selector);
+            const text = found?.textContent?.trim();
+            if (text && text.length > 1) return text;
+        }
+
+        return 'Unknown';
+    }
+
+    _isAllowlistedPost(node, cachedText = null, includeKeywordAllowlist = false) {
+        if (!node) return false;
+
+        const friends = (this.settings?.keywords?.allowlistFriends || [])
+            .map((v) => String(v).trim().toLowerCase())
+            .filter(Boolean);
+
+        if (friends.length > 0) {
+            const source = this._extractPostSource(node).toLowerCase();
+            if (friends.some((friend) => source.includes(friend))) return true;
+        }
+
+        if (includeKeywordAllowlist) {
+            const allowlist = (this.settings?.keywords?.allowlist || [])
+                .map((v) => String(v).trim().toLowerCase())
+                .filter(Boolean);
+
+            if (allowlist.length > 0) {
+                const textBody = (cachedText || this._extractPostText(node)).toLowerCase();
+                if (allowlist.some((kw) => textBody.includes(kw))) return true;
+            }
+        }
+
+        return false;
+    }
+
+    _extractPostText(node) {
+        const body = node.querySelector(PF_SELECTOR_MAP.postTextBody);
+        return body?.textContent || node.textContent || '';
+    }
+
+    async _addSourceToAllowlist(sourceName) {
+        const normalized = String(sourceName || '').trim();
+        if (!normalized) return;
+
+        const current = this.settings?.keywords?.allowlistFriends || [];
+        const exists = current.some((v) => String(v).toLowerCase() === normalized.toLowerCase());
+        if (exists) {
+            PF_Helpers.showToast(`"${normalized}" ${this._i18n('content_allow_source_exists', 'is already in Never Hide Sources.')}`, 'info');
+            return;
+        }
+
+        this.settings.keywords.allowlistFriends = [...current, normalized];
+        await PF_Storage.updateSettings(this.settings);
+        PF_Helpers.showToast(`${this._i18n('content_allow_source_added', 'Added')} "${normalized}" ${this._i18n('content_allow_source_added_suffix', 'to Never Hide Sources.')}`, 'success');
+
+        window.postMessage({ type: 'PF_LOCAL_SETTINGS_UPDATE' }, '*');
+    }
+
+    _i18n(key, fallback) {
+        if (typeof chrome === 'undefined' || !chrome.i18n) return fallback;
+        return chrome.i18n.getMessage(key) || fallback;
+    }
+
+    _collapsePost(postNode, matchedKeyword, includeKeywordAllowlist = false) {
         // Rather than hiding it completely, we dim it out and inject a "Show anyway" button
         if (postNode.dataset.pfCollapsed) return;
+        if (this._isAllowlistedPost(postNode, null, includeKeywordAllowlist)) return;
         
         // Hide the children
         postNode.dataset.pfCollapsed = 'true';

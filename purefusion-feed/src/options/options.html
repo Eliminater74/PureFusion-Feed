@@ -42,6 +42,24 @@
 
         <!-- TAB: FILTERS -->
         <section id="tab-filters" class="pf-tab-content active">
+            <div class="pf-card pf-card-accent">
+                <h3 class="pf-accent-title" data-i18n="options_presets_title">Preset Packs</h3>
+                <p class="pf-desc" data-i18n="options_presets_desc">Apply curated bundles for common use cases, then tweak anything manually.</p>
+                <div class="pf-setting-row auto-height">
+                    <label data-i18n="options_presets_label">Choose a preset</label>
+                    <div class="pf-inline-controls">
+                        <select id="opt_preset_pack" class="pf-select">
+                            <option value="workFocus" data-i18n="options_presets_work_focus">Work Focus</option>
+                            <option value="friendsOnly" data-i18n="options_presets_friends_only">Friends Only</option>
+                            <option value="minimal" data-i18n="options_presets_minimal">Minimal</option>
+                            <option value="newsHeavy" data-i18n="options_presets_news_heavy">News Heavy</option>
+                            <option value="messengerPrivacy" data-i18n="options_presets_messenger_privacy">Messenger Privacy</option>
+                        </select>
+                        <button id="btnApplyPreset" class="pf-btn pf-btn-secondary" data-i18n="options_presets_apply_btn">Apply Preset</button>
+                    </div>
+                </div>
+            </div>
+
             <div class="pf-card">
                 <h3 data-i18n="options_filters_card_title">Ad & Spam Removal</h3>
                 <p class="pf-desc" data-i18n="options_filters_card_desc">Toggle the primary DOM removal targets.</p>
@@ -337,6 +355,16 @@
                 <div class="pf-form-group mt-4">
                     <label data-i18n="options_keywords_autohide_label">Auto-hide (Silently nukes posts containing these strings)</label>
                     <textarea id="opt_keywords_autohide" class="pf-textarea" rows="4" data-i18n-placeholder="options_keywords_autohide_placeholder" placeholder="spam buzzword..."></textarea>
+                </div>
+
+                <div class="pf-form-group mt-4">
+                    <label data-i18n="options_keywords_allowlist_label">Allowlist Keywords (Never block if post contains these)</label>
+                    <textarea id="opt_keywords_allowlist" class="pf-textarea" rows="3" data-i18n-placeholder="options_keywords_allowlist_placeholder" placeholder="family update, project launch..."></textarea>
+                </div>
+
+                <div class="pf-form-group mt-4">
+                    <label data-i18n="options_keywords_allowlist_friends_label">Never Hide Sources (Friends/Pages)</label>
+                    <textarea id="opt_keywords_allowlistFriends" class="pf-textarea" rows="3" data-i18n-placeholder="options_keywords_allowlist_friends_placeholder" placeholder="Jane Doe, My Favorite Page..."></textarea>
                 </div>
             </div>
         </section>

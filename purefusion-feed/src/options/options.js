@@ -221,12 +221,103 @@ document.addEventListener('DOMContentLoaded', async () => {
     const themePreview = document.getElementById('pfThemePreview');
     const themePreviewMode = document.getElementById('pfThemePreviewMode');
     const themePreviewCard = document.getElementById('pfThemePreviewCard');
+    const presetSelect = document.getElementById('opt_preset_pack');
+    const btnApplyPreset = document.getElementById('btnApplyPreset');
 
     const themeNames = {
         default: t('options_ui_theme_default', 'Facebook Default'),
         darkPro: t('options_ui_theme_darkpro', 'Dark Pro'),
         amoled: t('options_ui_theme_amoled', 'AMOLED Pitch Black'),
         classicBlue: t('options_ui_theme_classic', 'Classic Blue')
+    };
+
+    const presetPacks = {
+        workFocus: {
+            filters: {
+                removeAds: true,
+                removeSuggested: true,
+                removePYMK: true,
+                removeGroupSuggestions: true,
+                removePageSuggestions: true,
+                hideReels: true,
+                hideStories: true,
+                hideFundraisers: true,
+                hideMarketplace: true
+            },
+            uiMode: {
+                compactMode: true,
+                friendsOnlyMode: false
+            },
+            wellbeing: {
+                infiniteScrollStopper: true,
+                scrollLimitPosts: 20
+            }
+        },
+        friendsOnly: {
+            filters: {
+                removeAds: true,
+                removeSuggested: true,
+                removePYMK: true,
+                removeGroupSuggestions: true,
+                removePageSuggestions: true,
+                hideReels: true,
+                hideStories: false
+            },
+            uiMode: {
+                friendsOnlyMode: true
+            }
+        },
+        minimal: {
+            filters: {
+                removeAds: true,
+                removeSuggested: false,
+                removePYMK: false,
+                removeGroupSuggestions: false,
+                removePageSuggestions: false,
+                hideReels: false,
+                hideStories: false,
+                hideFundraisers: false
+            },
+            uiMode: {
+                compactMode: false,
+                friendsOnlyMode: false
+            },
+            wellbeing: {
+                infiniteScrollStopper: false,
+                sessionTimer: false
+            }
+        },
+        newsHeavy: {
+            filters: {
+                removeAds: true,
+                removeSuggested: true,
+                removePYMK: true,
+                removeGroupSuggestions: false,
+                removePageSuggestions: false,
+                hideReels: true,
+                hideStories: true,
+                hideFundraisers: true
+            },
+            uiMode: {
+                friendsOnlyMode: false,
+                enforceChronologicalFeed: true
+            },
+            predictions: {
+                enabled: true,
+                showBadge: true,
+                showTrending: true
+            }
+        },
+        messengerPrivacy: {
+            uiMode: {
+                hideMessengerSeen: true
+            },
+            social: {
+                hideMessengerTyping: true,
+                messengerPrivacyBlur: true,
+                notificationDigestMode: true
+            }
+        }
     };
 
     function renderThemePreview(theme, scale) {
@@ -256,11 +347,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Handle Keywords Mapping
         document.getElementById('opt_keywords_blocklist').value = currentSettings.keywords.blocklist.join(', ');
         document.getElementById('opt_keywords_autohide').value = currentSettings.keywords.autohide.join(', ');
+        document.getElementById('opt_keywords_allowlist').value = (currentSettings.keywords.allowlist || []).join(', ');
+        document.getElementById('opt_keywords_allowlistFriends').value = (currentSettings.keywords.allowlistFriends || []).join(', ');
 
         renderThemePreview(currentSettings.uiMode.theme, currentSettings.uiMode.fontSizeScale);
     }
 
-    async function saveSettingsFromUI() {
+    async function saveSettingsFromUI(successMessage = null) {
         // Read mapped standard inputs
         for (const [domId, mapping] of Object.entries(uiMap)) {
             const el = document.getElementById(domId);
@@ -280,9 +373,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Parse Keyword comma-separated Arrays
         const blockString = document.getElementById('opt_keywords_blocklist').value;
         const autoString = document.getElementById('opt_keywords_autohide').value;
+        const allowString = document.getElementById('opt_keywords_allowlist').value;
+        const allowFriendsString = document.getElementById('opt_keywords_allowlistFriends').value;
 
         currentSettings.keywords.blocklist = blockString.split(',').map(s => s.trim()).filter(s => s.length > 0);
         currentSettings.keywords.autohide = autoString.split(',').map(s => s.trim()).filter(s => s.length > 0);
+        currentSettings.keywords.allowlist = allowString.split(',').map(s => s.trim()).filter(s => s.length > 0);
+        currentSettings.keywords.allowlistFriends = allowFriendsString.split(',').map(s => s.trim()).filter(s => s.length > 0);
 
         let providerPermissionDenied = false;
         const providerAllowed = await ensureLLMProviderPermission(currentSettings.llm.provider);
@@ -303,7 +400,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (providerPermissionDenied) {
             showSaveToast(t('options_toast_provider_permission_denied', 'AI provider permission denied. Provider disabled.'), true);
         } else {
-            showSaveToast(t('options_toast_saved', 'Settings saved successfully.'));
+            showSaveToast(successMessage || t('options_toast_saved', 'Settings saved successfully.'));
         }
         broadcastUpdate();
     }
@@ -342,6 +439,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (fontScaleInput) {
         fontScaleInput.addEventListener('input', () => {
             renderThemePreview(themeSelect ? themeSelect.value : 'default', fontScaleInput.value);
+        });
+    }
+
+    if (btnApplyPreset && presetSelect) {
+        btnApplyPreset.addEventListener('click', async () => {
+            const presetName = presetSelect.value;
+            const preset = presetPacks[presetName];
+            if (!preset) return;
+
+            currentSettings = mergeDeep(currentSettings, JSON.parse(JSON.stringify(preset)));
+            loadUIFromSettings();
+            await saveSettingsFromUI(t('options_toast_preset_applied', 'Preset applied successfully.'));
         });
     }
 
