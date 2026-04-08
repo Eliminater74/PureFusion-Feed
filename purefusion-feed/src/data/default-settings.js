@@ -133,7 +133,9 @@ const DEFAULT_SETTINGS = {
         geminiApiKey: '',               // Secure local storage only
         tldrEnabled: true,              // Inject summarize buttons
         smartCommentEnabled: true,      // Inject Co-Pilot into comment boxes
-        clickbaitDecoder: true          // Rewrite headlines instead of just blocking
+        clickbaitDecoder: true,         // Rewrite headlines instead of just blocking
+        messengerRewriteEnabled: true,
+        messengerSmartRepliesEnabled: true
     },
     // ------------------------------------------------------------------------
     // SUPPORT & LINKS

@@ -44,6 +44,7 @@
         "src/content/notifications.js",
         "src/content/wellbeing.js",
         "src/content/llm-features.js",
+        "src/content/messenger-ai.js",
         "src/content/inpage-ui.js",
         "src/content/main.js"
       ],
@@ -57,8 +58,10 @@
         "src/utils/logger.js",
         "src/utils/helpers.js",
         "src/utils/storage.js",
+        "src/utils/llm-engine.js",
         "src/data/default-settings.js",
         "src/content/ui-tweaks.js",
+        "src/content/messenger-ai.js",
         "src/content/messenger-main.js"
       ],
       "run_at": "document_idle"

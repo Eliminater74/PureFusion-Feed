@@ -9,12 +9,14 @@ class PureFusionMessengerApp {
     constructor() {
         this.settings = {};
         this.uiTweaks = null;
+        this.messengerAI = null;
     }
 
     async boot() {
         try {
             this.settings = await PF_Storage.init();
             this.uiTweaks = new window.PF_UiTweaks(this.getEffectiveSettings());
+            this.messengerAI = new window.PF_MessengerAI(this.getEffectiveSettings());
             this.setupEventListeners();
         } catch (error) {
             PF_Logger.error("Failed to initialize PureFusion Messenger app:", error);
@@ -47,6 +49,10 @@ class PureFusionMessengerApp {
             this.uiTweaks.settings = this.getEffectiveSettings();
             this.uiTweaks.applyDocumentLevelTweaks();
         }
+
+        if (this.messengerAI) {
+            this.messengerAI.updateSettings(this.getEffectiveSettings());
+        }
     }
 
     isEnabled() {
@@ -67,6 +73,12 @@ class PureFusionMessengerApp {
                 ...effective.social,
                 hideMessengerTyping: false,
                 messengerPrivacyBlur: false
+            };
+
+            effective.llm = {
+                ...effective.llm,
+                messengerRewriteEnabled: false,
+                messengerSmartRepliesEnabled: false
             };
         }
 

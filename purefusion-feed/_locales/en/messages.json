@@ -78,6 +78,9 @@
   "options_ai_tldr_toggle": { "message": "Inject \"TL;DR\" Summarize buttons on long posts" },
   "options_ai_smart_comment_toggle": { "message": "Smart Comment Co-Pilot (Wand icon)" },
   "options_ai_clickbait_decode_toggle": { "message": "Clickbait Decoder (Rewrite sensational headlines with facts)" },
+  "options_ai_messenger_tools_title": { "message": "Messenger AI Tools" },
+  "options_ai_messenger_rewrite_toggle": { "message": "Rewrite message drafts in composer" },
+  "options_ai_messenger_replies_toggle": { "message": "Generate 3 smart reply suggestions" },
   "options_ui_card_title": { "message": "Interface Restructuring" },
   "options_ui_friends_only": { "message": "Friends Only Mode (Nuke all Groups/Pages from Feed)" },
   "options_ui_anonymizer": { "message": "Screenshot Anonymizer (Blur PFP/Names)" },
@@ -176,5 +179,15 @@
   "content_hidden_chip_allow_source": { "message": "Always allow source" },
   "content_allow_source_exists": { "message": "is already in Never Hide Sources." },
   "content_allow_source_added": { "message": "Added" },
-  "content_allow_source_added_suffix": { "message": "to Never Hide Sources." }
+  "content_allow_source_added_suffix": { "message": "to Never Hide Sources." },
+  "messenger_ai_rewrite_btn": { "message": "Rewrite" },
+  "messenger_ai_replies_btn": { "message": "Smart Replies" },
+  "messenger_ai_rewriting_btn": { "message": "Rewriting..." },
+  "messenger_ai_generating_btn": { "message": "Generating..." },
+  "messenger_ai_empty_input": { "message": "Type a message first." },
+  "messenger_ai_rewrite_success": { "message": "Message rewritten." },
+  "messenger_ai_rewrite_fail": { "message": "Rewrite failed. Check AI provider settings." },
+  "messenger_ai_context_missing": { "message": "Need more chat context for smart replies." },
+  "messenger_ai_replies_fail": { "message": "Could not generate smart replies." },
+  "messenger_ai_provider_required": { "message": "Configure an AI provider in PureFusion settings first." }
 }

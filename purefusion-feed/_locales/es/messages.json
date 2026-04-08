@@ -78,6 +78,9 @@
   "options_ai_tldr_toggle": { "message": "Inyectar botones de resumen \"TL;DR\" en publicaciones largas" },
   "options_ai_smart_comment_toggle": { "message": "Copiloto de comentarios inteligente (ícono de varita)" },
   "options_ai_clickbait_decode_toggle": { "message": "Decodificador de clickbait (reescribe titulares sensacionalistas con hechos)" },
+  "options_ai_messenger_tools_title": { "message": "Herramientas de IA para Messenger" },
+  "options_ai_messenger_rewrite_toggle": { "message": "Reescribir borradores en el cuadro de mensaje" },
+  "options_ai_messenger_replies_toggle": { "message": "Generar 3 sugerencias de respuesta inteligente" },
   "options_ui_card_title": { "message": "Restructuración de Interface" },
   "options_ui_friends_only": { "message": "Modo solo amigos (elimina todos los grupos/páginas del feed)" },
   "options_ui_anonymizer": { "message": "Anonimizador de capturas (difumina fotos/nombres)" },
@@ -176,5 +179,15 @@
   "content_hidden_chip_allow_source": { "message": "Permitir siempre esta fuente" },
   "content_allow_source_exists": { "message": "ya está en Fuentes que nunca se ocultan." },
   "content_allow_source_added": { "message": "Agregado" },
-  "content_allow_source_added_suffix": { "message": "a Fuentes que nunca se ocultan." }
+  "content_allow_source_added_suffix": { "message": "a Fuentes que nunca se ocultan." },
+  "messenger_ai_rewrite_btn": { "message": "Reescribir" },
+  "messenger_ai_replies_btn": { "message": "Respuestas IA" },
+  "messenger_ai_rewriting_btn": { "message": "Reescribiendo..." },
+  "messenger_ai_generating_btn": { "message": "Generando..." },
+  "messenger_ai_empty_input": { "message": "Escribe un mensaje primero." },
+  "messenger_ai_rewrite_success": { "message": "Mensaje reescrito." },
+  "messenger_ai_rewrite_fail": { "message": "No se pudo reescribir. Revisa el proveedor de IA." },
+  "messenger_ai_context_missing": { "message": "Se necesita más contexto para sugerir respuestas." },
+  "messenger_ai_replies_fail": { "message": "No se pudieron generar respuestas inteligentes." },
+  "messenger_ai_provider_required": { "message": "Configura primero un proveedor de IA en PureFusion." }
 }

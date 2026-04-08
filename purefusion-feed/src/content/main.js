@@ -32,6 +32,7 @@ class PureFusionApp {
             this.notifControls = new window.PF_NotificationControls(initialSettings);
             this.wellbeing = new window.PF_Wellbeing(initialSettings);
             this.llmFeatures = new window.PF_LLMFeatures(initialSettings);
+            this.messengerAI = new window.PF_MessengerAI(initialSettings);
             this.inpageUI = new window.PF_InPageUI(initialSettings);
             this.observer = new window.PF_Observer();
 
@@ -104,6 +105,9 @@ class PureFusionApp {
             
             // Pass to LLM features
             if (this.llmFeatures) this.llmFeatures.applyToNodes(addedNodes);
+
+            // Messenger smart tooling on FB chat popups
+            if (this.messengerAI) this.messengerAI.applyToNodes(addedNodes);
             
             // Pass to notification rules engine to filter drop-down menus
             if (this.notifControls) this.notifControls.applyToNodes(addedNodes);
@@ -167,6 +171,7 @@ class PureFusionApp {
             this.notifControls,
             this.wellbeing,
             this.llmFeatures,
+            this.messengerAI,
             this.inpageUI
         ];
 
@@ -235,7 +240,9 @@ class PureFusionApp {
             ...effective.llm,
             tldrEnabled: false,
             smartCommentEnabled: false,
-            clickbaitDecoder: false
+            clickbaitDecoder: false,
+            messengerRewriteEnabled: false,
+            messengerSmartRepliesEnabled: false
         };
 
         return effective;
