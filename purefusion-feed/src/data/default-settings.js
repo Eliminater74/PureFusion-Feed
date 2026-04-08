@@ -39,6 +39,7 @@ const DEFAULT_SETTINGS = {
         showLinkPreviews: true,         // Anti-phishing real destination hover
         fixTimestamps: true,            // Show absolute Date/Time instead of "3 hours ago"
         hideMessengerSeen: false,       // Hide "Seen" receipts
+        notificationJewelStyle: 'classic', // 'classic', 'blue', 'grey', 'hidden'
         distractionFreeMode: false,     // Default state of 'Alt+Shift+F' reading mode
         friendsOnlyMode: false,         // Hide Groups and Pages
         anonymizerMode: false,          // Blur names and profile pictures
@@ -97,6 +98,9 @@ const DEFAULT_SETTINGS = {
         trackUnfriends: true,           // Compare friends list locally to detect unfriend/block
         trackDeactivated: true,         // Surf for missing/404 friends
         notificationDigestMode: false,  // If true, groups notifications by hour
+        hideMetaAI: true,               // Nuke gradient icons and sparkle buttons
+        hideMessengerTyping: true,      // Hide typing indicators (DOM level)
+        messengerPrivacyBlur: false,    // Blur chat previews until hover
         // Notification filters
         blockNotifGames: true,
         blockNotifBirthdays: false,

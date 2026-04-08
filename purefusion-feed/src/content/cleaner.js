@@ -56,8 +56,8 @@ class PF_Cleaner {
 
         // F.B. Purity Parity Feature: Algorithmic Friend Activity (X liked this, Y commented on this)
         // This targets Facebook's attempt to force unrelated posts into your feed based on what your friends interact with.
-        if (this.settings.filters.removeFriendActivity) {
-            this.removeFriendActivity(rootNode);
+        if (this.settings.social.hideMetaAI) {
+            this.removeMetaAI(rootNode);
         }
 
         // Apply advanced Clickbait filtering (Phase 10)
@@ -180,6 +180,25 @@ class PF_Cleaner {
                 PF_Helpers.hideElement(postWrapper, "Sponsored Post (Heuristic)");
             }
         }
+    }
+
+    /**
+     * Nuke Meta AI gradient icons and sparkle buttons.
+     */
+    removeMetaAI(rootNode) {
+        // 1. Top Search Bar
+        this.hideTarget(rootNode, PF_SELECTOR_MAP.metaAISearchIcon, "Meta AI Search Icon");
+        
+        // 2. Messenger Sparkle & AI Chats
+        this.hideTarget(rootNode, PF_SELECTOR_MAP.metaAIMessengerSparkle, "Meta AI Messenger Sparkle");
+        this.hideTarget(rootNode, PF_SELECTOR_MAP.metaAIHeader, "Meta AI Header");
+
+        // 3. Standalone AI Floating bubbles (Heuristic)
+        const circles = rootNode.querySelectorAll('div[style*="stop-color: rgb(0, 153, 255)"]'); // Heuristic for the gradient
+        circles.forEach(c => {
+            const wrap = PF_Helpers.getClosest(c, 'div[role="button"]') || c;
+            PF_Helpers.hideElement(wrap, "Meta AI Floating Icon");
+        });
     }
 
     removeSuggestedPosts(rootNode) {

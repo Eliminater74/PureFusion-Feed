@@ -24,6 +24,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         reels: document.getElementById('tgl_hideReelsStories'),
         chronological: document.getElementById('tgl_forceChronological'),
         groups: document.getElementById('tgl_removeGroups'),
+        ghost: document.getElementById('tgl_ghostMode'),
+        metaAI: document.getElementById('tgl_hideMetaAI'),
         
         btnOptions: document.getElementById('openOptionsBtn'),
         inputKeyword: document.getElementById('quickKeywordInput'),
@@ -41,6 +43,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     elements.reels.checked = (settings.filters.hideReels && settings.filters.hideStories);
     elements.chronological.checked = settings.uiMode.forceMostRecent;
     elements.groups.checked = settings.filters.removeGroupSuggestions;
+    // Ghost mode is on if both sub-settings are on
+    elements.ghost.checked = (settings.uiMode.hideMessengerSeen && settings.social.hideMessengerTyping);
+    elements.metaAI.checked = settings.social.hideMetaAI;
 
     // Load actual live stats (We fetch this from local storage if the worker saved it)
     const sessionStats = await PF_Storage.getLocalData('pf_session_stats') || { ads: 0, spam: 0 };
@@ -59,6 +64,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         settings.uiMode.forceMostRecent = elements.chronological.checked;
         settings.filters.removeGroupSuggestions = elements.groups.checked;
+        
+        // Ghost mode affects both Messenger Seen and Typing
+        settings.uiMode.hideMessengerSeen = elements.ghost.checked;
+        settings.social.hideMessengerTyping = elements.ghost.checked;
+        
+        settings.social.hideMetaAI = elements.metaAI.checked;
 
         // Save
         await PF_Storage.updateSettings(settings);
@@ -70,6 +81,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     elements.reels.addEventListener('change', handleToggle);
     elements.chronological.addEventListener('change', handleToggle);
     elements.groups.addEventListener('change', handleToggle);
+    elements.ghost.addEventListener('change', handleToggle);
+    elements.metaAI.addEventListener('change', handleToggle);
 
     // 5. Keyword Quick Add
     elements.btnAddKeyword.addEventListener('click', async () => {
