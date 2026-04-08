@@ -13,7 +13,7 @@ class PF_CommentPreview {
         this.postAttempts = new WeakMap();
         this.retryTimers = new WeakMap();
         this.intersectionObserver = null;
-        this.maxAttemptsPerPost = 4;
+        this.maxAttemptsPerPost = 8;
 
         this._initIntersectionObserver();
     }
@@ -136,16 +136,17 @@ class PF_CommentPreview {
     }
 
     _findInlineCommentTrigger(post) {
-        const candidates = post.querySelectorAll('div[role="button"], span[role="button"], button, [aria-label]');
+        const candidates = post.querySelectorAll('div[role="button"], span[role="button"], button, a[role="link"], [aria-label]');
 
         for (const el of candidates) {
             if (!this._isVisible(el)) continue;
-            if (el.closest('a[href]')) continue;
+            if (this._isRiskyNavigationTarget(el)) continue;
 
             const text = this._normalizeText(
                 el.innerText
                 || el.textContent
                 || el.getAttribute('aria-label')
+                || el.getAttribute('title')
                 || ''
             );
 
@@ -157,23 +158,86 @@ class PF_CommentPreview {
     }
 
     _findInlineCommentPrimer(post) {
-        const candidates = post.querySelectorAll('div[role="button"], span[role="button"], button, [aria-label]');
+        const candidates = post.querySelectorAll('div[role="button"], span[role="button"], button, a[role="link"], [aria-label]');
 
         for (const el of candidates) {
             if (!this._isVisible(el)) continue;
-            if (el.closest('a[href]')) continue;
+            if (this._isRiskyNavigationTarget(el)) continue;
             if (el.closest('[contenteditable="true"], [role="textbox"]')) continue;
 
             const text = this._normalizeText(
                 el.innerText
                 || el.textContent
                 || el.getAttribute('aria-label')
+                || el.getAttribute('title')
                 || ''
             );
 
             if (!text) continue;
             if (this._isLikelyInlineCommentAction(text)) continue;
             if (this._isLikelyCommentPrimerAction(text)) return el;
+        }
+
+        const footerCommentButton = this._findFooterCommentButton(post);
+        if (footerCommentButton && !this._isRiskyNavigationTarget(footerCommentButton)) {
+            return footerCommentButton;
+        }
+
+        const positionalCommentButton = this._findCommentActionByPosition(post);
+        if (positionalCommentButton && !this._isRiskyNavigationTarget(positionalCommentButton)) {
+            return positionalCommentButton;
+        }
+
+        return null;
+    }
+
+    _findFooterCommentButton(post) {
+        const candidates = post.querySelectorAll('div[role="button"], span[role="button"], button, a[role="link"], [aria-label], [title]');
+        const commentTokens = ['comment', 'comments', 'comentar', 'comentario', 'comentarios'];
+
+        for (const el of candidates) {
+            if (!this._isVisible(el)) continue;
+
+            const label = this._normalizeText(
+                el.getAttribute('aria-label')
+                || el.getAttribute('title')
+                || el.innerText
+                || el.textContent
+                || ''
+            );
+
+            if (!label) continue;
+            if (commentTokens.some((token) => label.includes(token))) return el;
+        }
+
+        return null;
+    }
+
+    _findCommentActionByPosition(post) {
+        const groups = post.querySelectorAll('div[role="group"], div[role="toolbar"]');
+
+        for (const group of groups) {
+            const buttons = Array.from(group.querySelectorAll('div[role="button"], span[role="button"], button, a[role="link"]'))
+                .filter((el) => this._isVisible(el));
+
+            if (buttons.length < 3 || buttons.length > 8) continue;
+
+            // The primary action row is typically Like / Comment / Share.
+            const likelyComment = buttons[1];
+            if (!likelyComment) continue;
+
+            const label = this._normalizeText(
+                likelyComment.innerText
+                || likelyComment.textContent
+                || likelyComment.getAttribute('aria-label')
+                || likelyComment.getAttribute('title')
+                || ''
+            );
+
+            // Accept if it clearly says comment, or if it's action-row-like with no text.
+            if (this._isLikelyCommentPrimerAction(label) || label === '') {
+                return likelyComment;
+            }
         }
 
         return null;
@@ -207,9 +271,43 @@ class PF_CommentPreview {
         return patterns.some((re) => re.test(text));
     }
 
+    _isRiskyNavigationTarget(el) {
+        if (!el) return false;
+
+        const anchor = el.matches('a[href]') ? el : el.closest('a[href]');
+        if (!anchor) return false;
+
+        const href = (anchor.getAttribute('href') || '').toLowerCase();
+        if (!href) return false;
+
+        // Safe-ish anchors used as button wrappers
+        if (href === '#' || href.startsWith('javascript:')) return false;
+
+        // Avoid opening full post pages/reels/videos.
+        const risky = [
+            '/posts/',
+            '/permalink/',
+            '/videos/',
+            '/watch/',
+            '/reel/',
+            'story_fbid=',
+            'comment_id='
+        ];
+
+        return risky.some((token) => href.includes(token));
+    }
+
     _safeClick(el) {
         try {
-            el.click();
+            const target = (el.closest && (el.closest('div[role="button"], span[role="button"], button, a[role="link"]') || el)) || el;
+
+            ['mousedown', 'mouseup', 'click'].forEach((type) => {
+                target.dispatchEvent(new MouseEvent(type, {
+                    bubbles: true,
+                    cancelable: true,
+                    view: window
+                }));
+            });
         } catch (err) {
             PF_Logger.warn('PF_CommentPreview: click failed.', err);
         }

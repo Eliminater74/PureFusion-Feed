@@ -48,18 +48,26 @@ class PF_InPageUI {
                 display: none;
             }
             .pf-fab {
-                width: 40px; height: 40px; border-radius: 20px;
-                background: linear-gradient(135deg, #6C3FC5, #00D4FF);
-                box-shadow: 0 2px 10px rgba(108,63,197,0.5);
+                width: 40px; height: 40px; border-radius: 999px;
+                background: var(--secondary-button-background, #4e4f50);
                 display: flex; align-items: center; justify-content: center;
-                cursor: pointer; transition: transform 0.2s;
+                cursor: pointer; transition: background-color 0.15s ease;
                 user-select: none; flex-shrink: 0;
-                padding: 4px; border: 1px solid rgba(255,255,255,0.1);
+                padding: 0;
+                margin-right: 8px;
+                border: 0;
             }
             .pf-fab img {
-                width: 100%; height: 100%; object-fit: contain;
+                width: 18px; height: 18px; object-fit: contain;
+                filter: grayscale(1) brightness(2.1) contrast(0.9);
+                opacity: 0.95;
             }
-            .pf-fab:hover { transform: scale(1.05); }
+            .pf-fab:hover {
+                background: var(--hover-overlay, #5b5c5e);
+            }
+            .pf-fab:active {
+                background: #66676a;
+            }
             
             .pf-modal-overlay {
                 display: none; position: fixed;
@@ -131,7 +139,7 @@ class PF_InPageUI {
         this.fab.className = 'pf-fab';
         
         const logo = document.createElement('img');
-        logo.src = chrome.runtime.getURL('icons/icon32.png');
+        logo.src = chrome.runtime.getURL('icons/icon16.png');
         this.fab.appendChild(logo);
         
         this.fab.title = chrome.i18n.getMessage("inpage_fab_title");
