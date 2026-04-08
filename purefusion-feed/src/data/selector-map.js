@@ -79,6 +79,8 @@ const SELECTOR_MAP = {
     metaAISearchIcon: 'svg.x14rh7hd.x1lliihq.x1tzjh5l.x1k90msu.x2h7rmj.x1qfuztq',
     metaAIMessengerSparkle: 'svg.x1tzjh5l.x1k90msu.x1qfuztq.x10l6tqk.x1u2d60l',
     metaAIHeader: 'div[aria-label="Meta AI"]',
+    messengerSeenReceipt: 'div[aria-label^="Seen by"] img, div[aria-label^="Visto por"] img',
+    messengerTypingIndicator: 'span.x6s0dn4.x78zum5.x135b78x, div.x17zd0t2.x78zum5.x1q0g3np',
 
     // ------------------------------------------------------------------------
     // COMMENT INTERFACES

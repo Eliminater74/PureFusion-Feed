@@ -49,10 +49,10 @@ class PF_UiTweaks {
 
         // 2. Messenger Ghost Mode (Hiding Seen Receipts & Typing)
         if (this.settings.uiMode.hideMessengerSeen) {
-            // Hide the text "Seen" and the tiny profile picture seen icons
-            // Note: :contains() is not standard CSS, but we use a polyfill or broader selector
+            // Hide only the tiny "Seen" profile pictures in message metadata
             css += `
-                div[role="none"] img.x14yjl9h.xudhj9z,
+                div[aria-label^="Seen by"] img,
+                div[aria-label^="Visto por"] img,
                 span.x1rg5ohu { 
                     opacity: 0 !important; 
                     pointer-events: none !important;
