@@ -6,6 +6,8 @@
  *  - innerText (default)
  *  - title (data-i18n-title)
  *  - placeholder (data-i18n-placeholder)
+ *  - alt text (data-i18n-alt)
+ *  - aria-label (data-i18n-aria-label)
  */
 
 const PF_I18n = {
@@ -41,6 +43,20 @@ const PF_I18n = {
             const key = el.getAttribute('data-i18n-placeholder');
             const msg = chrome.i18n.getMessage(key);
             if (msg) el.placeholder = msg;
+        });
+
+        // 4. Alt attributes (Images)
+        root.querySelectorAll('[data-i18n-alt]').forEach(el => {
+            const key = el.getAttribute('data-i18n-alt');
+            const msg = chrome.i18n.getMessage(key);
+            if (msg) el.alt = msg;
+        });
+
+        // 5. ARIA labels
+        root.querySelectorAll('[data-i18n-aria-label]').forEach(el => {
+            const key = el.getAttribute('data-i18n-aria-label');
+            const msg = chrome.i18n.getMessage(key);
+            if (msg) el.setAttribute('aria-label', msg);
         });
     }
 };

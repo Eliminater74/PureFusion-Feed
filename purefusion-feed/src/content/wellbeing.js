@@ -142,6 +142,8 @@ class PF_Wellbeing {
         document.body.appendChild(timerEl);
 
         this.timerIntervalId = setInterval(() => {
+            if (document.hidden) return;
+
             const elapsed = Math.floor((Date.now() - this.sessionStart) / 1000);
             const m = Math.floor(elapsed / 60).toString().padStart(2, '0');
             const s = (elapsed % 60).toString().padStart(2, '0');

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PureFusion Feed - Settings</title>
+    <title data-i18n="options_page_title">PureFusion Feed - Settings</title>
     <link rel="stylesheet" href="options.css">
 </head>
 <body>
@@ -13,7 +13,7 @@
     <!-- Sidebar Navigation -->
     <nav class="pf-sidebar">
         <div class="pf-brand">
-            <img src="../../icons/icon48.png" class="pf-logo" alt="logo">
+            <img src="../../icons/icon48.png" class="pf-logo" data-i18n-alt="common_logo_alt" alt="logo">
             <h2 data-i18n="extName">PureFusion</h2>
             <span id="pf-sidebar-version"></span>
         </div>
@@ -51,46 +51,46 @@
                     <input type="checkbox" id="opt_filters_removeAds" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
-                    <label>Hide "Suggested For You"</label>
+                    <label data-i18n="options_filters_hide_suggested">Hide "Suggested For You"</label>
                     <input type="checkbox" id="opt_filters_removeSuggested" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
-                    <label>Hide "People You May Know"</label>
+                    <label data-i18n="options_filters_hide_pymk">Hide "People You May Know"</label>
                     <input type="checkbox" id="opt_filters_removePYMK" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
-                    <label>Hide Group Suggestions</label>
+                    <label data-i18n="options_filters_hide_group_suggestions">Hide Group Suggestions</label>
                     <input type="checkbox" id="opt_filters_removeGroupSuggestions" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
-                    <label>Hide Page Suggestions</label>
+                    <label data-i18n="options_filters_hide_page_suggestions">Hide Page Suggestions</label>
                     <input type="checkbox" id="opt_filters_removePageSuggestions" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
-                    <label>Hide Fundraisers</label>
+                    <label data-i18n="options_filters_hide_fundraisers">Hide Fundraisers</label>
                     <input type="checkbox" id="opt_filters_hideFundraisers" class="pf-toggle">
                 </div>
             </div>
 
             <div class="pf-card mt-4">
-                <h3>Clutter & Injections</h3>
+                <h3 data-i18n="options_filters_clutter_title">Clutter & Injections</h3>
                 <div class="pf-setting-row">
-                    <label>Hide Reels Tray in Feed</label>
+                    <label data-i18n="options_filters_hide_reels_tray">Hide Reels Tray in Feed</label>
                     <input type="checkbox" id="opt_filters_hideReels" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row auto-height">
                     <div>
-                        <label>Widescreen Mode</label>
-                        <p class="pf-desc">Unlock center column boundaries to fill ultrawide monitors.</p>
+                        <label data-i18n="options_filters_widescreen_label">Widescreen Mode</label>
+                        <p class="pf-desc" data-i18n="options_filters_widescreen_desc">Unlock center column boundaries to fill ultrawide monitors.</p>
                     </div>
                     <input type="checkbox" id="opt_widescreen" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
-                    <label>Hide Stories Bar</label>
+                    <label data-i18n="options_filters_hide_stories">Hide Stories Bar</label>
                     <input type="checkbox" id="opt_filters_hideStories" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
-                    <label>Remove Colored Background Posts</label>
+                    <label data-i18n="options_filters_remove_colored_bg">Remove Colored Background Posts</label>
                     <input type="checkbox" id="opt_filters_removeColoredBackgrounds" class="pf-toggle">
                 </div>
             </div>
@@ -102,31 +102,31 @@
                 <h3 data-i18n="options_sidebar_wellbeing">Digital Wellbeing</h3>
                 <p class="pf-desc" data-i18n="welcome_dopamine_desc">Dopamine breakers and session limits designed to fight doom-scrolling.</p>
                 <div class="pf-setting-row header-row">
-                    <label>Grayscale Mode (Desaturate all colors)</label>
+                    <label data-i18n="options_wellbeing_grayscale">Grayscale Mode (Desaturate all colors)</label>
                     <input type="checkbox" id="opt_wb_grayscale" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
-                    <label>Infinite Scroll Stopper</label>
+                    <label data-i18n="options_wellbeing_scroll_stopper">Infinite Scroll Stopper</label>
                     <input type="checkbox" id="opt_wb_scrollStop" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row auto-height">
-                    <label>Posts until Break Wall</label>
+                    <label data-i18n="options_wellbeing_break_wall">Posts until Break Wall</label>
                     <input type="number" id="opt_wb_scrollLimit" min="10" max="100" class="pf-input-number">
                 </div>
                 <div class="pf-setting-row mt-4">
-                    <label>Visible Session Timer Clock</label>
+                    <label data-i18n="options_wellbeing_session_timer">Visible Session Timer Clock</label>
                     <input type="checkbox" id="opt_wb_sessionTimer" class="pf-toggle">
                 </div>
             </div>
             
             <div class="pf-card mt-4">
-                <h3>Advanced AI Blockers (Wellbeing Edition)</h3>
+                <h3 data-i18n="options_wellbeing_ai_blockers_title">Advanced AI Blockers (Wellbeing Edition)</h3>
                 <div class="pf-setting-row">
-                    <label>Rage-Bait Detector (Blur inflammatory outrage posts)</label>
+                    <label data-i18n="options_wellbeing_ragebait">Rage-Bait Detector (Blur inflammatory outrage posts)</label>
                     <input type="checkbox" id="opt_wb_ragebait" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
-                    <label>Clickbait Eliminator (Nuke viral manipulative headlines)</label>
+                    <label data-i18n="options_wellbeing_clickbait">Clickbait Eliminator (Nuke viral manipulative headlines)</label>
                     <input type="checkbox" id="opt_wb_clickbait" class="pf-toggle">
                 </div>
             </div>
@@ -135,48 +135,48 @@
         <!-- TAB: SOCIAL & PRIVACY -->
         <section id="tab-social" class="pf-tab-content">
             <div class="pf-card">
-                <h3>Ghost Mode (Messenger)</h3>
-                <p class="pf-desc">Private interactions. Hide your tracks while messaging.</p>
+                <h3 data-i18n="options_social_ghost_title">Ghost Mode (Messenger)</h3>
+                <p class="pf-desc" data-i18n="options_social_ghost_desc">Private interactions. Hide your tracks while messaging.</p>
                 <div class="pf-setting-row">
-                    <label>Hide "Seen" Receipts (Read without them knowing)</label>
+                    <label data-i18n="options_social_hide_seen">Hide "Seen" Receipts (Read without them knowing)</label>
                     <input type="checkbox" id="opt_uiMode_hideMessengerSeen" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
-                    <label>Hide "Typing..." Indicator</label>
+                    <label data-i18n="options_social_hide_typing">Hide "Typing..." Indicator</label>
                     <input type="checkbox" id="opt_social_hideMessengerTyping" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
-                    <label>Privacy Blur (Blur chat body until hover)</label>
+                    <label data-i18n="options_social_privacy_blur">Privacy Blur (Blur chat body until hover)</label>
                     <input type="checkbox" id="opt_social_messengerPrivacyBlur" class="pf-toggle">
                 </div>
             </div>
 
             <div class="pf-card mt-4">
-                <h3>Meta AI & Algorithmic Clutter</h3>
+                <h3 data-i18n="options_social_meta_title">Meta AI & Algorithmic Clutter</h3>
                 <div class="pf-setting-row">
-                    <label>Nuke Meta AI (Remove all gradient icons & sparkle buttons)</label>
+                    <label data-i18n="options_social_nuke_meta">Nuke Meta AI (Remove all gradient icons & sparkle buttons)</label>
                     <input type="checkbox" id="opt_social_hideMetaAI" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
-                    <label>Track Unfriends & Deactivations</label>
+                    <label data-i18n="options_social_track_unfriends">Track Unfriends & Deactivations</label>
                     <input type="checkbox" id="opt_social_trackUnfriends" class="pf-toggle">
                 </div>
             </div>
 
             <div class="pf-card mt-4">
-                <h3>Notification Soul-Soother</h3>
+                <h3 data-i18n="options_social_notif_title">Notification Soul-Soother</h3>
                 <div class="pf-setting-row auto-height">
-                    <label>Alert Jewel Style (The red dot)</label>
+                    <label data-i18n="options_social_notif_style">Alert Jewel Style (The red dot)</label>
                     <select id="opt_uiMode_notificationJewelStyle" class="pf-select">
-                        <option value="classic">Classic Red (Default)</option>
-                        <option value="blue">Pure Blue (Subtle)</option>
-                        <option value="purple">Fusion Purple (Branded)</option>
-                        <option value="grey">Ghost Grey (Minimal)</option>
-                        <option value="hidden">Hidden entirely</option>
+                        <option value="classic" data-i18n="options_social_notif_style_classic">Classic Red (Default)</option>
+                        <option value="blue" data-i18n="options_social_notif_style_blue">Pure Blue (Subtle)</option>
+                        <option value="purple" data-i18n="options_social_notif_style_purple">Fusion Purple (Branded)</option>
+                        <option value="grey" data-i18n="options_social_notif_style_grey">Ghost Grey (Minimal)</option>
+                        <option value="hidden" data-i18n="options_social_notif_style_hidden">Hidden entirely</option>
                     </select>
                 </div>
                 <div class="pf-setting-row">
-                    <label>Notification Digest Mode (Batch alerts every hour)</label>
+                    <label data-i18n="options_social_notif_digest">Notification Digest Mode (Batch alerts every hour)</label>
                     <input type="checkbox" id="opt_social_notificationDigestMode" class="pf-toggle">
                 </div>
             </div>
@@ -188,23 +188,23 @@
                 <h3 data-i18n="options_ai_card_title">Local Prediction Engine</h3>
                 <p class="pf-desc" data-i18n="options_ai_card_desc">Scores feed items locally based on your interaction history. Data never leaves your device.</p>
                 <div class="pf-setting-row header-row">
-                    <label>Enable AI Predictions</label>
+                    <label data-i18n="options_ai_enable_predictions">Enable AI Predictions</label>
                     <input type="checkbox" id="opt_pred_enabled" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
-                    <label>Show "PF Score" Badge on posts</label>
+                    <label data-i18n="options_ai_show_pf_badge">Show "PF Score" Badge on posts</label>
                     <input type="checkbox" id="opt_pred_showBadge" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
-                    <label>Dim/Collapse Low Interest Posts (Score < 20)</label>
+                    <label data-i18n="options_ai_dim_low_interest">Dim/Collapse Low Interest Posts (Score < 20)</label>
                     <input type="checkbox" id="opt_pred_dimLowInterest" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
-                    <label>Highlight High Interest Posts (Score > 80)</label>
+                    <label data-i18n="options_ai_highlight_high_interest">Highlight High Interest Posts (Score > 80)</label>
                     <input type="checkbox" id="opt_pred_highlightHighInterest" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
-                    <label>Analyze Local Trends & Keywords</label>
+                    <label data-i18n="options_ai_analyze_trends">Analyze Local Trends & Keywords</label>
                     <input type="checkbox" id="opt_pred_showTrending" class="pf-toggle">
                 </div>
             </div>
@@ -215,37 +215,37 @@
                 <p class="pf-desc" data-i18n="options_ai_llm_desc">Bring-Your-Own-Key. Unlock LLM capabilities like TL;DRs and Comment AI. Your keys are saved exclusively taking advantage of local machine storage.</p>
                 
                 <div class="pf-setting-row mb-2">
-                    <label>Active Provider</label>
+                    <label data-i18n="options_ai_provider_label">Active Provider</label>
                     <select id="opt_llm_provider" class="pf-select w-50">
-                        <option value="none">Disabled</option>
-                        <option value="openai">OpenAI (ChatGPT)</option>
-                        <option value="gemini">Google Gemini</option>
-                        <option value="windowai">Chrome Native (window.ai)</option>
+                        <option value="none" data-i18n="options_ai_provider_none">Disabled</option>
+                        <option value="openai" data-i18n="options_ai_provider_openai">OpenAI (ChatGPT)</option>
+                        <option value="gemini" data-i18n="options_ai_provider_gemini">Google Gemini</option>
+                        <option value="windowai" data-i18n="options_ai_provider_windowai">Chrome Native (window.ai)</option>
                     </select>
                 </div>
 
                 <div class="pf-setting-row mb-2">
-                    <label>OpenAI API Key</label>
+                    <label data-i18n="options_ai_openai_key_label">OpenAI API Key</label>
                     <input type="password" id="opt_llm_openAIApiKey" class="pf-input-text w-50" placeholder="sk-proj-...">
                 </div>
 
                 <div class="pf-setting-row">
-                    <label>Google Gemini API Key</label>
+                    <label data-i18n="options_ai_gemini_key_label">Google Gemini API Key</label>
                     <input type="password" id="opt_llm_geminiApiKey" class="pf-input-text w-50" placeholder="AIzaSy...">
                 </div>
 
                 <hr class="pf-hr">
 
                 <div class="pf-setting-row">
-                    <label>Inject "TL;DR" Summarize buttons on long posts</label>
+                    <label data-i18n="options_ai_tldr_toggle">Inject "TL;DR" Summarize buttons on long posts</label>
                     <input type="checkbox" id="opt_llm_tldr" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
-                    <label>Smart Comment Co-Pilot (Wand icon)</label>
+                    <label data-i18n="options_ai_smart_comment_toggle">Smart Comment Co-Pilot (Wand icon)</label>
                     <input type="checkbox" id="opt_llm_smartcomment" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
-                    <label>Clickbait Decoder (Rewrite sensational headlines with facts)</label>
+                    <label data-i18n="options_ai_clickbait_decode_toggle">Clickbait Decoder (Rewrite sensational headlines with facts)</label>
                     <input type="checkbox" id="opt_llm_clickbaitdecode" class="pf-toggle">
                 </div>
             </div>
@@ -257,32 +257,32 @@
                 <h3 data-i18n="options_ui_card_title">Interface Restructuring</h3>
                 
                 <div class="pf-setting-row pf-setting-row-feature">
-                    <label>Friends Only Mode (Nuke all Groups/Pages from Feed)</label>
+                    <label data-i18n="options_ui_friends_only">Friends Only Mode (Nuke all Groups/Pages from Feed)</label>
                     <input type="checkbox" id="opt_uiMode_friendsOnlyMode" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row pf-setting-row-feature">
-                    <label>Screenshot Anonymizer (Blur PFP/Names)</label>
+                    <label data-i18n="options_ui_anonymizer">Screenshot Anonymizer (Blur PFP/Names)</label>
                     <input type="checkbox" id="opt_uiMode_anonymizerMode" class="pf-toggle">
                 </div>
 
                 <div class="pf-setting-row">
-                    <label>Compact Mode (Reduce Margins/Padding)</label>
+                    <label data-i18n="options_ui_compact_mode">Compact Mode (Reduce Margins/Padding)</label>
                     <input type="checkbox" id="opt_uiMode_compactMode" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
-                    <label>Disable Comment Box Autofocus Stealing</label>
+                    <label data-i18n="options_ui_disable_comment_autofocus">Disable Comment Box Autofocus Stealing</label>
                     <input type="checkbox" id="opt_uiMode_disableCommentAutofocus" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
-                    <label>Enforce Chronological Feed (Most Recent)</label>
+                    <label data-i18n="options_ui_enforce_chrono">Enforce Chronological Feed (Most Recent)</label>
                     <input type="checkbox" id="opt_uiMode_enforceChronologicalFeed" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
-                    <label>Show True Destination Outbound Links</label>
+                    <label data-i18n="options_ui_show_link_previews">Show True Destination Outbound Links</label>
                     <input type="checkbox" id="opt_uiMode_showLinkPreviews" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
-                    <label>Convert Timestamps into Absolute Dates</label>
+                    <label data-i18n="options_ui_absolute_timestamps">Convert Timestamps into Absolute Dates</label>
                     <input type="checkbox" id="opt_uiMode_fixTimestamps" class="pf-toggle">
                 </div>
 
@@ -291,7 +291,7 @@
                 <div class="pf-setting-row auto-height">
                     <div>
                         <label data-i18n="options_ui_theme_label">Application Theme</label>
-                        <p class="pf-desc">Requires page reload.</p>
+                        <p class="pf-desc" data-i18n="options_ui_theme_reload_desc">Requires page reload.</p>
                     </div>
                     <select id="opt_uiMode_theme" class="pf-select">
                         <option value="default" data-i18n="options_ui_theme_default">Facebook Default</option>
@@ -330,13 +330,13 @@
                 <p class="pf-desc" data-i18n="options_keywords_card_desc">Separate keywords by commas.</p>
                 
                 <div class="pf-form-group">
-                    <label>Blocklist (Collapses posts with a "Show anyway" button)</label>
-                    <textarea id="opt_keywords_blocklist" class="pf-textarea" rows="4" placeholder="politics, spoilers, etc..."></textarea>
+                    <label data-i18n="options_keywords_blocklist_label">Blocklist (Collapses posts with a "Show anyway" button)</label>
+                    <textarea id="opt_keywords_blocklist" class="pf-textarea" rows="4" data-i18n-placeholder="options_keywords_blocklist_placeholder" placeholder="politics, spoilers, etc..."></textarea>
                 </div>
 
                 <div class="pf-form-group mt-4">
-                    <label>Auto-hide (Silently nukes posts containing these strings)</label>
-                    <textarea id="opt_keywords_autohide" class="pf-textarea" rows="4" placeholder="spam buzzword..."></textarea>
+                    <label data-i18n="options_keywords_autohide_label">Auto-hide (Silently nukes posts containing these strings)</label>
+                    <textarea id="opt_keywords_autohide" class="pf-textarea" rows="4" data-i18n-placeholder="options_keywords_autohide_placeholder" placeholder="spam buzzword..."></textarea>
                 </div>
             </div>
         </section>
@@ -347,9 +347,9 @@
                 <h3 data-i18n="options_data_backup_title">Configuration Backup</h3>
                 <p class="pf-desc" data-i18n="options_data_backup_desc">Export your settings & blocklists as JSON to sync to another machine.</p>
                 <div class="pf-btn-group">
-                    <button id="btnExport" class="pf-btn pf-btn-secondary">Export to File</button>
+                    <button id="btnExport" class="pf-btn pf-btn-secondary" data-i18n="options_data_export_btn">Export to File</button>
                     <input type="file" id="btnImportFile" style="display: none;" accept=".json">
-                    <button id="btnImport" class="pf-btn pf-btn-secondary">Import from File</button>
+                    <button id="btnImport" class="pf-btn pf-btn-secondary" data-i18n="options_data_import_btn">Import from File</button>
                 </div>
                 
                 <hr class="pf-hr">

@@ -14,6 +14,51 @@ document.addEventListener('DOMContentLoaded', async () => {
         return chrome.i18n.getMessage(key) || fallback;
     };
 
+    const providerOrigins = {
+        openai: ["https://api.openai.com/*"],
+        gemini: ["https://generativelanguage.googleapis.com/*"]
+    };
+
+    async function hasOriginPermission(origins) {
+        if (typeof chrome === 'undefined' || !chrome.permissions || !origins || origins.length === 0) return true;
+        return new Promise((resolve) => {
+            chrome.permissions.contains({ origins }, resolve);
+        });
+    }
+
+    async function requestOriginPermission(origins) {
+        if (typeof chrome === 'undefined' || !chrome.permissions || !origins || origins.length === 0) return true;
+        return new Promise((resolve) => {
+            chrome.permissions.request({ origins }, resolve);
+        });
+    }
+
+    async function removeOriginPermission(origins) {
+        if (typeof chrome === 'undefined' || !chrome.permissions || !origins || origins.length === 0) return;
+        return new Promise((resolve) => {
+            chrome.permissions.remove({ origins }, () => resolve());
+        });
+    }
+
+    async function ensureLLMProviderPermission(provider) {
+        const origins = providerOrigins[provider];
+        if (!origins) return true;
+
+        if (await hasOriginPermission(origins)) return true;
+        return requestOriginPermission(origins);
+    }
+
+    async function pruneUnusedLLMProviderPermissions(activeProvider) {
+        const providers = Object.keys(providerOrigins);
+        for (const provider of providers) {
+            if (provider === activeProvider) continue;
+            const origins = providerOrigins[provider];
+            if (await hasOriginPermission(origins)) {
+                await removeOriginPermission(origins);
+            }
+        }
+    }
+
     function mergeDeep(target, source) {
         for (const key of Object.keys(source || {})) {
             const sourceValue = source[key];
@@ -239,13 +284,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         currentSettings.keywords.blocklist = blockString.split(',').map(s => s.trim()).filter(s => s.length > 0);
         currentSettings.keywords.autohide = autoString.split(',').map(s => s.trim()).filter(s => s.length > 0);
 
+        let providerPermissionDenied = false;
+        const providerAllowed = await ensureLLMProviderPermission(currentSettings.llm.provider);
+        if (!providerAllowed) {
+            currentSettings.llm.provider = 'none';
+            const providerSelectEl = document.getElementById('opt_llm_provider');
+            if (providerSelectEl) providerSelectEl.value = 'none';
+            providerPermissionDenied = true;
+        }
+
         await PF_Storage.updateLocalLLMKeys({
             openAIApiKey: currentSettings.llm.openAIApiKey,
             geminiApiKey: currentSettings.llm.geminiApiKey
         });
 
         await PF_Storage.updateSettings(currentSettings);
-        showSaveToast('Settings saved successfully.');
+        await pruneUnusedLLMProviderPermissions(currentSettings.llm.provider);
+        if (providerPermissionDenied) {
+            showSaveToast(t('options_toast_provider_permission_denied', 'AI provider permission denied. Provider disabled.'), true);
+        } else {
+            showSaveToast(t('options_toast_saved', 'Settings saved successfully.'));
+        }
         broadcastUpdate();
     }
 
@@ -267,7 +326,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function broadcastUpdate() {
         if (typeof chrome === 'undefined' || !chrome.tabs) return;
-        chrome.tabs.query({url: "*://*.facebook.com/*"}, (tabs) => {
+        chrome.tabs.query({ url: ["*://*.facebook.com/*", "*://*.messenger.com/*"] }, (tabs) => {
             tabs.forEach(tab => {
                 chrome.tabs.sendMessage(tab.id, { type: "PF_SETTINGS_UPDATED" });
             });
@@ -316,19 +375,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                     currentSettings = mergeDeep(JSON.parse(JSON.stringify(PF_DEFAULT_SETTINGS)), imported);
                     loadUIFromSettings();
                     await saveSettingsFromUI();
-                    showSaveToast('Settings imported successfully.');
+                    showSaveToast(t('options_toast_imported', 'Settings imported successfully.'));
                 } else {
-                    showSaveToast('Invalid PureFusion backup file.', true);
+                    showSaveToast(t('options_toast_invalid_backup', 'Invalid PureFusion backup file.'), true);
                 }
             } catch (err) {
-                showSaveToast('Error importing file. It might be corrupted.', true);
+                showSaveToast(t('options_toast_import_error', 'Error importing file. It might be corrupted.'), true);
             }
         };
         reader.readAsText(file);
     });
 
     document.getElementById('btnReset').addEventListener('click', async () => {
-        if(confirm("Are you sure? This will wipe your preferences and all local AI Tracking data.")) {
+        if (confirm(t('options_reset_confirm', 'Are you sure? This will wipe your preferences and all local AI tracking data.'))) {
             await chrome.storage.local.clear();
             await chrome.storage.sync.clear();
             chrome.runtime.reload(); // Hard boot the extension background process

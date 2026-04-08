@@ -6,13 +6,16 @@
   "default_locale": "en",
   "permissions": [
     "storage",
-    "declarativeNetRequest"
+    "declarativeNetRequest",
+    "permissions"
   ],
   "host_permissions": [
     "*://*.facebook.com/*",
-    "*://*.messenger.com/*",
-    "*://api.openai.com/*",
-    "*://generativelanguage.googleapis.com/*"
+    "*://*.messenger.com/*"
+  ],
+  "optional_host_permissions": [
+    "https://api.openai.com/*",
+    "https://generativelanguage.googleapis.com/*"
   ],
   "background": {
     "service_worker": "src/background/service-worker.js"
@@ -45,6 +48,20 @@
         "src/content/main.js"
       ],
       "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "*://*.messenger.com/*"
+      ],
+      "js": [
+        "src/utils/logger.js",
+        "src/utils/helpers.js",
+        "src/utils/storage.js",
+        "src/data/default-settings.js",
+        "src/content/ui-tweaks.js",
+        "src/content/messenger-main.js"
+      ],
+      "run_at": "document_idle"
     }
   ],
   "action": {
@@ -57,10 +74,14 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "src/options/*",
-        "src/utils/*",
-        "src/data/*",
-        "icons/*"
+        "src/options/options.html",
+        "src/options/options.css",
+        "src/options/options.js",
+        "src/utils/storage.js",
+        "src/utils/i18n-engine.js",
+        "src/data/default-settings.js",
+        "icons/icon32.png",
+        "icons/icon48.png"
       ],
       "matches": [
         "*://*.facebook.com/*"

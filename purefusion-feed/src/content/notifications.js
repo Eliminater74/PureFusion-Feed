@@ -75,6 +75,8 @@ class PF_NotificationControls {
 
         // Find the red notification jewel count in the top right nav
         const runDigestCycle = () => {
+            if (document.hidden) return;
+
             const jewelWrappers = document.querySelectorAll(PF_SELECTOR_MAP.headerContainer + ' span:has(span[dir="auto"])');
             
             const ONE_HOUR = 60 * 60 * 1000;

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PureFusion Feed</title>
+    <title data-i18n="extName">PureFusion Feed</title>
     <link rel="stylesheet" href="popup.css">
 </head>
 <body>
@@ -11,7 +11,7 @@
         <!-- HEADER -->
         <header class="pf-header">
             <div class="pf-brand">
-                <img src="../../icons/icon32.png" class="pf-logo" alt="logo">
+                <img src="../../icons/icon32.png" class="pf-logo" data-i18n-alt="common_logo_alt" alt="logo">
                 <div>
                     <h1 data-i18n="extName">PureFusion Feed</h1>
                     <div id="pf-version" class="pf-version">v1.1.0</div>
@@ -19,7 +19,7 @@
             </div>
             <a href="https://www.paypal.com/donate/?business=X76ZW4RHA6T9C&no_recurring=0&item_name=PureFusion+returns+feed+control+to+you.+Support+our+independent%2C+private%2C+ad-free+social+tools.+Keep+your+feed+pure%21&currency_code=USD" target="_blank" rel="noopener noreferrer" class="pf-support-btn" data-i18n-title="common_support_developer">❤️</a>
             <!-- Master Toggle -->
-            <label class="pf-switch pf-master-switch" title="Toggle completely on/off">
+            <label class="pf-switch pf-master-switch" data-i18n-title="popup_master_toggle_title" title="Toggle completely on/off">
                 <input type="checkbox" id="masterToggle" checked>
                 <span class="pf-slider round"></span>
             </label>
@@ -124,7 +124,7 @@
             <h2 data-i18n="popup_fast_keyword">Fast Keyword Block</h2>
             <div class="keyword-input-wrapper">
                 <input type="text" id="quickKeywordInput" data-i18n-placeholder="popup_keyword_placeholder" placeholder="Enter keyword to collapse...">
-                <button id="addKeywordBtn">+</button>
+                <button id="addKeywordBtn" data-i18n-title="popup_add_keyword_title" title="Add keyword">+</button>
             </div>
             <div id="keywordStatus" class="pf-status-text"></div>
         </section>

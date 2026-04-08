@@ -16,6 +16,8 @@ class PF_Predictor {
         
         // Tracking queue so we don't hammer local storage on every click
         this._stateDirty = false;
+        this.syncIntervalId = null;
+        this.boundVisibilityHandler = null;
         
         this.init();
     }
@@ -29,7 +31,19 @@ class PF_Predictor {
         }
 
         // Start periodic sync
-        setInterval(() => this._syncState(), 10000); // 10 seconds flush
+        if (!this.syncIntervalId) {
+            this.syncIntervalId = setInterval(() => {
+                if (document.hidden) return;
+                this._syncState();
+            }, 10000); // 10 seconds flush
+        }
+
+        if (!this.boundVisibilityHandler) {
+            this.boundVisibilityHandler = () => {
+                if (!document.hidden) this._syncState();
+            };
+            document.addEventListener('visibilitychange', this.boundVisibilityHandler);
+        }
     }
 
     // =========================================================================

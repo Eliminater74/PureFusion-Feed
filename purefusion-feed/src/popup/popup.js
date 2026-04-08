@@ -6,6 +6,11 @@
  */
 
 document.addEventListener('DOMContentLoaded', async () => {
+    const t = (key, fallback) => {
+        if (typeof chrome === 'undefined' || !chrome.i18n) return fallback;
+        return chrome.i18n.getMessage(key) || fallback;
+    };
+
     // 0. Set Dynamic Version
     const versionEl = document.getElementById('pf-version');
     if (versionEl && typeof chrome !== 'undefined' && chrome.runtime.getManifest) {
@@ -124,12 +129,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 await PF_Storage.updateSettings(settings);
                 
                 elements.inputKeyword.value = '';
-                elements.statusMsg.textContent = `Added "${val}" to Blocklist!`;
+                elements.statusMsg.textContent = t('popup_keyword_added', `Added "${val}" to blocklist.`).replace('{keyword}', val);
                 setTimeout(() => { elements.statusMsg.textContent = ''; }, 2500);
                 
                 broadcastUpdate();
             } else {
-                elements.statusMsg.textContent = "Keyword already exists.";
+                elements.statusMsg.textContent = t('popup_keyword_exists', 'Keyword already exists.');
                 elements.statusMsg.style.color = "#ffaa00";
                 setTimeout(() => { 
                     elements.statusMsg.textContent = ''; 
@@ -157,7 +162,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (typeof chrome === 'undefined' || !chrome.tabs) return;
         
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-            if (tabs[0] && typeof tabs[0].url === 'string' && tabs[0].url.includes("facebook.com")) {
+            if (
+                tabs[0]
+                && typeof tabs[0].url === 'string'
+                && (tabs[0].url.includes("facebook.com") || tabs[0].url.includes("messenger.com"))
+            ) {
                 chrome.tabs.sendMessage(tabs[0].id, { type: "PF_SETTINGS_UPDATED" });
             }
         });

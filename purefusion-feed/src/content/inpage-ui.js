@@ -9,6 +9,8 @@ class PF_InPageUI {
     constructor(settings) {
         this.settings = settings;
         this.isOpen = false;
+        this.fabDockIntervalId = null;
+        this.boundVisibilityHandler = null;
         
         // Prevent multiple injections
         if (!document.getElementById('pf-inpage-container')) {
@@ -136,20 +138,52 @@ class PF_InPageUI {
         
         this.fab.addEventListener('click', () => this.toggleModal());
 
-        // Self-healing injection loop to keep it docked in Facebook's header
-        setInterval(() => {
-            if (!document.contains(this.fab)) {
-                const banner = document.querySelector('[role="banner"]');
-                if (banner && banner.lastElementChild) {
-                    // Try to attach to the inner UL or flex container grouping the icons
-                    let rightGroup = banner.lastElementChild;
-                    if (rightGroup.querySelector('ul')) rightGroup = rightGroup.querySelector('ul');
-                    else if (rightGroup.firstElementChild) rightGroup = rightGroup.firstElementChild;
-                    
-                    rightGroup.prepend(this.fab);
-                }
+        this._startFabDockingLoop();
+    }
+
+    _dockFabIntoHeader() {
+        if (document.hidden) return;
+        if (document.contains(this.fab)) return;
+
+        const banner = document.querySelector('[role="banner"]');
+        if (!banner || !banner.lastElementChild) return;
+
+        // Try to attach to the inner UL or flex container grouping the icons
+        let rightGroup = banner.lastElementChild;
+        if (rightGroup.querySelector('ul')) rightGroup = rightGroup.querySelector('ul');
+        else if (rightGroup.firstElementChild) rightGroup = rightGroup.firstElementChild;
+
+        rightGroup.prepend(this.fab);
+    }
+
+    _startFabDockingLoop() {
+        if (this.fabDockIntervalId) return;
+
+        this.fabDockIntervalId = setInterval(() => {
+            this._dockFabIntoHeader();
+        }, 2000);
+
+        this.boundVisibilityHandler = () => {
+            if (!document.hidden) {
+                this._dockFabIntoHeader();
             }
-        }, 1500);
+        };
+
+        document.addEventListener('visibilitychange', this.boundVisibilityHandler);
+        window.addEventListener('beforeunload', () => this._stopFabDockingLoop(), { once: true });
+
+        this._dockFabIntoHeader();
+    }
+
+    _stopFabDockingLoop() {
+        if (this.fabDockIntervalId) {
+            clearInterval(this.fabDockIntervalId);
+            this.fabDockIntervalId = null;
+        }
+        if (this.boundVisibilityHandler) {
+            document.removeEventListener('visibilitychange', this.boundVisibilityHandler);
+            this.boundVisibilityHandler = null;
+        }
     }
 
     _buildDashboardModal() {
