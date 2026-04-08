@@ -95,7 +95,22 @@ class PF_InPageUI {
             
             .pf-btn-full {
                 width: 100%; padding: 12px; margin-top: 20px; background: #6C3FC5;
-                color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
+                color: white; border: none; border-radius: 8px; 
+                font-weight: bold; cursor: pointer; box-sizing: border-box;
+                display: block; text-decoration: none; text-align: center;
+                font-family: sans-serif; font-size: 14px; transition: 0.2s;
+            }
+            .pf-btn-full:hover { opacity: 0.9; transform: translateY(-1px); }
+            
+            .pf-btn-support {
+                background: rgba(255, 63, 108, 0.15); 
+                color: #ff3f6c; 
+                border: 1px solid rgba(255, 63, 108, 0.4);
+                margin-top: 12px;
+            }
+            .pf-btn-support:hover {
+                background: rgba(255, 63, 108, 0.25);
+                border-color: #ff3f6c;
             }
         `;
         document.head.appendChild(style);
@@ -162,7 +177,7 @@ class PF_InPageUI {
                 </div>
                 
                 <button class="pf-btn-full" id="pfm_opt">Advanced Settings</button>
-                <a href="${this.settings.supportUrl}" target="_blank" class="pf-btn-full pf-btn-support" style="background: rgba(255, 63, 108, 0.2); color: #ff3f6c; text-decoration: none; display: block; text-align: center; margin-top: 10px; border: 1px solid rgba(255, 63, 108, 0.4);">💖 Support the Developer</a>
+                <a href="${this.settings.supportUrl}" target="_blank" class="pf-btn-full pf-btn-support">💖 Support the Developer</a>
             </div>
         `;
         

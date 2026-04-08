@@ -64,6 +64,42 @@ class PF_UiTweaks {
         document.body.style.fontSize = `${percentage}%`;
     }
 
+    _applyCompactWidescreen() {
+        const id = 'pf-layout-tweaks-style';
+        let style = document.getElementById(id);
+        
+        if (this.settings.uiMode.compactMode || this.settings.uiMode.widescreenMode) {
+            if (!style) {
+                style = document.createElement('style');
+                style.id = id;
+                document.head.appendChild(style);
+            }
+            
+            let css = '';
+            
+            // Compact Mode: Reduce margins and padding
+            if (this.settings.uiMode.compactMode) {
+                css += `
+                    div[data-pagelet="FeedUnit"] { margin-bottom: 8px !important; }
+                    div[role="article"] { padding-bottom: 8px !important; }
+                    div[role="complementary"] { display: none !important; } /* Hide sidebars in extremist compact */
+                `;
+            }
+
+            // Widescreen Mode: Expand feed width
+            if (this.settings.uiMode.widescreenMode) {
+                css += `
+                    div[role="main"] { max-width: 100% !important; width: 100% !important; }
+                    div[role="feed"] { max-width: 1000px !important; margin: 0 auto !important; }
+                `;
+            }
+            
+            style.textContent = css;
+        } else if (style) {
+            style.remove();
+        }
+    }
+
     _applyAnonymizer() {
         const id = 'pf-anonymizer-style';
         let style = document.getElementById(id);
