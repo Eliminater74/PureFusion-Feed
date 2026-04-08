@@ -66,5 +66,50 @@ Once installed, PureFusion docks a sleek dashboard button (or floating action ic
 
 ---
 
+## 🔒 Privacy & Permission Justifications
+
+Google requires these to be filled out in the "Privacy" tab to ensure transparency.
+
+### Single Purpose
+PureFusion Feed provides absolute control over the social media feed experience by intelligently filtering distraction trays, removing sponsored content, and providing privacy-preserving local AI enhancements.
+
+### Permissions
+*Copy these into the respective justification boxes:*
+
+- **storage:** "Required to store the user's customized blocklists, UI preferences (like Widescreen or Compact Mode), and local AI scoring configurations securely and consistently across the user's synced devices."
+- **declarativeNetRequest:** "Used to perform high-performance, zero-latency blocking of invasive tracking pixels and third-party ad-network payloads before they are even loaded into the browser, ensuring maximum privacy."
+- **scripting:** "Necessary to inject the core filtering engine and visual themes directly into the social media interface. This allows for real-time DOM restructuring and the removal of complex, dynamically generated sponsored elements."
+- **alarms:** "Powers the extension's wellbeing features like 'Digest Mode' and 'Session Timers,' allowing the extension to perform scheduled checks at regular intervals without wasting background resources."
+- **Host Permissions (*://*.facebook.com/*):** "Essential for the extension to read and modify the specific social media websites it's designed to enhance. It permits the identification of sponsored content and the application of user-selected interface refinements."
+
+### Remote Code Usage
+- **Question:** Are you using remote code?
+- **Answer:** Select **"No, I am not using remote code."**
+- **Internal Note:** PureFusion is built entirely on localized Vanilla JS and handles all AI logic via local environment APIs or the user's own keys. No external scripts are fetched or executed.
+
+---
+
+## 📊 Data Usage & Disclosures
+
+This section is for the final part of the **Privacy** tab in the Developer Dashboard.
+
+### What user data do you plan to collect?
+- **Answer:** Leave **everything unchecked.** 
+- **Reason:** PureFusion Feed operates 100% locally. You do not collect, harvest, or transmit any user data to your own servers or any third-party marketing servers. Even AI requests are handled via the user's own keys directly to the provider (OpenAI/Google).
+
+### Certification Disclosures
+*You must check all three of these boxes to comply with Google's policies:*
+- [x] I do not sell or transfer user data to third parties.
+- [x] I do not use or transfer user data for purposes that are unrelated to my item's single purpose.
+- [x] I do not use or transfer user data to determine creditworthiness or for lending purposes.
+
+### Privacy Policy URL
+*You must provide a public URL. Since your project is on GitHub, use this format:*
+`https://github.com/[YOUR_USERNAME]/[YOUR_REPO_NAME]/blob/main/PRIVACY_POLICY.md`
+
+*(Note: Replace the bracketed text with your actual GitHub username and repository name.)*
+
+---
+
 ## 🔒 Privacy Policy
-Use the content from the project's [PRIVACY_POLICY.md](file:///i:/GITHUB/Projects/Chrome/Extension/PRIVACY_POLICY.md) file.
+Use the content from the project's [PRIVACY_POLICY.md](file:///i:/GITHUB/Projects/Chrome/Extension/purefusion-feed/PRIVACY_POLICY.md) file.
