@@ -192,19 +192,6 @@ class PF_Cleaner {
         // 2. Messenger Sparkle & AI Chats
         this.hideTarget(rootNode, PF_SELECTOR_MAP.metaAIMessengerSparkle, "Meta AI Messenger Sparkle");
         this.hideTarget(rootNode, PF_SELECTOR_MAP.metaAIHeader, "Meta AI Header");
-
-        // 3. Standalone AI Floating bubbles (Heuristic)
-        const circles = rootNode.querySelectorAll('div[style*="stop-color: rgb(0, 153, 255)"]'); // Heuristic for the gradient
-        circles.forEach(c => {
-            const wrap = PF_Helpers.getClosest(c, 'div[role="button"]') || c;
-            const label = (wrap.getAttribute('aria-label') || "").toLowerCase();
-            const text = wrap.textContent.toLowerCase();
-            
-            // Only hide if it's explicitly Meta AI related
-            if (label.includes('meta ai') || text.includes('meta ai') || label === 'ai') {
-                PF_Helpers.hideElement(wrap, "Meta AI Floating Icon");
-            }
-        });
     }
 
     removeSuggestedPosts(rootNode) {

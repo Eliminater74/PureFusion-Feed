@@ -76,8 +76,8 @@ const SELECTOR_MAP = {
 
     // Top Header
     headerContainer: '[role="banner"]',
-    metaAISearchIcon: 'svg.x14rh7hd.x1lliihq.x1tzjh5l.x1k90msu.x2h7rmj.x1qfuztq',
-    metaAIMessengerSparkle: 'svg.x1tzjh5l.x1k90msu.x1qfuztq.x10l6tqk.x1u2d60l',
+    metaAISearchIcon: '[role="banner"] form svg.x14rh7hd.x1lliihq.x1tzjh5l',
+    metaAIMessengerSparkle: 'div[role="textbox"] svg.x1tzjh5l.x1k90msu.x1qfuztq',
     metaAIHeader: 'div[aria-label="Meta AI"]',
     messengerSeenReceipt: 'div[aria-label^="Seen by"] img, div[aria-label^="Visto por"] img',
     messengerTypingIndicator: 'span.x6s0dn4.x78zum5.x135b78x, div.x17zd0t2.x78zum5.x1q0g3np',
