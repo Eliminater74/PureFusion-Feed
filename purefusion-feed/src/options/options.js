@@ -9,6 +9,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let currentSettings = await PF_Storage.init();
 
+    const t = (key, fallback) => {
+        if (typeof chrome === 'undefined' || !chrome.i18n) return fallback;
+        return chrome.i18n.getMessage(key) || fallback;
+    };
+
     function mergeDeep(target, source) {
         for (const key of Object.keys(source || {})) {
             const sourceValue = source[key];
@@ -173,10 +178,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const themePreviewCard = document.getElementById('pfThemePreviewCard');
 
     const themeNames = {
-        default: 'Facebook Default',
-        darkPro: 'Dark Pro',
-        amoled: 'AMOLED Pitch Black',
-        classicBlue: 'Classic Blue'
+        default: t('options_ui_theme_default', 'Facebook Default'),
+        darkPro: t('options_ui_theme_darkpro', 'Dark Pro'),
+        amoled: t('options_ui_theme_amoled', 'AMOLED Pitch Black'),
+        classicBlue: t('options_ui_theme_classic', 'Classic Blue')
     };
 
     function renderThemePreview(theme, scale) {
