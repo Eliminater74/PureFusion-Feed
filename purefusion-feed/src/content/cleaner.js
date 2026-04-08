@@ -197,7 +197,13 @@ class PF_Cleaner {
         const circles = rootNode.querySelectorAll('div[style*="stop-color: rgb(0, 153, 255)"]'); // Heuristic for the gradient
         circles.forEach(c => {
             const wrap = PF_Helpers.getClosest(c, 'div[role="button"]') || c;
-            PF_Helpers.hideElement(wrap, "Meta AI Floating Icon");
+            const label = (wrap.getAttribute('aria-label') || "").toLowerCase();
+            const text = wrap.textContent.toLowerCase();
+            
+            // Only hide if it's explicitly Meta AI related
+            if (label.includes('meta ai') || text.includes('meta ai') || label === 'ai') {
+                PF_Helpers.hideElement(wrap, "Meta AI Floating Icon");
+            }
         });
     }
 
