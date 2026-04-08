@@ -16,6 +16,10 @@ class PF_InPageUI {
         }
     }
 
+    _isContextValid() {
+        return typeof chrome !== 'undefined' && !!chrome.runtime && !!chrome.runtime.id;
+    }
+
     init() {
         this._injectCSS();
         
@@ -237,7 +241,13 @@ class PF_InPageUI {
                     backdrop-filter: blur(10px);
                 `;
                 
-                // We pull the actual Options.html packaged in our extension and embed it seamlessly
+                // Safety Check: Avoid "Extension context invalidated" on reloads
+                if (!this._isContextValid()) {
+                    alert("PureFusion was updated! Please refresh the page to access settings.");
+                    return;
+                }
+
+                // We pull the actual options.html packaged in our extension and embed it seamlessly
                 const optionsUrl = chrome.runtime.getURL('src/options/options.html');
                 
                 bg.innerHTML = `

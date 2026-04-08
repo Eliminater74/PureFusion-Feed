@@ -93,24 +93,28 @@ class PureFusionApp {
             if (this.notifControls) this.notifControls.applyToNodes(addedNodes);
         });
 
-        // Listen for message passing from Popup/Options panel to hot-reload settings
-        if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
-            chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-                if (request.type === 'PF_SETTINGS_UPDATED') {
-                    PF_Logger.log("Settings update detected. Re-syncing and triggering visual sweep.");
-                    this.updateSettingsAndResweep();
-                    sendResponse({ status: "success" });
-                }
-            });
-        
-        // Listen to window postMessage for updates originating from the embedded UI
+        // 1. Listen for background script updates (Popup/Options)
+        if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id) {
+            try {
+                chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+                    if (request.type === 'PF_SETTINGS_UPDATED') {
+                        PF_Logger.log("Settings update detected. Re-syncing.");
+                        this.updateSettingsAndResweep();
+                        if (sendResponse) sendResponse({ status: "success" });
+                    }
+                });
+            } catch (e) {
+                PF_Logger.warn("PureFusion: Extension context invalidated. Hot-reloading disabled.");
+            }
+        }
+
+        // 2. Listen to window messages (from the embedded React/Iframe Dashboard)
         window.addEventListener('message', (event) => {
             if (event.data && event.data.type === 'PF_LOCAL_SETTINGS_UDPATE') {
                 PF_Logger.log("In-Page Settings update detected. Resweeping.");
                 this.updateSettingsAndResweep();
             }
         });
-        }
     }
 
     async updateSettingsAndResweep() {
