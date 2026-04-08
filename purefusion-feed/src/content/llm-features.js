@@ -97,10 +97,20 @@ class PF_LLMFeatures {
         const isMatch = rootNode.matches && rootNode.matches(window.PF_SELECTOR_MAP.commentInputBox);
         const commentBoxes = isMatch ? [rootNode] : Array.from(rootNode.querySelectorAll(window.PF_SELECTOR_MAP.commentInputBox));
         
-        commentBoxes.forEach(box => {
+        commentBoxes.forEach(node => {
             // Because React replaces this element often, we hook into the parent wrapper safely
+            const box = node.tagName === 'DIV' && node.getAttribute('role') === 'textbox' 
+            ? node : node.querySelector('div[role="textbox"]');
+
+            if (!box || box.dataset.pfWandInjected) return;
+
+            // Hide the wand entirely if no AI Engine is configured, to avoid clutter
+            if (!this.engine.isReady()) return;
+
             const parent = box.closest('form') || box.parentElement;
             if (!parent || parent.dataset.pfCopilotInjected) return;
+            
+            box.dataset.pfWandInjected = "true";
             parent.dataset.pfCopilotInjected = "true";
 
             const wand = document.createElement('div');
