@@ -104,10 +104,9 @@ This section is for the final part of the **Privacy** tab in the Developer Dashb
 - [x] I do not use or transfer user data to determine creditworthiness or for lending purposes.
 
 ### Privacy Policy URL
-*You must provide a public URL. Since your project is on GitHub, use this format:*
-`https://github.com/[YOUR_USERNAME]/[YOUR_REPO_NAME]/blob/main/PRIVACY_POLICY.md`
+*You must provide a public URL. Use your official GitHub link:*
+`https://raw.githubusercontent.com/Eliminater74/PureFusion-Feed/refs/heads/main/PRIVACY_POLICY.md`
 
-*(Note: Replace the bracketed text with your actual GitHub username and repository name.)*
 
 ---
 
