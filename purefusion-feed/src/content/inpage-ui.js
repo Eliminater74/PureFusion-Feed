@@ -59,8 +59,12 @@ class PF_InPageUI {
             }
             .pf-fab img {
                 width: 18px; height: 18px; object-fit: contain;
-                filter: grayscale(1) brightness(2.1) contrast(0.9);
-                opacity: 0.95;
+                opacity: 0.92;
+            }
+            .pf-fab.pf-fab-fallback {
+                color: #f0f2f5;
+                font: 700 12px/1 "Segoe UI Variable Text", "Segoe UI", sans-serif;
+                letter-spacing: 0.2px;
             }
             .pf-fab:hover {
                 background: var(--hover-overlay, #5b5c5e);
@@ -139,7 +143,12 @@ class PF_InPageUI {
         this.fab.className = 'pf-fab';
         
         const logo = document.createElement('img');
-        logo.src = chrome.runtime.getURL('icons/icon16.png');
+        logo.src = chrome.runtime.getURL('icons/icon32.png');
+        logo.alt = 'PF';
+        logo.addEventListener('error', () => {
+            this.fab.classList.add('pf-fab-fallback');
+            this.fab.textContent = 'PF';
+        }, { once: true });
         this.fab.appendChild(logo);
         
         this.fab.title = chrome.i18n.getMessage("inpage_fab_title");
