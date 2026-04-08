@@ -48,6 +48,10 @@ body {
     border-bottom: 1px solid var(--pf-border);
 }
 
+.pf-master-switch {
+    margin-left: 8px;
+}
+
 .pf-brand {
     display: flex;
     align-items: center;
@@ -108,6 +112,14 @@ body {
 .pf-quick-settings, .pf-quick-keyword {
     padding: 16px;
     border-bottom: 1px solid var(--pf-border);
+}
+
+.pf-quick-settings.is-disabled {
+    opacity: 0.55;
+}
+
+.pf-quick-settings.is-disabled .pf-toggle-row {
+    pointer-events: none;
 }
 
 h2 {

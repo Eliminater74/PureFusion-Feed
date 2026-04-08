@@ -37,15 +37,37 @@ document.addEventListener('DOMContentLoaded', async () => {
         statSpam: document.getElementById('statSpam')
     };
 
+    const quickToggles = [
+        elements.ads,
+        elements.suggested,
+        elements.reels,
+        elements.chronological,
+        elements.groups,
+        elements.ghost,
+        elements.metaAI
+    ];
+
     // 3. Initialize UI values from settings
     elements.ads.checked = settings.filters.removeAds;
     elements.suggested.checked = settings.filters.removeSuggested;
     elements.reels.checked = (settings.filters.hideReels && settings.filters.hideStories);
-    elements.chronological.checked = settings.uiMode.forceMostRecent;
+    elements.chronological.checked = !!settings.uiMode.enforceChronologicalFeed;
     elements.groups.checked = settings.filters.removeGroupSuggestions;
     // Ghost mode is on if both sub-settings are on
     elements.ghost.checked = (settings.uiMode.hideMessengerSeen && settings.social.hideMessengerTyping);
     elements.metaAI.checked = settings.social.hideMetaAI;
+    elements.master.checked = settings.enabled !== false;
+
+    const setQuickTogglesEnabled = () => {
+        const enabled = elements.master.checked;
+        quickToggles.filter(Boolean).forEach((toggle) => {
+            toggle.disabled = !enabled;
+        });
+        const quickSettings = document.querySelector('.pf-quick-settings');
+        if (quickSettings) quickSettings.classList.toggle('is-disabled', !enabled);
+    };
+
+    setQuickTogglesEnabled();
 
     // Load actual live stats (We fetch this from local storage if the worker saved it)
     const sessionStats = await PF_Storage.getLocalData('pf_session_stats') || { ads: 0, spam: 0 };
@@ -54,6 +76,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 4. Bind Toggle Events
     const handleToggle = async () => {
+        settings.enabled = elements.master.checked;
+
         // Build updated settings object
         settings.filters.removeAds = elements.ads.checked;
         settings.filters.removeSuggested = elements.suggested.checked;
@@ -63,6 +87,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         settings.filters.hideStories = elements.reels.checked;
         
         settings.uiMode.forceMostRecent = elements.chronological.checked;
+        settings.uiMode.enforceChronologicalFeed = elements.chronological.checked;
         settings.filters.removeGroupSuggestions = elements.groups.checked;
         
         // Ghost mode affects both Messenger Seen and Typing
@@ -75,6 +100,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         await PF_Storage.updateSettings(settings);
         broadcastUpdate();
     };
+
+    elements.master.addEventListener('change', async () => {
+        setQuickTogglesEnabled();
+        await handleToggle();
+    });
 
     elements.ads.addEventListener('change', handleToggle);
     elements.suggested.addEventListener('change', handleToggle);
@@ -100,7 +130,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 broadcastUpdate();
             } else {
                 elements.statusMsg.textContent = "Keyword already exists.";
-                elements.statusMsg.style.color = "#orange";
+                elements.statusMsg.style.color = "#ffaa00";
                 setTimeout(() => { 
                     elements.statusMsg.textContent = ''; 
                     elements.statusMsg.style.color = "#4CAF50";
@@ -127,7 +157,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (typeof chrome === 'undefined' || !chrome.tabs) return;
         
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-            if (tabs[0] && tabs[0].url.includes("facebook.com")) {
+            if (tabs[0] && typeof tabs[0].url === 'string' && tabs[0].url.includes("facebook.com")) {
                 chrome.tabs.sendMessage(tabs[0].id, { type: "PF_SETTINGS_UPDATED" });
             }
         });

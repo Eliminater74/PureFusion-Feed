@@ -34,6 +34,10 @@ class PF_InPageUI {
         this._bindEvents();
     }
 
+    updateSettings(settings) {
+        this.settings = settings;
+    }
+
     _injectCSS() {
         const style = document.createElement('style');
         style.textContent = `
@@ -181,7 +185,7 @@ class PF_InPageUI {
                 </div>
                 
                 <button class="pf-btn-full" id="pfm_opt">${chrome.i18n.getMessage("common_open_dashboard")}</button>
-                <a href="${this.settings.supportUrl}" target="_blank" class="pf-btn-full pf-btn-support">💖 ${chrome.i18n.getMessage("common_support_developer")}</a>
+                <a href="${this.settings.supportUrl}" target="_blank" rel="noopener noreferrer" class="pf-btn-full pf-btn-support">💖 ${chrome.i18n.getMessage("common_support_developer")}</a>
             </div>
         `;
         
@@ -222,7 +226,7 @@ class PF_InPageUI {
                 // Trigger a full sweep simulation immediately
                 // We dispatch our own settings updated message so the overarching app catches it 
                 // and runs the re-sweep natively.
-                window.postMessage({ type: 'PF_LOCAL_SETTINGS_UDPATE' }, '*');
+                window.postMessage({ type: 'PF_LOCAL_SETTINGS_UPDATE' }, '*');
             });
         });
 

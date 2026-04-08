@@ -6,13 +6,13 @@
   "default_locale": "en",
   "permissions": [
     "storage",
-    "declarativeNetRequest",
-    "scripting",
-    "alarms"
+    "declarativeNetRequest"
   ],
   "host_permissions": [
     "*://*.facebook.com/*",
-    "*://*.messenger.com/*"
+    "*://*.messenger.com/*",
+    "*://api.openai.com/*",
+    "*://generativelanguage.googleapis.com/*"
   ],
   "background": {
     "service_worker": "src/background/service-worker.js"

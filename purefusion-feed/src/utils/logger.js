@@ -5,7 +5,19 @@
  * Standardizes log formatting for easy bug-tracking and extension identification.
  */
 
-const IS_DEV = true; // TODO: Move to a build flag or check for unpacked extension
+const IS_DEV = (() => {
+    try {
+        if (typeof chrome === 'undefined' || !chrome.runtime || !chrome.runtime.getManifest) {
+            return true;
+        }
+
+        const manifest = chrome.runtime.getManifest();
+        // Packed Web Store builds include update_url; unpacked/dev builds do not.
+        return !Object.prototype.hasOwnProperty.call(manifest, 'update_url');
+    } catch {
+        return true;
+    }
+})();
 
 const PF_Logger = {
     _prefix: '[PureFusion]',

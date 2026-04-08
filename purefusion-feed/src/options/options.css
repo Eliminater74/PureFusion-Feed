@@ -193,6 +193,11 @@ body, html {
     padding: 15px 0;
 }
 
+.pf-setting-row .pf-desc {
+    margin: 4px 0 0;
+    font-size: 12px;
+}
+
 .pf-form-group label {
     display: block;
     font-weight: 500;
@@ -229,6 +234,29 @@ body, html {
 .pf-select:focus, .pf-input-number:focus {
     outline: none;
     border-color: var(--pf-purple);
+}
+
+.pf-input-text {
+    background: #111;
+    border: 1px solid var(--pf-border);
+    color: var(--pf-text-primary);
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.pf-input-text:focus {
+    outline: none;
+    border-color: var(--pf-purple);
+}
+
+.w-50 {
+    width: 50%;
+    min-width: 260px;
+}
+
+.mb-2 {
+    margin-bottom: 10px;
 }
 
 /* Buttons */
@@ -321,4 +349,63 @@ body, html {
 
 .pf-toggle:checked::after {
     transform: translateX(20px);
+}
+
+@media (max-width: 900px) {
+    body, html {
+        overflow: auto;
+        height: auto;
+        min-height: 100%;
+    }
+
+    .pf-dashboard {
+        flex-direction: column;
+        min-height: 100vh;
+        height: auto;
+    }
+
+    .pf-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--pf-border);
+    }
+
+    .pf-nav-links {
+        display: flex;
+        flex-wrap: wrap;
+        padding: 10px;
+        gap: 8px;
+    }
+
+    .pf-nav-links li {
+        border-left: none;
+        border: 1px solid var(--pf-border);
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    .pf-nav-links li.active {
+        border-left: none;
+        border-color: var(--pf-purple);
+        background: rgba(108,63,197,0.14);
+    }
+
+    .pf-content-header,
+    .pf-tab-content {
+        padding: 18px;
+    }
+
+    .pf-content-header {
+        position: static;
+    }
+
+    .pf-btn-group {
+        flex-direction: column;
+    }
+
+    .w-50 {
+        width: 100%;
+        min-width: 0;
+    }
 }

@@ -9,6 +9,8 @@ class PF_NotificationControls {
     constructor(settings) {
         this.settings = settings;
         this.lastDigestOpen = 0;
+        this.digestIntervalId = null;
+        this.isDigestClickBound = false;
         this.init();
     }
 
@@ -36,6 +38,15 @@ class PF_NotificationControls {
         });
     }
 
+    updateSettings(settings) {
+        this.settings = settings;
+        if (this.settings.social.notificationDigestMode) {
+            this._applyDigestMode();
+        } else {
+            this._clearDigestMode();
+        }
+    }
+
     _filterNotifications(items) {
         items.forEach(item => {
             if (item.dataset.pfNotifChecked) return;
@@ -60,6 +71,8 @@ class PF_NotificationControls {
     }
 
     _applyDigestMode() {
+        if (this.digestIntervalId) return;
+
         // Find the red notification jewel count in the top right nav
         const runDigestCycle = () => {
             const jewelWrappers = document.querySelectorAll(PF_SELECTOR_MAP.headerContainer + ' span:has(span[dir="auto"])');
@@ -83,16 +96,32 @@ class PF_NotificationControls {
         };
 
         // Standard loop to ensure injected jewels are overridden
-        setInterval(runDigestCycle, 5000);
+        this.digestIntervalId = setInterval(runDigestCycle, 5000);
         runDigestCycle();
 
         // If they actually click the notification bell, we reset the timer
-        document.addEventListener('click', (e) => {
-            const isBell = PF_Helpers.getClosest(e.target, 'div[aria-label="Notifications"]');
-            if (isBell) {
-                this.lastDigestOpen = Date.now();
-                PF_Storage.setLocalData('pf_last_digest', this.lastDigestOpen);
-            }
+        if (!this.isDigestClickBound) {
+            document.addEventListener('click', (e) => {
+                const isBell = PF_Helpers.getClosest(e.target, 'div[aria-label="Notifications"]');
+                if (isBell) {
+                    this.lastDigestOpen = Date.now();
+                    PF_Storage.setLocalData('pf_last_digest', this.lastDigestOpen);
+                }
+            });
+            this.isDigestClickBound = true;
+        }
+    }
+
+    _clearDigestMode() {
+        if (this.digestIntervalId) {
+            clearInterval(this.digestIntervalId);
+            this.digestIntervalId = null;
+        }
+
+        const jewelWrappers = document.querySelectorAll(PF_SELECTOR_MAP.headerContainer + ' span:has(span[dir="auto"])');
+        jewelWrappers.forEach((jewel) => {
+            jewel.style.opacity = '1';
+            jewel.style.pointerEvents = 'auto';
         });
     }
 }

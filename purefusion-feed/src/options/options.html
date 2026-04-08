@@ -27,7 +27,7 @@
             <li data-tab="tab-data" data-i18n="options_sidebar_data">💾 Data & Backup</li>
         </ul>
         <div class="pf-sidebar-footer">
-            <a href="https://www.paypal.com/donate/?business=X76ZW4RHA6T9C&no_recurring=0&item_name=PureFusion+returns+feed+control+to+you.+Support+our+independent%2C+private%2C+ad-free+social+tools.+Keep+your+feed+pure%21&currency_code=USD" target="_blank" class="pf-btn pf-support-footer-btn" data-i18n="common_support_developer">❤️ Support Developer</a>
+            <a href="https://www.paypal.com/donate/?business=X76ZW4RHA6T9C&no_recurring=0&item_name=PureFusion+returns+feed+control+to+you.+Support+our+independent%2C+private%2C+ad-free+social+tools.+Keep+your+feed+pure%21&currency_code=USD" target="_blank" rel="noopener noreferrer" class="pf-btn pf-support-footer-btn" data-i18n="common_support_developer">❤️ Support Developer</a>
             <button id="btnSaveBottom" class="pf-btn pf-btn-primary" data-i18n="common_save_changes">Save Changes</button>
             <div id="saveStatus" class="save-toast"></div>
         </div>
@@ -78,15 +78,13 @@
                     <label>Hide Reels Tray in Feed</label>
                     <input type="checkbox" id="opt_filters_hideReels" class="pf-toggle">
                 </div>
-                <label class="pf-checkbox">
-                <input type="checkbox" id="opt_widescreen" class="pf-toggle">
-                <span class="checkmark"></span>
-                <div>
-                    <strong>Widescreen Mode</strong>
-                    <p>Unlock center column boundaries to fill ultrawide monitors</p>
+                <div class="pf-setting-row auto-height">
+                    <div>
+                        <label>Widescreen Mode</label>
+                        <p class="pf-desc">Unlock center column boundaries to fill ultrawide monitors.</p>
+                    </div>
+                    <input type="checkbox" id="opt_widescreen" class="pf-toggle">
                 </div>
-            </label>
-            <div class="pf-divider"></div>
                 <div class="pf-setting-row">
                     <label>Hide Stories Bar</label>
                     <input type="checkbox" id="opt_filters_hideStories" class="pf-toggle">
@@ -177,6 +175,10 @@
                         <option value="hidden">Hidden entirely</option>
                     </select>
                 </div>
+                <div class="pf-setting-row">
+                    <label>Notification Digest Mode (Batch alerts every hour)</label>
+                    <input type="checkbox" id="opt_social_notificationDigestMode" class="pf-toggle">
+                </div>
             </div>
         </section>
 
@@ -202,10 +204,6 @@
                     <input type="checkbox" id="opt_pred_highlightHighInterest" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
-                    <label>Highlight High Interest Posts</label>
-                    <input type="checkbox" id="opt_pred_highlightHighInterest" class="pf-toggle">
-                </div>
-                <div class="pf-setting-row">
                     <label>Analyze Local Trends & Keywords</label>
                     <input type="checkbox" id="opt_pred_showTrending" class="pf-toggle">
                 </div>
@@ -218,7 +216,7 @@
                 
                 <div class="pf-setting-row mb-2">
                     <label>Active Provider</label>
-                    <select id="opt_llm_provider" class="pf-input-text w-50">
+                    <select id="opt_llm_provider" class="pf-select w-50">
                         <option value="none">Disabled</option>
                         <option value="openai">OpenAI (ChatGPT)</option>
                         <option value="gemini">Google Gemini</option>
@@ -267,10 +265,6 @@
                     <input type="checkbox" id="opt_uiMode_anonymizerMode" class="pf-toggle">
                 </div>
 
-                <div class="pf-setting-row">
-                    <label>Force "Most Recent" Feed Sort</label>
-                    <input type="checkbox" id="opt_uiMode_forceMostRecent" class="pf-toggle">
-                </div>
                 <div class="pf-setting-row">
                     <label>Compact Mode (Reduce Margins/Padding)</label>
                     <input type="checkbox" id="opt_uiMode_compactMode" class="pf-toggle">
@@ -328,21 +322,6 @@
                 <div class="pf-form-group mt-4">
                     <label>Auto-hide (Silently nukes posts containing these strings)</label>
                     <textarea id="opt_keywords_autohide" class="pf-textarea" rows="4" placeholder="spam buzzword..."></textarea>
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB: SOCIAL / NOTIFICATIONS -->
-        <section id="tab-social" class="pf-tab-content">
-            <div class="pf-card" data-i18n="options_sidebar_social">
-                <h3>Social Tools</h3>
-                <div class="pf-setting-row">
-                    <label>Track Unfriends (Locally compares friend lists over time)</label>
-                    <input type="checkbox" id="opt_social_trackUnfriends" class="pf-toggle">
-                </div>
-                <div class="pf-setting-row">
-                    <label>Notification Digest Mode (Batch alerts every hour)</label>
-                    <input type="checkbox" id="opt_social_notificationDigestMode" class="pf-toggle">
                 </div>
             </div>
         </section>

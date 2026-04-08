@@ -11,7 +11,7 @@ class PF_FeedManager {
     }
 
     applyDocumentLevelTweaks() {
-        if (this.settings.uiMode.forceMostRecent) {
+        if (this.settings.uiMode.forceMostRecent || this.settings.uiMode.enforceChronologicalFeed) {
             this._enforceChronologicalSort();
         }
 

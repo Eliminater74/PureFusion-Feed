@@ -20,30 +20,38 @@ class PureFusionApp {
             this.settings = await PF_Storage.init();
             PF_Logger.log("Settings successfully loaded.");
 
+            const initialSettings = this.getEffectiveSettings();
+
             // Initialize Modules
-            this.cleaner = new window.PF_Cleaner(this.settings);
-            this.uiTweaks = new window.PF_UiTweaks(this.settings);
-            this.feedManager = new window.PF_FeedManager(this.settings);
-            this.predictor = new window.PF_Predictor(this.settings);
-            this.socialTools = new window.PF_SocialTools(this.settings);
-            this.notifControls = new window.PF_NotificationControls(this.settings);
-            this.wellbeing = new window.PF_Wellbeing(this.settings);
-            this.llmFeatures = new window.PF_LLMFeatures(this.settings);
-            this.inpageUI = new window.PF_InPageUI(this.settings);
+            this.cleaner = new window.PF_Cleaner(initialSettings);
+            this.uiTweaks = new window.PF_UiTweaks(initialSettings);
+            this.feedManager = new window.PF_FeedManager(initialSettings);
+            this.predictor = new window.PF_Predictor(initialSettings);
+            this.socialTools = new window.PF_SocialTools(initialSettings);
+            this.notifControls = new window.PF_NotificationControls(initialSettings);
+            this.wellbeing = new window.PF_Wellbeing(initialSettings);
+            this.llmFeatures = new window.PF_LLMFeatures(initialSettings);
+            this.inpageUI = new window.PF_InPageUI(initialSettings);
             this.observer = new window.PF_Observer();
 
             // Set up our centralized event bus listeners
             this.setupEventListeners();
 
-            // Initial manual sweep to clean anything already rendered
-            this.cleaner.sweepDocument();
-            
-            // Apply root-level structural changes
-            this.feedManager.applyDocumentLevelTweaks();
-            this.uiTweaks.applyDocumentLevelTweaks();
+            this._syncModuleSettings();
 
-            // Start MutationObserver for dynamically injected feed elements
-            this.observer.start();
+            if (this.isEnabled()) {
+                // Initial manual sweep to clean anything already rendered
+                this.cleaner.sweepDocument();
+
+                // Apply root-level structural changes
+                this.feedManager.applyDocumentLevelTweaks();
+                this.uiTweaks.applyDocumentLevelTweaks();
+
+                // Start MutationObserver for dynamically injected feed elements
+                this.observer.start();
+            } else {
+                PF_Logger.info("PureFusion is disabled from settings.");
+            }
 
             PF_Logger.info("PureFusion Main initialized.", this.settings);
 
@@ -57,7 +65,8 @@ class PureFusionApp {
     }
 
     _checkChronologicalEnforcement() {
-        if (!this.settings.uiMode.enforceChronologicalFeed) return;
+        if (!this.isEnabled()) return;
+        if (!this.settings.uiMode || !this.settings.uiMode.enforceChronologicalFeed) return;
 
         // Force redirect to Recent feed if we land on the bare algorithmic feed
         const isBareNewsfeed = (window.location.pathname === '/' || window.location.pathname === '/home.php') 
@@ -72,6 +81,8 @@ class PureFusionApp {
     setupEventListeners() {
         // Listen to batched DOM injections from our custom observer
         document.addEventListener('pf:nodes_added', (e) => {
+            if (!this.isEnabled()) return;
+
             const addedNodes = e.detail.nodes;
 
             // Phase 10: Digital Wellbeing Infinite Scroll Break
@@ -110,7 +121,10 @@ class PureFusionApp {
 
         // 2. Listen to window messages (from the embedded React/Iframe Dashboard)
         window.addEventListener('message', (event) => {
-            if (event.data && event.data.type === 'PF_LOCAL_SETTINGS_UDPATE') {
+            const isUpdateMessage = event.data
+                && (event.data.type === 'PF_LOCAL_SETTINGS_UPDATE' || event.data.type === 'PF_LOCAL_SETTINGS_UDPATE');
+
+            if (isUpdateMessage) {
                 PF_Logger.log("In-Page Settings update detected. Resweeping.");
                 this.updateSettingsAndResweep();
             }
@@ -119,10 +133,108 @@ class PureFusionApp {
 
     async updateSettingsAndResweep() {
         this.settings = await PF_Storage.getSettings();
-        if (this.cleaner) {
-            this.cleaner.settings = this.settings;
-            this.cleaner.sweepDocument();
+
+        this._syncModuleSettings();
+
+        if (!this.isEnabled()) {
+            if (this.observer) this.observer.stop();
+            return;
         }
+
+        if (this.observer) this.observer.start();
+        if (this.cleaner) this.cleaner.sweepDocument();
+        if (this.feedManager) this.feedManager.applyDocumentLevelTweaks();
+        if (this.uiTweaks) this.uiTweaks.applyDocumentLevelTweaks();
+        this._checkChronologicalEnforcement();
+    }
+
+    _syncModuleSettings() {
+        const effectiveSettings = this.getEffectiveSettings();
+
+        const modules = [
+            this.cleaner,
+            this.uiTweaks,
+            this.feedManager,
+            this.predictor,
+            this.socialTools,
+            this.notifControls,
+            this.wellbeing,
+            this.llmFeatures,
+            this.inpageUI
+        ];
+
+        modules.forEach((moduleRef) => {
+            if (!moduleRef) return;
+
+            if (typeof moduleRef.updateSettings === 'function') {
+                moduleRef.updateSettings(effectiveSettings);
+            } else {
+                moduleRef.settings = effectiveSettings;
+            }
+        });
+    }
+
+    getEffectiveSettings() {
+        if (this.isEnabled()) return this.settings;
+
+        const effective = JSON.parse(JSON.stringify(this.settings));
+
+        effective.filters = {
+            ...effective.filters,
+            removeAds: false,
+            removeSuggested: false,
+            removePYMK: false,
+            removeGroupSuggestions: false,
+            removePageSuggestions: false,
+            hideReels: false,
+            hideMarketplace: false,
+            hideStories: false,
+            hideFundraisers: false,
+            removeColoredBackgrounds: false
+        };
+
+        effective.uiMode = {
+            ...effective.uiMode,
+            forceMostRecent: false,
+            enforceChronologicalFeed: false,
+            hideMessengerSeen: false,
+            notificationJewelStyle: 'classic'
+        };
+
+        effective.social = {
+            ...effective.social,
+            hideMetaAI: false,
+            hideMessengerTyping: false,
+            messengerPrivacyBlur: false,
+            notificationDigestMode: false
+        };
+
+        effective.predictions = {
+            ...effective.predictions,
+            enabled: false
+        };
+
+        effective.wellbeing = {
+            ...effective.wellbeing,
+            grayscaleMode: false,
+            infiniteScrollStopper: false,
+            sessionTimer: false,
+            clickbaitBlocker: false,
+            ragebaitDetector: false
+        };
+
+        effective.llm = {
+            ...effective.llm,
+            tldrEnabled: false,
+            smartCommentEnabled: false,
+            clickbaitDecoder: false
+        };
+
+        return effective;
+    }
+
+    isEnabled() {
+        return this.settings.enabled !== false;
     }
 }
 

@@ -6,6 +6,8 @@
  */
 
 const DEFAULT_SETTINGS = {
+    enabled: true,
+
     // ------------------------------------------------------------------------
     // CORE FILTERS (Ads & Spam)
     // ------------------------------------------------------------------------
@@ -29,7 +31,8 @@ const DEFAULT_SETTINGS = {
     // UI TWEAKS & LAYOUT
     // ------------------------------------------------------------------------
     uiMode: {
-        forceMostRecent: true,          // Automatically redirect/force chronological feed
+        forceMostRecent: false,
+        enforceChronologicalFeed: false,
         compactMode: false,             // Reduce whitespace and margins
         widescreenMode: false,          // Expand feed width for ultrawide monitors
         fontSizeScale: 100,             // Numeric percentage (80 - 140)
@@ -50,6 +53,7 @@ const DEFAULT_SETTINGS = {
     // ------------------------------------------------------------------------
     predictions: {
         enabled: true,                  // Master switch for local prediction AI
+        trueAffinitySort: false,
         showBadge: true,                // Display "PF Score" on posts
         dimLowInterest: true,           // Dim posts scoring below threshold
         highlightHighInterest: true,    // Glow posts scoring above threshold

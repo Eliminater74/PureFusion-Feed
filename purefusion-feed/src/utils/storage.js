@@ -34,7 +34,15 @@ const PF_Storage = {
         return new Promise((resolve) => {
             if (typeof chrome !== 'undefined' && chrome.storage) {
                 chrome.storage.sync.get('pf_settings', (result) => {
-                    resolve(result.pf_settings || {});
+                    const synced = result.pf_settings || {};
+
+                    chrome.storage.local.get('pf_llm_keys', (localResult) => {
+                        const localKeys = localResult.pf_llm_keys || {};
+                        if (!synced.llm) synced.llm = {};
+                        synced.llm.openAIApiKey = localKeys.openAIApiKey || '';
+                        synced.llm.geminiApiKey = localKeys.geminiApiKey || '';
+                        resolve(synced);
+                    });
                 });
             } else {
                 resolve({}); // Fallback for testing environments
@@ -48,15 +56,34 @@ const PF_Storage = {
      * @returns {Promise<void>}
      */
     async updateSettings(settingsData) {
+        const safeSettings = this._sanitizeSettings(settingsData);
+
         return new Promise((resolve) => {
             if (typeof chrome !== 'undefined' && chrome.storage) {
-                chrome.storage.sync.set({ pf_settings: settingsData }, () => {
+                chrome.storage.sync.set({ pf_settings: safeSettings }, () => {
                     resolve();
                 });
             } else {
                 resolve();
             }
         });
+    },
+
+    async updateLocalLLMKeys(keys = {}) {
+        const safeKeys = {
+            openAIApiKey: (keys.openAIApiKey || '').trim(),
+            geminiApiKey: (keys.geminiApiKey || '').trim()
+        };
+
+        return this.setLocalData('pf_llm_keys', safeKeys);
+    },
+
+    async getLocalLLMKeys() {
+        const keys = await this.getLocalData('pf_llm_keys');
+        return {
+            openAIApiKey: keys?.openAIApiKey || '',
+            geminiApiKey: keys?.geminiApiKey || ''
+        };
     },
 
     /**
@@ -88,13 +115,27 @@ const PF_Storage = {
     
     _deepMerge(target, source) {
         for (const key of Object.keys(source)) {
-            if (source[key] instanceof Object && !Array.isArray(source[key])) {
-                Object.assign(source[key], this._deepMerge(target[key] || {}, source[key]));
+            const sourceValue = source[key];
+
+            if (sourceValue && typeof sourceValue === 'object' && !Array.isArray(sourceValue)) {
+                const targetValue = target[key] && typeof target[key] === 'object' && !Array.isArray(target[key])
+                    ? target[key]
+                    : {};
+                target[key] = this._deepMerge(targetValue, sourceValue);
             } else {
-                target[key] = source[key];
+                target[key] = sourceValue;
             }
         }
         return target;
+    },
+
+    _sanitizeSettings(settingsData) {
+        const cloned = JSON.parse(JSON.stringify(settingsData || {}));
+        if (cloned.llm) {
+            cloned.llm.openAIApiKey = '';
+            cloned.llm.geminiApiKey = '';
+        }
+        return cloned;
     }
 };
 

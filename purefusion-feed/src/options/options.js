@@ -9,6 +9,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let currentSettings = await PF_Storage.init();
 
+    function mergeDeep(target, source) {
+        for (const key of Object.keys(source || {})) {
+            const sourceValue = source[key];
+            if (sourceValue && typeof sourceValue === 'object' && !Array.isArray(sourceValue)) {
+                if (!target[key] || typeof target[key] !== 'object' || Array.isArray(target[key])) {
+                    target[key] = {};
+                }
+                mergeDeep(target[key], sourceValue);
+            } else {
+                target[key] = sourceValue;
+            }
+        }
+        return target;
+    }
+
     // 0. Set Dynamic Version (Moved from inline to comply with CSP)
     const versionEl = document.getElementById('pf-sidebar-version');
     if (versionEl && typeof chrome !== 'undefined' && chrome.runtime.getManifest) {
@@ -35,7 +50,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById(targetId).classList.add('active');
             
             // Update Title
-            titleStatus.textContent = link.textContent.replace(/[🚫🤖🎨🔤📊💾🧘]/g, '').trim();
+            titleStatus.textContent = link.textContent.replace(/[🚫🤖🎨🔤📊💾🧘🤝]/g, '').trim();
         });
     });
 
@@ -64,7 +79,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_pred_showTrending': { obj: 'predictions', prop: 'showTrending', type: 'checkbox' },
 
         // UI Mode
-        'opt_uiMode_forceMostRecent': { obj: 'uiMode', prop: 'forceMostRecent', type: 'checkbox' },
         'opt_widescreen': { obj: 'uiMode', prop: 'widescreenMode', type: 'checkbox' },
         'opt_uiMode_compactMode': { obj: 'uiMode', prop: 'compactMode', type: 'checkbox' },
         'opt_uiMode_disableCommentAutofocus': { obj: 'uiMode', prop: 'disableCommentAutofocus', type: 'checkbox' },
@@ -109,10 +123,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (!el) continue;
             
             const val = currentSettings[mapping.obj][mapping.prop];
-            if (mapping.type === 'checkbox') el.checked = val;
-            else if (mapping.type === 'select') el.value = val;
-            else if (mapping.type === 'number') el.value = val;
-            else if (mapping.type === 'text') el.value = val;
+            if (mapping.type === 'checkbox') el.checked = !!val;
+            else if (mapping.type === 'select') el.value = val || '';
+            else if (mapping.type === 'number') el.value = Number.isFinite(val) ? val : 100;
+            else if (mapping.type === 'text') el.value = val || '';
         }
 
         // Handle Keywords Mapping
@@ -144,8 +158,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         currentSettings.keywords.blocklist = blockString.split(',').map(s => s.trim()).filter(s => s.length > 0);
         currentSettings.keywords.autohide = autoString.split(',').map(s => s.trim()).filter(s => s.length > 0);
 
+        await PF_Storage.updateLocalLLMKeys({
+            openAIApiKey: currentSettings.llm.openAIApiKey,
+            geminiApiKey: currentSettings.llm.geminiApiKey
+        });
+
         await PF_Storage.updateSettings(currentSettings);
-        showSaveToast();
+        showSaveToast('Settings saved successfully.');
         broadcastUpdate();
     }
 
@@ -158,9 +177,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     [btnSaveTop, btnSaveBottom].forEach(b => b.addEventListener('click', saveSettingsFromUI));
 
-    function showSaveToast() {
+    function showSaveToast(message, isError = false) {
         const toast = document.getElementById('saveStatus');
-        toast.textContent = 'Settings Saved successfully!';
+        toast.textContent = message;
+        toast.style.color = isError ? '#ff7676' : '#4CAF50';
         setTimeout(() => toast.textContent = '', 3000);
     }
 
@@ -200,15 +220,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             try {
                 const imported = JSON.parse(event.target.result);
                 if (imported.filters && imported.uiMode) {
-                    currentSettings = imported;
+                    currentSettings = mergeDeep(JSON.parse(JSON.stringify(PF_DEFAULT_SETTINGS)), imported);
                     loadUIFromSettings();
                     await saveSettingsFromUI();
-                    alert("Settings imported successfully!");
+                    showSaveToast('Settings imported successfully.');
                 } else {
-                    alert("Invalid PureFusion backup file.");
+                    showSaveToast('Invalid PureFusion backup file.', true);
                 }
             } catch (err) {
-                alert("Error importing file. It might be corrupted.");
+                showSaveToast('Error importing file. It might be corrupted.', true);
             }
         };
         reader.readAsText(file);
@@ -218,7 +238,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if(confirm("Are you sure? This will wipe your preferences and all local AI Tracking data.")) {
             await chrome.storage.local.clear();
             await chrome.storage.sync.clear();
-            alert("Factory Reset Complete. Reloading extension.");
             chrome.runtime.reload(); // Hard boot the extension background process
         }
     });

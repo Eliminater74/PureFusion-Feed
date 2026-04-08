@@ -15,7 +15,12 @@ chrome.runtime.onInstalled.addListener(async (details) => {
         await setupDNRRules();
     } else if (details.reason === "update") {
         console.log("PureFusion Feed Updated");
+        await setupDNRRules();
     }
+});
+
+chrome.runtime.onStartup.addListener(() => {
+    setupDNRRules();
 });
 
 /**

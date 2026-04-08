@@ -30,6 +30,11 @@ class PF_LLMFeatures {
         });
     }
 
+    updateSettings(settings) {
+        this.settings = settings;
+        if (this.engine) this.engine.settings = settings;
+    }
+
     injectTLDR(rootNode) {
         if (!rootNode.querySelectorAll) return;
         

@@ -11,6 +11,7 @@ class PF_Wellbeing {
         this.scrollCount = 0;
         this.isPaused = false;
         this.sessionStart = Date.now();
+        this.timerIntervalId = null;
         
         this.initDocumentLevel();
     }
@@ -30,7 +31,14 @@ class PF_Wellbeing {
         // 2. Session Timer HUD
         if (this.settings.wellbeing.sessionTimer) {
             this._injectSessionTimer();
+        } else {
+            this._removeSessionTimer();
         }
+    }
+
+    updateSettings(settings) {
+        this.settings = settings;
+        this.initDocumentLevel();
     }
 
     /**
@@ -133,7 +141,7 @@ class PF_Wellbeing {
         timerEl.appendChild(timeText);
         document.body.appendChild(timerEl);
 
-        setInterval(() => {
+        this.timerIntervalId = setInterval(() => {
             const elapsed = Math.floor((Date.now() - this.sessionStart) / 1000);
             const m = Math.floor(elapsed / 60).toString().padStart(2, '0');
             const s = (elapsed % 60).toString().padStart(2, '0');
@@ -150,6 +158,14 @@ class PF_Wellbeing {
                 dot.style.boxShadow = '0 0 8px #ff4444';
             }
         }, 1000);
+    }
+
+    _removeSessionTimer() {
+        document.getElementById('pf-session-timer')?.remove();
+        if (this.timerIntervalId) {
+            clearInterval(this.timerIntervalId);
+            this.timerIntervalId = null;
+        }
     }
 }
 
