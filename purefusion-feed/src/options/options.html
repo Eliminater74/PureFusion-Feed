@@ -14,7 +14,7 @@
     <nav class="pf-sidebar">
         <div class="pf-brand">
             <img src="../../icons/icon48.png" class="pf-logo" alt="logo">
-            <h2>PureFusion</h2>
+            <h2 data-i18n="extName">PureFusion</h2>
             <span id="pf-sidebar-version"></span>
             <script>
                 if (typeof chrome !== 'undefined' && chrome.runtime.getManifest) {
@@ -23,17 +23,17 @@
             </script>
         </div>
         <ul class="pf-nav-links">
-            <li class="active" data-tab="tab-filters">🚫 Core Filters</li>
-            <li data-tab="tab-wellbeing">🧘 Digital Wellbeing</li>
-            <li data-tab="tab-ai">🤖 AI Engine</li>
-            <li data-tab="tab-ui">🎨 UI Tweaks</li>
-            <li data-tab="tab-keywords">🔤 Keyword Filters</li>
-            <li data-tab="tab-social">📊 Social Tools</li>
-            <li data-tab="tab-data">💾 Data & Backup</li>
+            <li class="active" data-tab="tab-filters" data-i18n="options_sidebar_filters">🚫 Core Filters</li>
+            <li data-tab="tab-wellbeing" data-i18n="options_sidebar_wellbeing">🧘 Digital Wellbeing</li>
+            <li data-tab="tab-ai" data-i18n="options_sidebar_ai">🤖 AI Engine</li>
+            <li data-tab="tab-ui" data-i18n="options_sidebar_ui">🎨 UI Tweaks</li>
+            <li data-tab="tab-keywords" data-i18n="options_sidebar_keywords">🔤 Keyword Filters</li>
+            <li data-tab="tab-social" data-i18n="options_sidebar_social">📊 Social Tools</li>
+            <li data-tab="tab-data" data-i18n="options_sidebar_data">💾 Data & Backup</li>
         </ul>
         <div class="pf-sidebar-footer">
-            <a href="https://www.paypal.com/donate/?business=X76ZW4RHA6T9C&no_recurring=0&item_name=PureFusion+returns+feed+control+to+you.+Support+our+independent%2C+private%2C+ad-free+social+tools.+Keep+your+feed+pure%21&currency_code=USD" target="_blank" class="pf-btn pf-support-footer-btn">❤️ Support Developer</a>
-            <button id="btnSaveBottom" class="pf-btn pf-btn-primary">Save Changes</button>
+            <a href="https://www.paypal.com/donate/?business=X76ZW4RHA6T9C&no_recurring=0&item_name=PureFusion+returns+feed+control+to+you.+Support+our+independent%2C+private%2C+ad-free+social+tools.+Keep+your+feed+pure%21&currency_code=USD" target="_blank" class="pf-btn pf-support-footer-btn" data-i18n="common_support_developer">❤️ Support Developer</a>
+            <button id="btnSaveBottom" class="pf-btn pf-btn-primary" data-i18n="common_save_changes">Save Changes</button>
             <div id="saveStatus" class="save-toast"></div>
         </div>
     </nav>
@@ -41,18 +41,18 @@
     <!-- Main Content Area -->
     <main class="pf-content">
         <header class="pf-content-header">
-            <h1 id="currentTabTitle">Core Filters</h1>
-            <button id="btnSaveTop" class="pf-btn pf-btn-primary">Save Settings</button>
+            <h1 id="currentTabTitle" data-i18n="options_sidebar_filters">Core Filters</h1>
+            <button id="btnSaveTop" class="pf-btn pf-btn-primary" data-i18n="common_save_settings">Save Settings</button>
         </header>
 
         <!-- TAB: FILTERS -->
         <section id="tab-filters" class="pf-tab-content active">
             <div class="pf-card">
-                <h3>Ad & Spam Removal</h3>
-                <p class="pf-desc">Toggle the primary DOM removal targets.</p>
+                <h3 data-i18n="options_filters_card_title">Ad & Spam Removal</h3>
+                <p class="pf-desc" data-i18n="options_filters_card_desc">Toggle the primary DOM removal targets.</p>
                 
                 <div class="pf-setting-row">
-                    <label>Block Sponsored Content (Ads)</label>
+                    <label data-i18n="popup_block_sponsored">Block Sponsored Content (Ads)</label>
                     <input type="checkbox" id="opt_filters_removeAds" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
@@ -102,8 +102,8 @@
         <!-- TAB: WELLBEING (Phase 10) -->
         <section id="tab-wellbeing" class="pf-tab-content">
             <div class="pf-card">
-                <h3>Digital Wellbeing</h3>
-                <p class="pf-desc">Dopamine breakers and session limits designed to fight doom-scrolling.</p>
+                <h3 data-i18n="options_sidebar_wellbeing">Digital Wellbeing</h3>
+                <p class="pf-desc" data-i18n="welcome_dopamine_desc">Dopamine breakers and session limits designed to fight doom-scrolling.</p>
                 <div class="pf-setting-row header-row">
                     <label>Grayscale Mode (Desaturate all colors)</label>
                     <input type="checkbox" id="opt_wb_grayscale" class="pf-toggle">
@@ -138,8 +138,8 @@
         <!-- TAB: AI -->
         <section id="tab-ai" class="pf-tab-content">
             <div class="pf-card">
-                <h3>Local Prediction Engine</h3>
-                <p class="pf-desc">Scores feed items locally based on your interaction history. Data never leaves your device.</p>
+                <h3 data-i18n="options_ai_card_title">Local Prediction Engine</h3>
+                <p class="pf-desc" data-i18n="options_ai_card_desc">Scores feed items locally based on your interaction history. Data never leaves your device.</p>
                 <div class="pf-setting-row header-row">
                     <label>Enable AI Predictions</label>
                     <input type="checkbox" id="opt_pred_enabled" class="pf-toggle">
@@ -168,8 +168,8 @@
 
             <!-- BYOK LLM Settings -->
             <div class="pf-card mt-4" style="border-color: #00D4FF;">
-                <h3 style="color: #00D4FF;">Deep Intelligence Server (BYOK API)</h3>
-                <p class="pf-desc">Bring-Your-Own-Key. Unlock LLM capabilities like TL;DRs and Comment AI. Your keys are saved exclusively taking advantage of local machine storage.</p>
+                <h3 style="color: #00D4FF;" data-i18n="options_ai_llm_title">Deep Intelligence Server (BYOK API)</h3>
+                <p class="pf-desc" data-i18n="options_ai_llm_desc">Bring-Your-Own-Key. Unlock LLM capabilities like TL;DRs and Comment AI. Your keys are saved exclusively taking advantage of local machine storage.</p>
                 
                 <div class="pf-setting-row mb-2">
                     <label>Active Provider</label>
@@ -211,7 +211,7 @@
         <!-- TAB: UI TWEAKS -->
         <section id="tab-ui" class="pf-tab-content">
             <div class="pf-card">
-                <h3>Interface Restructuring</h3>
+                <h3 data-i18n="options_ui_card_title">Interface Restructuring</h3>
                 
                 <div class="pf-setting-row" style="background: rgba(108, 63, 197, 0.15); border: 1px solid rgba(108, 63, 197, 0.4);">
                     <label>Friends Only Mode (Nuke all Groups/Pages from Feed)</label>
@@ -272,8 +272,8 @@
         <!-- TAB: KEYWORDS -->
         <section id="tab-keywords" class="pf-tab-content">
             <div class="pf-card">
-                <h3>Text Keyword Filter</h3>
-                <p class="pf-desc">Separate keywords by commas.</p>
+                <h3 data-i18n="options_sidebar_keywords">Text Keyword Filter</h3>
+                <p class="pf-desc" data-i18n="options_keywords_card_desc">Separate keywords by commas.</p>
                 
                 <div class="pf-form-group">
                     <label>Blocklist (Collapses posts with a "Show anyway" button)</label>
@@ -289,7 +289,7 @@
 
         <!-- TAB: SOCIAL / NOTIFICATIONS -->
         <section id="tab-social" class="pf-tab-content">
-            <div class="pf-card">
+            <div class="pf-card" data-i18n="options_sidebar_social">
                 <h3>Social Tools</h3>
                 <div class="pf-setting-row">
                     <label>Track Unfriends (Locally compares friend lists over time)</label>
@@ -305,8 +305,8 @@
         <!-- TAB: DATA -->
         <section id="tab-data" class="pf-tab-content">
             <div class="pf-card">
-                <h3>Configuration Backup</h3>
-                <p class="pf-desc">Export your settings & blocklists as JSON to sync to another machine.</p>
+                <h3 data-i18n="options_data_backup_title">Configuration Backup</h3>
+                <p class="pf-desc" data-i18n="options_data_backup_desc">Export your settings & blocklists as JSON to sync to another machine.</p>
                 <div class="pf-btn-group">
                     <button id="btnExport" class="pf-btn pf-btn-secondary">Export to File</button>
                     <input type="file" id="btnImportFile" style="display: none;" accept=".json">
@@ -315,9 +315,9 @@
                 
                 <hr class="pf-hr">
                 
-                <h3>Factory Reset</h3>
-                <p class="pf-desc pf-warn-text">This will wipe all preferences and local AI learning data.</p>
-                <button id="btnReset" class="pf-btn pf-btn-danger">Wipe Everything</button>
+                <h3 data-i18n="options_data_reset_title">Factory Reset</h3>
+                <p class="pf-desc pf-warn-text" data-i18n="options_data_reset_desc">This will wipe all preferences and local AI learning data.</p>
+                <button id="btnReset" class="pf-btn pf-btn-danger" data-i18n="options_data_reset_btn">Wipe Everything</button>
             </div>
         </section>
 
@@ -326,6 +326,7 @@
 
 <!-- Scripts -->
 <script src="../utils/storage.js"></script>
+<script src="../utils/i18n-engine.js"></script>
 <script src="../data/default-settings.js"></script>
 <script src="options.js"></script>
 

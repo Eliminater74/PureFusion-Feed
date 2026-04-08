@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to PureFusion Feed</title>
+    <title data-i18n="welcome_title">Welcome to PureFusion Feed</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -17,15 +17,15 @@
             <div class="logo-wrapper">
                 <img src="../../icons/icon128.png" alt="PureFusion Logo" class="main-logo">
             </div>
-            <h1>PureFusion Feed <span id="pf-welcome-version" class="badge">v1.1.0</span></h1>
-            <p class="subtitle">Step into a cleaner, faster, and more private Social Experience.</p>
+            <h1><span data-i18n="extName">PureFusion Feed</span> <span id="pf-welcome-version" class="badge">v1.1.0</span></h1>
+            <p class="subtitle" data-i18n="welcome_subtitle">Step into a cleaner, faster, and more private Social Experience.</p>
         </header>
 
         <section class="feature-grid">
             <div class="feature-card">
                 <div class="icon">🚫</div>
-                <h3>God Mode Core</h3>
-                <p>Total eradication of sponsored content, suggested reels, and algorithmic junk.</p>
+                <h3 data-i18n="welcome_god_mode">God Mode Core</h3>
+                <p data-i18n="welcome_god_mode_desc">Total eradication of sponsored content, suggested reels, and algorithmic junk.</p>
             </div>
             <div class="feature-card highlighted">
                 <div class="icon">🤖</div>
@@ -40,11 +40,11 @@
         </section>
 
         <div class="intro-card">
-            <h2>Ready to take control?</h2>
-            <p>Your feed is now under your command. You can access the **Advanced Dashboard** anytime by clicking the PureFusion icon in your toolbar, or using the floating "Action Button" inside Facebook.</p>
+            <h2 data-i18n="welcome_ready">Ready to take control?</h2>
+            <p data-i18n="welcome_ready_desc">Your feed is now under your command. You can access the **Advanced Dashboard** anytime by clicking the PureFusion icon in your toolbar, or using the floating "Action Button" inside Facebook.</p>
             
             <div class="action-buttons">
-                <button id="btnOpenOptions" class="btn btn-primary">Open Advanced Dashboard</button>
+                <button id="btnOpenOptions" class="btn btn-primary" data-i18n="common_open_advanced">Open Advanced Dashboard</button>
                 <a href="https://www.paypal.com/donate/?business=X76ZW4RHA6T9C&no_recurring=0&item_name=PureFusion+returns+feed+control+to+you.+Support+our+independent%2C+private%2C+ad-free+social+tools.+Keep+your+feed+pure%21&currency_code=USD" target="_blank" class="btn btn-support">❤️ Support Development</a>
             </div>
         </div>
@@ -54,6 +54,7 @@
         </footer>
     </div>
 
+    <script src="../utils/i18n-engine.js"></script>
     <script src="welcome.js"></script>
 </body>
 </html>

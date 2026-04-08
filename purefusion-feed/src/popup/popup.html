@@ -13,11 +13,11 @@
             <div class="pf-brand">
                 <img src="../../icons/icon32.png" class="pf-logo" alt="logo">
                 <div>
-                    <h1>PureFusion Feed</h1>
+                    <h1 data-i18n="extName">PureFusion Feed</h1>
                     <div id="pf-version" class="pf-version">v1.1.0</div>
                 </div>
             </div>
-            <a href="https://www.paypal.com/donate/?business=X76ZW4RHA6T9C&no_recurring=0&item_name=PureFusion+returns+feed+control+to+you.+Support+our+independent%2C+private%2C+ad-free+social+tools.+Keep+your+feed+pure%21&currency_code=USD" target="_blank" class="pf-support-btn" title="Support Developer">❤️</a>
+            <a href="https://www.paypal.com/donate/?business=X76ZW4RHA6T9C&no_recurring=0&item_name=PureFusion+returns+feed+control+to+you.+Support+our+independent%2C+private%2C+ad-free+social+tools.+Keep+your+feed+pure%21&currency_code=USD" target="_blank" class="pf-support-btn" data-i18n-title="common_support_developer">❤️</a>
             <!-- Master Toggle -->
             <label class="pf-switch pf-master-switch" title="Toggle completely on/off">
                 <input type="checkbox" id="masterToggle" checked>
@@ -29,22 +29,22 @@
         <section class="pf-stats">
             <div class="stat-box">
                 <span class="stat-val" id="statAds">0</span>
-                <span class="stat-label">Ads Blocked</span>
+                <span class="stat-label" data-i18n="common_ads_blocked">Ads Blocked</span>
             </div>
             <div class="stat-box">
                 <span class="stat-val" id="statSpam">0</span>
-                <span class="stat-label">Spam Hidden</span>
+                <span class="stat-label" data-i18n="common_spam_hidden">Spam Hidden</span>
             </div>
         </section>
 
         <!-- QUICK TOGGLES -->
         <section class="pf-quick-settings">
-            <h2>Quick Filters</h2>
+            <h2 data-i18n="popup_quick_filters">Quick Filters</h2>
             
             <div class="pf-toggle-row">
                 <div class="pf-toggle-info">
-                    <span class="pf-toggle-title">Block Sponsored Content</span>
-                    <span class="pf-toggle-desc">Removes feed and sidebar ads</span>
+                    <span class="pf-toggle-title" data-i18n="popup_block_sponsored">Block Sponsored Content</span>
+                    <span class="pf-toggle-desc" data-i18n="popup_block_sponsored_desc">Removes feed and sidebar ads</span>
                 </div>
                 <label class="pf-switch">
                     <input type="checkbox" id="tgl_removeAds">
@@ -54,8 +54,8 @@
 
             <div class="pf-toggle-row">
                 <div class="pf-toggle-info">
-                    <span class="pf-toggle-title">Hide Suggested/PYMK</span>
-                    <span class="pf-toggle-desc">Removes algortihmic suggestions</span>
+                    <span class="pf-toggle-title" data-i18n="popup_hide_suggested">Hide Suggested/PYMK</span>
+                    <span class="pf-toggle-desc" data-i18n="popup_hide_suggested_desc">Removes algortihmic suggestions</span>
                 </div>
                 <label class="pf-switch">
                     <input type="checkbox" id="tgl_removeSuggested">
@@ -65,8 +65,8 @@
 
             <div class="pf-toggle-row">
                 <div class="pf-toggle-info">
-                    <span class="pf-toggle-title">Hide Reels & Stories</span>
-                    <span class="pf-toggle-desc">Removes short-form video UI</span>
+                    <span class="pf-toggle-title" data-i18n="popup_hide_reels">Hide Reels & Stories</span>
+                    <span class="pf-toggle-desc" data-i18n="popup_hide_reels_desc">Removes short-form video UI</span>
                 </div>
                 <label class="pf-switch">
                     <input type="checkbox" id="tgl_hideReelsStories">
@@ -76,8 +76,8 @@
             
             <div class="pf-toggle-row">
                 <div class="pf-toggle-info">
-                    <span class="pf-toggle-title">Force Most Recent</span>
-                    <span class="pf-toggle-desc">Always load chronological feed</span>
+                    <span class="pf-toggle-title" data-i18n="popup_force_recent">Force Most Recent</span>
+                    <span class="pf-toggle-desc" data-i18n="popup_force_recent_desc">Always load chronological feed</span>
                 </div>
                 <label class="pf-switch">
                     <input type="checkbox" id="tgl_forceChronological">
@@ -88,9 +88,9 @@
 
         <!-- QUICK KEYWORD -->
         <section class="pf-quick-keyword">
-            <h2>Fast Keyword Block</h2>
+            <h2 data-i18n="popup_fast_keyword">Fast Keyword Block</h2>
             <div class="keyword-input-wrapper">
-                <input type="text" id="quickKeywordInput" placeholder="Enter keyword to collapse...">
+                <input type="text" id="quickKeywordInput" data-i18n-placeholder="popup_keyword_placeholder" placeholder="Enter keyword to collapse...">
                 <button id="addKeywordBtn">+</button>
             </div>
             <div id="keywordStatus" class="pf-status-text"></div>
@@ -98,12 +98,13 @@
 
         <!-- FOOTER -->
         <footer class="pf-footer">
-            <button id="openOptionsBtn" class="pf-btn pf-btn-primary">Open Full Settings</button>
+            <button id="openOptionsBtn" class="pf-btn pf-btn-primary" data-i18n="common_open_dashboard">Open Full Settings</button>
         </footer>
     </div>
 
     <!-- Scripts -->
     <script src="../utils/storage.js"></script>
+    <script src="../utils/i18n-engine.js"></script>
     <script src="../data/default-settings.js"></script>
     <script src="popup.js"></script>
 </body>
