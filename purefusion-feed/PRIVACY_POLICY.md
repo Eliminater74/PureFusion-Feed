@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last Updated: April 2024**
+**Last Updated: April 8, 2026**
 
 This Privacy Policy describes how "PureFusion Feed" (the "Extension") handles your personal data. By installing and using the Extension, you agree to the practices outlined below.
 
@@ -15,15 +15,17 @@ If you choose to use the "Advanced AI Blockers" or "Deep Intelligence Server" fe
 - These keys are never transmitted to the developers of PureFusion Feed.
 - When an AI feature is triggered (e.g., clicking the Summarize button), the text of that specific post is securely transmitted *directly* from your browser to the provider you selected (OpenAI/Google). Their respective Privacy Policies apply to that transmission.
 
-## 3. Chrome Web Store Requirements
+## 3. Chrome Web Store Permissions
 This extension requires the following permissions to function:
 - `storage`: Required to save your customized dashboard settings and API credentials locally.
 - `declarativeNetRequest`: Required to block network requests associated with known tracking or advertising domains.
-- `scripting`: Required to inject the PureFusion engine and visual themes directly into `facebook.com`.
-- `alarms`: Used to trigger scheduled wellbeing features and notification digests.
+
+Optional host permissions are requested only when you enable an external AI provider:
+- `https://api.openai.com/*`
+- `https://generativelanguage.googleapis.com/*`
 
 ## 4. Host Permissions
-The extension requests broad host permissions for `*://*.facebook.com/*` and `*://*.messenger.com/*`. 
+The extension requests host permissions for `*://*.facebook.com/*` and `*://*.messenger.com/*`. 
 This is strictly necessary to allow the content scripts to read and modify the DOM (Document Object Model) of those websites, enabling features like ad removal, layout restructuring, and post restyling.
 
 ## 5. Contact Us
