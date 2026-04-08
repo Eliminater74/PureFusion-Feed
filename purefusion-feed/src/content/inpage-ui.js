@@ -42,9 +42,12 @@ class PF_InPageUI {
                 background: linear-gradient(135deg, #6C3FC5, #00D4FF);
                 box-shadow: 0 2px 10px rgba(108,63,197,0.5);
                 display: flex; align-items: center; justify-content: center;
-                color: white; font-weight: 900; font-size: 16px; margin: 0 8px;
                 cursor: pointer; transition: transform 0.2s;
                 user-select: none; flex-shrink: 0;
+                padding: 4px; border: 1px solid rgba(255,255,255,0.1);
+            }
+            .pf-fab img {
+                width: 100%; height: 100%; object-fit: contain;
             }
             .pf-fab:hover { transform: scale(1.05); }
             
@@ -101,7 +104,11 @@ class PF_InPageUI {
     _buildFAB() {
         this.fab = document.createElement('div');
         this.fab.className = 'pf-fab';
-        this.fab.textContent = 'PF';
+        
+        const logo = document.createElement('img');
+        logo.src = chrome.runtime.getURL('icons/icon32.png');
+        this.fab.appendChild(logo);
+        
         this.fab.title = "Open PureFusion Dashboard";
         
         this.fab.addEventListener('click', () => this.toggleModal());

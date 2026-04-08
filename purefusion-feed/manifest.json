@@ -58,7 +58,8 @@
       "resources": [
         "src/options/*",
         "src/utils/*",
-        "src/data/*"
+        "src/data/*",
+        "icons/*"
       ],
       "matches": [
         "*://*.facebook.com/*"

@@ -46,15 +46,9 @@ body, html {
 }
 
 .pf-logo {
-    background: linear-gradient(135deg, var(--pf-purple), var(--pf-cyan));
-    color: white;
-    font-weight: 900;
-    font-size: 20px;
     height: 48px;
     width: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    object-fit: contain;
     border-radius: 12px;
     margin-bottom: 15px;
     box-shadow: 0 4px 15px rgba(108,63,197,0.4);
