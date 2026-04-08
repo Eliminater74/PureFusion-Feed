@@ -48,6 +48,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_filters_removeAds': { obj: 'filters', prop: 'removeAds', type: 'checkbox' },
         'opt_filters_removeSuggested': { obj: 'filters', prop: 'removeSuggested', type: 'checkbox' },
         'opt_filters_removePYMK': { obj: 'filters', prop: 'removePYMK', type: 'checkbox' },
+        'opt_filters_removeGroupSuggestions': { obj: 'filters', prop: 'removeGroupSuggestions', type: 'checkbox' },
         'opt_filters_removePageSuggestions': { obj: 'filters', prop: 'removePageSuggestions', type: 'checkbox' },
         'opt_filters_hideReels': { obj: 'filters', prop: 'hideReels', type: 'checkbox' },
         'opt_filters_hideStories': { obj: 'filters', prop: 'hideStories', type: 'checkbox' },

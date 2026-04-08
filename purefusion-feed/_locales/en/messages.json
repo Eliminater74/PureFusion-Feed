@@ -25,6 +25,8 @@
   "popup_force_recent_desc": { "message": "Always load chronological feed" },
   "popup_fast_keyword": { "message": "Fast Keyword Block" },
   "popup_keyword_placeholder": { "message": "Enter keyword to collapse..." },
+  "popup_hide_groups": { "message": "Hide Suggested Groups" },
+  "popup_hide_groups_desc": { "message": "Removes algorithmic group recommendations" },
   "options_filters_card_title": { "message": "Ad & Spam Removal" },
   "options_filters_card_desc": { "message": "Toggle the primary DOM removal targets." },
   "options_ai_card_title": { "message": "Local Prediction Engine" },

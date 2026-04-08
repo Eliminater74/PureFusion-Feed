@@ -193,8 +193,24 @@ class PF_Cleaner {
         }
 
         if (this.settings.filters.removeGroupSuggestions) {
-            const grpWrapper = rootNode.querySelectorAll(PF_SELECTOR_MAP.suggestedGroups);
-            grpWrapper.forEach(node => PF_Helpers.hideElement(node, "Suggested Groups"));
+            const selectors = Array.isArray(PF_SELECTOR_MAP.suggestedGroups) ? PF_SELECTOR_MAP.suggestedGroups : [PF_SELECTOR_MAP.suggestedGroups];
+            for (const selector of selectors) {
+                let targets = [];
+                if (selector.includes(':contains')) {
+                    const text = selector.match(/:contains\("([^"]+)"\)/)[1];
+                    const parts = selector.split(':');
+                    const baseSelector = parts[0];
+                    targets = PF_Helpers.findContains(rootNode, baseSelector, text);
+                } else {
+                    targets = Array.from(rootNode.querySelectorAll(selector));
+                }
+                
+                targets.forEach(node => {
+                    // Try to find the bounding pagelet or post container
+                    const wrap = PF_Helpers.getClosest(node, 'div[data-pagelet]') || node;
+                    PF_Helpers.hideElement(wrap, "Suggested Groups");
+                });
+            }
         }
     }
 

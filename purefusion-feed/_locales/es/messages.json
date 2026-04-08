@@ -25,6 +25,8 @@
   "popup_force_recent_desc": { "message": "Siempre cargar feed cronológico" },
   "popup_fast_keyword": { "message": "Bloqueo Rápido de Palabras" },
   "popup_keyword_placeholder": { "message": "Palabra para ocultar..." },
+  "popup_hide_groups": { "message": "Ocultar Sugerencias de Grupos" },
+  "popup_hide_groups_desc": { "message": "Elimina las recomendaciones algorítmicas de grupos" },
   "options_filters_card_title": { "message": "Eliminación de Anuncios y Spam" },
   "options_filters_card_desc": { "message": "Toggles de eliminación de DOM principal." },
   "options_ai_card_title": { "message": "Motor de Predicción Local" },

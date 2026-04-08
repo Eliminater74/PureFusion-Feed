@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         suggested: document.getElementById('tgl_removeSuggested'),
         reels: document.getElementById('tgl_hideReelsStories'),
         chronological: document.getElementById('tgl_forceChronological'),
+        groups: document.getElementById('tgl_removeGroups'),
         
         btnOptions: document.getElementById('openOptionsBtn'),
         inputKeyword: document.getElementById('quickKeywordInput'),
@@ -39,6 +40,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     elements.suggested.checked = settings.filters.removeSuggested;
     elements.reels.checked = (settings.filters.hideReels && settings.filters.hideStories);
     elements.chronological.checked = settings.uiMode.forceMostRecent;
+    elements.groups.checked = settings.filters.removeGroupSuggestions;
 
     // Load actual live stats (We fetch this from local storage if the worker saved it)
     const sessionStats = await PF_Storage.getLocalData('pf_session_stats') || { ads: 0, spam: 0 };
@@ -56,6 +58,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         settings.filters.hideStories = elements.reels.checked;
         
         settings.uiMode.forceMostRecent = elements.chronological.checked;
+        settings.filters.removeGroupSuggestions = elements.groups.checked;
 
         // Save
         await PF_Storage.updateSettings(settings);
@@ -66,6 +69,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     elements.suggested.addEventListener('change', handleToggle);
     elements.reels.addEventListener('change', handleToggle);
     elements.chronological.addEventListener('change', handleToggle);
+    elements.groups.addEventListener('change', handleToggle);
 
     // 5. Keyword Quick Add
     elements.btnAddKeyword.addEventListener('click', async () => {

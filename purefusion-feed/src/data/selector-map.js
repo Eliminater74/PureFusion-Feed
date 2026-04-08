@@ -54,7 +54,11 @@ const SELECTOR_MAP = {
     // Specific feed unit wrappers Facebook uses for injection
     suggestedForYouWrapper: '[data-pagelet="FeedUnit_Suggested_For_You"]',
     peopleYouMayKnow: '[data-pagelet="NetEgo_PeopleYouMayKnow"]',
-    suggestedGroups: '[data-pagelet="NetEgo_SuggestedGroups"]',
+    suggestedGroups: [
+        '[data-pagelet="NetEgo_SuggestedGroups"]',
+        'span:contains("Group suggestions")',
+        'span:contains("Sugerencias de grupos")'
+    ],
     reelsTray: '[data-pagelet="FeedUnit_Reels_Tray"], [data-pagelet^="ShortsAndReels"], [data-pagelet*="Reels"]',
     storiesTray: '[data-pagelet="Stories"]',
 
