@@ -1,4 +1,4 @@
-# 💜 PureFusion Feed
+# 💜 PureFusion Feed v1.1.0
 
 > "Your Facebook. Filtered. Predicted. Perfected."
 

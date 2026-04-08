@@ -3,6 +3,12 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 0. Set Dynamic Version
+    const versionEl = document.getElementById('pf-welcome-version');
+    if (versionEl && typeof chrome !== 'undefined' && chrome.runtime.getManifest) {
+        versionEl.textContent = 'v' + chrome.runtime.getManifest().version;
+    }
+    
     const btnOpenOptions = document.getElementById('btnOpenOptions');
 
     if (btnOpenOptions) {

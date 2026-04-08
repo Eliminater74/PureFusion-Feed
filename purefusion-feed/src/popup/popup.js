@@ -6,6 +6,13 @@
  */
 
 document.addEventListener('DOMContentLoaded', async () => {
+    // 0. Set Dynamic Version
+    const versionEl = document.getElementById('pf-version');
+    if (versionEl && typeof chrome !== 'undefined' && chrome.runtime.getManifest) {
+        const manifest = chrome.runtime.getManifest();
+        versionEl.textContent = 'v' + manifest.version;
+    }
+
     // 1. Load Settings
     let settings = await PF_Storage.init();
 

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "PureFusion Feed",
-  "version": "1.0.0",
-  "description": "Your Facebook. Filtered. Predicted. Perfected.",
+  "version": "1.1.0",
+  "description": "Premium God-Mode Feed Manager with Ad-Blocking, AI Insights, and Privacy Guard.",
   "permissions": [
     "storage",
     "declarativeNetRequest",

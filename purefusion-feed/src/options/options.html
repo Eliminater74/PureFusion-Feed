@@ -15,7 +15,12 @@
         <div class="pf-brand">
             <img src="../../icons/icon48.png" class="pf-logo" alt="logo">
             <h2>PureFusion</h2>
-            <span>Settings Panel</span>
+            <span id="pf-sidebar-version"></span>
+            <script>
+                if (typeof chrome !== 'undefined' && chrome.runtime.getManifest) {
+                    document.getElementById('pf-sidebar-version').textContent = 'v' + chrome.runtime.getManifest().version;
+                }
+            </script>
         </div>
         <ul class="pf-nav-links">
             <li class="active" data-tab="tab-filters">🚫 Core Filters</li>
