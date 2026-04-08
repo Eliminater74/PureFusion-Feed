@@ -125,19 +125,26 @@ class PF_LLMFeatures {
                 parent.appendChild(wand); // Fallback
             }
 
-            wand.addEventListener('click', async () => {
+            wand.addEventListener('click', async (e) => {
                 if (!this.engine.isReady()) {
-                    alert("⚠️ PureFusion AI isn't configured!\n\nOpen the PureFusion Advanced Settings panel and select an AI Provider (like OpenAI or Chrome Native window.ai) to activate your Comment Co-Pilot.");
+                    alert("✨ PureFusion AI Assistant is almost ready!\n\nPlease open the PureFusion Options panel and paste your preferred AI Provider API key (OpenAI/ChatGPT, Gemini, or Claude) in the 'AI Comment Engine' tab to activate this feature.");
                     return;
                 }
 
-                // To generate a logical comment, we need the context of the main post
-                const postContainer = window.PF_Helpers.getClosest(box, window.PF_SELECTOR_MAP.postContainer);
-                const textContainer = postContainer ? postContainer.querySelector(window.PF_SELECTOR_MAP.postTextBody) : null;
+                // Attempt to isolate the context. 
+                // 1. Try Feed node. 2. Try Modal/Theater node. 3. Fallback to generic body
+                let postNode = e.target.closest(window.PF_SELECTOR_MAP ? window.PF_SELECTOR_MAP.postContainer : 'div[data-pagelet^="FeedUnit"]');
+                
+                if (!postNode) {
+                    // Check if we are inside a Facebook theater modal viewing a photo or video
+                    postNode = e.target.closest('div[role="dialog"]') || document.body;
+                }
+
+                const textContainer = postNode.querySelector(window.PF_SELECTOR_MAP.postTextBody);
                 const postContext = textContainer ? textContainer.textContent : '';
 
                 if (!postContext) {
-                    alert('PureFusion: Could not extract parent post context for the AI Copilot.');
+                    alert('PureFusion: Could not extract enough text context from this post for the AI Assistant.');
                     return;
                 }
 
