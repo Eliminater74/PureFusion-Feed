@@ -57,11 +57,9 @@ class PF_LLMEngine {
         const apiKey = (this.settings.llm.geminiApiKey || '').trim();
         if (!apiKey) throw new Error('Gemini API key is missing.');
 
-        const models = [
-            'gemini-1.5-flash',
-            'gemini-1.5-pro',
-            'gemini-pro'
-        ];
+        const discoveredModels = await this._fetchGeminiModelNames(apiKey);
+        const models = this._buildGeminiModelPriority(discoveredModels);
+        const apiVersions = ['v1beta', 'v1'];
 
         const payload = {
             systemInstruction: {
@@ -78,36 +76,38 @@ class PF_LLMEngine {
 
         let lastError = null;
 
-        for (const model of models) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+        for (const version of apiVersions) {
+            for (const model of models) {
+                const url = `https://generativelanguage.googleapis.com/${version}/models/${model}:generateContent`;
 
-            const res = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-goog-api-key': apiKey
-                },
-                body: JSON.stringify(payload)
-            });
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-goog-api-key': apiKey
+                    },
+                    body: JSON.stringify(payload)
+                });
 
-            if (!res.ok) {
-                const errText = await this._safeErrorText(res);
-                lastError = new Error(`Gemini API ${res.status}: ${errText}`);
+                if (!res.ok) {
+                    const errText = await this._safeErrorText(res);
+                    lastError = new Error(`Gemini API ${res.status}: ${errText}`);
 
-                if (res.status === 404) {
-                    continue;
+                    if (this._shouldTryNextGeminiModel(res.status, errText)) {
+                        continue;
+                    }
+
+                    throw lastError;
                 }
 
-                throw lastError;
-            }
+                const data = await res.json();
+                const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (text && text.trim()) {
+                    return text.trim();
+                }
 
-            const data = await res.json();
-            const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-            if (text && text.trim()) {
-                return text.trim();
+                throw new Error('Gemini returned an empty response.');
             }
-
-            throw new Error('Gemini returned an empty response.');
         }
 
         throw lastError || new Error('No compatible Gemini model is available for this API key.');
@@ -167,6 +167,80 @@ class PF_LLMEngine {
         } catch {
             return 'Unknown error';
         }
+    }
+
+    async _fetchGeminiModelNames(apiKey) {
+        const versions = ['v1beta', 'v1'];
+        const found = [];
+
+        for (const version of versions) {
+            try {
+                const url = `https://generativelanguage.googleapis.com/${version}/models`;
+                const res = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'x-goog-api-key': apiKey
+                    }
+                });
+
+                if (!res.ok) continue;
+
+                const data = await res.json();
+                const models = data?.models || [];
+
+                models.forEach((model) => {
+                    const supportsGenerate = Array.isArray(model.supportedGenerationMethods)
+                        && model.supportedGenerationMethods.includes('generateContent');
+                    const name = model?.name || '';
+                    if (!supportsGenerate || !name.startsWith('models/')) return;
+
+                    const shortName = name.replace('models/', '').trim();
+                    if (!shortName) return;
+                    found.push(shortName);
+                });
+            } catch {
+                // Soft-fail: we can still use built-in fallback model names.
+            }
+        }
+
+        return [...new Set(found)];
+    }
+
+    _buildGeminiModelPriority(discovered = []) {
+        const preferred = [
+            'gemini-2.5-flash',
+            'gemini-2.0-flash',
+            'gemini-1.5-flash',
+            'gemini-1.5-pro',
+            'gemini-pro'
+        ];
+
+        const rankedDiscovered = discovered
+            .filter((name) => /^gemini/i.test(name))
+            .sort((a, b) => {
+                const aFlash = /flash/i.test(a) ? 1 : 0;
+                const bFlash = /flash/i.test(b) ? 1 : 0;
+                if (aFlash !== bFlash) return bFlash - aFlash;
+                return a.localeCompare(b);
+            });
+
+        return [...new Set([...preferred, ...rankedDiscovered])];
+    }
+
+    _shouldTryNextGeminiModel(status, errText = '') {
+        if (status === 404) return true;
+
+        const msg = String(errText || '').toLowerCase();
+        if (status === 400 && (
+            msg.includes('not found for api version')
+            || msg.includes('is not found')
+            || msg.includes('unsupported for generatecontent')
+            || msg.includes('models/')
+        )) {
+            return true;
+        }
+
+        return false;
     }
 }
 
