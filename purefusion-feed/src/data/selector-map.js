@@ -43,7 +43,12 @@ const SELECTOR_MAP = {
     sponsoredIndicators: [
         'a[aria-label="Sponsored"]',
         'span[aria-label="Sponsored"]',
-        'span:contains("Sponsored")' // Polyfilled by helpers
+        'a[aria-label="Publicidad"]',
+        'span[aria-label="Publicidad"]',
+        'span:contains("Sponsored")',
+        'span:contains("Publicidad")',
+        '[data-testid="fbfeed_ads_native_container"]',
+        'a[role="link"] > span[aria-labelledby]' // Matches complex hidden-char spans
     ],
 
     // Specific feed unit wrappers Facebook uses for injection

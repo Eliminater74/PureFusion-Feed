@@ -148,7 +148,7 @@ class PF_Cleaner {
     removeSponsored(rootNode) {
         let targets = [];
         
-        // Facebook uses complex SVG shapes that eventually read "Sponsored" via an aria-label.
+        // 1. Standard Selector / SVG heuristic
         for (const selector of PF_SELECTOR_MAP.sponsoredIndicators) {
             if (selector.includes(':contains')) {
                 const text = selector.match(/:contains\("([^"]+)"\)/)[1];
@@ -160,10 +160,24 @@ class PF_Cleaner {
             }
         }
 
+        // 2. Advanced aria-labelledby heuristic (Manifest V3 God-Mode)
+        // FB often uses: <span aria-labelledby="some-id"></span> ... <span id="some-id">Sponsored</span>
+        const labeledElements = rootNode.querySelectorAll('[aria-labelledby]');
+        labeledElements.forEach(el => {
+            const labelId = el.getAttribute('aria-labelledby');
+            const labelNode = document.getElementById(labelId);
+            if (labelNode) {
+                const text = labelNode.textContent.trim();
+                if (text === 'Sponsored' || text === 'Publicidad') {
+                    targets.push(el);
+                }
+            }
+        });
+
         for (const indicator of targets) {
             const postWrapper = PF_Helpers.getClosest(indicator, PF_SELECTOR_MAP.postContainer);
             if (postWrapper) {
-                PF_Helpers.hideElement(postWrapper, "Sponsored Post");
+                PF_Helpers.hideElement(postWrapper, "Sponsored Post (Heuristic)");
             }
         }
     }
