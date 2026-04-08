@@ -1,4 +1,4 @@
-# PureFusion Feed v1.1.0
+# PureFusion Feed v1.2.0
 
 **Your Facebook. Filtered. Predicted. Perfected.**
 
@@ -14,6 +14,7 @@ PureFusion Feed is an advanced, privacy-first Chrome Extension designed to take 
 - **Core Engine:** Cleaner, Predictor, and Observer loops.
 - **Privacy:** Screenshot Anonymizer and Friends-Only mode.
 - **Wellbeing:** Clickbait blocker and Scroll stopper.
+- **Global Support:** Smart, automatic i18n with English and Spanish presets.
 - **AI Intelligence:** Gemini and Window.ai integrations.
 
 ---

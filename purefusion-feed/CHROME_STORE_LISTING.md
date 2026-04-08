@@ -1,4 +1,4 @@
-# Chrome Web Store Release Package: PureFusion Feed
+# Chrome Web Store Release Package: PureFusion Feed v1.2.0
 
 This document contains all the text and configuration details you need to fill out your Developer Dashboard for a professional release.
 
@@ -25,6 +25,7 @@ PureFusion Feed isn't just an ad-blocker—it's a complete restructuring engine 
 - **Widescreen Mode:** Break the rigid center-column constraints and utilize your entire ultrawide monitor for a more comfortable reading experience.
 - **Digital Wellbeing:** Fight doom-scrolling with a built-in session timer, grayscale mode, and infinite-scroll "break walls."
 - **Privacy Guard:** Includes a "Screenshot Anonymizer" that blurs names and pictures with one click—perfect for sharing posts safely.
+- **Smart i18n & Global Support:** Built-in multi-language engine with English and Spanish presets. Automatically detects your browser language for a native experience.
 
 **🔒 PRIVACY-FIRST ARCHITECTURE:**
 PureFusion operates with a strict local-first philosophy. Your data, API keys, and interaction history never leave your device. All AI processing happens via your own keys or your local machine's hardware.

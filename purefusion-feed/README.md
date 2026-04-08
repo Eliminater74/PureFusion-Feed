@@ -1,4 +1,4 @@
-# 💜 PureFusion Feed v1.1.0
+# 💜 PureFusion Feed v1.2.0
 
 > "Your Facebook. Filtered. Predicted. Perfected."
 
@@ -32,6 +32,11 @@
 - **Silent Unfriend Detection:** Passively maps your friends list over intervals to identify removed or deactivated accounts.
 - **Digest Mode:** Hides the anxiety-inducing red notification count badge until a full hour has passed.
 - **Targeted Notification Blocking:** Strips out Game Invites and Marketplace noise from the alert dropdown.
+
+### 🌍 Global Support & Smart i18n
+- **Multi-Language Architecture:** Fully compliant with Chrome's `_locales` system.
+- **Dynamic Translation Engine:** A custom-built engine (`i18n-engine.js`) that automatically scans and translates all UI components (Popup, Options, Welcome Page) on-the-fly.
+- **Initial Support:** English and Spanish fully supported out of the box. Ready for any new language with just a single JSON file update.
 
 ---
 
@@ -72,6 +77,7 @@ All Icons and `manifest.json` are automatically picked up.
 - [x] Options Dashboard with JSON Export/Import
 - [x] Local Prediction Engine (Scoring / Learning)
 - [x] Social Tools (Unfriend Detection) & Notification Digest
+- [x] Smart Internationalization (i18n) & Locale Engine
 - [x] Icons generated
 - [x] Clean architecture with zero console-spam in Production
 

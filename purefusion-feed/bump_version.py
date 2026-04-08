@@ -62,7 +62,7 @@ def bump_version():
             with open(path, 'r', encoding='utf-8') as f:
                 content = f.read()
             
-            new_content = version_pattern.sub(rf"\1{new_version}", content)
+            new_content = version_pattern.sub(rf"\g<1>{new_version}", content)
             
             with open(path, 'w', encoding='utf-8') as f:
                 f.write(new_content)
