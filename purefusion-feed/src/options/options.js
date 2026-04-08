@@ -37,22 +37,72 @@ document.addEventListener('DOMContentLoaded', async () => {
     const navLinks = document.querySelectorAll('.pf-nav-links li');
     const tabContents = document.querySelectorAll('.pf-tab-content');
     const titleStatus = document.getElementById('currentTabTitle');
+    const navList = document.querySelector('.pf-nav-links');
 
-    navLinks.forEach(link => {
+    function cleanedTabTitle(label = '') {
+        return label.replace(/[🚫🤖🎨🔤📊💾🧘🤝]/g, '').trim();
+    }
+
+    function activateTab(link) {
+        const targetId = link.getAttribute('data-tab');
+
+        navLinks.forEach((n) => {
+            const isActive = n === link;
+            n.classList.toggle('active', isActive);
+            n.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            n.tabIndex = isActive ? 0 : -1;
+        });
+
+        tabContents.forEach((tab) => {
+            const isActive = tab.id === targetId;
+            tab.classList.toggle('active', isActive);
+            tab.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+        });
+
+        titleStatus.textContent = cleanedTabTitle(link.textContent);
+    }
+
+    if (navList) navList.setAttribute('role', 'tablist');
+    tabContents.forEach((tab) => tab.setAttribute('role', 'tabpanel'));
+
+    navLinks.forEach((link, index) => {
+        const targetId = link.getAttribute('data-tab');
+        const isInitiallyActive = link.classList.contains('active');
+
+        link.setAttribute('role', 'tab');
+        link.setAttribute('aria-controls', targetId || '');
+        link.setAttribute('aria-selected', isInitiallyActive ? 'true' : 'false');
+        link.tabIndex = isInitiallyActive ? 0 : -1;
+
         link.addEventListener('click', () => {
-            // Remove active from all
-            navLinks.forEach(n => n.classList.remove('active'));
-            tabContents.forEach(t => t.classList.remove('active'));
-            
-            // Add active to targeted
-            link.classList.add('active');
-            const targetId = link.getAttribute('data-tab');
-            document.getElementById(targetId).classList.add('active');
-            
-            // Update Title
-            titleStatus.textContent = link.textContent.replace(/[🚫🤖🎨🔤📊💾🧘🤝]/g, '').trim();
+            activateTab(link);
+        });
+
+        link.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                activateTab(link);
+                return;
+            }
+
+            if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+                e.preventDefault();
+                const next = navLinks[(index + 1) % navLinks.length];
+                next.focus();
+                activateTab(next);
+            }
+
+            if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                e.preventDefault();
+                const prev = navLinks[(index - 1 + navLinks.length) % navLinks.length];
+                prev.focus();
+                activateTab(prev);
+            }
         });
     });
+
+    const initialActiveTab = Array.from(navLinks).find((link) => link.classList.contains('active')) || navLinks[0];
+    if (initialActiveTab) activateTab(initialActiveTab);
 
     // =========================================================================
     // Map Storage Object to HTML Elements & Vice Versa
@@ -116,6 +166,30 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_llm_clickbaitdecode': { obj: 'llm', prop: 'clickbaitDecoder', type: 'checkbox' },
     };
 
+    const themeSelect = document.getElementById('opt_uiMode_theme');
+    const fontScaleInput = document.getElementById('opt_uiMode_fontSizeScale');
+    const themePreview = document.getElementById('pfThemePreview');
+    const themePreviewMode = document.getElementById('pfThemePreviewMode');
+    const themePreviewCard = document.getElementById('pfThemePreviewCard');
+
+    const themeNames = {
+        default: 'Facebook Default',
+        darkPro: 'Dark Pro',
+        amoled: 'AMOLED Pitch Black',
+        classicBlue: 'Classic Blue'
+    };
+
+    function renderThemePreview(theme, scale) {
+        if (!themePreview || !themePreviewCard || !themePreviewMode) return;
+
+        const previewTheme = themeNames[theme] ? theme : 'default';
+        const previewScale = Math.max(80, Math.min(150, parseInt(scale, 10) || 100));
+
+        themePreview.dataset.theme = previewTheme;
+        themePreviewMode.textContent = themeNames[previewTheme];
+        themePreviewCard.style.fontSize = `${previewScale}%`;
+    }
+
     function loadUIFromSettings() {
         // Handle mapped standard inputs
         for (const [domId, mapping] of Object.entries(uiMap)) {
@@ -132,6 +206,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Handle Keywords Mapping
         document.getElementById('opt_keywords_blocklist').value = currentSettings.keywords.blocklist.join(', ');
         document.getElementById('opt_keywords_autohide').value = currentSettings.keywords.autohide.join(', ');
+
+        renderThemePreview(currentSettings.uiMode.theme, currentSettings.uiMode.fontSizeScale);
     }
 
     async function saveSettingsFromUI() {
@@ -190,6 +266,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             tabs.forEach(tab => {
                 chrome.tabs.sendMessage(tab.id, { type: "PF_SETTINGS_UPDATED" });
             });
+        });
+    }
+
+    if (themeSelect) {
+        themeSelect.addEventListener('change', () => {
+            renderThemePreview(themeSelect.value, fontScaleInput ? fontScaleInput.value : 100);
+        });
+    }
+
+    if (fontScaleInput) {
+        fontScaleInput.addEventListener('input', () => {
+            renderThemePreview(themeSelect ? themeSelect.value : 'default', fontScaleInput.value);
         });
     }
 

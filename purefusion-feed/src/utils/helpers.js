@@ -196,6 +196,13 @@ const PF_Helpers = {
                 background: rgba(255, 84, 89, 0.22);
                 color: #ff5459;
             }
+
+            @media (prefers-reduced-motion: reduce) {
+                .pf-toast {
+                    transition: none;
+                    transform: none;
+                }
+            }
         `;
 
         document.head.appendChild(style);
