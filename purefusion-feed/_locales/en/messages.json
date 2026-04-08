@@ -111,6 +111,7 @@
   "options_social_hide_typing": { "message": "Hide \"Typing...\" Indicator" },
   "options_social_privacy_blur": { "message": "Privacy Blur (Blur chat body until hover)" },
   "options_social_meta_title": { "message": "Meta AI & Algorithmic Clutter" },
+  "options_social_auto_comment_preview": { "message": "Auto Comment Preview (Beta)" },
   "options_social_nuke_meta": { "message": "Nuke Meta AI (Remove all gradient icons & sparkle buttons)" },
   "options_social_track_unfriends": { "message": "Track Unfriends & Deactivations" },
   "options_social_notif_title": { "message": "Notification Soul-Soother" },

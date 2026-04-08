@@ -203,6 +203,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Social
         'opt_social_trackUnfriends': { obj: 'social', prop: 'trackUnfriends', type: 'checkbox' },
         'opt_social_notificationDigestMode': { obj: 'social', prop: 'notificationDigestMode', type: 'checkbox' },
+        'opt_social_autoCommentPreview': { obj: 'social', prop: 'autoCommentPreview', type: 'checkbox' },
         'opt_social_hideMetaAI': { obj: 'social', prop: 'hideMetaAI', type: 'checkbox' },
         'opt_social_hideMessengerTyping': { obj: 'social', prop: 'hideMessengerTyping', type: 'checkbox' },
         'opt_social_messengerPrivacyBlur': { obj: 'social', prop: 'messengerPrivacyBlur', type: 'checkbox' },

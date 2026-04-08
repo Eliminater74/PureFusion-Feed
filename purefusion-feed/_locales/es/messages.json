@@ -111,6 +111,7 @@
   "options_social_hide_typing": { "message": "Ocultar indicador de \"Escribiendo...\"" },
   "options_social_privacy_blur": { "message": "Desenfoque de privacidad (desenfoca chat hasta pasar el cursor)" },
   "options_social_meta_title": { "message": "Meta AI y ruido algorítmico" },
+  "options_social_auto_comment_preview": { "message": "Vista previa automática de comentarios (Beta)" },
   "options_social_nuke_meta": { "message": "Eliminar Meta AI (quitar iconos degradados y botones brillantes)" },
   "options_social_track_unfriends": { "message": "Rastrear eliminaciones y desactivaciones" },
   "options_social_notif_title": { "message": "Suavizador de notificaciones" },

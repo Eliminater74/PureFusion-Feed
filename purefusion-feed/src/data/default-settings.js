@@ -102,6 +102,7 @@ const DEFAULT_SETTINGS = {
         trackUnfriends: true,           // Compare friends list locally to detect unfriend/block
         trackDeactivated: true,         // Surf for missing/404 friends
         notificationDigestMode: false,  // If true, groups notifications by hour
+        autoCommentPreview: true,       // Auto-expand inline comments for visible feed posts
         hideMetaAI: true,               // Nuke gradient icons and sparkle buttons
         hideMessengerTyping: true,      // Hide typing indicators (DOM level)
         messengerPrivacyBlur: false,    // Blur chat previews until hover

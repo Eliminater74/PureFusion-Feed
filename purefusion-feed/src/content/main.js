@@ -24,6 +24,7 @@ class PureFusionApp {
 
             // Initialize Modules
             this.cleaner = new window.PF_Cleaner(initialSettings);
+            this.commentPreview = new window.PF_CommentPreview(initialSettings);
             this.uiTweaks = new window.PF_UiTweaks(initialSettings);
             this.feedManager = new window.PF_FeedManager(initialSettings);
             this.predictor = new window.PF_Predictor(initialSettings);
@@ -46,6 +47,7 @@ class PureFusionApp {
                 // Apply root-level structural changes
                 this.feedManager.applyDocumentLevelTweaks();
                 this.uiTweaks.applyDocumentLevelTweaks();
+                this.commentPreview.sweepDocument();
 
                 // Start MutationObserver for dynamically injected feed elements
                 this.observer.start();
@@ -96,6 +98,9 @@ class PureFusionApp {
             
             // Pass to AI Engine for learning and scoring
             if (this.predictor) this.predictor.applyToNodes(addedNodes);
+
+            // Progressive inline comment previews
+            if (this.commentPreview) this.commentPreview.applyToNodes(addedNodes);
             
             // Pass to LLM features
             if (this.llmFeatures) this.llmFeatures.applyToNodes(addedNodes);
@@ -145,6 +150,7 @@ class PureFusionApp {
         if (this.cleaner) this.cleaner.sweepDocument();
         if (this.feedManager) this.feedManager.applyDocumentLevelTweaks();
         if (this.uiTweaks) this.uiTweaks.applyDocumentLevelTweaks();
+        if (this.commentPreview) this.commentPreview.sweepDocument();
         this._checkChronologicalEnforcement();
     }
 
@@ -153,6 +159,7 @@ class PureFusionApp {
 
         const modules = [
             this.cleaner,
+            this.commentPreview,
             this.uiTweaks,
             this.feedManager,
             this.predictor,
@@ -206,7 +213,8 @@ class PureFusionApp {
             hideMetaAI: false,
             hideMessengerTyping: false,
             messengerPrivacyBlur: false,
-            notificationDigestMode: false
+            notificationDigestMode: false,
+            autoCommentPreview: false
         };
 
         effective.predictions = {
