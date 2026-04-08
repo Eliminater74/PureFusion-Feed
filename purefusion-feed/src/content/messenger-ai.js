@@ -78,11 +78,15 @@ class PF_MessengerAI {
         if (!this._isComposer(composer)) return;
         if (!this._isLikelyMessengerComposer(composer)) return;
 
-        const host = this._findHostContainer(composer);
-        if (!host || host.querySelector('.pf-msg-ai-toolbar')) return;
+        const anchor = this._findToolbarAnchor(composer);
+        if (!anchor || !anchor.parent) return;
+
+        const composerId = this._getComposerId(composer);
+        if (anchor.parent.querySelector(`.pf-msg-ai-toolbar[data-pf-composer-id="${composerId}"]`)) return;
 
         const toolbar = document.createElement('div');
         toolbar.className = 'pf-msg-ai-toolbar';
+        toolbar.dataset.pfComposerId = composerId;
 
         const rewriteBtn = document.createElement('button');
         rewriteBtn.type = 'button';
@@ -104,7 +108,7 @@ class PF_MessengerAI {
 
         if (!toolbar.children.length) return;
 
-        host.insertBefore(toolbar, host.firstChild);
+        anchor.parent.insertBefore(toolbar, anchor.before || null);
 
         rewriteBtn.addEventListener('click', async () => {
             await this._handleRewrite(composer, rewriteBtn);
@@ -190,6 +194,7 @@ class PF_MessengerAI {
 
         const panel = document.createElement('div');
         panel.className = 'pf-msg-ai-replies';
+        panel.dataset.pfComposerId = toolbar.dataset.pfComposerId || this._getComposerId(composer);
 
         replies.forEach((reply) => {
             const chip = document.createElement('button');
@@ -289,12 +294,57 @@ class PF_MessengerAI {
         }
     }
 
-    _findHostContainer(composer) {
-        const row = composer.closest('form, [role="dialog"], [role="main"]');
-        if (!row) return composer.parentElement;
+    _findToolbarAnchor(composer) {
+        const composerRow = this._findComposerRow(composer);
+        if (composerRow && composerRow.parentElement) {
+            return {
+                parent: composerRow.parentElement,
+                before: composerRow
+            };
+        }
 
-        const anchor = composer.closest('div')?.parentElement;
-        return anchor || composer.parentElement || row;
+        if (composer.parentElement) {
+            return {
+                parent: composer.parentElement,
+                before: composer
+            };
+        }
+
+        return null;
+    }
+
+    _findComposerRow(composer) {
+        let node = composer;
+
+        for (let depth = 0; depth < 7 && node; depth += 1) {
+            const rect = node.getBoundingClientRect ? node.getBoundingClientRect() : null;
+            const controls = node.querySelectorAll
+                ? node.querySelectorAll('div[role="button"], button, a[role="link"]')
+                : [];
+
+            const hasComposer = node.contains && node.contains(composer);
+            const looksLikeRow = !!(
+                hasComposer
+                && controls.length >= 3
+                && rect
+                && rect.height > 20
+                && rect.height < 140
+                && rect.width > 180
+            );
+
+            if (looksLikeRow) return node;
+            node = node.parentElement;
+        }
+
+        return null;
+    }
+
+    _getComposerId(composer) {
+        if (!composer.dataset.pfComposerId) {
+            composer.dataset.pfComposerId = `pfm-${Math.random().toString(36).slice(2, 9)}`;
+        }
+
+        return composer.dataset.pfComposerId;
     }
 
     _isComposer(node) {
@@ -350,8 +400,11 @@ class PF_MessengerAI {
                 display: flex;
                 gap: 8px;
                 align-items: center;
-                margin: 6px 0 8px;
-                flex-wrap: wrap;
+                margin: 4px 8px 6px;
+                padding: 0 2px;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                scrollbar-width: thin;
             }
 
             .pf-msg-ai-btn {
@@ -362,6 +415,7 @@ class PF_MessengerAI {
                 padding: 4px 10px;
                 font: 700 11px/1.2 "Segoe UI Variable Text", "Segoe UI", sans-serif;
                 cursor: pointer;
+                white-space: nowrap;
             }
 
             .pf-msg-ai-btn:hover {
@@ -375,22 +429,22 @@ class PF_MessengerAI {
             }
 
             .pf-msg-ai-replies {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 8px;
-                margin: 0 0 8px;
+                display: grid;
+                gap: 6px;
+                margin: 0 8px 8px;
             }
 
             .pf-msg-ai-reply-chip {
                 border: 1px solid rgba(114, 172, 255, 0.42);
                 background: rgba(27, 49, 79, 0.72);
                 color: #dbedff;
-                border-radius: 14px;
+                border-radius: 10px;
                 padding: 6px 10px;
                 font: 600 12px/1.3 "Segoe UI Variable Text", "Segoe UI", sans-serif;
                 cursor: pointer;
                 max-width: 100%;
                 text-align: left;
+                width: 100%;
             }
 
             .pf-msg-ai-reply-chip:hover {
