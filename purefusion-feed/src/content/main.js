@@ -234,6 +234,17 @@ class PureFusionApp {
             enabled: false
         };
 
+        effective.imageFilters = {
+            ...effective.imageFilters,
+            enabled: false,
+            hideSports: false,
+            hideFood: false,
+            hidePets: false,
+            hideVehicles: false,
+            hideScreenshotsMemes: false,
+            hideTravelScenery: false
+        };
+
         effective.wellbeing = {
             ...effective.wellbeing,
             grayscaleMode: false,

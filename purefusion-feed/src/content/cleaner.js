@@ -110,6 +110,10 @@ class PF_Cleaner {
         if (this._hasStoryActivityFiltersEnabled()) {
             this.removeStoryActivityPosts(rootNode);
         }
+
+        if (this._hasImageSubjectFiltersEnabled()) {
+            this.removeImageSubjectPosts(rootNode);
+        }
         
         if (this.settings.filters.removeColoredBackgrounds) this.removeColoredBackgrounds(rootNode);
         
@@ -156,6 +160,22 @@ class PF_Cleaner {
             || sf.hideLikedThis
             || sf.hideAttendingEvents
             || sf.hideSharedMemories
+        );
+    }
+
+    _hasImageSubjectFiltersEnabled() {
+        if (this._panicMode) return false;
+
+        const imageFilters = this.settings?.imageFilters;
+        if (!imageFilters || !imageFilters.enabled) return false;
+
+        return !!(
+            imageFilters.hideSports
+            || imageFilters.hideFood
+            || imageFilters.hidePets
+            || imageFilters.hideVehicles
+            || imageFilters.hideScreenshotsMemes
+            || imageFilters.hideTravelScenery
         );
     }
 
@@ -249,6 +269,84 @@ class PF_Cleaner {
         const maxHide = Math.max(4, Math.floor(scannedCount * 0.45));
         if ((scannedCount > 2 && matchedPosts.length >= scannedCount) || matchedPosts.length > maxHide) {
             PF_Logger.warn(`Story activity filter safety bailout: matched ${matchedPosts.length}/${scannedCount}.`);
+            return;
+        }
+
+        matchedPosts.forEach(({ node, reason }) => {
+            this._hidePostNode(node, reason);
+        });
+    }
+
+    removeImageSubjectPosts(rootNode) {
+        const imageFilters = this.settings?.imageFilters;
+        if (!imageFilters || !imageFilters.enabled) return;
+
+        const rules = [
+            {
+                enabled: imageFilters.hideSports,
+                reason: 'Image Subject: Sports',
+                tokens: ['soccer', 'football', 'basketball', 'baseball', 'hockey', 'tennis', 'athlete', 'stadium', 'sport']
+            },
+            {
+                enabled: imageFilters.hideFood,
+                reason: 'Image Subject: Food',
+                tokens: ['food', 'meal', 'dish', 'plate', 'pizza', 'burger', 'drink', 'restaurant', 'cocina', 'comida', 'bebida']
+            },
+            {
+                enabled: imageFilters.hidePets,
+                reason: 'Image Subject: Pets',
+                tokens: ['dog', 'cat', 'puppy', 'kitten', 'pet', 'perro', 'gato', 'mascota']
+            },
+            {
+                enabled: imageFilters.hideVehicles,
+                reason: 'Image Subject: Vehicles',
+                tokens: ['car', 'truck', 'vehicle', 'motorcycle', 'bike', 'van', 'bus', 'coche', 'camion', 'vehiculo', 'moto']
+            },
+            {
+                enabled: imageFilters.hideScreenshotsMemes,
+                reason: 'Image Subject: Screenshots/Memes',
+                tokens: ['screenshot', 'meme', 'text that says', 'caption', 'captura de pantalla', 'texto que dice']
+            },
+            {
+                enabled: imageFilters.hideTravelScenery,
+                reason: 'Image Subject: Travel/Scenery',
+                tokens: ['beach', 'mountain', 'sunset', 'landscape', 'travel', 'vacation', 'playa', 'montana', 'atardecer', 'paisaje', 'viaje', 'vacaciones']
+            }
+        ].filter((rule) => rule.enabled);
+
+        if (!rules.length) return;
+
+        const strictPostSelector = '[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"]';
+        const postCandidates = this._getPostCandidates(rootNode)
+            .filter((postWrapper) => {
+                if (!postWrapper || postWrapper.dataset.pfHidden) return false;
+                if (!postWrapper.matches || !postWrapper.matches(strictPostSelector)) return false;
+                if (!this._isLikelySingleFeedPost(postWrapper)) return false;
+                return true;
+            });
+
+        if (!postCandidates.length) return;
+
+        const matchedPosts = [];
+
+        postCandidates.forEach((postWrapper) => {
+            const imageSignals = this._extractImageSubjectSignals(postWrapper);
+            if (!imageSignals.length) return;
+
+            for (const rule of rules) {
+                if (imageSignals.some((signal) => this._containsAnyToken(signal, rule.tokens))) {
+                    matchedPosts.push({ node: postWrapper, reason: rule.reason });
+                    break;
+                }
+            }
+        });
+
+        if (!matchedPosts.length) return;
+
+        const scannedCount = postCandidates.length;
+        const maxHide = Math.max(3, Math.floor(scannedCount * 0.35));
+        if ((scannedCount > 2 && matchedPosts.length >= scannedCount) || matchedPosts.length > maxHide) {
+            PF_Logger.warn(`Image subject filter safety bailout: matched ${matchedPosts.length}/${scannedCount}.`);
             return;
         }
 
@@ -933,6 +1031,48 @@ class PF_Cleaner {
         if (!text) return false;
 
         return /(friends?|group|commented|liked|reacted|shared a memory|memories on facebook|event|attending|interested in|going to|amigos?|grupo|comento|comentado|gusto|reacciono|recuerdo|recuerdos|evento|asistio|asistira|interesado)/.test(text);
+    }
+
+    _extractImageSubjectSignals(node) {
+        if (!node || !node.querySelectorAll) return [];
+
+        const parts = [];
+        const seen = new Set();
+        const selectors = 'img[alt], [role="img"][aria-label], image[aria-label], video[aria-label]';
+
+        node.querySelectorAll(selectors).forEach((el) => {
+            if (parts.length >= 16) return;
+
+            const raw = (el.getAttribute('alt') || el.getAttribute('aria-label') || '').trim();
+            const comparable = this._normalizeComparableText(raw);
+            if (!comparable || comparable.length < 8 || comparable.length > 280) return;
+            if (!this._looksLikeImageDescriptor(comparable)) return;
+            if (seen.has(comparable)) return;
+
+            seen.add(comparable);
+            parts.push(comparable);
+        });
+
+        return parts;
+    }
+
+    _looksLikeImageDescriptor(text) {
+        if (!text) return false;
+
+        if (/(may be (an )?(image|photo)|image of|photo of|picture of|screenshot|meme|text that says|puede ser (una )?(imagen|foto)|imagen de|foto de|captura de pantalla|texto que dice)/.test(text)) {
+            return true;
+        }
+
+        return /(soccer|football|basketball|food|pizza|dog|cat|car|truck|beach|mountain|atardecer|viaje|comida|mascota)/.test(text);
+    }
+
+    _containsAnyToken(text, tokens) {
+        if (!text || !Array.isArray(tokens) || tokens.length === 0) return false;
+
+        return tokens.some((token) => {
+            const normalizedToken = this._normalizeComparableText(token);
+            return normalizedToken && text.includes(normalizedToken);
+        });
     }
 
     _isLikelySingleFeedPost(node) {

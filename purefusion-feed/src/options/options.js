@@ -178,6 +178,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_story_hideLikedThis': { obj: 'storyFilters', prop: 'hideLikedThis', type: 'checkbox' },
         'opt_story_hideAttendingEvents': { obj: 'storyFilters', prop: 'hideAttendingEvents', type: 'checkbox' },
         'opt_story_hideSharedMemories': { obj: 'storyFilters', prop: 'hideSharedMemories', type: 'checkbox' },
+
+        // Image Subject Filters
+        'opt_image_filters_enabled': { obj: 'imageFilters', prop: 'enabled', type: 'checkbox' },
+        'opt_image_hideSports': { obj: 'imageFilters', prop: 'hideSports', type: 'checkbox' },
+        'opt_image_hideFood': { obj: 'imageFilters', prop: 'hideFood', type: 'checkbox' },
+        'opt_image_hidePets': { obj: 'imageFilters', prop: 'hidePets', type: 'checkbox' },
+        'opt_image_hideVehicles': { obj: 'imageFilters', prop: 'hideVehicles', type: 'checkbox' },
+        'opt_image_hideScreenshotsMemes': { obj: 'imageFilters', prop: 'hideScreenshotsMemes', type: 'checkbox' },
+        'opt_image_hideTravelScenery': { obj: 'imageFilters', prop: 'hideTravelScenery', type: 'checkbox' },
         
         // Predictions
         'opt_pred_enabled': { obj: 'predictions', prop: 'enabled', type: 'checkbox' },

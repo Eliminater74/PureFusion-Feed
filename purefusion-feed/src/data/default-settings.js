@@ -40,6 +40,19 @@ const DEFAULT_SETTINGS = {
     },
 
     // ------------------------------------------------------------------------
+    // IMAGE SUBJECT FILTERS
+    // ------------------------------------------------------------------------
+    imageFilters: {
+        enabled: false,
+        hideSports: false,
+        hideFood: false,
+        hidePets: false,
+        hideVehicles: false,
+        hideScreenshotsMemes: false,
+        hideTravelScenery: false
+    },
+
+    // ------------------------------------------------------------------------
     // UI TWEAKS & LAYOUT
     // ------------------------------------------------------------------------
     uiMode: {

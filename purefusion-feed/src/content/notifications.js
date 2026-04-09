@@ -112,9 +112,11 @@ class PF_NotificationControls {
     }
 
     _filterNotifications(items) {
+        const filterSignature = this._getNotifFilterSignature();
+
         items.forEach((item) => {
-            if (item.dataset.pfNotifChecked) return;
-            item.dataset.pfNotifChecked = 'true';
+            if (item.dataset.pfNotifChecked === filterSignature) return;
+            item.dataset.pfNotifChecked = filterSignature;
 
             const content = this._normalizeComparableText(item.textContent || '');
             if (!content || content.length < 8) return;
@@ -160,6 +162,16 @@ class PF_NotificationControls {
                 PF_Helpers.hideElement(item, 'Engagement Suggestion Notification');
             }
         });
+    }
+
+    _getNotifFilterSignature() {
+        const social = this.settings?.social || {};
+        return [
+            social.blockNotifGames ? '1' : '0',
+            social.blockNotifBirthdays ? '1' : '0',
+            social.blockNotifMarketplace ? '1' : '0',
+            social.blockNotifEngagement ? '1' : '0'
+        ].join('');
     }
 
     _startPopupScanner() {
