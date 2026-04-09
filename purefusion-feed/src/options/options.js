@@ -170,6 +170,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_filters_hideMemories': { obj: 'filters', prop: 'hideMemories', type: 'checkbox' },
         'opt_filters_hideFundraisers': { obj: 'filters', prop: 'hideFundraisers', type: 'checkbox' },
         'opt_filters_removeColoredBackgrounds': { obj: 'filters', prop: 'removeColoredBackgrounds', type: 'checkbox' },
+
+        // Story Activity Filters
+        'opt_story_hideBecameFriends': { obj: 'storyFilters', prop: 'hideBecameFriends', type: 'checkbox' },
+        'opt_story_hideJoinedGroups': { obj: 'storyFilters', prop: 'hideJoinedGroups', type: 'checkbox' },
+        'opt_story_hideCommentedOnThis': { obj: 'storyFilters', prop: 'hideCommentedOnThis', type: 'checkbox' },
+        'opt_story_hideLikedThis': { obj: 'storyFilters', prop: 'hideLikedThis', type: 'checkbox' },
+        'opt_story_hideAttendingEvents': { obj: 'storyFilters', prop: 'hideAttendingEvents', type: 'checkbox' },
+        'opt_story_hideSharedMemories': { obj: 'storyFilters', prop: 'hideSharedMemories', type: 'checkbox' },
         
         // Predictions
         'opt_pred_enabled': { obj: 'predictions', prop: 'enabled', type: 'checkbox' },

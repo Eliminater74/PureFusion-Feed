@@ -28,6 +28,18 @@ const DEFAULT_SETTINGS = {
     },
 
     // ------------------------------------------------------------------------
+    // STORY ACTIVITY FILTERS
+    // ------------------------------------------------------------------------
+    storyFilters: {
+        hideBecameFriends: false,
+        hideJoinedGroups: false,
+        hideCommentedOnThis: false,
+        hideLikedThis: false,
+        hideAttendingEvents: false,
+        hideSharedMemories: false
+    },
+
+    // ------------------------------------------------------------------------
     // UI TWEAKS & LAYOUT
     // ------------------------------------------------------------------------
     uiMode: {

@@ -98,6 +98,10 @@ class PF_Cleaner {
             this.removeRightRailAds(rootNode);
         }
         if (this.settings.filters.removeSuggested) this.removeSuggestedPosts(rootNode); // Shared logic for suggested, pymk, groups
+
+        if (this._hasStoryActivityFiltersEnabled()) {
+            this.removeStoryActivityPosts(rootNode);
+        }
         
         if (this.settings.filters.removeColoredBackgrounds) this.removeColoredBackgrounds(rootNode);
         
@@ -129,6 +133,78 @@ class PF_Cleaner {
 
         // Apply keyword sweeping
         this.applyKeywordFilters(rootNode);
+    }
+
+    _hasStoryActivityFiltersEnabled() {
+        const sf = this.settings?.storyFilters;
+        if (!sf) return false;
+
+        return !!(
+            sf.hideBecameFriends
+            || sf.hideJoinedGroups
+            || sf.hideCommentedOnThis
+            || sf.hideLikedThis
+            || sf.hideAttendingEvents
+            || sf.hideSharedMemories
+        );
+    }
+
+    removeStoryActivityPosts(rootNode) {
+        const sf = this.settings?.storyFilters;
+        if (!sf) return;
+
+        const rules = [
+            {
+                enabled: sf.hideBecameFriends,
+                reason: 'Story Type: Became Friends',
+                rx: /\b(became friends|are now friends|celebrating friendship|ahora son amigos)\b/
+            },
+            {
+                enabled: sf.hideJoinedGroups,
+                reason: 'Story Type: Joined Groups',
+                rx: /\b(joined (a )?group|joined group|se unio al grupo|se unio a un grupo)\b/
+            },
+            {
+                enabled: sf.hideCommentedOnThis,
+                reason: 'Story Type: Commented On This',
+                rx: /\b(commented on this|replied to .* comment|ha comentado|comento en esto)\b/
+            },
+            {
+                enabled: sf.hideLikedThis,
+                reason: 'Story Type: Liked This',
+                rx: /\b(liked this|reacted to this|le gusto esto|reacciono a esto)\b/
+            },
+            {
+                enabled: sf.hideAttendingEvents,
+                reason: 'Story Type: Event Attendance',
+                rx: /\b(attending|attended|is interested in|is going to|interesado en|asistira|asistio|asistiendo)\b/
+            },
+            {
+                enabled: sf.hideSharedMemories,
+                reason: 'Story Type: Shared Memory',
+                rx: /\b(shared a memory|your memories on facebook|compartio un recuerdo|recuerdos en facebook)\b/
+            }
+        ].filter((r) => r.enabled);
+
+        if (!rules.length) return;
+
+        const postCandidates = this._getPostCandidates(rootNode);
+        postCandidates.forEach((postWrapper) => {
+            if (!postWrapper || postWrapper.dataset.pfHidden) return;
+
+            const normalizedText = this._extractPostText(postWrapper);
+            if (!normalizedText) return;
+
+            // Use early section of text, where story activity labels usually appear.
+            const headerText = normalizedText.slice(0, 420);
+
+            for (const rule of rules) {
+                if (rule.rx.test(headerText)) {
+                    this._hidePostNode(postWrapper, rule.reason);
+                    break;
+                }
+            }
+        });
     }
 
     /**
