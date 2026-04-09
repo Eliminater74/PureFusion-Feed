@@ -266,22 +266,58 @@ class PF_MessengerAI {
 
         const safeText = String(text || '').trim();
 
-        composer.focus();
+        const target = composer.matches('[contenteditable="true"]')
+            ? composer
+            : (composer.querySelector('[contenteditable="true"]') || composer);
 
-        // Use a single write path to avoid duplicate text insertion in Messenger.
-        composer.textContent = safeText;
+        target.focus();
 
+        // Replace content via Range to avoid duplicate inserts (e.g. "OkOk").
         try {
-            composer.dispatchEvent(new InputEvent('input', {
+            const selection = window.getSelection();
+            const range = document.createRange();
+            range.selectNodeContents(target);
+            range.deleteContents();
+
+            const textNode = document.createTextNode(safeText);
+            range.insertNode(textNode);
+            range.setStartAfter(textNode);
+            range.collapse(true);
+
+            selection.removeAllRanges();
+            selection.addRange(range);
+        } catch {
+            // Fallback for edge cases where Range APIs are blocked by host editor
+            target.textContent = safeText;
+        }
+
+        this._dispatchComposerInput(target, safeText);
+        this._moveCaretToEnd(target);
+    }
+
+    _dispatchComposerInput(target, text) {
+        try {
+            target.dispatchEvent(new InputEvent('beforeinput', {
                 bubbles: true,
-                data: safeText,
+                cancelable: true,
+                data: text,
                 inputType: 'insertReplacementText'
             }));
         } catch {
-            composer.dispatchEvent(new Event('input', { bubbles: true }));
+            // noop
         }
 
-        this._moveCaretToEnd(composer);
+        try {
+            target.dispatchEvent(new InputEvent('input', {
+                bubbles: true,
+                data: text,
+                inputType: 'insertReplacementText'
+            }));
+        } catch {
+            target.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+
+        target.dispatchEvent(new Event('change', { bubbles: true }));
     }
 
     _moveCaretToEnd(el) {
