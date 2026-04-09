@@ -49,6 +49,8 @@ class PF_MessengerAI {
     scanDocument() {
         if (!this._isEnabled()) return;
 
+        this._cleanupMisplacedToolbars();
+
         const composers = document.querySelectorAll('div[role="textbox"][contenteditable="true"]');
         composers.forEach((composer) => this._attachToComposer(composer));
     }
@@ -410,7 +412,7 @@ class PF_MessengerAI {
         if (host.includes('messenger.com')) return true;
 
         // On facebook.com only allow chat popups, not feed comment composers.
-        return this._isFacebookChatPopupComposer(composer) || label.includes('message') || label.includes('mensaje');
+        return this._isFacebookChatPopupComposer(composer);
     }
 
     _isFacebookChatPopupComposer(composer) {
@@ -429,6 +431,23 @@ class PF_MessengerAI {
         ];
 
         return headerSignals.some((selector) => !!dialog.querySelector(selector));
+    }
+
+    _cleanupMisplacedToolbars() {
+        const host = window.location.hostname || '';
+        if (!host.includes('facebook.com')) return;
+
+        document.querySelectorAll('.pf-msg-ai-toolbar').forEach((toolbar) => {
+            const inFeedArticle = !!toolbar.closest('[role="article"]');
+            const inDialog = !!toolbar.closest('[role="dialog"]');
+            if (inFeedArticle && !inDialog) {
+                const composerId = toolbar.dataset.pfComposerId;
+                toolbar.remove();
+                if (composerId) {
+                    document.querySelectorAll(`.pf-msg-ai-replies[data-pf-composer-id="${composerId}"]`).forEach((panel) => panel.remove());
+                }
+            }
+        });
     }
 
     _checkReady() {
