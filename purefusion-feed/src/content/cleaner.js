@@ -160,9 +160,22 @@ class PF_Cleaner {
     }
 
     _hasSidebarVisibilityFilters() {
-        // Emergency stability guard:
-        // Navigation/sidebar module filtering is temporarily disabled.
-        return false;
+        if (this._panicMode) return false;
+
+        const sidebar = this.settings?.sidebar;
+        if (!sidebar || !sidebar.enableModuleFilters) return false;
+
+        return !!(
+            sidebar.hideLeftMarketplace
+            || sidebar.hideLeftGaming
+            || sidebar.hideLeftWatch
+            || sidebar.hideLeftMemories
+            || sidebar.hideLeftMetaAI
+            || sidebar.hideRightTrending
+            || sidebar.hideRightContacts
+            || sidebar.hideRightEvents
+            || sidebar.hideRightBirthdays
+        );
     }
 
     removeStoryActivityPosts(rootNode) {
@@ -246,9 +259,9 @@ class PF_Cleaner {
 
     removeNavigationModules(rootNode) {
         const sidebar = this.settings?.sidebar;
-        if (!sidebar) return;
+        if (!sidebar || !sidebar.enableModuleFilters) return;
 
-        const leftSelector = PF_SELECTOR_MAP.leftSidebar || '[role="navigation"]';
+        const leftSelector = PF_SELECTOR_MAP.leftSidebar || '[role="navigation"][aria-label="Facebook"]';
         const rightSelector = PF_SELECTOR_MAP.rightSidebar || '[role="complementary"]';
 
         const leftNav = rootNode.matches && rootNode.matches(leftSelector)
@@ -267,32 +280,36 @@ class PF_Cleaner {
                 this._hideLeftNavByHref(leftNav, ['/watch'], 'Left Nav: Watch');
             }
             if (sidebar.hideLeftGaming) {
-                this._hideLeftNavByHref(leftNav, ['/gaming', '/games', '/play/'], 'Left Nav: Gaming');
+                this._hideLeftNavByHref(leftNav, ['/gaming', '/games'], 'Left Nav: Gaming');
             }
             if (sidebar.hideLeftMemories) {
                 this._hideLeftNavByHref(leftNav, ['/memories'], 'Left Nav: Memories');
             }
             if (sidebar.hideLeftMetaAI) {
-                this._hideByTextTokens(leftNav, 'a, span, div', ['meta ai', 'meta ia'], 'Left Nav: Meta AI');
+                this._hideLeftNavByHref(leftNav, ['/ai', 'meta.ai'], 'Left Nav: Meta AI');
+                this._hideLeftNavByExactLabel(leftNav, ['meta ai', 'meta ia'], 'Left Nav: Meta AI');
             }
         }
 
         if (rightNav) {
             if (sidebar.hideRightTrending) {
-                this._hideByTextTokens(rightNav, 'h2, h3, span, div', ['trending', 'tendencias', 'popular now'], 'Right Sidebar: Trending');
+                this._hideRightModuleByHeading(rightNav, ['trending', 'tendencias', 'popular now'], 'Right Sidebar: Trending');
+                this._hideRightModuleByLink(rightNav, ['/search/top/', '/hashtag/'], 'Right Sidebar: Trending');
             }
 
             if (sidebar.hideRightContacts) {
-                this.hideTarget(rightNav, PF_SELECTOR_MAP.rightSidebarContacts || '[aria-label="Contacts"], [aria-label="Contactos"]', 'Right Sidebar: Contacts');
-                this._hideByTextTokens(rightNav, 'h2, h3, span, div', ['contacts', 'contactos'], 'Right Sidebar: Contacts');
+                this._hideRightModuleByAriaLabel(rightNav, ['contacts', 'contactos'], 'Right Sidebar: Contacts');
+                this._hideRightModuleByHeading(rightNav, ['contacts', 'contactos'], 'Right Sidebar: Contacts');
             }
 
             if (sidebar.hideRightEvents) {
-                this._hideByTextTokens(rightNav, 'h2, h3, span, div', ['events', 'eventos', 'upcoming events', 'proximos eventos'], 'Right Sidebar: Events');
+                this._hideRightModuleByHeading(rightNav, ['events', 'eventos', 'upcoming events', 'proximos eventos'], 'Right Sidebar: Events');
+                this._hideRightModuleByLink(rightNav, ['/events/'], 'Right Sidebar: Events');
             }
 
             if (sidebar.hideRightBirthdays) {
-                this._hideByTextTokens(rightNav, 'h2, h3, span, div', ['birthdays', 'birthday', 'cumpleanos', 'cumpleanos proximos'], 'Right Sidebar: Birthdays');
+                this._hideRightModuleByHeading(rightNav, ['birthdays', 'birthday', 'cumpleanos', 'cumpleanos proximos'], 'Right Sidebar: Birthdays');
+                this._hideRightModuleByLink(rightNav, ['/events/birthdays/', '/birthdays/'], 'Right Sidebar: Birthdays');
             }
         }
     }
@@ -310,25 +327,85 @@ class PF_Cleaner {
         });
     }
 
-    _hideByTextTokens(scopeNode, selector, tokens, reason) {
-        if (!scopeNode || !scopeNode.querySelectorAll || !Array.isArray(tokens) || tokens.length === 0) return;
+    _hideLeftNavByExactLabel(scopeNode, labels, reason) {
+        if (!scopeNode || !scopeNode.querySelectorAll || !Array.isArray(labels) || labels.length === 0) return;
 
-        const normalizedTokens = tokens
-            .map((token) => this._normalizeComparableText(token))
+        const normalizedLabels = labels
+            .map((label) => this._normalizeComparableText(label))
             .filter(Boolean);
 
-        if (!normalizedTokens.length) return;
+        if (!normalizedLabels.length) return;
 
-        scopeNode.querySelectorAll(selector).forEach((node) => {
-            const text = this._normalizeComparableText(node.textContent || '');
-            if (!text || text.length < 4 || text.length > 96) return;
+        scopeNode.querySelectorAll('a[role="link"], a[href]').forEach((anchor) => {
+            const text = this._normalizeComparableText(anchor.textContent || '');
+            if (!text || text.length < 4 || text.length > 48) return;
+            if (!normalizedLabels.some((label) => text === label)) return;
 
-            const matches = normalizedTokens.some((token) => text === token || text.includes(token));
-            if (!matches) return;
-
-            const target = this._findCompactNavContainer(node, scopeNode);
+            const target = this._findCompactNavContainer(anchor, scopeNode);
             this._hideNodeSafely(target, reason);
         });
+    }
+
+    _hideRightModuleByAriaLabel(scopeNode, labels, reason) {
+        if (!scopeNode || !scopeNode.querySelectorAll || !Array.isArray(labels) || labels.length === 0) return;
+
+        const normalizedLabels = labels
+            .map((label) => this._normalizeComparableText(label))
+            .filter(Boolean);
+
+        if (!normalizedLabels.length) return;
+
+        scopeNode.querySelectorAll('[aria-label]').forEach((node) => {
+            const aria = this._normalizeComparableText(node.getAttribute('aria-label') || '');
+            if (!aria || !normalizedLabels.some((label) => aria === label || aria.startsWith(`${label} `))) return;
+
+            const target = this._findRightModuleContainer(node, scopeNode);
+            this._hideNodeSafely(target, reason);
+        });
+    }
+
+    _hideRightModuleByHeading(scopeNode, labels, reason) {
+        if (!scopeNode || !scopeNode.querySelectorAll || !Array.isArray(labels) || labels.length === 0) return;
+
+        const normalizedLabels = labels
+            .map((label) => this._normalizeComparableText(label))
+            .filter(Boolean);
+
+        if (!normalizedLabels.length) return;
+
+        const headingSelector = 'h2, h3, [role="heading"], [role="heading"][aria-level]';
+        scopeNode.querySelectorAll(headingSelector).forEach((heading) => {
+            const text = this._normalizeComparableText(heading.textContent || '');
+            if (!text || text.length < 4 || text.length > 72) return;
+            if (!normalizedLabels.some((label) => text === label || text.startsWith(`${label} `))) return;
+
+            const target = this._findRightModuleContainer(heading, scopeNode);
+            this._hideNodeSafely(target, reason);
+        });
+    }
+
+    _hideRightModuleByLink(scopeNode, hrefTokens, reason) {
+        if (!scopeNode || !scopeNode.querySelectorAll || !Array.isArray(hrefTokens) || hrefTokens.length === 0) return;
+
+        scopeNode.querySelectorAll('a[href]').forEach((anchor) => {
+            const href = (anchor.getAttribute('href') || '').toLowerCase();
+            if (!href) return;
+            if (!hrefTokens.some((token) => href.includes(token))) return;
+
+            const target = this._findRightModuleContainer(anchor, scopeNode);
+            this._hideNodeSafely(target, reason);
+        });
+    }
+
+    _findRightModuleContainer(node, scopeNode) {
+        if (!node) return null;
+
+        const moduleRegion = PF_Helpers.getClosest(node, '[role="region"], section, [data-pagelet], div[aria-label]', 8);
+        if (moduleRegion && moduleRegion !== scopeNode && !moduleRegion.matches('[role="complementary"]')) {
+            return moduleRegion;
+        }
+
+        return this._findCompactNavContainer(node, scopeNode);
     }
 
     _findCompactNavContainer(node, scopeNode) {
@@ -352,7 +429,8 @@ class PF_Cleaner {
             depth++;
         }
 
-        return node;
+        if (node.matches && node.matches('[role="listitem"], li')) return node;
+        return null;
     }
 
     _hideNodeSafely(node, reason) {
@@ -908,7 +986,8 @@ class PF_Cleaner {
             if (!node) return;
 
             const reason = String(node.dataset.pfReason || '');
-            if (reason.startsWith('Left Nav:') || reason.startsWith('Right Sidebar:')) {
+            const isNavReason = reason.startsWith('Left Nav:') || reason.startsWith('Right Sidebar:');
+            if (isNavReason && !this._hasSidebarVisibilityFilters()) {
                 node.style.removeProperty('display');
                 delete node.dataset.pfHidden;
                 delete node.dataset.pfReason;
@@ -974,11 +1053,11 @@ class PF_Cleaner {
 
     _isSafeHideTargetNode(node) {
         if (!node || !node.matches) return false;
-        if (node.matches('html, body, [role="main"], [role="feed"]')) return false;
-        if (node.querySelector && (node.querySelector('[role="feed"]') || node.querySelector('[role="main"]'))) return false;
+        if (node.matches('html, body, [role="main"], [role="feed"], [role="banner"], [role="navigation"], [role="complementary"]')) return false;
+        if (node.querySelector && (node.querySelector('[role="feed"]') || node.querySelector('[role="main"]') || node.querySelector('[role="navigation"]') || node.querySelector('[role="complementary"]'))) return false;
 
         const role = (node.getAttribute && node.getAttribute('role')) || '';
-        if (role === 'main' || role === 'feed') return false;
+        if (role === 'main' || role === 'feed' || role === 'banner' || role === 'navigation' || role === 'complementary') return false;
 
         const articleCount = node.querySelectorAll ? node.querySelectorAll('[role="article"]').length : 0;
         if (articleCount > 2) return false;

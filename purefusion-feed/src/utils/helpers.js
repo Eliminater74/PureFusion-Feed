@@ -68,8 +68,8 @@ const PF_Helpers = {
      */
     hideElement(node, reason = "Filtered") {
         if (!node) return;
-        if (node.matches && node.matches('html, body, [role="main"], [role="feed"]')) return;
-        if (node.querySelector && node.querySelector('[role="feed"]')) return;
+        if (node.matches && node.matches('html, body, [role="main"], [role="feed"], [role="banner"], [role="navigation"], [role="complementary"]')) return;
+        if (node.querySelector && (node.querySelector('[role="feed"]') || node.querySelector('[role="main"]') || node.querySelector('[role="navigation"]') || node.querySelector('[role="complementary"]'))) return;
 
         if (node.getBoundingClientRect) {
             const rect = node.getBoundingClientRect();

@@ -99,6 +99,7 @@
   "options_ui_absolute_timestamps": { "message": "Convertir marcas de tiempo a fechas absolutas" },
   "options_nav_filters_title": { "message": "Modulos de navegacion y barra lateral" },
   "options_nav_filters_desc": { "message": "Oculta modulos especificos de la navegacion izquierda y la barra lateral derecha." },
+  "options_nav_master_enable": { "message": "Activar filtrado modular de navegacion (Modo seguro)" },
   "options_nav_left_marketplace": { "message": "Ocultar nav izquierda: Marketplace" },
   "options_nav_left_watch": { "message": "Ocultar nav izquierda: Watch" },
   "options_nav_left_gaming": { "message": "Ocultar nav izquierda: Gaming" },

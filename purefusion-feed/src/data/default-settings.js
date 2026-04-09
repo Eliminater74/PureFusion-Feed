@@ -89,19 +89,20 @@ const DEFAULT_SETTINGS = {
     // SIDEBAR & COMPONENT VISIBILITY
     // ------------------------------------------------------------------------
     sidebar: {
+        enableModuleFilters: false,
         // Left Nav
         hideLeftMarketplace: false,
         hideLeftGaming: false,
         hideLeftWatch: false,
         hideLeftMemories: false,
-        hideLeftMetaAI: true,
+        hideLeftMetaAI: false,
         fixTimestamps: true,
         showLinkPreviews: true,
         disableCommentAutofocus: true,
         widescreenMode: false,
         enforceChronologicalFeed: false,
         // Right Col
-        hideRightTrending: true,
+        hideRightTrending: false,
         hideRightContacts: false,
         hideRightEvents: false,
         hideRightBirthdays: false,

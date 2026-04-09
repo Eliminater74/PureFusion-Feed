@@ -201,6 +201,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_uiMode_fontSizeScale': { obj: 'uiMode', prop: 'fontSizeScale', type: 'number' },
 
         // Sidebar Visibility
+        'opt_sidebar_enableModuleFilters': { obj: 'sidebar', prop: 'enableModuleFilters', type: 'checkbox' },
         'opt_sidebar_hideLeftMarketplace': { obj: 'sidebar', prop: 'hideLeftMarketplace', type: 'checkbox' },
         'opt_sidebar_hideLeftGaming': { obj: 'sidebar', prop: 'hideLeftGaming', type: 'checkbox' },
         'opt_sidebar_hideLeftWatch': { obj: 'sidebar', prop: 'hideLeftWatch', type: 'checkbox' },

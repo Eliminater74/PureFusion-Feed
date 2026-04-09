@@ -99,6 +99,7 @@
   "options_ui_absolute_timestamps": { "message": "Convert Timestamps into Absolute Dates" },
   "options_nav_filters_title": { "message": "Navigation & Sidebar Modules" },
   "options_nav_filters_desc": { "message": "Hide specific left navigation and right sidebar modules." },
+  "options_nav_master_enable": { "message": "Enable module-level nav filtering (Safe Mode)" },
   "options_nav_left_marketplace": { "message": "Hide left nav: Marketplace" },
   "options_nav_left_watch": { "message": "Hide left nav: Watch" },
   "options_nav_left_gaming": { "message": "Hide left nav: Gaming" },
