@@ -55,8 +55,14 @@ What PureFusion includes:
 2. Open extension popup and toggle ad/suggested filters.
 3. Open full settings and apply a preset pack from Core Filters.
 4. Verify feed updates without page reload.
-5. Open Messenger and verify Ghost Mode options (seen/typing/privacy blur).
-6. Optional AI test:
+5. Keyword filter reproducibility test:
+   - In Options -> Keyword Filters, add a visible word from a feed post into Blocklist.
+   - Save settings and confirm that matching posts collapse behind the filter overlay.
+6. Sponsored filter reproducibility test:
+   - Keep default Ad filter enabled.
+   - Scroll feed and confirm posts labeled "Sponsored" are hidden when detected.
+7. Open Messenger and verify Ghost Mode options (seen/typing/privacy blur).
+8. Optional AI test:
    - In Options -> AI Engine, choose Gemini or OpenAI and save.
    - Allow optional host permission prompt.
    - Trigger TL;DR on feed or Rewrite/Smart Replies in Messenger composer.

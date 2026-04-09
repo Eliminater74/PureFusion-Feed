@@ -9,6 +9,16 @@ class PF_Cleaner {
     constructor(settings) {
         this.settings = settings;
         this._undoStyleInjected = false;
+        this.sponsoredTokens = [
+            'sponsored',
+            'publicidad',
+            'patrocinado',
+            'patrocinada',
+            'sponsorise',
+            'sponsorisee',
+            'sponsorizzato',
+            'gesponsert'
+        ];
         this._injectUndoChipStyles();
     }
 
@@ -136,10 +146,12 @@ class PF_Cleaner {
 
         // 2. Deep traverse for obfuscated text injection
         // FB injects "Sponsored" as literal text nodes in the sidebar
-        const adSpans = PF_Helpers.findContains(rightCol, 'span, div, h2, h3', 'Sponsored');
+        const adSpans = PF_Helpers.findContains(rightCol, 'span, div, h2, h3', 'Sponsored')
+            .concat(PF_Helpers.findContains(rightCol, 'span, div, h2, h3', 'Publicidad'))
+            .concat(PF_Helpers.findContains(rightCol, 'span, div, h2, h3', 'Patrocinado'));
         adSpans.forEach(el => {
             // Verify exact match to prevent false positives if someone's name contains the word
-            if (el.textContent.trim() === "Sponsored") {
+            if (this._isSponsoredLabel(el.textContent)) {
                 const targetWrap = PF_Helpers.getClosest(el, 'div[data-pagelet]') || el.parentElement.parentElement;
                 if (targetWrap && !targetWrap.dataset.pfHidden) {
                     PF_Helpers.hideElement(targetWrap, "Right Rail Heuristics");
@@ -220,10 +232,18 @@ class PF_Cleaner {
             const labelNode = document.getElementById(labelId);
             if (labelNode) {
                 const text = labelNode.textContent.trim();
-                if (text === 'Sponsored' || text === 'Publicidad') {
+                if (this._isSponsoredLabel(text)) {
                     targets.push(el);
                 }
             }
+        });
+
+        // 3. Post-level fallback scan for localized Sponsored markers.
+        const postCandidates = this._getPostCandidates(rootNode);
+        postCandidates.forEach((post) => {
+            if (!post || post.dataset.pfHidden) return;
+            const marker = this._findSponsoredMarkerInPost(post);
+            if (marker) targets.push(marker);
         });
 
         for (const indicator of targets) {
@@ -334,20 +354,21 @@ class PF_Cleaner {
         
         if (autohide.length === 0 && blocklist.length === 0 && allowlist.length === 0) return;
 
-        // Note: For actual post text inspection we look inside `PF_SELECTOR_MAP.postTextBody`
-        const textNodes = rootNode.querySelectorAll(PF_SELECTOR_MAP.postTextBody);
-        
-        textNodes.forEach(textContainer => {
-            const textContent = textContainer.textContent.toLowerCase();
-            const postWrapper = PF_Helpers.getClosest(textContainer, PF_SELECTOR_MAP.postContainer);
+        const postCandidates = this._getPostCandidates(rootNode);
+
+        postCandidates.forEach((postWrapper) => {
             if (!postWrapper || postWrapper.dataset.pfHidden) return;
+
+            const textContent = this._extractPostText(postWrapper).toLowerCase();
+            if (!textContent) return;
 
             if (this._isAllowlistedPost(postWrapper, textContent, true)) return;
 
             // Check auto-hide (Full silent deletion)
             let hidden = false;
             for (const kw of autohide) {
-                if (textContent.includes(kw.toLowerCase())) {
+                const normalized = this._normalizeText(kw);
+                if (normalized && textContent.includes(normalized)) {
                     this._hidePostNode(postWrapper, `Keyword Autohide: ${kw}`);
                     hidden = true;
                     break;
@@ -357,28 +378,101 @@ class PF_Cleaner {
 
             // Check blocklist (Soft hiding/collapse)
             for (const kw of blocklist) {
-                if (textContent.includes(kw.toLowerCase())) {
+                const normalized = this._normalizeText(kw);
+                if (normalized && textContent.includes(normalized)) {
                     this._collapsePost(postWrapper, kw, true);
                     break; // stop at first match
                 }
             }
 
-            // 2. Friends Only Mode check
+            // Friends Only Mode check
             if (this.settings.uiMode.friendsOnlyMode) {
-                // If it contains markers of groups, pages, or suggested content.
-                if (postWrapper.querySelector('a[href*="/groups/"]') || textContent.includes('suggested for you') || textContent.includes('sponsored') || textContent.includes('join group')) {
+                if (
+                    postWrapper.querySelector('a[href*="/groups/"]')
+                    || textContent.includes('suggested for you')
+                    || textContent.includes('sponsored')
+                    || textContent.includes('join group')
+                ) {
                     this._hidePostNode(postWrapper, "Friends Only Mode: Group/Page Hidden");
                     return;
                 }
             }
 
-            // 3. Fundraiser hide Check
+            // Fundraiser hide check
             if (this.settings.filters.hideFundraisers) {
                 if (textContent.includes('fundraiser') || textContent.includes('donate')) {
                     this._hidePostNode(postWrapper, "Fundraiser Module");
-                    return;
                 }
             }
+        });
+    }
+
+    _getPostCandidates(rootNode) {
+        const results = [];
+        const seen = new Set();
+
+        const addCandidate = (node) => {
+            if (!node || seen.has(node)) return;
+            seen.add(node);
+            results.push(node);
+        };
+
+        if (rootNode.matches && rootNode.matches(PF_SELECTOR_MAP.postContainer)) {
+            addCandidate(rootNode);
+        }
+
+        if (rootNode.querySelectorAll) {
+            rootNode.querySelectorAll(PF_SELECTOR_MAP.postContainer).forEach(addCandidate);
+
+            // Some post shells are plain role=article, so include them as fallback.
+            rootNode.querySelectorAll('[role="article"]').forEach((article) => {
+                const inFeed = !!PF_Helpers.getClosest(article, '[role="feed"]', 12);
+                const inDialog = !!PF_Helpers.getClosest(article, '[role="dialog"]', 6);
+                if (!inFeed && !inDialog) return;
+
+                const wrapped = PF_Helpers.getClosest(article, PF_SELECTOR_MAP.postContainer, 3) || article;
+                addCandidate(wrapped);
+            });
+        }
+
+        return results;
+    }
+
+    _findSponsoredMarkerInPost(postNode) {
+        const candidates = postNode.querySelectorAll('[aria-label], a[role="link"], span, div');
+        const postRect = postNode.getBoundingClientRect ? postNode.getBoundingClientRect() : null;
+
+        for (const node of candidates) {
+            const text = this._normalizeText(
+                node.getAttribute('aria-label')
+                || node.textContent
+                || ''
+            );
+
+            if (!text || text.length > 32) continue;
+            if (!this._isSponsoredLabel(text)) continue;
+
+            // Prefer markers near the top header area of a post.
+            if (postRect && node.getBoundingClientRect) {
+                const rect = node.getBoundingClientRect();
+                if (rect.top - postRect.top > 260) continue;
+            }
+
+            return node;
+        }
+
+        return null;
+    }
+
+    _isSponsoredLabel(text) {
+        const normalized = this._normalizeText(text);
+        if (!normalized) return false;
+
+        return this.sponsoredTokens.some((token) => {
+            return normalized === token
+                || normalized.startsWith(`${token} `)
+                || normalized.startsWith(`${token} ·`)
+                || normalized.startsWith(`${token}:`);
         });
     }
 
@@ -496,8 +590,33 @@ class PF_Cleaner {
     }
 
     _extractPostText(node) {
-        const body = node.querySelector(PF_SELECTOR_MAP.postTextBody);
-        return body?.textContent || node.textContent || '';
+        if (!node || !node.querySelectorAll) return '';
+
+        const parts = [];
+        const seen = new Set();
+
+        const selectors = [
+            PF_SELECTOR_MAP.postTextBody,
+            '[data-ad-comet-preview="message"]',
+            'div[dir="auto"]',
+            'span[dir="auto"]'
+        ];
+
+        selectors.forEach((selector) => {
+            node.querySelectorAll(selector).forEach((el) => {
+                const text = this._normalizeText(el.textContent || '');
+                if (!text || text.length < 2) return;
+                if (seen.has(text)) return;
+                seen.add(text);
+                parts.push(text);
+            });
+        });
+
+        if (parts.length > 0) {
+            return parts.join(' ');
+        }
+
+        return this._normalizeText(node.textContent || '');
     }
 
     async _addSourceToAllowlist(sourceName) {
@@ -521,6 +640,13 @@ class PF_Cleaner {
     _i18n(key, fallback) {
         if (typeof chrome === 'undefined' || !chrome.i18n) return fallback;
         return chrome.i18n.getMessage(key) || fallback;
+    }
+
+    _normalizeText(text) {
+        return String(text || '')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .toLowerCase();
     }
 
     _collapsePost(postNode, matchedKeyword, includeKeywordAllowlist = false) {
