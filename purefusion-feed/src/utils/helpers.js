@@ -71,6 +71,12 @@ const PF_Helpers = {
         if (node.matches && node.matches('html, body, [role="main"], [role="feed"]')) return;
         if (node.querySelector && node.querySelector('[role="feed"]')) return;
 
+        if (node.getBoundingClientRect) {
+            const rect = node.getBoundingClientRect();
+            if (rect.width > window.innerWidth * 0.8 && rect.height > window.innerHeight * 0.7) return;
+            if (rect.width > window.innerWidth * 0.45 && rect.height > window.innerHeight * 0.55) return;
+        }
+
         node.style.setProperty('display', 'none', 'important');
         node.dataset.pfHidden = 'true';
         node.dataset.pfReason = reason;

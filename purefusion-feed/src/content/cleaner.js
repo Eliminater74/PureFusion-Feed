@@ -372,7 +372,7 @@ class PF_Cleaner {
 
         // 1. Static known containers
         const staticAds = rightCol.querySelectorAll('[data-pagelet="RightRailAdUnits"], [data-pagelet="EgoPane"]');
-        staticAds.forEach(ad => PF_Helpers.hideElement(ad, "Right Rail Target"));
+        staticAds.forEach((ad) => this._hideNodeSafely(ad, "Right Rail Target"));
 
         // 2. Deep traverse for obfuscated text injection
         // FB injects "Sponsored" as literal text nodes in the sidebar
@@ -384,7 +384,7 @@ class PF_Cleaner {
             if (this._isSponsoredLabel(el.textContent)) {
                 const targetWrap = PF_Helpers.getClosest(el, 'div[data-pagelet]') || el.parentElement.parentElement;
                 if (targetWrap && !targetWrap.dataset.pfHidden) {
-                    PF_Helpers.hideElement(targetWrap, "Right Rail Heuristics");
+                    this._hideNodeSafely(targetWrap, "Right Rail Heuristics");
                 }
             }
         });
@@ -977,12 +977,18 @@ class PF_Cleaner {
         if (node.matches('html, body, [role="main"], [role="feed"]')) return false;
         if (node.querySelector && (node.querySelector('[role="feed"]') || node.querySelector('[role="main"]'))) return false;
 
+        const role = (node.getAttribute && node.getAttribute('role')) || '';
+        if (role === 'main' || role === 'feed') return false;
+
         const articleCount = node.querySelectorAll ? node.querySelectorAll('[role="article"]').length : 0;
         if (articleCount > 2) return false;
 
         if (node.getBoundingClientRect) {
             const rect = node.getBoundingClientRect();
             if (rect.width > window.innerWidth * 0.8 && rect.height > window.innerHeight * 0.7) {
+                return false;
+            }
+            if (rect.width > window.innerWidth * 0.45 && rect.height > window.innerHeight * 0.55) {
                 return false;
             }
         }
