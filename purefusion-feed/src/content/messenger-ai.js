@@ -397,13 +397,38 @@ class PF_MessengerAI {
             || ''
         );
 
-        if (label.includes('comment') || label.includes('coment')) return false;
-        if (label.includes('message') || label.includes('mensaje')) return true;
+        if (label.includes('comment') || label.includes('coment') || label.includes('reply')) return false;
 
-        const scope = composer.closest('[role="dialog"], [role="main"]') || document;
-        const hasMessengerSignals = !!scope.querySelector('[aria-label*="GIF"], [aria-label*="Sticker"], [aria-label*="Emoji"], [aria-label*="Like"], [aria-label*="Me gusta"]');
+        const localContext = this._normalizeText(
+            (composer.closest('[role="article"], [data-pagelet], [role="dialog"], [role="main"], form')?.innerText || '').slice(0, 800)
+        );
 
-        return hasMessengerSignals;
+        const looksLikeFeedCommentContext = /reply to|write a reply|write a comment|most relevant|view all \d+ replies|responder a|escribe una respuesta|escribe un comentario|más relevantes/.test(localContext);
+        if (looksLikeFeedCommentContext) return false;
+
+        const host = window.location.hostname || '';
+        if (host.includes('messenger.com')) return true;
+
+        // On facebook.com only allow chat popups, not feed comment composers.
+        return this._isFacebookChatPopupComposer(composer) || label.includes('message') || label.includes('mensaje');
+    }
+
+    _isFacebookChatPopupComposer(composer) {
+        const dialog = composer.closest('[role="dialog"]');
+        if (!dialog) return false;
+
+        const headerSignals = [
+            '[aria-label*="Call"]',
+            '[aria-label*="Video"]',
+            '[aria-label*="chat"]',
+            '[aria-label*="Messenger"]',
+            '[aria-label*="Llam"]',
+            '[aria-label*="Cerrar chat"]',
+            '[aria-label*="Minimize"]',
+            '[aria-label*="Minimizar"]'
+        ];
+
+        return headerSignals.some((selector) => !!dialog.querySelector(selector));
     }
 
     _checkReady() {
