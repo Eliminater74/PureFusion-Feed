@@ -219,7 +219,14 @@ class PureFusionApp {
             hideMessengerTyping: false,
             messengerPrivacyBlur: false,
             notificationDigestMode: false,
-            autoCommentPreview: false
+            autoCommentPreview: false,
+            blockNotifGames: false,
+            blockNotifBirthdays: false,
+            blockNotifMarketplace: false,
+            blockNotifEngagement: false,
+            hideSearchPopupSuggestions: false,
+            hideSearchTrending: false,
+            hideSearchRecent: false
         };
 
         effective.predictions = {

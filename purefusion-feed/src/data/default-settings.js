@@ -123,6 +123,10 @@ const DEFAULT_SETTINGS = {
         blockNotifGames: true,
         blockNotifBirthdays: false,
         blockNotifMarketplace: true,
+        blockNotifEngagement: false,
+        hideSearchPopupSuggestions: false,
+        hideSearchTrending: false,
+        hideSearchRecent: false,
     },
 
     // ------------------------------------------------------------------------

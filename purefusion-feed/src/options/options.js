@@ -227,6 +227,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_social_hideMetaAI': { obj: 'social', prop: 'hideMetaAI', type: 'checkbox' },
         'opt_social_hideMessengerTyping': { obj: 'social', prop: 'hideMessengerTyping', type: 'checkbox' },
         'opt_social_messengerPrivacyBlur': { obj: 'social', prop: 'messengerPrivacyBlur', type: 'checkbox' },
+        'opt_social_blockNotifGames': { obj: 'social', prop: 'blockNotifGames', type: 'checkbox' },
+        'opt_social_blockNotifBirthdays': { obj: 'social', prop: 'blockNotifBirthdays', type: 'checkbox' },
+        'opt_social_blockNotifMarketplace': { obj: 'social', prop: 'blockNotifMarketplace', type: 'checkbox' },
+        'opt_social_blockNotifEngagement': { obj: 'social', prop: 'blockNotifEngagement', type: 'checkbox' },
+        'opt_social_hideSearchPopupSuggestions': { obj: 'social', prop: 'hideSearchPopupSuggestions', type: 'checkbox' },
+        'opt_social_hideSearchTrending': { obj: 'social', prop: 'hideSearchTrending', type: 'checkbox' },
+        'opt_social_hideSearchRecent': { obj: 'social', prop: 'hideSearchRecent', type: 'checkbox' },
 
         // LLM
         'opt_llm_provider': { obj: 'llm', prop: 'provider', type: 'select' },
