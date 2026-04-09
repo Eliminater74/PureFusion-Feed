@@ -142,28 +142,35 @@ class PF_Cleaner {
     }
 
     _hasStoryActivityFiltersEnabled() {
-        // Emergency stability guard:
-        // Story activity filtering is temporarily disabled until selector-based
-        // matching replaces the current text-heuristic approach.
-        return false;
+        if (this._panicMode) return false;
+
+        const sf = this.settings?.storyFilters;
+        if (!sf) return false;
+
+        return !!(
+            sf.hideBecameFriends
+            || sf.hideJoinedGroups
+            || sf.hideCommentedOnThis
+            || sf.hideLikedThis
+            || sf.hideAttendingEvents
+            || sf.hideSharedMemories
+        );
     }
 
     removeStoryActivityPosts(rootNode) {
         const sf = this.settings?.storyFilters;
         if (!sf) return;
 
-        const strictPostSelector = '[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"]';
-
         const rules = [
             {
                 enabled: sf.hideBecameFriends,
                 reason: 'Story Type: Became Friends',
-                rx: /\b(became friends|are now friends|celebrating friendship|ahora son amigos)\b/
+                rx: /\b(became friends|are now friends|now friends with|celebrating friendship|se hicieron amigos|ahora son amigos)\b/
             },
             {
                 enabled: sf.hideJoinedGroups,
                 reason: 'Story Type: Joined Groups',
-                rx: /\b(joined (a )?group|se unio a(l)? (un )?grupo)\b/
+                rx: /\b(joined (a )?group|joined .* group|se unio a(l)? (un )?grupo)\b/
             },
             {
                 enabled: sf.hideCommentedOnThis,
@@ -178,7 +185,7 @@ class PF_Cleaner {
             {
                 enabled: sf.hideAttendingEvents,
                 reason: 'Story Type: Event Attendance',
-                rx: /\b(attending an event|attended an event|is interested in (an )?event|is going to (an )?event|interesado en (un )?evento|asistira a (un )?evento|asistio a (un )?evento)\b/
+                rx: /\b(is going to (an )?event|is interested in (an )?event|attending (an )?event|attended (an )?event|interesado en (un )?evento|asistira a (un )?evento|asistio a (un )?evento)\b/
             },
             {
                 enabled: sf.hideSharedMemories,
@@ -189,22 +196,25 @@ class PF_Cleaner {
 
         if (!rules.length) return;
 
-        const postCandidates = this._getPostCandidates(rootNode);
+        const strictPostSelector = '[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"]';
+        const postCandidates = this._getPostCandidates(rootNode)
+            .filter((postWrapper) => {
+                if (!postWrapper || postWrapper.dataset.pfHidden) return false;
+                if (!postWrapper.matches || !postWrapper.matches(strictPostSelector)) return false;
+                if (!this._isLikelySingleFeedPost(postWrapper)) return false;
+                return true;
+            });
+
+        if (!postCandidates.length) return;
+
         const matchedPosts = [];
-        let scannedCount = 0;
 
         postCandidates.forEach((postWrapper) => {
-            if (!postWrapper || postWrapper.dataset.pfHidden) return;
-            if (!postWrapper.matches || !postWrapper.matches(strictPostSelector)) return;
-            if (!this._isLikelySingleFeedPost(postWrapper)) return;
-
-            scannedCount++;
-
-            const headerText = this._extractStoryHeaderText(postWrapper);
-            if (!headerText) return;
+            const headerSignals = this._extractStoryHeaderSignals(postWrapper);
+            if (!headerSignals.length) return;
 
             for (const rule of rules) {
-                if (rule.rx.test(headerText)) {
+                if (headerSignals.some((signal) => rule.rx.test(signal))) {
                     matchedPosts.push({ node: postWrapper, reason: rule.reason });
                     break;
                 }
@@ -213,9 +223,10 @@ class PF_Cleaner {
 
         if (!matchedPosts.length) return;
 
-        // Safety valve: if matching is abnormally high, bail out to avoid accidental feed wipe.
-        const maxHide = Math.max(4, Math.floor(scannedCount * 0.3));
-        if ((scannedCount > 1 && matchedPosts.length >= scannedCount) || matchedPosts.length > maxHide) {
+        // Safety valve: if matching spikes too high, abort this pass.
+        const scannedCount = postCandidates.length;
+        const maxHide = Math.max(4, Math.floor(scannedCount * 0.45));
+        if ((scannedCount > 2 && matchedPosts.length >= scannedCount) || matchedPosts.length > maxHide) {
             PF_Logger.warn(`Story activity filter safety bailout: matched ${matchedPosts.length}/${scannedCount}.`);
             return;
         }
@@ -685,32 +696,40 @@ class PF_Cleaner {
         return false;
     }
 
-    _extractStoryHeaderText(node) {
-        if (!node || !node.querySelectorAll) return '';
+    _extractStoryHeaderSignals(node) {
+        if (!node || !node.querySelectorAll) return [];
 
         const parts = [];
         const seen = new Set();
         const postRect = node.getBoundingClientRect ? node.getBoundingClientRect() : null;
-        const selectors = 'h2, h3, h4, a[role="link"] span[dir="auto"], span[dir="auto"]';
+        const selectors = 'h2, h3, h4, [role="heading"], a[role="link"] span[dir="auto"], span[dir="auto"]';
 
         node.querySelectorAll(selectors).forEach((el) => {
-            if (parts.length >= 24) return;
+            if (parts.length >= 20) return;
 
-            const text = this._normalizeText(el.textContent || '');
-            if (!text || text.length < 6 || text.length > 140) return;
-            if (seen.has(text)) return;
+            const comparable = this._normalizeComparableText(el.textContent || '');
+            if (!comparable || comparable.length < 8 || comparable.length > 220) return;
+            if (seen.has(comparable)) return;
 
             if (postRect && el.getBoundingClientRect) {
                 const rect = el.getBoundingClientRect();
                 const topOffset = rect.top - postRect.top;
-                if (topOffset < -4 || topOffset > 220) return;
+                if (topOffset < -4 || topOffset > 260) return;
             }
 
-            seen.add(text);
-            parts.push(text);
+            if (!this._looksLikeStoryActivitySignal(comparable)) return;
+
+            seen.add(comparable);
+            parts.push(comparable);
         });
 
-        return parts.join(' ');
+        return parts;
+    }
+
+    _looksLikeStoryActivitySignal(text) {
+        if (!text) return false;
+
+        return /(friends?|group|commented|liked|reacted|shared a memory|memories on facebook|event|attending|interested in|going to|amigos?|grupo|comento|comentado|gusto|reacciono|recuerdo|recuerdos|evento|asistio|asistira|interesado)/.test(text);
     }
 
     _isLikelySingleFeedPost(node) {
@@ -853,6 +872,15 @@ class PF_Cleaner {
 
     _normalizeText(text) {
         return String(text || '')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .toLowerCase();
+    }
+
+    _normalizeComparableText(text) {
+        return String(text || '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
             .replace(/\s+/g, ' ')
             .trim()
             .toLowerCase();
