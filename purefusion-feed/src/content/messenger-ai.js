@@ -264,18 +264,21 @@ class PF_MessengerAI {
     _setComposerText(composer, text) {
         if (!composer) return;
 
+        const safeText = String(text || '').trim();
+
         composer.focus();
 
-        try {
-            document.execCommand('selectAll', false);
-            document.execCommand('insertText', false, text);
-        } catch {
-            // fallback below
-        }
+        // Use a single write path to avoid duplicate text insertion in Messenger.
+        composer.textContent = safeText;
 
-        if (this._getComposerText(composer) !== text) {
-            composer.textContent = text;
-            composer.dispatchEvent(new InputEvent('input', { bubbles: true, data: text, inputType: 'insertText' }));
+        try {
+            composer.dispatchEvent(new InputEvent('input', {
+                bubbles: true,
+                data: safeText,
+                inputType: 'insertReplacementText'
+            }));
+        } catch {
+            composer.dispatchEvent(new Event('input', { bubbles: true }));
         }
 
         this._moveCaretToEnd(composer);
