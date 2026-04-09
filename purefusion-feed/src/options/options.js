@@ -200,6 +200,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_uiMode_theme': { obj: 'uiMode', prop: 'theme', type: 'select' },
         'opt_uiMode_fontSizeScale': { obj: 'uiMode', prop: 'fontSizeScale', type: 'number' },
 
+        // Sidebar Visibility
+        'opt_sidebar_hideLeftMarketplace': { obj: 'sidebar', prop: 'hideLeftMarketplace', type: 'checkbox' },
+        'opt_sidebar_hideLeftGaming': { obj: 'sidebar', prop: 'hideLeftGaming', type: 'checkbox' },
+        'opt_sidebar_hideLeftWatch': { obj: 'sidebar', prop: 'hideLeftWatch', type: 'checkbox' },
+        'opt_sidebar_hideLeftMemories': { obj: 'sidebar', prop: 'hideLeftMemories', type: 'checkbox' },
+        'opt_sidebar_hideLeftMetaAI': { obj: 'sidebar', prop: 'hideLeftMetaAI', type: 'checkbox' },
+        'opt_sidebar_hideRightTrending': { obj: 'sidebar', prop: 'hideRightTrending', type: 'checkbox' },
+        'opt_sidebar_hideRightContacts': { obj: 'sidebar', prop: 'hideRightContacts', type: 'checkbox' },
+        'opt_sidebar_hideRightEvents': { obj: 'sidebar', prop: 'hideRightEvents', type: 'checkbox' },
+        'opt_sidebar_hideRightBirthdays': { obj: 'sidebar', prop: 'hideRightBirthdays', type: 'checkbox' },
+
         // Wellbeing
         'opt_wb_grayscale': { obj: 'wellbeing', prop: 'grayscaleMode', type: 'checkbox' },
         'opt_wb_scrollStop': { obj: 'wellbeing', prop: 'infiniteScrollStopper', type: 'checkbox' },

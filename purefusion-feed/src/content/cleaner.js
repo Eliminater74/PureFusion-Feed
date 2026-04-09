@@ -10,6 +10,7 @@ class PF_Cleaner {
         this.settings = settings;
         this._undoStyleInjected = false;
         this._panicMode = false;
+        this._recoveryIntervalId = null;
         this.sponsoredTokens = [
             'sponsored',
             'publicidad',
@@ -21,6 +22,7 @@ class PF_Cleaner {
             'gesponsert'
         ];
         this._injectUndoChipStyles();
+        this._startRecoveryWatchdog();
     }
 
     updateSettings(settings) {
@@ -111,8 +113,8 @@ class PF_Cleaner {
         
         if (this.settings.filters.removeColoredBackgrounds) this.removeColoredBackgrounds(rootNode);
         
-        if (this.settings.sidebar.hideRightTrending) {
-            this.hideTarget(rootNode, PF_SELECTOR_MAP.rightSidebarTrending || '[data-pagelet="RightRail"]', "Right Sidebar Trending");
+        if (this._hasSidebarVisibilityFilters()) {
+            this.removeNavigationModules(rootNode);
         }
         
         // Hide features like Reels, Marketplace, Stories if toggled
@@ -155,6 +157,12 @@ class PF_Cleaner {
             || sf.hideAttendingEvents
             || sf.hideSharedMemories
         );
+    }
+
+    _hasSidebarVisibilityFilters() {
+        // Emergency stability guard:
+        // Navigation/sidebar module filtering is temporarily disabled.
+        return false;
     }
 
     removeStoryActivityPosts(rootNode) {
@@ -234,6 +242,123 @@ class PF_Cleaner {
         matchedPosts.forEach(({ node, reason }) => {
             this._hidePostNode(node, reason);
         });
+    }
+
+    removeNavigationModules(rootNode) {
+        const sidebar = this.settings?.sidebar;
+        if (!sidebar) return;
+
+        const leftSelector = PF_SELECTOR_MAP.leftSidebar || '[role="navigation"]';
+        const rightSelector = PF_SELECTOR_MAP.rightSidebar || '[role="complementary"]';
+
+        const leftNav = rootNode.matches && rootNode.matches(leftSelector)
+            ? rootNode
+            : rootNode.querySelector(leftSelector);
+
+        const rightNav = rootNode.matches && rootNode.matches(rightSelector)
+            ? rootNode
+            : rootNode.querySelector(rightSelector);
+
+        if (leftNav) {
+            if (sidebar.hideLeftMarketplace) {
+                this._hideLeftNavByHref(leftNav, ['/marketplace'], 'Left Nav: Marketplace');
+            }
+            if (sidebar.hideLeftWatch) {
+                this._hideLeftNavByHref(leftNav, ['/watch'], 'Left Nav: Watch');
+            }
+            if (sidebar.hideLeftGaming) {
+                this._hideLeftNavByHref(leftNav, ['/gaming', '/games', '/play/'], 'Left Nav: Gaming');
+            }
+            if (sidebar.hideLeftMemories) {
+                this._hideLeftNavByHref(leftNav, ['/memories'], 'Left Nav: Memories');
+            }
+            if (sidebar.hideLeftMetaAI) {
+                this._hideByTextTokens(leftNav, 'a, span, div', ['meta ai', 'meta ia'], 'Left Nav: Meta AI');
+            }
+        }
+
+        if (rightNav) {
+            if (sidebar.hideRightTrending) {
+                this._hideByTextTokens(rightNav, 'h2, h3, span, div', ['trending', 'tendencias', 'popular now'], 'Right Sidebar: Trending');
+            }
+
+            if (sidebar.hideRightContacts) {
+                this.hideTarget(rightNav, PF_SELECTOR_MAP.rightSidebarContacts || '[aria-label="Contacts"], [aria-label="Contactos"]', 'Right Sidebar: Contacts');
+                this._hideByTextTokens(rightNav, 'h2, h3, span, div', ['contacts', 'contactos'], 'Right Sidebar: Contacts');
+            }
+
+            if (sidebar.hideRightEvents) {
+                this._hideByTextTokens(rightNav, 'h2, h3, span, div', ['events', 'eventos', 'upcoming events', 'proximos eventos'], 'Right Sidebar: Events');
+            }
+
+            if (sidebar.hideRightBirthdays) {
+                this._hideByTextTokens(rightNav, 'h2, h3, span, div', ['birthdays', 'birthday', 'cumpleanos', 'cumpleanos proximos'], 'Right Sidebar: Birthdays');
+            }
+        }
+    }
+
+    _hideLeftNavByHref(scopeNode, hrefTokens, reason) {
+        if (!scopeNode || !scopeNode.querySelectorAll || !Array.isArray(hrefTokens) || hrefTokens.length === 0) return;
+
+        scopeNode.querySelectorAll('a[href]').forEach((anchor) => {
+            const href = (anchor.getAttribute('href') || '').toLowerCase();
+            if (!href) return;
+            if (!hrefTokens.some((token) => href.includes(token))) return;
+
+            const target = this._findCompactNavContainer(anchor, scopeNode);
+            this._hideNodeSafely(target, reason);
+        });
+    }
+
+    _hideByTextTokens(scopeNode, selector, tokens, reason) {
+        if (!scopeNode || !scopeNode.querySelectorAll || !Array.isArray(tokens) || tokens.length === 0) return;
+
+        const normalizedTokens = tokens
+            .map((token) => this._normalizeComparableText(token))
+            .filter(Boolean);
+
+        if (!normalizedTokens.length) return;
+
+        scopeNode.querySelectorAll(selector).forEach((node) => {
+            const text = this._normalizeComparableText(node.textContent || '');
+            if (!text || text.length < 4 || text.length > 96) return;
+
+            const matches = normalizedTokens.some((token) => text === token || text.includes(token));
+            if (!matches) return;
+
+            const target = this._findCompactNavContainer(node, scopeNode);
+            this._hideNodeSafely(target, reason);
+        });
+    }
+
+    _findCompactNavContainer(node, scopeNode) {
+        if (!node) return null;
+
+        const listItem = PF_Helpers.getClosest(node, '[role="listitem"], li', 6);
+        if (listItem && listItem !== scopeNode) return listItem;
+
+        let current = node.parentElement;
+        let depth = 0;
+
+        while (current && current !== scopeNode && depth < 8) {
+            if (current.getBoundingClientRect) {
+                const rect = current.getBoundingClientRect();
+                if (rect.height >= 26 && rect.height <= 240 && rect.width > 80 && rect.width <= 520) {
+                    return current;
+                }
+            }
+
+            current = current.parentElement;
+            depth++;
+        }
+
+        return node;
+    }
+
+    _hideNodeSafely(node, reason) {
+        if (!node || node.dataset.pfHidden === 'true') return;
+        if (!this._isSafeHideTargetNode(node)) return;
+        PF_Helpers.hideElement(node, reason);
     }
 
     /**
@@ -782,6 +907,14 @@ class PF_Cleaner {
         hidden.forEach((node) => {
             if (!node) return;
 
+            const reason = String(node.dataset.pfReason || '');
+            if (reason.startsWith('Left Nav:') || reason.startsWith('Right Sidebar:')) {
+                node.style.removeProperty('display');
+                delete node.dataset.pfHidden;
+                delete node.dataset.pfReason;
+                return;
+            }
+
             const isCritical = node.matches && node.matches('html, body, [role="main"], [role="feed"]');
             const containsFeed = !!(node.querySelector && node.querySelector('[role="feed"]'));
             const containsMain = !!(node.querySelector && node.querySelector('[role="main"]'));
@@ -799,6 +932,16 @@ class PF_Cleaner {
             delete node.dataset.pfHidden;
             delete node.dataset.pfReason;
         });
+    }
+
+    _startRecoveryWatchdog() {
+        if (this._recoveryIntervalId) return;
+
+        this._recoveryIntervalId = setInterval(() => {
+            if (document.hidden) return;
+            this._restoreCriticalContainers();
+            this._checkFeedRecovery();
+        }, 1500);
     }
 
     _checkFeedRecovery() {
