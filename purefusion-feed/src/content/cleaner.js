@@ -160,6 +160,14 @@ class PF_Cleaner {
             || sf.hideLikedThis
             || sf.hideAttendingEvents
             || sf.hideSharedMemories
+            || sf.hideProfilePhotoUpdates
+            || sf.hideCoverPhotoUpdates
+            || sf.hideLifeEvents
+            || sf.hideCheckIns
+            || sf.hideMilestones
+            || sf.hideJobWorkUpdates
+            || sf.hideRelationshipUpdates
+            || sf.hideGroupActivityPosts
         );
     }
 
@@ -232,6 +240,46 @@ class PF_Cleaner {
                 enabled: sf.hideSharedMemories,
                 reason: 'Story Type: Shared Memory',
                 rx: /\b(shared a memory|your memories on facebook|compartio un recuerdo|recuerdos en facebook)\b/
+            },
+            {
+                enabled: sf.hideProfilePhotoUpdates,
+                reason: 'Story Type: Profile Photo Update',
+                rx: /\b(updated (his|her|their) profile picture|updated profile picture|changed profile picture|actualizo su foto de perfil|cambio su foto de perfil)\b/
+            },
+            {
+                enabled: sf.hideCoverPhotoUpdates,
+                reason: 'Story Type: Cover Photo Update',
+                rx: /\b(updated (his|her|their) cover photo|updated cover photo|changed cover photo|actualizo su foto de portada|cambio su foto de portada)\b/
+            },
+            {
+                enabled: sf.hideLifeEvents,
+                reason: 'Story Type: Life Event',
+                rx: /\b(added a life event|life event|evento importante|agrego un evento importante)\b/
+            },
+            {
+                enabled: sf.hideCheckIns,
+                reason: 'Story Type: Check-In',
+                rx: /\b(checked in at|check-in|is at .* with|registro en|se registro en|esta en .* con)\b/
+            },
+            {
+                enabled: sf.hideMilestones,
+                reason: 'Story Type: Milestone',
+                rx: /\b(milestone|celebrating .* milestone|hito|celebrando un hito)\b/
+            },
+            {
+                enabled: sf.hideJobWorkUpdates,
+                reason: 'Story Type: Job/Work Update',
+                rx: /\b(started working at|works at|new job|job update|comenzo a trabajar en|trabaja en|nuevo trabajo|actualizacion laboral)\b/
+            },
+            {
+                enabled: sf.hideRelationshipUpdates,
+                reason: 'Story Type: Relationship Update',
+                rx: /\b(is in a relationship|got engaged|got married|relationship status|esta en una relacion|se comprometio|se caso|estado de relacion)\b/
+            },
+            {
+                enabled: sf.hideGroupActivityPosts,
+                reason: 'Story Type: Group Activity Post',
+                rx: /\b(posted in .* group|shared in .* group|publico en .* grupo|compartio en .* grupo)\b/
             }
         ].filter((r) => r.enabled);
 

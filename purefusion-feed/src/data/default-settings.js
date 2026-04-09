@@ -36,7 +36,15 @@ const DEFAULT_SETTINGS = {
         hideCommentedOnThis: false,
         hideLikedThis: false,
         hideAttendingEvents: false,
-        hideSharedMemories: false
+        hideSharedMemories: false,
+        hideProfilePhotoUpdates: false,
+        hideCoverPhotoUpdates: false,
+        hideLifeEvents: false,
+        hideCheckIns: false,
+        hideMilestones: false,
+        hideJobWorkUpdates: false,
+        hideRelationshipUpdates: false,
+        hideGroupActivityPosts: false
     },
 
     // ------------------------------------------------------------------------

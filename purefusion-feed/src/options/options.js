@@ -178,6 +178,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_story_hideLikedThis': { obj: 'storyFilters', prop: 'hideLikedThis', type: 'checkbox' },
         'opt_story_hideAttendingEvents': { obj: 'storyFilters', prop: 'hideAttendingEvents', type: 'checkbox' },
         'opt_story_hideSharedMemories': { obj: 'storyFilters', prop: 'hideSharedMemories', type: 'checkbox' },
+        'opt_story_hideProfilePhotoUpdates': { obj: 'storyFilters', prop: 'hideProfilePhotoUpdates', type: 'checkbox' },
+        'opt_story_hideCoverPhotoUpdates': { obj: 'storyFilters', prop: 'hideCoverPhotoUpdates', type: 'checkbox' },
+        'opt_story_hideLifeEvents': { obj: 'storyFilters', prop: 'hideLifeEvents', type: 'checkbox' },
+        'opt_story_hideCheckIns': { obj: 'storyFilters', prop: 'hideCheckIns', type: 'checkbox' },
+        'opt_story_hideMilestones': { obj: 'storyFilters', prop: 'hideMilestones', type: 'checkbox' },
+        'opt_story_hideJobWorkUpdates': { obj: 'storyFilters', prop: 'hideJobWorkUpdates', type: 'checkbox' },
+        'opt_story_hideRelationshipUpdates': { obj: 'storyFilters', prop: 'hideRelationshipUpdates', type: 'checkbox' },
+        'opt_story_hideGroupActivityPosts': { obj: 'storyFilters', prop: 'hideGroupActivityPosts', type: 'checkbox' },
 
         // Image Subject Filters
         'opt_image_filters_enabled': { obj: 'imageFilters', prop: 'enabled', type: 'checkbox' },

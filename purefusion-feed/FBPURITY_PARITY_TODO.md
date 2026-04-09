@@ -17,8 +17,9 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 
 1) Story/activity post filters (friend activity style clutter)
 - FBP parity need: hide "became friends", "joined group", "liked/commented", event/memory style activity posts.
-- PureFusion status: DONE.
+- PureFusion status: WIP (core done, expanded pack added and hardening continues).
 - Notes: uses header-signal matching + safety bailouts in cleaner.
+- Added in expanded pack: profile/cover photo updates, life events, check-ins, milestones, job/work updates, relationship updates, group activity posts.
 
 2) Granular navigation/sidebar module controls
 - FBP parity need: fine-grained left/right module hides (not one giant sidebar kill switch).
@@ -43,6 +44,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 ## Remaining Major Gap Areas
 
 1) Expanded post-type filters (high priority)
+- Status: initial implementation complete; continue tuning selectors/phrases per locale.
 - Add dedicated toggles for: profile picture updates, cover photo updates, life events, check-ins, milestones, job/work updates, relationship updates, group activity variants.
 
 2) Top header micro-controls (high priority)
