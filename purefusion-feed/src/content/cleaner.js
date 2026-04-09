@@ -9,6 +9,7 @@ class PF_Cleaner {
     constructor(settings) {
         this.settings = settings;
         this._undoStyleInjected = false;
+        this._panicMode = false;
         this.sponsoredTokens = [
             'sponsored',
             'publicidad',
@@ -78,6 +79,7 @@ class PF_Cleaner {
     sweepDocument() {
         PF_Logger.log("Running initial document sweep...");
         this._applyAllFilters(document.body);
+        this._checkFeedRecovery();
     }
 
     /**
@@ -88,10 +90,14 @@ class PF_Cleaner {
         for (const node of nodes) {
             this._applyAllFilters(node);
         }
+        this._checkFeedRecovery();
     }
 
     _applyAllFilters(rootNode) {
         if (!rootNode || !rootNode.querySelectorAll) return;
+
+        this._restoreCriticalContainers();
+        if (this._panicMode) return;
 
         if (this.settings.filters.removeAds) {
             this.removeSponsored(rootNode);
@@ -136,22 +142,17 @@ class PF_Cleaner {
     }
 
     _hasStoryActivityFiltersEnabled() {
-        const sf = this.settings?.storyFilters;
-        if (!sf) return false;
-
-        return !!(
-            sf.hideBecameFriends
-            || sf.hideJoinedGroups
-            || sf.hideCommentedOnThis
-            || sf.hideLikedThis
-            || sf.hideAttendingEvents
-            || sf.hideSharedMemories
-        );
+        // Emergency stability guard:
+        // Story activity filtering is temporarily disabled until selector-based
+        // matching replaces the current text-heuristic approach.
+        return false;
     }
 
     removeStoryActivityPosts(rootNode) {
         const sf = this.settings?.storyFilters;
         if (!sf) return;
+
+        const strictPostSelector = '[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"]';
 
         const rules = [
             {
@@ -162,12 +163,12 @@ class PF_Cleaner {
             {
                 enabled: sf.hideJoinedGroups,
                 reason: 'Story Type: Joined Groups',
-                rx: /\b(joined (a )?group|joined group|se unio al grupo|se unio a un grupo)\b/
+                rx: /\b(joined (a )?group|se unio a(l)? (un )?grupo)\b/
             },
             {
                 enabled: sf.hideCommentedOnThis,
                 reason: 'Story Type: Commented On This',
-                rx: /\b(commented on this|replied to .* comment|ha comentado|comento en esto)\b/
+                rx: /\b(commented on this|ha comentado|comento en esto)\b/
             },
             {
                 enabled: sf.hideLikedThis,
@@ -177,7 +178,7 @@ class PF_Cleaner {
             {
                 enabled: sf.hideAttendingEvents,
                 reason: 'Story Type: Event Attendance',
-                rx: /\b(attending|attended|is interested in|is going to|interesado en|asistira|asistio|asistiendo)\b/
+                rx: /\b(attending an event|attended an event|is interested in (an )?event|is going to (an )?event|interesado en (un )?evento|asistira a (un )?evento|asistio a (un )?evento)\b/
             },
             {
                 enabled: sf.hideSharedMemories,
@@ -189,21 +190,38 @@ class PF_Cleaner {
         if (!rules.length) return;
 
         const postCandidates = this._getPostCandidates(rootNode);
+        const matchedPosts = [];
+        let scannedCount = 0;
+
         postCandidates.forEach((postWrapper) => {
             if (!postWrapper || postWrapper.dataset.pfHidden) return;
+            if (!postWrapper.matches || !postWrapper.matches(strictPostSelector)) return;
+            if (!this._isLikelySingleFeedPost(postWrapper)) return;
 
-            const normalizedText = this._extractPostText(postWrapper);
-            if (!normalizedText) return;
+            scannedCount++;
 
-            // Use early section of text, where story activity labels usually appear.
-            const headerText = normalizedText.slice(0, 420);
+            const headerText = this._extractStoryHeaderText(postWrapper);
+            if (!headerText) return;
 
             for (const rule of rules) {
                 if (rule.rx.test(headerText)) {
-                    this._hidePostNode(postWrapper, rule.reason);
+                    matchedPosts.push({ node: postWrapper, reason: rule.reason });
                     break;
                 }
             }
+        });
+
+        if (!matchedPosts.length) return;
+
+        // Safety valve: if matching is abnormally high, bail out to avoid accidental feed wipe.
+        const maxHide = Math.max(4, Math.floor(scannedCount * 0.3));
+        if ((scannedCount > 1 && matchedPosts.length >= scannedCount) || matchedPosts.length > maxHide) {
+            PF_Logger.warn(`Story activity filter safety bailout: matched ${matchedPosts.length}/${scannedCount}.`);
+            return;
+        }
+
+        matchedPosts.forEach(({ node, reason }) => {
+            this._hidePostNode(node, reason);
         });
     }
 
@@ -554,6 +572,8 @@ class PF_Cleaner {
 
     _hidePostNode(node, reason) {
         if (!node || node.dataset.pfHidden === 'true') return;
+        if (node.matches && node.matches('html, body, [role="main"], [role="feed"]')) return;
+        if (!this._isSafeHideTargetNode(node)) return;
         if (this._isAllowlistedPost(node)) return;
 
         if (this._isUndoEligible(node)) {
@@ -665,6 +685,49 @@ class PF_Cleaner {
         return false;
     }
 
+    _extractStoryHeaderText(node) {
+        if (!node || !node.querySelectorAll) return '';
+
+        const parts = [];
+        const seen = new Set();
+        const postRect = node.getBoundingClientRect ? node.getBoundingClientRect() : null;
+        const selectors = 'h2, h3, h4, a[role="link"] span[dir="auto"], span[dir="auto"]';
+
+        node.querySelectorAll(selectors).forEach((el) => {
+            if (parts.length >= 24) return;
+
+            const text = this._normalizeText(el.textContent || '');
+            if (!text || text.length < 6 || text.length > 140) return;
+            if (seen.has(text)) return;
+
+            if (postRect && el.getBoundingClientRect) {
+                const rect = el.getBoundingClientRect();
+                const topOffset = rect.top - postRect.top;
+                if (topOffset < -4 || topOffset > 220) return;
+            }
+
+            seen.add(text);
+            parts.push(text);
+        });
+
+        return parts.join(' ');
+    }
+
+    _isLikelySingleFeedPost(node) {
+        if (!node || !node.querySelectorAll) return false;
+
+        if (node.querySelector('[role="feed"]')) return false;
+
+        const articleCount = node.querySelectorAll('[role="article"]').length;
+        if (articleCount === 0) return false;
+        if (articleCount > 1) return false;
+
+        const textLength = (node.textContent || '').length;
+        if (textLength > 9000) return false;
+
+        return true;
+    }
+
     _extractPostText(node) {
         if (!node || !node.querySelectorAll) return '';
 
@@ -693,6 +756,76 @@ class PF_Cleaner {
         }
 
         return this._normalizeText(node.textContent || '');
+    }
+
+    _restoreCriticalContainers() {
+        const hidden = document.querySelectorAll('[data-pf-hidden="true"]');
+        hidden.forEach((node) => {
+            if (!node) return;
+
+            const isCritical = node.matches && node.matches('html, body, [role="main"], [role="feed"]');
+            const containsFeed = !!(node.querySelector && node.querySelector('[role="feed"]'));
+            const containsMain = !!(node.querySelector && node.querySelector('[role="main"]'));
+            const articleCount = node.querySelectorAll ? node.querySelectorAll('[role="article"]').length : 0;
+
+            let isHugeShell = false;
+            if (node.getBoundingClientRect) {
+                const rect = node.getBoundingClientRect();
+                isHugeShell = rect.width > window.innerWidth * 0.7 && rect.height > window.innerHeight * 0.5;
+            }
+
+            if (!isCritical && !containsFeed && !containsMain && articleCount <= 2 && !isHugeShell) return;
+
+            node.style.removeProperty('display');
+            delete node.dataset.pfHidden;
+            delete node.dataset.pfReason;
+        });
+    }
+
+    _checkFeedRecovery() {
+        if (this._panicMode) return;
+
+        const feed = document.querySelector('[role="feed"]');
+        if (!feed) return;
+
+        const hiddenByPF = feed.querySelectorAll('[data-pf-hidden="true"]').length;
+        if (!hiddenByPF) return;
+
+        const visibleArticles = Array.from(feed.querySelectorAll('[role="article"]')).filter((node) => {
+            if (!node || node.dataset.pfHidden === 'true') return false;
+            const rect = node.getBoundingClientRect ? node.getBoundingClientRect() : null;
+            return !!rect && rect.width > 0 && rect.height > 0;
+        }).length;
+
+        if (visibleArticles > 0) return;
+
+        PF_Logger.warn(`Cleaner panic recovery activated. Hidden feed nodes: ${hiddenByPF}.`);
+        this._panicMode = true;
+
+        document.querySelectorAll('[data-pf-hidden="true"]').forEach((node) => {
+            if (!node) return;
+            node.style.removeProperty('display');
+            delete node.dataset.pfHidden;
+            delete node.dataset.pfReason;
+        });
+    }
+
+    _isSafeHideTargetNode(node) {
+        if (!node || !node.matches) return false;
+        if (node.matches('html, body, [role="main"], [role="feed"]')) return false;
+        if (node.querySelector && (node.querySelector('[role="feed"]') || node.querySelector('[role="main"]'))) return false;
+
+        const articleCount = node.querySelectorAll ? node.querySelectorAll('[role="article"]').length : 0;
+        if (articleCount > 2) return false;
+
+        if (node.getBoundingClientRect) {
+            const rect = node.getBoundingClientRect();
+            if (rect.width > window.innerWidth * 0.8 && rect.height > window.innerHeight * 0.7) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     async _addSourceToAllowlist(sourceName) {
@@ -760,7 +893,10 @@ class PF_Cleaner {
 
     hideTarget(rootNode, selector, reason) {
         const targets = rootNode.querySelectorAll(selector);
-        targets.forEach(node => PF_Helpers.hideElement(node, reason));
+        targets.forEach((node) => {
+            if (!this._isSafeHideTargetNode(node)) return;
+            PF_Helpers.hideElement(node, reason);
+        });
     }
 }
 

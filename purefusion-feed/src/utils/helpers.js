@@ -68,6 +68,9 @@ const PF_Helpers = {
      */
     hideElement(node, reason = "Filtered") {
         if (!node) return;
+        if (node.matches && node.matches('html, body, [role="main"], [role="feed"]')) return;
+        if (node.querySelector && node.querySelector('[role="feed"]')) return;
+
         node.style.setProperty('display', 'none', 'important');
         node.dataset.pfHidden = 'true';
         node.dataset.pfReason = reason;
