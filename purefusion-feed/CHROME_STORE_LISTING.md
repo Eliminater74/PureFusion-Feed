@@ -9,40 +9,34 @@ Clean up Facebook and Messenger with smart feed filters, privacy controls, and o
 
 ### Description
 
-PureFusion Feed helps you take back control of Facebook and Messenger.
+PureFusion Feed helps reduce clutter in Facebook and Messenger with user-controlled filters, privacy options, and optional BYOK AI tools.
 
-Core value:
-- Remove sponsored and suggested clutter.
-- Customize feed behavior with presets and advanced filters.
-- Keep settings privacy-first with local key storage.
-- Add optional BYOK AI features only when you enable them.
+What it does:
 
-What PureFusion includes:
+1) Feed cleanup controls
+- Hides many sponsored and suggested feed injections.
+- Hides reels/stories and selected recommendation modules.
+- Supports keyword blocklist/autohide plus allowlist and never-hide sources.
+- Includes preset packs (Work Focus, Friends Only, Minimal, News Heavy, Messenger Privacy).
 
-1) Feed cleanup and focus controls
-- Blocks sponsored posts and noisy recommendations.
-- Hides reels, stories, and selected sidebar components.
-- Includes keyword blocklist/autohide with allowlist support.
-- Adds quick presets (Work Focus, Friends Only, Minimal, News Heavy, Messenger Privacy).
-
-2) User-safe control surface
-- Popup quick toggles for common actions.
+2) Settings and usability
+- Popup quick toggles for common filters.
 - Full options dashboard with import/export.
-- Undo chips for hidden posts, including one-click source allowlisting.
+- Undo chips for hidden posts (show once / always allow source).
 
-3) Optional AI (BYOK)
-- Post TL;DR and smart comment assistance.
-- Messenger draft rewrite and smart replies.
-- AI host permissions are optional and requested only if a provider is enabled.
+3) Optional AI features (BYOK)
+- TL;DR summaries and comment-assist tools.
+- Messenger composer tools: rewrite draft and generate smart replies.
+- AI permissions are requested only when a provider is enabled.
 
 4) Messenger privacy tools
 - Hide seen receipts.
 - Hide typing indicators.
 - Privacy blur mode.
 
-5) Performance and architecture
-- Debounced observer pipeline for dynamic feed updates.
-- Uses roles/data attributes where possible for resilient selection.
+Important compatibility note:
+- Facebook and Messenger interfaces change frequently. Some filter results can vary by account, language, or rollout variant.
+- PureFusion does not guarantee removal of every sponsored or suggested element in every interface variant.
 
 ## Category and Language
 
