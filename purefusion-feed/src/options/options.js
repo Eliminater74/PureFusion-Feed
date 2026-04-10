@@ -249,6 +249,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_topbar_hideMenu': { obj: 'topbarFilters', prop: 'hideMenu', type: 'checkbox' },
         'opt_topbar_hideCreate': { obj: 'topbarFilters', prop: 'hideCreate', type: 'checkbox' },
 
+        // Diagnostics
+        'opt_diag_enabled': { obj: 'diagnostics', prop: 'enabled', type: 'checkbox' },
+        'opt_diag_showOverlay': { obj: 'diagnostics', prop: 'showOverlay', type: 'checkbox' },
+        'opt_diag_verboseConsole': { obj: 'diagnostics', prop: 'verboseConsole', type: 'checkbox' },
+        'opt_diag_maxReasons': { obj: 'diagnostics', prop: 'maxReasons', type: 'number' },
+
         // Wellbeing
         'opt_wb_grayscale': { obj: 'wellbeing', prop: 'grayscaleMode', type: 'checkbox' },
         'opt_wb_scrollStop': { obj: 'wellbeing', prop: 'infiniteScrollStopper', type: 'checkbox' },
@@ -447,6 +453,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         currentSettings.keywords.autohide = autoString.split(',').map(s => s.trim()).filter(s => s.length > 0);
         currentSettings.keywords.allowlist = allowString.split(',').map(s => s.trim()).filter(s => s.length > 0);
         currentSettings.keywords.allowlistFriends = allowFriendsString.split(',').map(s => s.trim()).filter(s => s.length > 0);
+
+        if (currentSettings.diagnostics) {
+            const parsedMaxReasons = Number(currentSettings.diagnostics.maxReasons);
+            currentSettings.diagnostics.maxReasons = Math.max(3, Math.min(12, Number.isFinite(parsedMaxReasons) ? parsedMaxReasons : 6));
+        }
 
         let providerPermissionDenied = false;
         const providerAllowed = await ensureLLMProviderPermission(currentSettings.llm.provider);

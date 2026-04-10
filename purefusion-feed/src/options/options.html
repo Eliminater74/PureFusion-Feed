@@ -669,6 +669,27 @@
                 </div>
                 
                 <hr class="pf-hr">
+
+                <h3 data-i18n="options_data_diag_title">Diagnostics Mode</h3>
+                <p class="pf-desc" data-i18n="options_data_diag_desc">Optional local debug overlay to inspect hide reasons and filter activity.</p>
+                <div class="pf-setting-row">
+                    <label data-i18n="options_data_diag_enable">Enable diagnostics mode</label>
+                    <input type="checkbox" id="opt_diag_enabled" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row">
+                    <label data-i18n="options_data_diag_overlay">Show in-page diagnostics overlay</label>
+                    <input type="checkbox" id="opt_diag_showOverlay" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row">
+                    <label data-i18n="options_data_diag_console">Verbose diagnostics in console</label>
+                    <input type="checkbox" id="opt_diag_verboseConsole" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row auto-height">
+                    <label data-i18n="options_data_diag_max_reasons">Overlay max reason rows</label>
+                    <input type="number" id="opt_diag_maxReasons" min="3" max="12" class="pf-input-number">
+                </div>
+
+                <hr class="pf-hr">
                 
                 <h3 data-i18n="options_data_reset_title">Factory Reset</h3>
                 <p class="pf-desc pf-warn-text" data-i18n="options_data_reset_desc">This will wipe all preferences and local AI learning data.</p>

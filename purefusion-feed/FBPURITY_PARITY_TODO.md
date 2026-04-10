@@ -65,7 +65,9 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Improve rule coverage across additional locales and synonym variants.
 
 5) Rule diagnostics panel (medium)
-- Add optional debug mode to show which rule hid each item and count actions per rule.
+- Status: initial implementation complete.
+- Implemented: optional in-page diagnostics overlay with per-reason hide counters and optional verbose console mode.
+- Next: add observer workload timing + export snapshot.
 
 6) Per-surface controls (medium)
 - Separate behavior for Home feed vs Groups vs Watch vs Marketplace surfaces.

@@ -80,6 +80,19 @@ const PF_Helpers = {
         node.style.setProperty('display', 'none', 'important');
         node.dataset.pfHidden = 'true';
         node.dataset.pfReason = reason;
+
+        try {
+            window.dispatchEvent(new CustomEvent('pf:element_hidden', {
+                detail: {
+                    reason,
+                    tag: node.tagName || 'UNKNOWN',
+                    role: node.getAttribute ? (node.getAttribute('role') || '') : '',
+                    pagelet: node.getAttribute ? (node.getAttribute('data-pagelet') || '') : ''
+                }
+            }));
+        } catch (err) {
+            // no-op for diagnostics event failures
+        }
     },
 
     /**

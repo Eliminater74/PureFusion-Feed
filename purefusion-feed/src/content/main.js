@@ -34,6 +34,7 @@ class PureFusionApp {
             this.llmFeatures = new window.PF_LLMFeatures(initialSettings);
             this.messengerAI = new window.PF_MessengerAI(initialSettings);
             this.inpageUI = new window.PF_InPageUI(initialSettings);
+            this.diagnostics = new window.PF_Diagnostics(initialSettings);
             this.observer = new window.PF_Observer();
 
             // Set up our centralized event bus listeners
@@ -48,6 +49,7 @@ class PureFusionApp {
                 // Apply root-level structural changes
                 this.feedManager.applyDocumentLevelTweaks();
                 this.uiTweaks.applyDocumentLevelTweaks();
+                this.diagnostics.applyDocumentLevelTweaks();
                 this.commentPreview.sweepDocument();
 
                 // Start MutationObserver for dynamically injected feed elements
@@ -111,6 +113,7 @@ class PureFusionApp {
             
             // Pass to notification rules engine to filter drop-down menus
             if (this.notifControls) this.notifControls.applyToNodes(addedNodes);
+            if (this.diagnostics) this.diagnostics.applyToNodes(addedNodes);
         });
 
         // 1. Listen for background script updates (Popup/Options)
@@ -154,6 +157,7 @@ class PureFusionApp {
         if (this.cleaner) this.cleaner.sweepDocument();
         if (this.feedManager) this.feedManager.applyDocumentLevelTweaks();
         if (this.uiTweaks) this.uiTweaks.applyDocumentLevelTweaks();
+        if (this.diagnostics) this.diagnostics.applyDocumentLevelTweaks();
         if (this.commentPreview) this.commentPreview.sweepDocument();
         this._checkChronologicalEnforcement();
     }
@@ -172,7 +176,8 @@ class PureFusionApp {
             this.wellbeing,
             this.llmFeatures,
             this.messengerAI,
-            this.inpageUI
+            this.inpageUI,
+            this.diagnostics
         ];
 
         modules.forEach((moduleRef) => {
@@ -262,6 +267,14 @@ class PureFusionApp {
             hideNotifications: false,
             hideMenu: false,
             hideCreate: false
+        };
+
+        effective.diagnostics = {
+            ...effective.diagnostics,
+            enabled: false,
+            showOverlay: false,
+            verboseConsole: false,
+            maxReasons: 6
         };
 
         effective.wellbeing = {
