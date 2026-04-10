@@ -263,6 +263,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_wb_scrollStop': { obj: 'wellbeing', prop: 'infiniteScrollStopper', type: 'checkbox' },
         'opt_wb_scrollLimit': { obj: 'wellbeing', prop: 'scrollLimitPosts', type: 'number' },
         'opt_wb_sessionTimer': { obj: 'wellbeing', prop: 'sessionTimer', type: 'checkbox' },
+        'opt_wb_reelsLimiterEnabled': { obj: 'wellbeing', prop: 'reelsLimiterEnabled', type: 'checkbox' },
+        'opt_wb_reelsSessionLimit': { obj: 'wellbeing', prop: 'reelsSessionLimit', type: 'number' },
+        'opt_wb_reelsHardLock': { obj: 'wellbeing', prop: 'reelsHardLock', type: 'checkbox' },
         'opt_wb_ragebait': { obj: 'wellbeing', prop: 'ragebaitDetector', type: 'checkbox' },
         'opt_wb_clickbait': { obj: 'wellbeing', prop: 'clickbaitBlocker', type: 'checkbox' },
 
@@ -460,6 +463,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (currentSettings.diagnostics) {
             const parsedMaxReasons = Number(currentSettings.diagnostics.maxReasons);
             currentSettings.diagnostics.maxReasons = Math.max(3, Math.min(12, Number.isFinite(parsedMaxReasons) ? parsedMaxReasons : 6));
+        }
+
+        if (currentSettings.wellbeing) {
+            const parsedReelsLimit = Number(currentSettings.wellbeing.reelsSessionLimit);
+            currentSettings.wellbeing.reelsSessionLimit = Math.max(1, Math.min(20, Number.isFinite(parsedReelsLimit) ? parsedReelsLimit : 3));
         }
 
         let providerPermissionDenied = false;

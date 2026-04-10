@@ -11,6 +11,9 @@ class PF_Cleaner {
         this._undoStyleInjected = false;
         this._panicMode = false;
         this._recoveryIntervalId = null;
+        this._reelsSeenCount = 0;
+        this._reelsTrackedNodes = new WeakSet();
+        this._reelsLimitNoticeShown = false;
         this.sponsoredTokens = [
             'sponsored',
             'publicidad',
@@ -26,7 +29,17 @@ class PF_Cleaner {
     }
 
     updateSettings(settings) {
+        const prevLimiterEnabled = !!this.settings?.wellbeing?.reelsLimiterEnabled;
+        const prevLimit = Number(this.settings?.wellbeing?.reelsSessionLimit || 3);
+
         this.settings = settings;
+
+        const nextLimiterEnabled = !!this.settings?.wellbeing?.reelsLimiterEnabled;
+        const nextLimit = Number(this.settings?.wellbeing?.reelsSessionLimit || 3);
+
+        if (!nextLimiterEnabled || !prevLimiterEnabled || nextLimit !== prevLimit) {
+            this._resetReelsLimiterSession();
+        }
     }
 
     _injectUndoChipStyles() {
@@ -123,6 +136,10 @@ class PF_Cleaner {
 
         if (this._hasTopbarFiltersEnabled()) {
             this.removeTopbarModules(rootNode);
+        }
+
+        if (this._hasReelsSessionLimiterEnabled()) {
+            this.applyReelsSessionLimiter(rootNode);
         }
         
         // Hide features like Reels, Marketplace, Stories if toggled
@@ -230,6 +247,16 @@ class PF_Cleaner {
             || topbar.hideMenu
             || topbar.hideCreate
         );
+    }
+
+    _hasReelsSessionLimiterEnabled() {
+        if (this._panicMode) return false;
+        if (this.settings?.filters?.hideReels) return false;
+
+        const wellbeing = this.settings?.wellbeing;
+        if (!wellbeing) return false;
+
+        return !!wellbeing.reelsLimiterEnabled;
     }
 
     removeStoryActivityPosts(rootNode) {
@@ -1012,6 +1039,84 @@ class PF_Cleaner {
                 }
             }
         });
+    }
+
+    applyReelsSessionLimiter(rootNode) {
+        const wellbeing = this.settings?.wellbeing;
+        if (!wellbeing?.reelsLimiterEnabled) return;
+
+        const limit = Math.max(1, Math.min(20, Number(wellbeing.reelsSessionLimit || 3)));
+        const hardLock = !!wellbeing.reelsHardLock;
+
+        const candidates = this._findReelLimiterCandidates(rootNode);
+        if (!candidates.length) return;
+
+        candidates.forEach((candidate) => {
+            if (!candidate || this._reelsTrackedNodes.has(candidate)) return;
+
+            this._reelsTrackedNodes.add(candidate);
+            this._reelsSeenCount += 1;
+
+            const overLimit = this._reelsSeenCount > limit;
+            if (!overLimit) return;
+
+            const reason = hardLock ? 'Reels Session Hard Lock' : 'Reels Session Limit';
+            this._hidePostNode(candidate, reason);
+
+            if (!this._reelsLimitNoticeShown) {
+                this._reelsLimitNoticeShown = true;
+                const message = hardLock
+                    ? `Reels hard lock active after ${limit} reels this session.`
+                    : `Reels session limit reached (${limit}). Additional reels hidden.`;
+                PF_Helpers.showToast(message, 'info', 4200);
+            }
+        });
+    }
+
+    _findReelLimiterCandidates(rootNode) {
+        if (!rootNode || !rootNode.querySelectorAll) return [];
+
+        const found = new Set();
+
+        const addCandidate = (node) => {
+            if (!node) return;
+            const wrapper = PF_Helpers.getClosest(node, PF_SELECTOR_MAP.postContainer, 8)
+                || PF_Helpers.getClosest(node, '[data-pagelet*="Reels"], [data-pagelet*="Shorts"]', 8)
+                || (node.matches && node.matches(PF_SELECTOR_MAP.postContainer) ? node : null);
+            if (!wrapper) return;
+            if (wrapper.dataset?.pfHidden === 'true') return;
+            found.add(wrapper);
+        };
+
+        const reelsSelectors = [
+            PF_SELECTOR_MAP.reelsTray,
+            '[data-pagelet*="Reels"]',
+            '[data-pagelet*="Shorts"]',
+            'a[href*="/reel/"]'
+        ];
+
+        reelsSelectors.forEach((selector) => {
+            if (!selector) return;
+            rootNode.querySelectorAll(selector).forEach(addCandidate);
+        });
+
+        const textMarkers = PF_Helpers.findContains(rootNode, 'span, h2, h3, div', 'Reels')
+            .concat(PF_Helpers.findContains(rootNode, 'span, h2, h3, div', 'short videos'));
+
+        textMarkers.forEach((node) => {
+            const text = this._normalizeComparableText(node.textContent || '');
+            if (text === 'reels' || text.includes('reels and short videos') || text.includes('short videos')) {
+                addCandidate(node);
+            }
+        });
+
+        return Array.from(found).filter((node) => this._isSafeHideTargetNode(node));
+    }
+
+    _resetReelsLimiterSession() {
+        this._reelsSeenCount = 0;
+        this._reelsTrackedNodes = new WeakSet();
+        this._reelsLimitNoticeShown = false;
     }
 
     /**

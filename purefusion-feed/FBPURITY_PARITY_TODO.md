@@ -95,8 +95,9 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Maintain low CPU budget on long sessions.
 
 11) Reels control v2 (medium)
-- Full disable and optional session limit mode.
-- Keep current hide toggle but add per-session counter + lock option.
+- Status: initial implementation complete.
+- Implemented: optional Reels session limiter with threshold and hard-lock mode.
+- Keep current hide toggle and continue tuning detection reliability.
 
 12) Rule engine for power users (medium)
 - Simple IF/THEN rules over post metadata/text.
@@ -141,6 +142,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 
 8) Reels session limiter
 - Add optional counter and soft lock after user-defined threshold.
+- Add optional on-screen "Reels locked" panel with resume action.
 
 9) Power-user rule engine spike
 - Implement MVP parser for IF/THEN post rules and evaluate performance impact.

@@ -199,6 +199,9 @@ const DEFAULT_SETTINGS = {
         infiniteScrollStopper: false,   // Pause observer rendering after X posts
         scrollLimitPosts: 20,           // Number of posts before showing "Take a break" button
         sessionTimer: false,            // Render floating clock representing time on FB
+        reelsLimiterEnabled: false,     // Allow only N reels/shorts per session
+        reelsSessionLimit: 3,
+        reelsHardLock: false,           // If true, keep reels blocked after threshold
         clickbaitBlocker: true,         // Automatically collapse known clickbait phrases
         ragebaitDetector: true,         // Uses AI Predictor to negative-score intentionally inflammatory posts
     },

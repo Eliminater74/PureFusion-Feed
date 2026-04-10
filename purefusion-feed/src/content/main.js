@@ -10,6 +10,8 @@ class PureFusionApp {
         this.settings = {};
         this.cleaner = null;
         this.observer = null;
+        this.postUpdateSweepTimer = null;
+        this.postUpdateSweepTimerLong = null;
     }
 
     async boot() {
@@ -149,17 +151,49 @@ class PureFusionApp {
         this._syncModuleSettings();
 
         if (!this.isEnabled()) {
+            this._clearFollowupResweeps();
             if (this.observer) this.observer.stop();
             return;
         }
 
         if (this.observer) this.observer.start();
+        this._runLiveResweepPass();
+        this._scheduleFollowupResweeps();
+        this._checkChronologicalEnforcement();
+    }
+
+    _runLiveResweepPass() {
         if (this.cleaner) this.cleaner.sweepDocument();
         if (this.feedManager) this.feedManager.applyDocumentLevelTweaks();
         if (this.uiTweaks) this.uiTweaks.applyDocumentLevelTweaks();
         if (this.diagnostics) this.diagnostics.applyDocumentLevelTweaks();
         if (this.commentPreview) this.commentPreview.sweepDocument();
-        this._checkChronologicalEnforcement();
+    }
+
+    _clearFollowupResweeps() {
+        if (this.postUpdateSweepTimer) {
+            clearTimeout(this.postUpdateSweepTimer);
+            this.postUpdateSweepTimer = null;
+        }
+
+        if (this.postUpdateSweepTimerLong) {
+            clearTimeout(this.postUpdateSweepTimerLong);
+            this.postUpdateSweepTimerLong = null;
+        }
+    }
+
+    _scheduleFollowupResweeps() {
+        this._clearFollowupResweeps();
+
+        this.postUpdateSweepTimer = setTimeout(() => {
+            if (!this.isEnabled()) return;
+            this._runLiveResweepPass();
+        }, 650);
+
+        this.postUpdateSweepTimerLong = setTimeout(() => {
+            if (!this.isEnabled()) return;
+            this._runLiveResweepPass();
+        }, 1800);
     }
 
     _syncModuleSettings() {
@@ -283,6 +317,9 @@ class PureFusionApp {
             grayscaleMode: false,
             infiniteScrollStopper: false,
             sessionTimer: false,
+            reelsLimiterEnabled: false,
+            reelsSessionLimit: 3,
+            reelsHardLock: false,
             clickbaitBlocker: false,
             ragebaitDetector: false
         };
