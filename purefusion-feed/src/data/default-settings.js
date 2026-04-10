@@ -167,7 +167,13 @@ const DEFAULT_SETTINGS = {
         enabled: false,
         showOverlay: true,
         verboseConsole: false,
-        maxReasons: 6
+        maxReasons: 6,
+        observerWarnDurationMs: 25,
+        observerSevereDurationMs: 45,
+        observerWarnNodes: 220,
+        observerSevereNodes: 420,
+        observerWarnRecords: 120,
+        observerSevereRecords: 240
     },
 
     // ------------------------------------------------------------------------

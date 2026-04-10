@@ -722,6 +722,35 @@
                 </div>
 
                 <hr class="pf-hr">
+
+                <h3 data-i18n="options_data_diag_thresholds_title">Observer Spike Thresholds</h3>
+                <p class="pf-desc" data-i18n="options_data_diag_thresholds_desc">Tune warning and severe thresholds used by diagnostics workload alerts.</p>
+                <div class="pf-setting-row auto-height">
+                    <label data-i18n="options_data_diag_warn_duration">Warn duration (ms)</label>
+                    <input type="number" id="opt_diag_warnDurationMs" min="8" max="200" class="pf-input-number">
+                </div>
+                <div class="pf-setting-row auto-height">
+                    <label data-i18n="options_data_diag_severe_duration">Severe duration (ms)</label>
+                    <input type="number" id="opt_diag_severeDurationMs" min="10" max="300" class="pf-input-number">
+                </div>
+                <div class="pf-setting-row auto-height">
+                    <label data-i18n="options_data_diag_warn_nodes">Warn node count</label>
+                    <input type="number" id="opt_diag_warnNodes" min="40" max="3000" class="pf-input-number">
+                </div>
+                <div class="pf-setting-row auto-height">
+                    <label data-i18n="options_data_diag_severe_nodes">Severe node count</label>
+                    <input type="number" id="opt_diag_severeNodes" min="60" max="5000" class="pf-input-number">
+                </div>
+                <div class="pf-setting-row auto-height">
+                    <label data-i18n="options_data_diag_warn_records">Warn mutation records</label>
+                    <input type="number" id="opt_diag_warnRecords" min="20" max="2000" class="pf-input-number">
+                </div>
+                <div class="pf-setting-row auto-height">
+                    <label data-i18n="options_data_diag_severe_records">Severe mutation records</label>
+                    <input type="number" id="opt_diag_severeRecords" min="30" max="3000" class="pf-input-number">
+                </div>
+
+                <hr class="pf-hr">
                 
                 <h3 data-i18n="options_data_reset_title">Factory Reset</h3>
                 <p class="pf-desc pf-warn-text" data-i18n="options_data_reset_desc">This will wipe all preferences and local AI learning data.</p>

@@ -256,7 +256,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_diag_enabled': { obj: 'diagnostics', prop: 'enabled', type: 'checkbox' },
         'opt_diag_showOverlay': { obj: 'diagnostics', prop: 'showOverlay', type: 'checkbox' },
         'opt_diag_verboseConsole': { obj: 'diagnostics', prop: 'verboseConsole', type: 'checkbox' },
-        'opt_diag_maxReasons': { obj: 'diagnostics', prop: 'maxReasons', type: 'number' },
+        'opt_diag_maxReasons': { obj: 'diagnostics', prop: 'maxReasons', type: 'number', fallback: 6 },
+        'opt_diag_warnDurationMs': { obj: 'diagnostics', prop: 'observerWarnDurationMs', type: 'number', fallback: 25 },
+        'opt_diag_severeDurationMs': { obj: 'diagnostics', prop: 'observerSevereDurationMs', type: 'number', fallback: 45 },
+        'opt_diag_warnNodes': { obj: 'diagnostics', prop: 'observerWarnNodes', type: 'number', fallback: 220 },
+        'opt_diag_severeNodes': { obj: 'diagnostics', prop: 'observerSevereNodes', type: 'number', fallback: 420 },
+        'opt_diag_warnRecords': { obj: 'diagnostics', prop: 'observerWarnRecords', type: 'number', fallback: 120 },
+        'opt_diag_severeRecords': { obj: 'diagnostics', prop: 'observerSevereRecords', type: 'number', fallback: 240 },
 
         // Wellbeing
         'opt_wb_grayscale': { obj: 'wellbeing', prop: 'grayscaleMode', type: 'checkbox' },
@@ -419,7 +425,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const val = currentSettings[mapping.obj][mapping.prop];
             if (mapping.type === 'checkbox') el.checked = !!val;
             else if (mapping.type === 'select') el.value = val || '';
-            else if (mapping.type === 'number') el.value = Number.isFinite(val) ? val : 100;
+            else if (mapping.type === 'number') el.value = Number.isFinite(val) ? val : (mapping.fallback ?? 100);
             else if (mapping.type === 'text') el.value = val || '';
         }
 
@@ -443,7 +449,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             } else if (mapping.type === 'select') {
                 currentSettings[mapping.obj][mapping.prop] = el.value;
             } else if (mapping.type === 'number') {
-                currentSettings[mapping.obj][mapping.prop] = parseInt(el.value, 10) || 100;
+                currentSettings[mapping.obj][mapping.prop] = parseInt(el.value, 10) || (mapping.fallback ?? 100);
             } else if (mapping.type === 'text') {
                 currentSettings[mapping.obj][mapping.prop] = el.value.trim();
             }
@@ -461,8 +467,32 @@ document.addEventListener('DOMContentLoaded', async () => {
         currentSettings.keywords.allowlistFriends = allowFriendsString.split(',').map(s => s.trim()).filter(s => s.length > 0);
 
         if (currentSettings.diagnostics) {
-            const parsedMaxReasons = Number(currentSettings.diagnostics.maxReasons);
-            currentSettings.diagnostics.maxReasons = Math.max(3, Math.min(12, Number.isFinite(parsedMaxReasons) ? parsedMaxReasons : 6));
+            const clampInt = (value, min, max, fallback) => {
+                const parsed = Number(value);
+                if (!Number.isFinite(parsed)) return fallback;
+                return Math.max(min, Math.min(max, Math.round(parsed)));
+            };
+
+            const diagnostics = currentSettings.diagnostics;
+            diagnostics.maxReasons = clampInt(diagnostics.maxReasons, 3, 12, 6);
+            diagnostics.observerWarnDurationMs = clampInt(diagnostics.observerWarnDurationMs, 8, 200, 25);
+            diagnostics.observerSevereDurationMs = clampInt(diagnostics.observerSevereDurationMs, 10, 300, 45);
+            diagnostics.observerWarnNodes = clampInt(diagnostics.observerWarnNodes, 40, 3000, 220);
+            diagnostics.observerSevereNodes = clampInt(diagnostics.observerSevereNodes, 60, 5000, 420);
+            diagnostics.observerWarnRecords = clampInt(diagnostics.observerWarnRecords, 20, 2000, 120);
+            diagnostics.observerSevereRecords = clampInt(diagnostics.observerSevereRecords, 30, 3000, 240);
+
+            if (diagnostics.observerSevereDurationMs <= diagnostics.observerWarnDurationMs) {
+                diagnostics.observerSevereDurationMs = Math.min(300, diagnostics.observerWarnDurationMs + 5);
+            }
+
+            if (diagnostics.observerSevereNodes <= diagnostics.observerWarnNodes) {
+                diagnostics.observerSevereNodes = Math.min(5000, diagnostics.observerWarnNodes + 40);
+            }
+
+            if (diagnostics.observerSevereRecords <= diagnostics.observerWarnRecords) {
+                diagnostics.observerSevereRecords = Math.min(3000, diagnostics.observerWarnRecords + 20);
+            }
         }
 
         if (currentSettings.wellbeing) {

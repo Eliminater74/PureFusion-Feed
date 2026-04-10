@@ -101,6 +101,7 @@ class PF_Diagnostics {
         const nodes = Math.max(0, Number(event?.detail?.nodes || 0));
         const mutationRecords = Math.max(0, Number(event?.detail?.mutationRecords || 0));
         const durationMs = Math.max(0, Number(event?.detail?.durationMs || 0));
+        const thresholds = this._getObserverThresholds();
 
         this.observerBatchCount += 1;
         this.observerNodesTotal += nodes;
@@ -114,7 +115,7 @@ class PF_Diagnostics {
             ts: Date.now()
         };
 
-        const severity = this._classifyObserverSeverity(durationMs, nodes, mutationRecords);
+        const severity = this._classifyObserverSeverity(durationMs, nodes, mutationRecords, thresholds);
         if (severity !== 'ok') {
             this.observerSpikeHistory.unshift({
                 nodes,
@@ -172,7 +173,7 @@ class PF_Diagnostics {
                 <div>Avg/Peak batch: <strong id="pfDiagObserverAvgMs">0.00ms</strong> / <strong id="pfDiagObserverPeakMs">0.00ms</strong></div>
                 <div>Last batch: <span id="pfDiagObserverLastBatch">-</span></div>
             </div>
-            <div class="pf-diag-thresholds">Warn if batch >= 25ms, 220 nodes, or 120 records.</div>
+            <div id="pfDiagObserverThresholds" class="pf-diag-thresholds">Warn if batch >= 25ms, 220 nodes, or 120 records.</div>
             <div class="pf-diag-subtitle">Recent observer spikes</div>
             <ul id="pfDiagObserverSpikes" class="pf-diag-spike-list"></ul>
             <div class="pf-diag-subtitle">Top hide reasons</div>
@@ -215,7 +216,10 @@ class PF_Diagnostics {
         const observerPeakMsEl = this.overlay.querySelector('#pfDiagObserverPeakMs');
         const observerLastBatchEl = this.overlay.querySelector('#pfDiagObserverLastBatch');
         const observerSpikesEl = this.overlay.querySelector('#pfDiagObserverSpikes');
-        if (!totalEl || !listEl || !syncEl || !resweepEl || !followupsEl || !lastSyncEl || !lastResweepEl || !observerBatchesEl || !observerNodesEl || !observerRecordsEl || !observerAvgMsEl || !observerPeakMsEl || !observerLastBatchEl || !observerSpikesEl) return;
+        const observerThresholdsEl = this.overlay.querySelector('#pfDiagObserverThresholds');
+        if (!totalEl || !listEl || !syncEl || !resweepEl || !followupsEl || !lastSyncEl || !lastResweepEl || !observerBatchesEl || !observerNodesEl || !observerRecordsEl || !observerAvgMsEl || !observerPeakMsEl || !observerLastBatchEl || !observerSpikesEl || !observerThresholdsEl) return;
+
+        const thresholds = this._getObserverThresholds();
 
         totalEl.textContent = String(this.hiddenTotal);
         syncEl.textContent = String(this.settingsUpdateCount);
@@ -232,8 +236,10 @@ class PF_Diagnostics {
             : 0;
         observerAvgMsEl.textContent = `${avgMs.toFixed(2)}ms`;
         observerPeakMsEl.textContent = `${this.observerDurationPeak.toFixed(2)}ms`;
-        observerAvgMsEl.className = this._severityClassName(this._classifyObserverSeverity(avgMs, 0, 0));
-        observerPeakMsEl.className = this._severityClassName(this._classifyObserverSeverity(this.observerDurationPeak, 0, 0));
+        observerAvgMsEl.className = this._severityClassName(this._classifyObserverSeverity(avgMs, 0, 0, thresholds));
+        observerPeakMsEl.className = this._severityClassName(this._classifyObserverSeverity(this.observerDurationPeak, 0, 0, thresholds));
+
+        observerThresholdsEl.textContent = `Warn if batch >= ${thresholds.warnDurationMs}ms, ${thresholds.warnNodes} nodes, or ${thresholds.warnRecords} records.`;
 
         if (!this.lastObserverBatch) {
             observerLastBatchEl.textContent = '-';
@@ -243,7 +249,8 @@ class PF_Diagnostics {
             observerLastBatchEl.className = this._severityClassName(this._classifyObserverSeverity(
                 this.lastObserverBatch.durationMs,
                 this.lastObserverBatch.nodes,
-                this.lastObserverBatch.mutationRecords
+                this.lastObserverBatch.mutationRecords,
+                thresholds
             ));
         }
 
@@ -321,18 +328,32 @@ class PF_Diagnostics {
     }
 
     _getObserverThresholds() {
+        const diagnostics = this.settings?.diagnostics || {};
+
+        const warnDurationMs = this._clampInt(diagnostics.observerWarnDurationMs, 8, 200, 25);
+        let severeDurationMs = this._clampInt(diagnostics.observerSevereDurationMs, 10, 300, 45);
+        if (severeDurationMs <= warnDurationMs) severeDurationMs = Math.min(300, warnDurationMs + 5);
+
+        const warnNodes = this._clampInt(diagnostics.observerWarnNodes, 40, 3000, 220);
+        let severeNodes = this._clampInt(diagnostics.observerSevereNodes, 60, 5000, 420);
+        if (severeNodes <= warnNodes) severeNodes = Math.min(5000, warnNodes + 40);
+
+        const warnRecords = this._clampInt(diagnostics.observerWarnRecords, 20, 2000, 120);
+        let severeRecords = this._clampInt(diagnostics.observerSevereRecords, 30, 3000, 240);
+        if (severeRecords <= warnRecords) severeRecords = Math.min(3000, warnRecords + 20);
+
         return {
-            warnDurationMs: 25,
-            severeDurationMs: 45,
-            warnNodes: 220,
-            severeNodes: 420,
-            warnRecords: 120,
-            severeRecords: 240
+            warnDurationMs,
+            severeDurationMs,
+            warnNodes,
+            severeNodes,
+            warnRecords,
+            severeRecords
         };
     }
 
-    _classifyObserverSeverity(durationMs, nodes, mutationRecords) {
-        const t = this._getObserverThresholds();
+    _classifyObserverSeverity(durationMs, nodes, mutationRecords, thresholds = null) {
+        const t = thresholds || this._getObserverThresholds();
 
         if (durationMs >= t.severeDurationMs || nodes >= t.severeNodes || mutationRecords >= t.severeRecords) {
             return 'severe';
@@ -349,6 +370,12 @@ class PF_Diagnostics {
         if (severity === 'severe') return 'pf-diag-value-severe';
         if (severity === 'warn') return 'pf-diag-value-warn';
         return 'pf-diag-value-ok';
+    }
+
+    _clampInt(value, min, max, fallback) {
+        const parsed = Number(value);
+        if (!Number.isFinite(parsed)) return fallback;
+        return Math.max(min, Math.min(max, Math.round(parsed)));
     }
 
     _exportSnapshot() {
