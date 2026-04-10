@@ -157,17 +157,26 @@ class PureFusionApp {
         }
 
         if (this.observer) this.observer.start();
-        this._runLiveResweepPass();
+        this._dispatchDiagnosticsEvent('pf:settings_update', {
+            source: 'runtime-settings-sync'
+        });
+
+        this._runLiveResweepPass('settings-immediate');
         this._scheduleFollowupResweeps();
         this._checkChronologicalEnforcement();
     }
 
-    _runLiveResweepPass() {
+    _runLiveResweepPass(phase = 'manual-pass') {
         if (this.cleaner) this.cleaner.sweepDocument();
         if (this.feedManager) this.feedManager.applyDocumentLevelTweaks();
         if (this.uiTweaks) this.uiTweaks.applyDocumentLevelTweaks();
         if (this.diagnostics) this.diagnostics.applyDocumentLevelTweaks();
         if (this.commentPreview) this.commentPreview.sweepDocument();
+
+        this._dispatchDiagnosticsEvent('pf:resweep_pass', {
+            phase,
+            ts: Date.now()
+        });
     }
 
     _clearFollowupResweeps() {
@@ -187,13 +196,23 @@ class PureFusionApp {
 
         this.postUpdateSweepTimer = setTimeout(() => {
             if (!this.isEnabled()) return;
-            this._runLiveResweepPass();
+            this._runLiveResweepPass('settings-followup-fast');
         }, 650);
 
         this.postUpdateSweepTimerLong = setTimeout(() => {
             if (!this.isEnabled()) return;
-            this._runLiveResweepPass();
+            this._runLiveResweepPass('settings-followup-deep');
         }, 1800);
+    }
+
+    _dispatchDiagnosticsEvent(type, detail) {
+        if (!type) return;
+
+        try {
+            window.dispatchEvent(new CustomEvent(type, { detail }));
+        } catch (err) {
+            // no-op when CustomEvent dispatch is unavailable
+        }
     }
 
     _syncModuleSettings() {

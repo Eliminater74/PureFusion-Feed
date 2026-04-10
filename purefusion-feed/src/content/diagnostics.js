@@ -11,9 +11,18 @@ class PF_Diagnostics {
         this.overlay = null;
         this.hiddenTotal = 0;
         this.reasonCounts = new Map();
+        this.liveResweepTotal = 0;
+        this.liveResweepFollowups = 0;
+        this.lastResweepAt = 0;
+        this.settingsUpdateCount = 0;
+        this.lastSettingsUpdateAt = 0;
         this.boundHiddenHandler = this._onElementHidden.bind(this);
+        this.boundResweepHandler = this._onResweepPass.bind(this);
+        this.boundSettingsUpdateHandler = this._onSettingsUpdate.bind(this);
 
         window.addEventListener('pf:element_hidden', this.boundHiddenHandler);
+        window.addEventListener('pf:resweep_pass', this.boundResweepHandler);
+        window.addEventListener('pf:settings_update', this.boundSettingsUpdateHandler);
         this._syncOverlayState();
     }
 
@@ -45,6 +54,37 @@ class PF_Diagnostics {
         this._render();
     }
 
+    _onResweepPass(event) {
+        if (!this._isEnabled()) return;
+
+        const phase = String(event?.detail?.phase || 'unknown-pass');
+        this.liveResweepTotal += 1;
+        if (phase.includes('followup')) {
+            this.liveResweepFollowups += 1;
+        }
+        this.lastResweepAt = Date.now();
+
+        if (this.settings?.diagnostics?.verboseConsole) {
+            PF_Logger.log(`[Diagnostics] Resweep pass: ${phase}`);
+        }
+
+        this._render();
+    }
+
+    _onSettingsUpdate(event) {
+        if (!this._isEnabled()) return;
+
+        const source = String(event?.detail?.source || 'unknown-source');
+        this.settingsUpdateCount += 1;
+        this.lastSettingsUpdateAt = Date.now();
+
+        if (this.settings?.diagnostics?.verboseConsole) {
+            PF_Logger.log(`[Diagnostics] Settings sync: ${source}`);
+        }
+
+        this._render();
+    }
+
     _isEnabled() {
         return !!this.settings?.diagnostics?.enabled;
     }
@@ -67,6 +107,12 @@ class PF_Diagnostics {
         this.overlay.innerHTML = `
             <div class="pf-diag-title">PureFusion Diagnostics</div>
             <div class="pf-diag-total">Hidden this session: <strong id="pfDiagTotal">0</strong></div>
+            <div class="pf-diag-meta">
+                <div>Settings syncs: <strong id="pfDiagSettingsSyncs">0</strong></div>
+                <div>Live resweeps: <strong id="pfDiagResweeps">0</strong> (<span id="pfDiagResweepFollowups">0</span> follow-up)</div>
+                <div>Last sync: <span id="pfDiagLastSync">-</span></div>
+                <div>Last resweep: <span id="pfDiagLastResweep">-</span></div>
+            </div>
             <div class="pf-diag-subtitle">Top hide reasons</div>
             <ol id="pfDiagReasons" class="pf-diag-list"></ol>
         `;
@@ -85,9 +131,19 @@ class PF_Diagnostics {
 
         const totalEl = this.overlay.querySelector('#pfDiagTotal');
         const listEl = this.overlay.querySelector('#pfDiagReasons');
-        if (!totalEl || !listEl) return;
+        const syncEl = this.overlay.querySelector('#pfDiagSettingsSyncs');
+        const resweepEl = this.overlay.querySelector('#pfDiagResweeps');
+        const followupsEl = this.overlay.querySelector('#pfDiagResweepFollowups');
+        const lastSyncEl = this.overlay.querySelector('#pfDiagLastSync');
+        const lastResweepEl = this.overlay.querySelector('#pfDiagLastResweep');
+        if (!totalEl || !listEl || !syncEl || !resweepEl || !followupsEl || !lastSyncEl || !lastResweepEl) return;
 
         totalEl.textContent = String(this.hiddenTotal);
+        syncEl.textContent = String(this.settingsUpdateCount);
+        resweepEl.textContent = String(this.liveResweepTotal);
+        followupsEl.textContent = String(this.liveResweepFollowups);
+        lastSyncEl.textContent = this._formatTime(this.lastSettingsUpdateAt);
+        lastResweepEl.textContent = this._formatTime(this.lastResweepAt);
 
         const maxReasons = Math.max(1, Math.min(12, Number(this.settings?.diagnostics?.maxReasons || 6)));
         const top = Array.from(this.reasonCounts.entries())
@@ -97,6 +153,20 @@ class PF_Diagnostics {
         listEl.innerHTML = top.length
             ? top.map(([reason, count]) => `<li><span>${this._escapeHtml(reason)}</span><strong>${count}</strong></li>`).join('')
             : '<li><span>No hide actions yet.</span><strong>0</strong></li>';
+    }
+
+    _formatTime(timestamp) {
+        if (!timestamp) return '-';
+
+        try {
+            return new Date(timestamp).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        } catch (err) {
+            return '-';
+        }
     }
 
     _escapeHtml(value) {
@@ -140,6 +210,19 @@ class PF_Diagnostics {
             #pf-diagnostics-overlay .pf-diag-total {
                 margin-bottom: 8px;
                 color: #d7e4fb;
+            }
+
+            #pf-diagnostics-overlay .pf-diag-meta {
+                display: grid;
+                gap: 4px;
+                margin-bottom: 8px;
+                color: #c5d4ee;
+                font-weight: 500;
+            }
+
+            #pf-diagnostics-overlay .pf-diag-meta strong {
+                color: #89f4ff;
+                font-weight: 800;
             }
 
             #pf-diagnostics-overlay .pf-diag-subtitle {
