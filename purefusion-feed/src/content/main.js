@@ -192,9 +192,10 @@ class PureFusionApp {
     }
 
     getEffectiveSettings() {
-        if (this.isEnabled()) return this.settings;
+        const effective = JSON.parse(JSON.stringify(this.settings || {}));
+        this._applyExperienceMode(effective);
 
-        const effective = JSON.parse(JSON.stringify(this.settings));
+        if (this.isEnabled()) return effective;
 
         effective.filters = {
             ...effective.filters,
@@ -296,6 +297,118 @@ class PureFusionApp {
         };
 
         return effective;
+    }
+
+    _applyExperienceMode(effective) {
+        if (!effective || typeof effective !== 'object') return;
+
+        if (!effective.experienceMode || typeof effective.experienceMode !== 'object') {
+            effective.experienceMode = { active: 'custom' };
+        }
+
+        const allowedModes = new Set(['custom', 'clean', 'focus', 'smart', 'classic']);
+        const requestedMode = String(effective.experienceMode.active || 'custom').toLowerCase();
+        const mode = allowedModes.has(requestedMode) ? requestedMode : 'custom';
+        effective.experienceMode.active = mode;
+
+        if (mode === 'custom') return;
+
+        const modePatches = {
+            clean: {
+                filters: {
+                    removeAds: true,
+                    removeSuggested: true,
+                    removePYMK: true,
+                    removeGroupSuggestions: true,
+                    removePageSuggestions: true,
+                    hideReels: true,
+                    hideMarketplace: true,
+                    hideStories: true,
+                    hideFundraisers: true
+                },
+                sidebar: {
+                    enableModuleFilters: true,
+                    hideRightTrending: true
+                }
+            },
+            focus: {
+                filters: {
+                    removeAds: true,
+                    removeSuggested: true,
+                    removePYMK: true,
+                    removeGroupSuggestions: true,
+                    removePageSuggestions: true,
+                    hideReels: true,
+                    hideMarketplace: true,
+                    hideStories: true
+                },
+                uiMode: {
+                    friendsOnlyMode: true,
+                    compactMode: true,
+                    enforceChronologicalFeed: true
+                },
+                predictions: {
+                    enabled: false
+                }
+            },
+            smart: {
+                filters: {
+                    removeAds: true,
+                    hideFundraisers: true
+                },
+                predictions: {
+                    enabled: true,
+                    showBadge: true,
+                    dimLowInterest: true,
+                    highlightHighInterest: true,
+                    showTrending: true
+                },
+                storyFilters: {
+                    hideLikedThis: true,
+                    hideCommentedOnThis: true
+                }
+            },
+            classic: {
+                filters: {
+                    removeAds: true,
+                    removeSuggested: true,
+                    removePYMK: true,
+                    removeGroupSuggestions: true,
+                    removePageSuggestions: true,
+                    hideReels: true,
+                    hideMarketplace: true,
+                    hideStories: true,
+                    hideFundraisers: true
+                },
+                uiMode: {
+                    enforceChronologicalFeed: true,
+                    compactMode: true
+                },
+                social: {
+                    hideSearchPopupSuggestions: true
+                }
+            }
+        };
+
+        const patch = modePatches[mode];
+        if (!patch) return;
+        this._mergeModePatch(effective, patch);
+    }
+
+    _mergeModePatch(target, patch) {
+        if (!target || !patch) return;
+
+        for (const key of Object.keys(patch)) {
+            const value = patch[key];
+            if (value && typeof value === 'object' && !Array.isArray(value)) {
+                if (!target[key] || typeof target[key] !== 'object' || Array.isArray(target[key])) {
+                    target[key] = {};
+                }
+                this._mergeModePatch(target[key], value);
+            } else {
+                target[key] = value;
+            }
+        }
     }
 
     isEnabled() {

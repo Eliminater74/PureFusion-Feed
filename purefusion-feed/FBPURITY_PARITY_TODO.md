@@ -84,7 +84,8 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Keep transparent with "why hidden" reasons.
 
 9) Feed mode presets (high)
-- One-click modes: Clean, Focus, Smart.
+- Status: initial implementation complete.
+- Implemented: persistent mode selector with Custom, Clean, Focus, Smart, Classic.
 - Scope mode behavior to existing filters + predictions + keyword rules.
 - Keep mode switching instant and reversible.
 

@@ -171,6 +171,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_filters_hideFundraisers': { obj: 'filters', prop: 'hideFundraisers', type: 'checkbox' },
         'opt_filters_removeColoredBackgrounds': { obj: 'filters', prop: 'removeColoredBackgrounds', type: 'checkbox' },
 
+        // Feed Experience Mode
+        'opt_experience_mode': { obj: 'experienceMode', prop: 'active', type: 'select' },
+
         // Story Activity Filters
         'opt_story_hideBecameFriends': { obj: 'storyFilters', prop: 'hideBecameFriends', type: 'checkbox' },
         'opt_story_hideJoinedGroups': { obj: 'storyFilters', prop: 'hideJoinedGroups', type: 'checkbox' },
