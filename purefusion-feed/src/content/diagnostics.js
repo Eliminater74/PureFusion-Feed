@@ -22,6 +22,8 @@ class PF_Diagnostics {
         this.observerDurationTotal = 0;
         this.observerDurationPeak = 0;
         this.lastObserverBatch = null;
+        this.observerSpikeHistory = [];
+        this.observerSpikeHistoryLimit = 10;
         this.boundHiddenHandler = this._onElementHidden.bind(this);
         this.boundResweepHandler = this._onResweepPass.bind(this);
         this.boundSettingsUpdateHandler = this._onSettingsUpdate.bind(this);
@@ -112,8 +114,23 @@ class PF_Diagnostics {
             ts: Date.now()
         };
 
+        const severity = this._classifyObserverSeverity(durationMs, nodes, mutationRecords);
+        if (severity !== 'ok') {
+            this.observerSpikeHistory.unshift({
+                nodes,
+                mutationRecords,
+                durationMs,
+                ts: this.lastObserverBatch.ts,
+                severity
+            });
+
+            if (this.observerSpikeHistory.length > this.observerSpikeHistoryLimit) {
+                this.observerSpikeHistory.length = this.observerSpikeHistoryLimit;
+            }
+        }
+
         if (this.settings?.diagnostics?.verboseConsole) {
-            PF_Logger.log(`[Diagnostics] Observer batch: ${nodes} nodes, ${mutationRecords} records, ${durationMs.toFixed(2)}ms`);
+            PF_Logger.log(`[Diagnostics] Observer batch: ${nodes} nodes, ${mutationRecords} records, ${durationMs.toFixed(2)}ms (${severity})`);
         }
 
         this._render();
@@ -155,6 +172,9 @@ class PF_Diagnostics {
                 <div>Avg/Peak batch: <strong id="pfDiagObserverAvgMs">0.00ms</strong> / <strong id="pfDiagObserverPeakMs">0.00ms</strong></div>
                 <div>Last batch: <span id="pfDiagObserverLastBatch">-</span></div>
             </div>
+            <div class="pf-diag-thresholds">Warn if batch >= 25ms, 220 nodes, or 120 records.</div>
+            <div class="pf-diag-subtitle">Recent observer spikes</div>
+            <ul id="pfDiagObserverSpikes" class="pf-diag-spike-list"></ul>
             <div class="pf-diag-subtitle">Top hide reasons</div>
             <ol id="pfDiagReasons" class="pf-diag-list"></ol>
             <div class="pf-diag-actions">
@@ -194,7 +214,8 @@ class PF_Diagnostics {
         const observerAvgMsEl = this.overlay.querySelector('#pfDiagObserverAvgMs');
         const observerPeakMsEl = this.overlay.querySelector('#pfDiagObserverPeakMs');
         const observerLastBatchEl = this.overlay.querySelector('#pfDiagObserverLastBatch');
-        if (!totalEl || !listEl || !syncEl || !resweepEl || !followupsEl || !lastSyncEl || !lastResweepEl || !observerBatchesEl || !observerNodesEl || !observerRecordsEl || !observerAvgMsEl || !observerPeakMsEl || !observerLastBatchEl) return;
+        const observerSpikesEl = this.overlay.querySelector('#pfDiagObserverSpikes');
+        if (!totalEl || !listEl || !syncEl || !resweepEl || !followupsEl || !lastSyncEl || !lastResweepEl || !observerBatchesEl || !observerNodesEl || !observerRecordsEl || !observerAvgMsEl || !observerPeakMsEl || !observerLastBatchEl || !observerSpikesEl) return;
 
         totalEl.textContent = String(this.hiddenTotal);
         syncEl.textContent = String(this.settingsUpdateCount);
@@ -211,12 +232,28 @@ class PF_Diagnostics {
             : 0;
         observerAvgMsEl.textContent = `${avgMs.toFixed(2)}ms`;
         observerPeakMsEl.textContent = `${this.observerDurationPeak.toFixed(2)}ms`;
+        observerAvgMsEl.className = this._severityClassName(this._classifyObserverSeverity(avgMs, 0, 0));
+        observerPeakMsEl.className = this._severityClassName(this._classifyObserverSeverity(this.observerDurationPeak, 0, 0));
 
         if (!this.lastObserverBatch) {
             observerLastBatchEl.textContent = '-';
+            observerLastBatchEl.className = '';
         } else {
             observerLastBatchEl.textContent = `${this.lastObserverBatch.nodes} nodes, ${this.lastObserverBatch.mutationRecords} records, ${this.lastObserverBatch.durationMs.toFixed(2)}ms @ ${this._formatTime(this.lastObserverBatch.ts)}`;
+            observerLastBatchEl.className = this._severityClassName(this._classifyObserverSeverity(
+                this.lastObserverBatch.durationMs,
+                this.lastObserverBatch.nodes,
+                this.lastObserverBatch.mutationRecords
+            ));
         }
+
+        observerSpikesEl.innerHTML = this.observerSpikeHistory.length
+            ? this.observerSpikeHistory.map((entry) => {
+                const className = this._severityClassName(entry.severity);
+                const info = `${entry.durationMs.toFixed(2)}ms | ${entry.nodes} nodes | ${entry.mutationRecords} records`;
+                return `<li><span>${this._formatTime(entry.ts)}</span><strong class="${className}">${info}</strong></li>`;
+            }).join('')
+            : '<li><span>No spikes yet.</span><strong>Stable</strong></li>';
 
         const maxReasons = Math.max(1, Math.min(12, Number(this.settings?.diagnostics?.maxReasons || 6)));
         const top = Array.from(this.reasonCounts.entries())
@@ -257,6 +294,7 @@ class PF_Diagnostics {
                 lastResweepAt: this.lastResweepAt ? new Date(this.lastResweepAt).toISOString() : null
             },
             observer: {
+                thresholds: this._getObserverThresholds(),
                 batchCount: this.observerBatchCount,
                 nodesSeen: this.observerNodesTotal,
                 recordsSeen: this.observerMutationTotal,
@@ -269,10 +307,48 @@ class PF_Diagnostics {
                         durationMs: Number(this.lastObserverBatch.durationMs.toFixed(3)),
                         ts: new Date(this.lastObserverBatch.ts).toISOString()
                     }
-                    : null
+                    : null,
+                spikeHistory: this.observerSpikeHistory.map((entry) => ({
+                    nodes: entry.nodes,
+                    mutationRecords: entry.mutationRecords,
+                    durationMs: Number(entry.durationMs.toFixed(3)),
+                    severity: entry.severity,
+                    ts: new Date(entry.ts).toISOString()
+                }))
             },
             topReasons: reasonCounts
         };
+    }
+
+    _getObserverThresholds() {
+        return {
+            warnDurationMs: 25,
+            severeDurationMs: 45,
+            warnNodes: 220,
+            severeNodes: 420,
+            warnRecords: 120,
+            severeRecords: 240
+        };
+    }
+
+    _classifyObserverSeverity(durationMs, nodes, mutationRecords) {
+        const t = this._getObserverThresholds();
+
+        if (durationMs >= t.severeDurationMs || nodes >= t.severeNodes || mutationRecords >= t.severeRecords) {
+            return 'severe';
+        }
+
+        if (durationMs >= t.warnDurationMs || nodes >= t.warnNodes || mutationRecords >= t.warnRecords) {
+            return 'warn';
+        }
+
+        return 'ok';
+    }
+
+    _severityClassName(severity) {
+        if (severity === 'severe') return 'pf-diag-value-severe';
+        if (severity === 'warn') return 'pf-diag-value-warn';
+        return 'pf-diag-value-ok';
     }
 
     _exportSnapshot() {
@@ -382,6 +458,12 @@ class PF_Diagnostics {
                 letter-spacing: 0.04em;
             }
 
+            #pf-diagnostics-overlay .pf-diag-thresholds {
+                margin-bottom: 8px;
+                color: #95a8ca;
+                font-size: 11px;
+            }
+
             #pf-diagnostics-overlay .pf-diag-list {
                 margin: 0;
                 padding-left: 16px;
@@ -405,6 +487,42 @@ class PF_Diagnostics {
             #pf-diagnostics-overlay .pf-diag-list strong {
                 color: #74f0ff;
                 font-weight: 800;
+            }
+
+            #pf-diagnostics-overlay .pf-diag-spike-list {
+                margin: 0 0 10px;
+                padding-left: 16px;
+                display: grid;
+                gap: 4px;
+            }
+
+            #pf-diagnostics-overlay .pf-diag-spike-list li {
+                display: flex;
+                justify-content: space-between;
+                gap: 10px;
+                align-items: flex-start;
+            }
+
+            #pf-diagnostics-overlay .pf-diag-spike-list span {
+                color: #c7d6f1;
+                font-weight: 600;
+            }
+
+            #pf-diagnostics-overlay .pf-diag-spike-list strong {
+                color: #e3ebfb;
+                font-weight: 700;
+            }
+
+            #pf-diagnostics-overlay .pf-diag-value-ok {
+                color: #7ce8ff !important;
+            }
+
+            #pf-diagnostics-overlay .pf-diag-value-warn {
+                color: #ffd166 !important;
+            }
+
+            #pf-diagnostics-overlay .pf-diag-value-severe {
+                color: #ff7a90 !important;
             }
 
             #pf-diagnostics-overlay .pf-diag-actions {

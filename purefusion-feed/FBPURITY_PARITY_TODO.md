@@ -70,7 +70,9 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Added: live settings-sync telemetry (sync count, resweep count, follow-up pass count, and last-sync timestamps).
 - Added: observer workload timing (batch count, records/nodes, avg/peak batch ms, last batch summary).
 - Added: one-click diagnostics snapshot export (JSON) from the overlay.
-- Next: add persistent history ring buffer for recent observer spikes.
+- Added: rolling observer spike history ring buffer (last 10 warning/severe batches).
+- Added: threshold-based severity highlighting in diagnostics (OK/Warn/Severe).
+- Next: make spike thresholds user-configurable in diagnostics settings.
 
 6) Per-surface controls (medium)
 - Separate behavior for Home feed vs Groups vs Watch vs Marketplace surfaces.
