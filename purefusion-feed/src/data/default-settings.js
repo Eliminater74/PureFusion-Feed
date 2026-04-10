@@ -116,6 +116,9 @@ const DEFAULT_SETTINGS = {
         dimLowInterest: true,           // Dim posts scoring below threshold
         collapseLowInterest: false,     // Hide low-score posts behind reveal chip
         highlightHighInterest: true,    // Glow posts scoring above threshold
+        credibilitySignalsEnabled: false, // Heuristic claim-risk detector (local only)
+        showCredibilityBadge: true,     // Show "verify" marker on suspicious claims
+        strictCredibilityPenalty: false,// Apply stronger score penalty to suspicious claims
         lowThreshold: 20,
         highThreshold: 80,
         showTrending: true,             // "Trending in your feed" sidecar

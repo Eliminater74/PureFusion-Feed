@@ -217,6 +217,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_pred_showTrending': { obj: 'predictions', prop: 'showTrending', type: 'checkbox' },
         'opt_pred_lowThreshold': { obj: 'predictions', prop: 'lowThreshold', type: 'number', fallback: 20 },
         'opt_pred_highThreshold': { obj: 'predictions', prop: 'highThreshold', type: 'number', fallback: 80 },
+        'opt_pred_credibilitySignalsEnabled': { obj: 'predictions', prop: 'credibilitySignalsEnabled', type: 'checkbox' },
+        'opt_pred_showCredibilityBadge': { obj: 'predictions', prop: 'showCredibilityBadge', type: 'checkbox' },
+        'opt_pred_strictCredibilityPenalty': { obj: 'predictions', prop: 'strictCredibilityPenalty', type: 'checkbox' },
 
         // UI Mode
         'opt_widescreen': { obj: 'uiMode', prop: 'widescreenMode', type: 'checkbox' },
@@ -522,6 +525,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             p.showScoreReasons = p.showScoreReasons !== false;
             p.collapseLowInterest = !!p.collapseLowInterest;
+            p.credibilitySignalsEnabled = !!p.credibilitySignalsEnabled;
+            p.showCredibilityBadge = p.showCredibilityBadge !== false;
+            p.strictCredibilityPenalty = !!p.strictCredibilityPenalty;
         }
 
         if (currentSettings.wellbeing) {

@@ -83,6 +83,7 @@ class PF_Predictor {
 
         // 3. Apply Visual Badges and True-Affinity Flexbox Sorting
         this._injectBadge(node, score, scoreDetails);
+        this._injectCredibilityBadge(node, scoreDetails);
 
         if (this.settings.predictions.trueAffinitySort) {
             this._applyNativeAffinitySort(node, score);
@@ -236,6 +237,22 @@ class PF_Predictor {
             }
         }
 
+        // --- Model E: Suspicious Claim / Credibility Signals (Local Heuristics) ---
+        const credibility = this._analyzeCredibilitySignals(textContent, postNode);
+        if (credibility && credibility.penalty > 0) {
+            score -= credibility.penalty;
+            postNode.dataset.pfCredibilityLevel = credibility.level;
+            postNode.dataset.pfCredibilitySummary = credibility.summary;
+
+            reasonSignals.push({
+                short: `-${credibility.penalty} verify`,
+                detail: `-${credibility.penalty} suspicious-claim penalty (${credibility.summary})`
+            });
+        } else {
+            delete postNode.dataset.pfCredibilityLevel;
+            delete postNode.dataset.pfCredibilitySummary;
+        }
+
         // Clamp 0 to 100
         const rawRounded = Math.round(score);
         const finalScore = Math.max(0, Math.min(100, rawRounded));
@@ -303,6 +320,36 @@ class PF_Predictor {
         }
         
         postNode.dataset.pfScored = score;
+    }
+
+    _injectCredibilityBadge(postNode, scoreDetails = null) {
+        const predictions = this.settings?.predictions || {};
+        if (!predictions.credibilitySignalsEnabled) return;
+        if (predictions.showCredibilityBadge === false) return;
+        if (!postNode || postNode.dataset.pfCredBadgeInjected === 'true') return;
+
+        const level = String(postNode.dataset.pfCredibilityLevel || '');
+        if (!level) return;
+
+        const summary = String(postNode.dataset.pfCredibilitySummary || 'suspicious claim pattern');
+        const chip = document.createElement('div');
+        chip.className = `pf-cred-chip ${level === 'high' ? 'pf-cred-high' : 'pf-cred-warn'}`;
+        chip.textContent = level === 'high' ? 'VERIFY SOURCE (high risk)' : 'VERIFY SOURCE';
+        chip.title = `PureFusion credibility signal: ${summary}`;
+
+        const score = Number(scoreDetails?.score);
+        if (Number.isFinite(score)) {
+            chip.setAttribute('aria-label', `Verify source warning. PF score ${score}. ${summary}`);
+        }
+
+        const anchor = postNode.querySelector('[data-pagelet], h3, h4, strong') || postNode;
+        if (anchor.parentElement) {
+            anchor.parentElement.appendChild(chip);
+        } else {
+            postNode.prepend(chip);
+        }
+
+        postNode.dataset.pfCredBadgeInjected = 'true';
     }
 
     _applyScoreEffects(postNode, score, scoreDetails) {
@@ -406,6 +453,91 @@ class PF_Predictor {
             .replace(/'/g, '&#39;');
     }
 
+    _analyzeCredibilitySignals(textContent, postNode) {
+        const predictions = this.settings?.predictions || {};
+        if (!predictions.credibilitySignalsEnabled) return { penalty: 0, level: '', summary: '' };
+
+        const text = String(textContent || '').trim();
+        if (!text) return { penalty: 0, level: '', summary: '' };
+
+        const lower = text.toLowerCase();
+        let points = 0;
+        const triggers = [];
+
+        const phraseSignals = [
+            { phrase: 'they do not want you to know', points: 3, label: 'conspiracy framing' },
+            { phrase: "they don't want you to know", points: 3, label: 'conspiracy framing' },
+            { phrase: 'share before it is deleted', points: 3, label: 'share-before-delete prompt' },
+            { phrase: 'share before deleted', points: 3, label: 'share-before-delete prompt' },
+            { phrase: 'mainstream media will not show this', points: 3, label: 'anti-media framing' },
+            { phrase: '100% proven', points: 2, label: 'absolute certainty claim' },
+            { phrase: 'secret cure', points: 2, label: 'miracle cure claim' },
+            { phrase: 'miracle cure', points: 2, label: 'miracle cure claim' },
+            { phrase: 'breaking', points: 1, label: 'breaking claim tone' },
+            { phrase: 'wake up people', points: 2, label: 'manipulative urgency phrase' },
+            { phrase: 'source: trust me bro', points: 4, label: 'explicit non-source' },
+            { phrase: 'ai generated', points: 1, label: 'AI-generated disclosure' },
+            { phrase: 'deepfake', points: 2, label: 'deepfake mention' }
+        ];
+
+        for (const signal of phraseSignals) {
+            if (lower.includes(signal.phrase)) {
+                points += signal.points;
+                triggers.push(signal.label);
+            }
+        }
+
+        const exclamations = (text.match(/!/g) || []).length;
+        const questions = (text.match(/\?/g) || []).length;
+        if (exclamations >= 6 || questions >= 6) {
+            points += 1;
+            triggers.push('heavy punctuation spam');
+        }
+
+        const letters = text.replace(/[^A-Za-z]/g, '');
+        const upperLetters = letters.replace(/[^A-Z]/g, '');
+        if (letters.length >= 60) {
+            const upperRatio = upperLetters.length / letters.length;
+            if (upperRatio >= 0.46) {
+                points += 2;
+                triggers.push('all-caps intensity');
+            }
+        }
+
+        const hasOutboundSourceLink = !!postNode?.querySelector('a[href^="http"], a[href*="/l.php?u="]');
+        const claimWords = ['proof', 'exposed', 'leak', 'revealed', 'cure', 'hoax', 'scam', 'truth'];
+        const hasClaimWord = claimWords.some((word) => lower.includes(word));
+        if (hasClaimWord && !hasOutboundSourceLink) {
+            points += 1;
+            triggers.push('strong claim without source link');
+        }
+
+        if (points < 3) {
+            return { penalty: 0, level: '', summary: '' };
+        }
+
+        const strict = !!predictions.strictCredibilityPenalty;
+        const level = points >= 6 ? 'high' : 'warn';
+        const basePenalty = strict ? (points * 4) : (points * 3);
+        const penalty = Math.max(6, Math.min(strict ? 36 : 24, basePenalty));
+        const summary = this._formatCredibilitySummary(triggers);
+
+        return {
+            penalty,
+            level,
+            summary
+        };
+    }
+
+    _formatCredibilitySummary(triggers) {
+        if (!Array.isArray(triggers) || triggers.length === 0) {
+            return 'suspicious claim pattern';
+        }
+
+        const unique = Array.from(new Set(triggers));
+        return unique.slice(0, 3).join(', ');
+    }
+
     _injectPredictorStyles() {
         if (this._stylesInjected || document.getElementById('pf-predictor-styles')) return;
 
@@ -440,6 +572,29 @@ class PF_Predictor {
             .pf-predict-chip button:hover {
                 border-color: rgba(255, 171, 180, 0.95);
                 color: #ffffff;
+            }
+
+            .pf-cred-chip {
+                display: inline-block;
+                margin-left: 8px;
+                padding: 2px 8px;
+                border-radius: 999px;
+                font: 800 10px/1.2 "Segoe UI Variable Text", "Segoe UI", sans-serif;
+                letter-spacing: 0.03em;
+                text-transform: uppercase;
+                border: 1px solid;
+            }
+
+            .pf-cred-chip.pf-cred-warn {
+                color: #ffd166;
+                background: rgba(110, 82, 18, 0.22);
+                border-color: rgba(255, 209, 102, 0.7);
+            }
+
+            .pf-cred-chip.pf-cred-high {
+                color: #ff8fa1;
+                background: rgba(94, 28, 40, 0.3);
+                border-color: rgba(255, 143, 161, 0.8);
             }
         `;
 
