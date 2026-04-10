@@ -434,6 +434,7 @@ textarea:focus-visible,
 .pf-btn-group {
     display: flex;
     gap: 15px;
+    flex-wrap: wrap;
 }
 
 .pf-btn-primary {

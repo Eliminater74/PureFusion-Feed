@@ -157,6 +157,26 @@ body {
     margin-right: auto;
 }
 
+.help-card {
+    background: rgba(30, 31, 33, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 20px;
+    padding: 28px;
+    margin-bottom: 32px;
+    animation: fadeInUp 1.1s ease-out;
+}
+
+.help-card h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.help-card p {
+    color: var(--pf-text-secondary);
+    margin-bottom: 20px;
+    font-size: 15px;
+}
+
 .action-buttons {
     display: flex;
     gap: 20px;
@@ -197,6 +217,32 @@ body {
 .btn-support:hover {
     background: rgba(255, 59, 108, 0.15);
     border-color: #FF3B6C;
+    transform: scale(1.05);
+}
+
+.btn-discord {
+    background: rgba(88, 101, 242, 0.14);
+    border: 1px solid rgba(88, 101, 242, 0.55);
+    color: #cfd6ff;
+}
+
+.btn-discord:hover {
+    background: rgba(88, 101, 242, 0.3);
+    border-color: #8f9dff;
+    transform: scale(1.05);
+}
+
+.btn-github,
+.btn-issues {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--pf-border);
+    color: #f2f4fa;
+}
+
+.btn-github:hover,
+.btn-issues:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: #ffffff;
     transform: scale(1.05);
 }
 
