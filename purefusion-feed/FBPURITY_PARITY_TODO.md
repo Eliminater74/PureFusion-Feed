@@ -103,6 +103,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Added: expandable "Why flagged" details panel on credibility warnings.
 - Added: one-click "Verify this claim" web search action from credibility details panel.
 - Added: source-domain trust hints (recognized source / unverified domain / short-link warnings).
+- Added: optional credibility debug preview chip to show detector status on scanned posts.
 
 9) Feed mode presets (high)
 - Status: initial implementation complete.

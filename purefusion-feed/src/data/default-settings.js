@@ -119,6 +119,7 @@ const DEFAULT_SETTINGS = {
         credibilitySignalsEnabled: false, // Heuristic claim-risk detector (local only)
         showCredibilityBadge: true,     // Show "verify" marker on suspicious claims
         strictCredibilityPenalty: false,// Apply stronger score penalty to suspicious claims
+        showCredibilityDebugPreview: false, // Show detector points on all scanned posts
         lowThreshold: 20,
         highThreshold: 80,
         showTrending: true,             // "Trending in your feed" sidecar

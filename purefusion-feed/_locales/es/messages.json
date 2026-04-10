@@ -116,6 +116,7 @@
   "options_ai_cred_enabled": { "message": "Activar deteccion de afirmaciones sospechosas" },
   "options_ai_cred_badge": { "message": "Mostrar insignia de \"verificar\" en publicaciones marcadas" },
   "options_ai_cred_strict": { "message": "Modo estricto (penalizacion de puntaje mas fuerte para afirmaciones sospechosas)" },
+  "options_ai_cred_debug": { "message": "Mostrar vista de depuracion de credibilidad en todas las publicaciones analizadas" },
   "options_ai_llm_title": { "message": "Servidor Inteligente Profundo (BYOK API)" },
   "options_ai_llm_desc": { "message": "Traiga su propia clave (BYOK). Desbloquee capacidades de LLM como TL;DR y comentarios. Sus claves se guardan exclusivamente en el almacenamiento local." },
   "options_ai_provider_label": { "message": "Proveedor activo" },

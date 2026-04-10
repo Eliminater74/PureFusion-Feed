@@ -69,8 +69,14 @@ class PF_Predictor {
     }
 
     _processSingleNode(node) {
-        if (node.dataset.pfPredictProcessed) return;
-        node.dataset.pfPredictProcessed = "true";
+        const predictVersion = 'v2-cred-debug';
+
+        if (node.dataset.pfPredictProcessed === predictVersion) {
+            this._refreshPredictionDecorations(node);
+            return;
+        }
+
+        node.dataset.pfPredictProcessed = predictVersion;
 
         // 1. Analyze text for trend mapping
         this._analyzeForTrends(node);
@@ -84,6 +90,7 @@ class PF_Predictor {
         // 3. Apply Visual Badges and True-Affinity Flexbox Sorting
         this._injectBadge(node, score, scoreDetails);
         this._injectCredibilityBadge(node, scoreDetails);
+        this._injectCredibilityDebugBadge(node, scoreDetails);
 
         if (this.settings.predictions.trueAffinitySort) {
             this._applyNativeAffinitySort(node, score);
@@ -91,6 +98,28 @@ class PF_Predictor {
 
         // 4. Attach Engagement Listeners (so we can learn)
         this._bindInteractionListeners(node);
+    }
+
+    _refreshPredictionDecorations(postNode) {
+        const predictions = this.settings?.predictions || {};
+        const score = Number(postNode?.dataset?.pfScored || 0);
+        const scoreDetails = {
+            score: Number.isFinite(score) ? score : 0
+        };
+
+        if (!predictions.credibilitySignalsEnabled || predictions.showCredibilityBadge === false) {
+            postNode.querySelectorAll('.pf-cred-block').forEach((node) => node.remove());
+            delete postNode.dataset.pfCredBadgeInjected;
+        } else {
+            this._injectCredibilityBadge(postNode, scoreDetails);
+        }
+
+        if (!predictions.credibilitySignalsEnabled || !predictions.showCredibilityDebugPreview) {
+            postNode.querySelectorAll('.pf-cred-debug-chip').forEach((node) => node.remove());
+            delete postNode.dataset.pfCredDebugInjected;
+        } else {
+            this._injectCredibilityDebugBadge(postNode, scoreDetails);
+        }
     }
 
     _applyNativeAffinitySort(postNode, score) {
@@ -239,13 +268,16 @@ class PF_Predictor {
 
         // --- Model E: Suspicious Claim / Credibility Signals (Local Heuristics) ---
         const credibility = this._analyzeCredibilitySignals(textContent, postNode);
+        postNode.dataset.pfCredibilityPoints = String(Math.max(0, Number(credibility.points || 0)));
+        postNode.dataset.pfCredibilitySourceHint = credibility.sourceHint || '';
+        postNode.dataset.pfCredibilitySourceTier = credibility.sourceTier || 'none';
+
         if (credibility && credibility.penalty > 0) {
             score -= credibility.penalty;
             postNode.dataset.pfCredibilityLevel = credibility.level;
             postNode.dataset.pfCredibilitySummary = credibility.summary;
             postNode.dataset.pfCredibilityReasons = (credibility.reasons || []).join('||');
             postNode.dataset.pfCredibilityClaimSeed = credibility.claimSeed || '';
-            postNode.dataset.pfCredibilitySourceHint = credibility.sourceHint || '';
 
             reasonSignals.push({
                 short: `-${credibility.penalty} verify`,
@@ -256,7 +288,6 @@ class PF_Predictor {
             delete postNode.dataset.pfCredibilitySummary;
             delete postNode.dataset.pfCredibilityReasons;
             delete postNode.dataset.pfCredibilityClaimSeed;
-            delete postNode.dataset.pfCredibilitySourceHint;
         }
 
         // Clamp 0 to 100
@@ -269,7 +300,8 @@ class PF_Predictor {
         return {
             score: finalScore,
             reasonSummary: this._summarizeReasonSignals(reasonSignals),
-            reasonDetails: reasonSignals.map((signal) => signal.detail)
+            reasonDetails: reasonSignals.map((signal) => signal.detail),
+            credibility
         };
     }
 
@@ -391,6 +423,46 @@ class PF_Predictor {
         postNode.dataset.pfCredBadgeInjected = 'true';
     }
 
+    _injectCredibilityDebugBadge(postNode, scoreDetails = null) {
+        const predictions = this.settings?.predictions || {};
+        if (!predictions.credibilitySignalsEnabled) return;
+        if (!predictions.showCredibilityDebugPreview) return;
+        if (!postNode || postNode.dataset.pfCredDebugInjected === 'true') return;
+
+        const points = Math.max(0, Number(postNode.dataset.pfCredibilityPoints || 0));
+        const sourceTier = String(postNode.dataset.pfCredibilitySourceTier || 'none');
+        const sourceHint = String(postNode.dataset.pfCredibilitySourceHint || 'No source hint');
+        const level = String(postNode.dataset.pfCredibilityLevel || 'none');
+
+        const badge = document.createElement('div');
+        const status = level === 'high' ? 'HIGH' : level === 'warn' ? 'WARN' : 'OK';
+        const sourceShort = sourceTier === 'high-trust'
+            ? 'trusted-source'
+            : sourceTier === 'shortener'
+                ? 'short-link'
+                : sourceTier === 'unknown'
+                    ? 'unknown-source'
+                    : 'no-source';
+
+        badge.className = `pf-cred-debug-chip pf-cred-debug-${status.toLowerCase()}`;
+        badge.textContent = `Cred ${status} | pts ${points} | ${sourceShort}`;
+        badge.title = `Credibility debug: ${sourceHint}`;
+
+        const score = Number(scoreDetails?.score);
+        if (Number.isFinite(score)) {
+            badge.setAttribute('aria-label', `Credibility debug ${status}. Points ${points}. PF score ${score}. ${sourceHint}`);
+        }
+
+        const anchor = postNode.querySelector('[data-pagelet], h3, h4, strong') || postNode;
+        if (anchor.parentElement) {
+            anchor.parentElement.appendChild(badge);
+        } else {
+            postNode.prepend(badge);
+        }
+
+        postNode.dataset.pfCredDebugInjected = 'true';
+    }
+
     _applyScoreEffects(postNode, score, scoreDetails) {
         const predictions = this.settings?.predictions || {};
 
@@ -494,10 +566,32 @@ class PF_Predictor {
 
     _analyzeCredibilitySignals(textContent, postNode) {
         const predictions = this.settings?.predictions || {};
-        if (!predictions.credibilitySignalsEnabled) return { penalty: 0, level: '', summary: '', reasons: [] };
+        if (!predictions.credibilitySignalsEnabled) {
+            return {
+                penalty: 0,
+                level: '',
+                summary: '',
+                reasons: [],
+                claimSeed: '',
+                points: 0,
+                sourceHint: '',
+                sourceTier: 'none'
+            };
+        }
 
         const text = String(textContent || '').trim();
-        if (!text) return { penalty: 0, level: '', summary: '', reasons: [] };
+        if (!text) {
+            return {
+                penalty: 0,
+                level: '',
+                summary: '',
+                reasons: [],
+                claimSeed: '',
+                points: 0,
+                sourceHint: '',
+                sourceTier: 'none'
+            };
+        }
 
         const lower = text.toLowerCase();
         let points = 0;
@@ -568,7 +662,16 @@ class PF_Predictor {
         }
 
         if (points < 3) {
-            return { penalty: 0, level: '', summary: '', reasons: [] };
+            return {
+                penalty: 0,
+                level: '',
+                summary: '',
+                reasons: Array.from(new Set(triggers)),
+                claimSeed: this._buildClaimSeed(text),
+                points,
+                sourceHint: sourceInfo.hint || '',
+                sourceTier: sourceInfo.tier || 'none'
+            };
         }
 
         const strict = !!predictions.strictCredibilityPenalty;
@@ -586,7 +689,9 @@ class PF_Predictor {
             summary,
             reasons: uniqueReasons,
             claimSeed,
-            sourceHint
+            points,
+            sourceHint,
+            sourceTier: sourceInfo.tier || 'none'
         };
     }
 
@@ -595,7 +700,7 @@ class PF_Predictor {
             hasSource: false,
             domain: '',
             tier: 'none',
-            hint: ''
+            hint: 'No outbound source domain detected.'
         };
 
         if (!postNode || !postNode.querySelectorAll) return result;
@@ -781,6 +886,35 @@ class PF_Predictor {
                 letter-spacing: 0.03em;
                 text-transform: uppercase;
                 border: 1px solid;
+            }
+
+            .pf-cred-debug-chip {
+                display: inline-block;
+                margin-left: 8px;
+                padding: 2px 8px;
+                border-radius: 999px;
+                font: 800 10px/1.2 "Segoe UI Variable Text", "Segoe UI", sans-serif;
+                letter-spacing: 0.02em;
+                text-transform: uppercase;
+                border: 1px solid;
+            }
+
+            .pf-cred-debug-chip.pf-cred-debug-ok {
+                color: #87e5ff;
+                background: rgba(34, 86, 108, 0.24);
+                border-color: rgba(135, 229, 255, 0.62);
+            }
+
+            .pf-cred-debug-chip.pf-cred-debug-warn {
+                color: #ffd166;
+                background: rgba(113, 85, 23, 0.25);
+                border-color: rgba(255, 209, 102, 0.72);
+            }
+
+            .pf-cred-debug-chip.pf-cred-debug-high {
+                color: #ff95a6;
+                background: rgba(111, 32, 47, 0.28);
+                border-color: rgba(255, 149, 166, 0.78);
             }
 
             .pf-cred-block {

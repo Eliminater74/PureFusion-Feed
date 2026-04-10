@@ -116,6 +116,7 @@
   "options_ai_cred_enabled": { "message": "Enable suspicious-claim detection" },
   "options_ai_cred_badge": { "message": "Show \"verify\" warning badge on flagged posts" },
   "options_ai_cred_strict": { "message": "Strict mode (stronger score penalty for suspicious claims)" },
+  "options_ai_cred_debug": { "message": "Show credibility debug preview on all scanned posts" },
   "options_ai_llm_title": { "message": "Deep Intelligence Server (BYOK API)" },
   "options_ai_llm_desc": { "message": "Bring-Your-Own-Key. Unlock LLM capabilities like TL;DRs and Comment AI. Your keys are saved exclusively taking advantage of local machine storage." },
   "options_ai_provider_label": { "message": "Active Provider" },
