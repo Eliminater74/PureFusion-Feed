@@ -59,15 +59,8 @@ class PF_Predictor {
         if (!scoringEnabled && !credibilityEnabled) return;
 
         nodes.forEach(node => {
-            // Ensure we ONLY process actual posts, or search inside injected wrappers
-            if (!node.matches || !node.matches(PF_SELECTOR_MAP.postContainer)) {
-                if (node.querySelectorAll) {
-                    const innerPosts = node.querySelectorAll(PF_SELECTOR_MAP.postContainer);
-                    innerPosts.forEach(innerNode => this._processSingleNode(innerNode));
-                }
-                return;
-            }
-            this._processSingleNode(node);
+            const candidates = this._collectPostCandidatesFromNode(node);
+            candidates.forEach((candidateNode) => this._processSingleNode(candidateNode));
         });
     }
 
@@ -82,7 +75,11 @@ class PF_Predictor {
         if (!root || !root.querySelectorAll) return;
 
         const feedRoot = document.querySelector(PF_SELECTOR_MAP.mainFeedRegion) || root;
-        const rawPosts = Array.from(feedRoot.querySelectorAll(PF_SELECTOR_MAP.postContainer));
+        this._cleanupLeakedDebugChips();
+        const rawPosts = [
+            ...Array.from(feedRoot.querySelectorAll(PF_SELECTOR_MAP.postContainer)),
+            ...Array.from(feedRoot.querySelectorAll('[role="article"]')).filter((node) => !!node.querySelector(PF_SELECTOR_MAP.postTextBody))
+        ];
         const posts = this._dedupeNestedPosts(rawPosts.filter((postNode) => this._isLikelyFeedPost(postNode)));
         const visibleCount = posts.filter((postNode) => this._isElementVisible(postNode)).length;
 
@@ -132,15 +129,60 @@ class PF_Predictor {
 
     _isLikelyFeedPost(postNode) {
         if (!postNode || !postNode.matches) return false;
-        if (postNode.matches('[role="dialog"]')) return true;
-
-        const role = String(postNode.getAttribute('role') || '').toLowerCase();
-        if (role === 'article') return true;
 
         const pagelet = String(postNode.getAttribute('data-pagelet') || '');
         if (pagelet.startsWith('FeedUnit_') || pagelet.startsWith('AdUnit_')) return true;
 
+        if (postNode.matches('[role="dialog"]')) {
+            return !!postNode.querySelector(PF_SELECTOR_MAP.postTextBody);
+        }
+
+        const role = String(postNode.getAttribute('role') || '').toLowerCase();
+        if (role === 'article') {
+            const insideFeed = !!postNode.closest(PF_SELECTOR_MAP.mainFeedRegion);
+            const hasPostText = !!postNode.querySelector(PF_SELECTOR_MAP.postTextBody);
+            return insideFeed && hasPostText;
+        }
+
         return !!postNode.querySelector(PF_SELECTOR_MAP.postTextBody);
+    }
+
+    _collectPostCandidatesFromNode(node) {
+        if (!node) return [];
+
+        const candidates = [];
+        const seen = new Set();
+        const addCandidate = (candidate) => {
+            if (!candidate || seen.has(candidate)) return;
+            if (!this._isLikelyFeedPost(candidate)) return;
+            seen.add(candidate);
+            candidates.push(candidate);
+        };
+
+        if (node.matches && node.matches(PF_SELECTOR_MAP.postContainer)) {
+            addCandidate(node);
+        }
+
+        if (node.matches && node.matches('[role="article"]')) {
+            addCandidate(node);
+        }
+
+        if (node.querySelectorAll) {
+            node.querySelectorAll(PF_SELECTOR_MAP.postContainer).forEach((candidate) => addCandidate(candidate));
+            node.querySelectorAll('[role="article"]').forEach((candidate) => addCandidate(candidate));
+        }
+
+        return this._dedupeNestedPosts(candidates);
+    }
+
+    _cleanupLeakedDebugChips() {
+        const leaked = Array.from(document.querySelectorAll('.pf-cred-debug-chip, .pf-cred-block'));
+        leaked.forEach((chip) => {
+            const host = chip.closest('[data-pagelet], [role="article"], [role="dialog"]');
+            if (!host || !this._isLikelyFeedPost(host)) {
+                chip.remove();
+            }
+        });
     }
 
     _isElementVisible(element) {

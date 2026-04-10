@@ -19,7 +19,7 @@ const SELECTOR_MAP = {
     mainFeedRegion: '[role="feed"]',
     
     // An individual post within the feed, or a popup modal containing a post
-    postContainer: '[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"], [role="article"], [role="dialog"]',
+    postContainer: '[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"], [role="dialog"]',
 
     // ------------------------------------------------------------------------
     // WITHIN A POST
