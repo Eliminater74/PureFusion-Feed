@@ -53,6 +53,7 @@ class PureFusionApp {
                 this.uiTweaks.applyDocumentLevelTweaks();
                 this.diagnostics.applyDocumentLevelTweaks();
                 this.commentPreview.sweepDocument();
+                if (this.predictor) this.predictor.sweepDocument();
 
                 // Start MutationObserver for dynamically injected feed elements
                 this.observer.start();
@@ -162,6 +163,7 @@ class PureFusionApp {
         });
 
         this._runLiveResweepPass('settings-immediate');
+        if (this.predictor) this.predictor.sweepDocument();
         this._scheduleFollowupResweeps();
         this._checkChronologicalEnforcement();
     }

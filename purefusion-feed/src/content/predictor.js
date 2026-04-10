@@ -68,6 +68,28 @@ class PF_Predictor {
         });
     }
 
+    sweepDocument(forceRescore = true) {
+        if (!this.settings.predictions.enabled) return;
+
+        const root = document.body || document.documentElement;
+        if (!root || !root.querySelectorAll) return;
+
+        const posts = Array.from(root.querySelectorAll(PF_SELECTOR_MAP.postContainer));
+        if (!posts.length) return;
+
+        if (forceRescore) {
+            posts.forEach((postNode) => {
+                this._clearPredictionDecorations(postNode);
+                delete postNode.dataset.pfPredictProcessed;
+                delete postNode.dataset.pfScored;
+                delete postNode.dataset.pfCredBadgeInjected;
+                delete postNode.dataset.pfCredDebugInjected;
+            });
+        }
+
+        this.applyToNodes(posts);
+    }
+
     _processSingleNode(node) {
         const predictVersion = 'v2-cred-debug';
 
@@ -122,6 +144,25 @@ class PF_Predictor {
         }
     }
 
+    _clearPredictionDecorations(postNode) {
+        if (!postNode || !postNode.querySelectorAll) return;
+
+        postNode.querySelectorAll('.pf-score-badge, .pf-cred-block, .pf-cred-debug-chip').forEach((node) => {
+            if (node && node.remove) node.remove();
+        });
+
+        if (postNode.dataset.pfCollapsedLowScore) {
+            postNode.style.removeProperty('display');
+            delete postNode.dataset.pfCollapsedLowScore;
+            delete postNode.dataset.pfCollapsedReason;
+        }
+
+        const prev = postNode.previousElementSibling;
+        if (prev && prev.classList && prev.classList.contains('pf-predict-chip') && prev.remove) {
+            prev.remove();
+        }
+    }
+
     _applyNativeAffinitySort(postNode, score) {
         // If sorting is enabled, we utilize CSS Flexbox order to visually rearrange the feed on the fly
         // WITHOUT destroying Facebook's React Virtual DOM hooks.
@@ -142,6 +183,9 @@ class PF_Predictor {
     // =========================================================================
 
     _bindInteractionListeners(postNode) {
+        if (!postNode || postNode.dataset.pfPredictBound === 'true') return;
+        postNode.dataset.pfPredictBound = 'true';
+
         // Find reaction buttons (Like, Love, Haha, etc.) and Comment boxes
         // Facebook's interaction DOM is incredibly nested. We attach a bubbled listener to the post wrapper.
         
@@ -325,6 +369,7 @@ class PF_Predictor {
         }
 
         const badge = document.createElement('div');
+        badge.className = 'pf-score-badge';
         const showReasons = this.settings?.predictions?.showScoreReasons !== false;
         const reasonSummary = showReasons ? String(scoreDetails?.reasonSummary || '') : '';
         const reasonDetails = Array.isArray(scoreDetails?.reasonDetails) ? scoreDetails.reasonDetails : [];
