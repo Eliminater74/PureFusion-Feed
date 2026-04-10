@@ -1,6 +1,6 @@
 # F.B. Purity Parity TODO (Living Plan)
 
-Last updated: 2026-04-09
+Last updated: 2026-04-10
 
 ## Goal
 
@@ -76,6 +76,33 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Add rate limiting and per-post retry cap to avoid bot-like behavior.
 - Keep OFF by default and expose as an explicit advanced toggle.
 
+8) Smart feed quality scoring (medium-high)
+- Detect likely ragebait/engagement bait/low-value repost patterns and assign a quality score.
+- Use score thresholds to collapse/dim/hide posts.
+- Keep transparent with "why hidden" reasons.
+
+9) Feed mode presets (high)
+- One-click modes: Clean, Focus, Smart.
+- Scope mode behavior to existing filters + predictions + keyword rules.
+- Keep mode switching instant and reversible.
+
+10) Performance layer (high)
+- Mutation batching and pre-filter passes before expensive processing.
+- Aggressive caps to avoid repeated scans of the same nodes.
+- Maintain low CPU budget on long sessions.
+
+11) Reels control v2 (medium)
+- Full disable and optional session limit mode.
+- Keep current hide toggle but add per-session counter + lock option.
+
+12) Rule engine for power users (medium)
+- Simple IF/THEN rules over post metadata/text.
+- Start with safe operators and local-only evaluation.
+
+13) Plugin SDK spike (low-medium)
+- Define extension-safe plugin hooks for custom filters and post scoring modules.
+- Gate behind developer mode first.
+
 ## Implementation Order (Next)
 
 1) Post-type filter pack v2
@@ -101,12 +128,33 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Add cooldown between auto-click actions.
 - Add per-surface allow/deny list (Home yes, Notifications no by default).
 
+6) Feed mode presets + quality scoring
+- Add mode selector in UI and map to internal setting bundles.
+- Implement first-pass quality score heuristics with explicit reason labels.
+
+7) Performance pass
+- Add mutation batching, debounce windows, and skip markers for processed nodes.
+- Track observer workload metrics in diagnostics mode.
+
+8) Reels session limiter
+- Add optional counter and soft lock after user-defined threshold.
+
+9) Power-user rule engine spike
+- Implement MVP parser for IF/THEN post rules and evaluate performance impact.
+
 ## Safety Rules (Do Not Remove)
 
 - Never hide structural containers: `html`, `body`, `role=main`, `role=feed`, `role=banner`, `role=navigation`, `role=complementary`.
 - Keep panic recovery and recovery watchdog active.
 - Keep feature master toggles default OFF for new risky modules until validated.
 - Prefer strict selectors and short heading/aria/href anchors over broad full-text sweeps.
+- Keep all advanced AI/behavior features local-first and transparent for policy safety.
+
+## Red-Team Notes (Helpful vs Risky)
+
+- Helpful now: feed mode presets, quality scoring, performance batching, reels limiter, diagnostics.
+- Helpful later: rule engine, plugin SDK.
+- Risky/policy-sensitive (defer): deep "shadow profile" estimation and anything that implies hidden account inference.
 
 ## Regression Checklist Per Feature Slice
 
