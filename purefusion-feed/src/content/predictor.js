@@ -244,6 +244,7 @@ class PF_Predictor {
             postNode.dataset.pfCredibilityLevel = credibility.level;
             postNode.dataset.pfCredibilitySummary = credibility.summary;
             postNode.dataset.pfCredibilityReasons = (credibility.reasons || []).join('||');
+            postNode.dataset.pfCredibilityClaimSeed = credibility.claimSeed || '';
 
             reasonSignals.push({
                 short: `-${credibility.penalty} verify`,
@@ -253,6 +254,7 @@ class PF_Predictor {
             delete postNode.dataset.pfCredibilityLevel;
             delete postNode.dataset.pfCredibilitySummary;
             delete postNode.dataset.pfCredibilityReasons;
+            delete postNode.dataset.pfCredibilityClaimSeed;
         }
 
         // Clamp 0 to 100
@@ -340,6 +342,8 @@ class PF_Predictor {
             .map((item) => item.trim())
             .filter(Boolean)
             .slice(0, 4);
+        const claimSeed = String(postNode.dataset.pfCredibilityClaimSeed || '').trim();
+        const verificationUrl = this._buildVerificationSearchUrl(claimSeed || summary);
 
         const wrapper = document.createElement('div');
         wrapper.className = `pf-cred-block ${level === 'high' ? 'pf-cred-high' : 'pf-cred-warn'}`;
@@ -357,7 +361,7 @@ class PF_Predictor {
         const details = document.createElement('div');
         details.className = 'pf-cred-details';
         details.hidden = true;
-        details.innerHTML = this._buildCredibilityDetailsHtml(summary, reasons);
+        details.innerHTML = this._buildCredibilityDetailsHtml(summary, reasons, verificationUrl);
 
         whyBtn.addEventListener('click', () => {
             const isHidden = details.hidden;
@@ -554,12 +558,14 @@ class PF_Predictor {
         const penalty = Math.max(6, Math.min(strict ? 36 : 24, basePenalty));
         const uniqueReasons = Array.from(new Set(triggers));
         const summary = this._formatCredibilitySummary(uniqueReasons);
+        const claimSeed = this._buildClaimSeed(text);
 
         return {
             penalty,
             level,
             summary,
-            reasons: uniqueReasons
+            reasons: uniqueReasons,
+            claimSeed
         };
     }
 
@@ -572,18 +578,41 @@ class PF_Predictor {
         return unique.slice(0, 3).join(', ');
     }
 
-    _buildCredibilityDetailsHtml(summary, reasons) {
+    _buildCredibilityDetailsHtml(summary, reasons, verificationUrl = '') {
         const safeSummary = this._escapeHtml(summary || 'suspicious claim pattern');
         const reasonItems = Array.isArray(reasons) && reasons.length
             ? reasons.map((reason) => `<li>${this._escapeHtml(reason)}</li>`).join('')
             : '<li>Suspicious claim pattern</li>';
+        const safeVerificationUrl = this._escapeHtml(verificationUrl || '');
+        const verificationAction = safeVerificationUrl
+            ? `<div class="pf-cred-actions"><a class="pf-cred-action-link" href="${safeVerificationUrl}" target="_blank" rel="noopener noreferrer">Verify this claim</a></div>`
+            : '';
 
         return `
             <div class="pf-cred-details-title">Why this was flagged</div>
             <p>${safeSummary}</p>
             <ul>${reasonItems}</ul>
+            ${verificationAction}
             <p class="pf-cred-details-tip">Tip: Verify with trusted outlets or official sources before resharing.</p>
         `;
+    }
+
+    _buildVerificationSearchUrl(claimSeed) {
+        const seed = String(claimSeed || '').replace(/\s+/g, ' ').trim();
+        if (!seed) return '';
+
+        const shortSeed = seed.slice(0, 180);
+        const query = `"${shortSeed}" fact check`;
+        return `https://duckduckgo.com/?q=${encodeURIComponent(query)}`;
+    }
+
+    _buildClaimSeed(text) {
+        const normalized = String(text || '')
+            .replace(/\s+/g, ' ')
+            .trim();
+        if (!normalized) return '';
+
+        return normalized.slice(0, 220);
     }
 
     _injectPredictorStyles() {
@@ -693,6 +722,28 @@ class PF_Predictor {
             .pf-cred-details-tip {
                 margin-bottom: 0 !important;
                 color: #b9c9e8 !important;
+            }
+
+            .pf-cred-actions {
+                margin-bottom: 6px;
+            }
+
+            .pf-cred-action-link {
+                display: inline-flex;
+                align-items: center;
+                text-decoration: none;
+                border: 1px solid rgba(136, 188, 255, 0.6);
+                border-radius: 999px;
+                padding: 3px 10px;
+                background: rgba(29, 58, 102, 0.35);
+                color: #d5e8ff;
+                font: 700 11px/1.2 "Segoe UI Variable Text", "Segoe UI", sans-serif;
+            }
+
+            .pf-cred-action-link:hover {
+                border-color: rgba(162, 210, 255, 0.95);
+                color: #ffffff;
+                background: rgba(39, 77, 132, 0.52);
             }
 
             .pf-cred-chip.pf-cred-warn {

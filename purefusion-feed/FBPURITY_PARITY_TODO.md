@@ -101,6 +101,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Added: optional low-score post collapsing with one-click reveal chip.
 - Added: local credibility-signal heuristics (suspicious-claim warnings + optional strict penalty mode).
 - Added: expandable "Why flagged" details panel on credibility warnings.
+- Added: one-click "Verify this claim" web search action from credibility details panel.
 
 9) Feed mode presets (high)
 - Status: initial implementation complete.
