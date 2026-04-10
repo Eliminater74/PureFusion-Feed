@@ -78,7 +78,7 @@ class PF_Predictor {
         this._cleanupLeakedDebugChips();
         const rawPosts = [
             ...Array.from(feedRoot.querySelectorAll(PF_SELECTOR_MAP.postContainer)),
-            ...Array.from(feedRoot.querySelectorAll('[role="article"]')).filter((node) => !!node.querySelector(PF_SELECTOR_MAP.postTextBody)),
+            ...Array.from(feedRoot.querySelectorAll('[role="article"]')),
             ...Array.from(document.querySelectorAll('[role="dialog"]'))
         ];
         const posts = this._dedupeNestedPosts(rawPosts.filter((postNode) => this._isLikelyFeedPost(postNode)));
@@ -144,7 +144,9 @@ class PF_Predictor {
             const insideFeed = !!postNode.closest(PF_SELECTOR_MAP.mainFeedRegion);
             const insideDialog = !!postNode.closest('[role="dialog"]');
             const hasPostText = !!postNode.querySelector(PF_SELECTOR_MAP.postTextBody);
-            return (insideFeed || insideDialog) && hasPostText;
+            const hasHeader = !!postNode.querySelector('h3, h4');
+            const hasMedia = !!postNode.querySelector('img, video');
+            return (insideFeed || insideDialog) && (hasPostText || (hasHeader && hasMedia));
         }
 
         return !!postNode.querySelector(PF_SELECTOR_MAP.postTextBody);
@@ -186,6 +188,11 @@ class PF_Predictor {
             addCandidate(node);
         }
 
+        const closestCandidate = this._findClosestPostCandidate(node);
+        if (closestCandidate) {
+            addCandidate(closestCandidate);
+        }
+
         if (node.querySelectorAll) {
             node.querySelectorAll(PF_SELECTOR_MAP.postContainer).forEach((candidate) => addCandidate(candidate));
             node.querySelectorAll('[role="article"]').forEach((candidate) => addCandidate(candidate));
@@ -194,12 +201,28 @@ class PF_Predictor {
         return this._dedupeNestedPosts(candidates);
     }
 
+    _findClosestPostCandidate(node) {
+        const element = (node && node.nodeType === Node.ELEMENT_NODE)
+            ? node
+            : (node?.parentElement || null);
+        if (!element || !element.closest) return null;
+
+        return element.closest('[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"], [role="article"], [role="dialog"]');
+    }
+
     _cleanupLeakedDebugChips(activePosts = []) {
         const activeSet = new Set(Array.isArray(activePosts) ? activePosts : []);
         const leaked = Array.from(document.querySelectorAll('.pf-cred-debug-chip, .pf-cred-block'));
         leaked.forEach((chip) => {
             const host = chip.closest('[data-pagelet], [role="article"], [role="dialog"]');
-            if (!host || !this._isLikelyFeedPost(host) || (activeSet.size > 0 && !activeSet.has(host))) {
+            const relatedToActive = activeSet.size === 0
+                || activeSet.has(host)
+                || Array.from(activeSet).some((activeNode) => {
+                    if (!activeNode) return false;
+                    return (host.contains && host.contains(activeNode)) || (activeNode.contains && activeNode.contains(host));
+                });
+
+            if (!host || !this._isLikelyFeedPost(host) || !relatedToActive) {
                 chip.remove();
             }
         });
@@ -221,7 +244,7 @@ class PF_Predictor {
     }
 
     _processSingleNode(node) {
-        const predictVersion = 'v6-cred-dialog-anchor';
+        const predictVersion = 'v7-cred-refresh-stable';
 
         if (node.dataset.pfPredictProcessed === predictVersion) {
             this._refreshPredictionDecorations(node);
@@ -264,6 +287,14 @@ class PF_Predictor {
         const scoreDetails = {
             score: Number.isFinite(score) ? score : 0
         };
+
+        if (!postNode.querySelector('.pf-cred-block')) {
+            delete postNode.dataset.pfCredBadgeInjected;
+        }
+
+        if (!postNode.querySelector('.pf-cred-debug-chip')) {
+            delete postNode.dataset.pfCredDebugInjected;
+        }
 
         if (!predictions.credibilitySignalsEnabled || predictions.showCredibilityBadge === false) {
             postNode.querySelectorAll('.pf-cred-block').forEach((node) => node.remove());
