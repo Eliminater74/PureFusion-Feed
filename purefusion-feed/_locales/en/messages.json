@@ -201,6 +201,21 @@
   "options_wellbeing_ai_blockers_title": { "message": "Advanced AI Blockers (Wellbeing Edition)" },
   "options_wellbeing_ragebait": { "message": "Rage-Bait Detector (Blur inflammatory outrage posts)" },
   "options_wellbeing_clickbait": { "message": "Clickbait Eliminator (Nuke viral manipulative headlines)" },
+  "wellbeing_report_button": { "message": "Report" },
+  "wellbeing_report_disabled": { "message": "Daily Feed Report is disabled. Enable it in Digital Wellbeing." },
+  "wellbeing_report_label_auto": { "message": "Daily Feed Report" },
+  "wellbeing_report_label_session": { "message": "Session Feed Report" },
+  "wellbeing_report_no_filters": { "message": "No filters triggered yet" },
+  "wellbeing_report_toast_template": {
+    "message": "$LABEL$: hidden $HIDDEN$ items, reels blocked $REELS$, top reason $REASON$, est. $MINUTES$ min saved.",
+    "placeholders": {
+      "label": { "content": "$1" },
+      "hidden": { "content": "$2" },
+      "reels": { "content": "$3" },
+      "reason": { "content": "$4" },
+      "minutes": { "content": "$5" }
+    }
+  },
   "options_social_ghost_title": { "message": "Ghost Mode (Messenger)" },
   "options_social_ghost_desc": { "message": "Private interactions. Hide your tracks while messaging." },
   "options_social_hide_seen": { "message": "Hide \"Seen\" Receipts (Read without them knowing)" },

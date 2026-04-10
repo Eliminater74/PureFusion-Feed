@@ -54,6 +54,18 @@ class PF_Wellbeing {
         this.initDocumentLevel();
     }
 
+    _t(key, fallback, substitutions) {
+        if (typeof chrome === 'undefined' || !chrome.i18n) return fallback;
+        try {
+            const localized = substitutions === undefined
+                ? chrome.i18n.getMessage(key)
+                : chrome.i18n.getMessage(key, substitutions);
+            return localized || fallback;
+        } catch (err) {
+            return fallback;
+        }
+    }
+
     _onElementHidden(event) {
         const reason = String(event?.detail?.reason || 'Unknown');
         this.hiddenReasonCounts.set(reason, (this.hiddenReasonCounts.get(reason) || 0) + 1);
@@ -120,7 +132,9 @@ class PF_Wellbeing {
         const sortedReasons = Array.from(this.hiddenReasonCounts.entries())
             .sort((a, b) => b[1] - a[1]);
 
-        const topReason = sortedReasons.length ? `${sortedReasons[0][0]} (${sortedReasons[0][1]})` : 'No filters triggered yet';
+        const topReason = sortedReasons.length
+            ? `${sortedReasons[0][0]} (${sortedReasons[0][1]})`
+            : this._t('wellbeing_report_no_filters', 'No filters triggered yet');
         const nonReelHidden = Math.max(0, hiddenTotal - this.reelsHiddenCount);
         const estimatedSecondsSaved = (nonReelHidden * 6) + (this.reelsHiddenCount * 20);
         const estimatedMinutesSaved = Math.max(0, Math.round((estimatedSecondsSaved / 60) * 10) / 10);
@@ -135,7 +149,7 @@ class PF_Wellbeing {
 
     _showFeedReportToast(trigger = 'manual') {
         if (!this.settings?.wellbeing?.dailyFeedReportEnabled) {
-            PF_Helpers.showToast('Daily Feed Report is disabled. Enable it in Digital Wellbeing.', 'info', 3200);
+            PF_Helpers.showToast(this._t('wellbeing_report_disabled', 'Daily Feed Report is disabled. Enable it in Digital Wellbeing.'), 'info', 3200);
             return;
         }
 
@@ -148,8 +162,14 @@ class PF_Wellbeing {
 
         this.lastReportShownAt = Date.now();
 
-        const label = trigger === 'auto' ? 'Daily Feed Report' : 'Session Feed Report';
-        const message = `${label}: hidden ${snapshot.hiddenTotal} items, reels blocked ${snapshot.reelsHidden}, top reason ${snapshot.topReason}, est. ${snapshot.estimatedMinutesSaved} min saved.`;
+        const label = trigger === 'auto'
+            ? this._t('wellbeing_report_label_auto', 'Daily Feed Report')
+            : this._t('wellbeing_report_label_session', 'Session Feed Report');
+        const message = this._t(
+            'wellbeing_report_toast_template',
+            `${label}: hidden ${snapshot.hiddenTotal} items, reels blocked ${snapshot.reelsHidden}, top reason ${snapshot.topReason}, est. ${snapshot.estimatedMinutesSaved} min saved.`,
+            [label, String(snapshot.hiddenTotal), String(snapshot.reelsHidden), snapshot.topReason, String(snapshot.estimatedMinutesSaved)]
+        );
         PF_Helpers.showToast(message, 'info', 5600);
     }
 
@@ -296,7 +316,7 @@ class PF_Wellbeing {
                 reportBtn = document.createElement('button');
                 reportBtn.id = 'pf-session-report-btn';
                 reportBtn.type = 'button';
-                reportBtn.textContent = 'Report';
+                reportBtn.textContent = this._t('wellbeing_report_button', 'Report');
                 reportBtn.style.cssText = `
                     border: 1px solid rgba(0, 212, 255, 0.5);
                     background: rgba(0, 212, 255, 0.12);

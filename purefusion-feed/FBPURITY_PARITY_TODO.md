@@ -149,6 +149,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Implemented: optional session impact report (hidden items, reels blocked, top reason, estimated minutes saved).
 - Added: auto-report interval + manual report button on session timer + keyboard shortcut (Alt+Shift+R).
 - Hardened: shortcut no longer triggers while typing, and auto-report stays quiet when no items were filtered.
+- Localized: session report labels/messages/button now run through extension i18n keys (EN/ES).
 
 ## Implementation Order (Next)
 

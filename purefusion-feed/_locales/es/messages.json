@@ -201,6 +201,21 @@
   "options_wellbeing_ai_blockers_title": { "message": "Bloqueadores avanzados de IA (edición bienestar)" },
   "options_wellbeing_ragebait": { "message": "Detector de rage-bait (difumina publicaciones inflamatorias)" },
   "options_wellbeing_clickbait": { "message": "Eliminador de clickbait (elimina titulares virales manipulativos)" },
+  "wellbeing_report_button": { "message": "Reporte" },
+  "wellbeing_report_disabled": { "message": "El reporte diario del feed esta desactivado. Activalo en Bienestar digital." },
+  "wellbeing_report_label_auto": { "message": "Reporte diario del feed" },
+  "wellbeing_report_label_session": { "message": "Reporte de la sesion" },
+  "wellbeing_report_no_filters": { "message": "Aun no se activaron filtros" },
+  "wellbeing_report_toast_template": {
+    "message": "$LABEL$: ocultados $HIDDEN$ elementos, reels bloqueados $REELS$, razon principal $REASON$, aprox. $MINUTES$ min ahorrados.",
+    "placeholders": {
+      "label": { "content": "$1" },
+      "hidden": { "content": "$2" },
+      "reels": { "content": "$3" },
+      "reason": { "content": "$4" },
+      "minutes": { "content": "$5" }
+    }
+  },
   "options_social_ghost_title": { "message": "Modo fantasma (Messenger)" },
   "options_social_ghost_desc": { "message": "Interacciones privadas. Oculta tu rastro al mensajear." },
   "options_social_hide_seen": { "message": "Ocultar recibos de \"Visto\" (leer sin que lo sepan)" },
