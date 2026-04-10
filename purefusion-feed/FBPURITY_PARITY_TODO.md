@@ -83,6 +83,8 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 
 6) Per-surface controls (medium)
 - Separate behavior for Home feed vs Groups vs Watch vs Marketplace surfaces.
+- Status: initial implementation complete.
+- Implemented: optional per-surface scope toggle with independent application switches for Home, Groups, Watch, Marketplace, and Other surfaces.
 
 7) Auto comment preview v2 (medium)
 - Expand first comment batch inline for visible posts only.

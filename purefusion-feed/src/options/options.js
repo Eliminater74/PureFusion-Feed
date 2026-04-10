@@ -198,6 +198,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_image_hideVehicles': { obj: 'imageFilters', prop: 'hideVehicles', type: 'checkbox' },
         'opt_image_hideScreenshotsMemes': { obj: 'imageFilters', prop: 'hideScreenshotsMemes', type: 'checkbox' },
         'opt_image_hideTravelScenery': { obj: 'imageFilters', prop: 'hideTravelScenery', type: 'checkbox' },
+
+        // Surface Scope Controls
+        'opt_surface_enabled': { obj: 'surfaceControls', prop: 'enabled', type: 'checkbox' },
+        'opt_surface_applyHome': { obj: 'surfaceControls', prop: 'applyHome', type: 'checkbox' },
+        'opt_surface_applyGroups': { obj: 'surfaceControls', prop: 'applyGroups', type: 'checkbox' },
+        'opt_surface_applyWatch': { obj: 'surfaceControls', prop: 'applyWatch', type: 'checkbox' },
+        'opt_surface_applyMarketplace': { obj: 'surfaceControls', prop: 'applyMarketplace', type: 'checkbox' },
+        'opt_surface_applyOther': { obj: 'surfaceControls', prop: 'applyOther', type: 'checkbox' },
         
         // Predictions
         'opt_pred_enabled': { obj: 'predictions', prop: 'enabled', type: 'checkbox' },

@@ -61,6 +61,18 @@ const DEFAULT_SETTINGS = {
     },
 
     // ------------------------------------------------------------------------
+    // SURFACE SCOPE CONTROLS
+    // ------------------------------------------------------------------------
+    surfaceControls: {
+        enabled: false,
+        applyHome: true,
+        applyGroups: true,
+        applyWatch: true,
+        applyMarketplace: true,
+        applyOther: true
+    },
+
+    // ------------------------------------------------------------------------
     // FEED EXPERIENCE MODES
     // ------------------------------------------------------------------------
     experienceMode: {

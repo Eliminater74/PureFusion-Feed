@@ -14,6 +14,7 @@ class PF_Cleaner {
         this._reelsSeenCount = 0;
         this._reelsTrackedNodes = new WeakSet();
         this._reelsLimitNoticeShown = false;
+        this._lastSurfaceScopeSkipKey = '';
         this.sponsoredTokens = [
             'sponsored',
             'publicidad',
@@ -113,6 +114,10 @@ class PF_Cleaner {
 
         this._restoreCriticalContainers();
         if (this._panicMode) return;
+
+        if (!this._shouldApplyForCurrentSurface()) {
+            return;
+        }
 
         if (this.settings.filters.removeAds) {
             this.removeSponsored(rootNode);
@@ -228,6 +233,58 @@ class PF_Cleaner {
             || sidebar.hideRightEvents
             || sidebar.hideRightBirthdays
         );
+    }
+
+    _getCurrentSurfaceKey() {
+        const pathname = String(window?.location?.pathname || '/').toLowerCase();
+
+        if (pathname === '/' || pathname === '/home.php') return 'home';
+        if (pathname.startsWith('/groups')) return 'groups';
+        if (pathname.startsWith('/watch')) return 'watch';
+        if (pathname.startsWith('/marketplace')) return 'marketplace';
+        return 'other';
+    }
+
+    _shouldApplyForCurrentSurface() {
+        const surfaceControls = this.settings?.surfaceControls;
+        if (!surfaceControls || !surfaceControls.enabled) {
+            this._lastSurfaceScopeSkipKey = '';
+            return true;
+        }
+
+        const surfaceKey = this._getCurrentSurfaceKey();
+        let allowed = true;
+
+        switch (surfaceKey) {
+            case 'home':
+                allowed = surfaceControls.applyHome !== false;
+                break;
+            case 'groups':
+                allowed = surfaceControls.applyGroups !== false;
+                break;
+            case 'watch':
+                allowed = surfaceControls.applyWatch !== false;
+                break;
+            case 'marketplace':
+                allowed = surfaceControls.applyMarketplace !== false;
+                break;
+            default:
+                allowed = surfaceControls.applyOther !== false;
+                break;
+        }
+
+        if (allowed) {
+            this._lastSurfaceScopeSkipKey = '';
+            return true;
+        }
+
+        const skipKey = `${surfaceKey}:${window.location.pathname}`;
+        if (skipKey !== this._lastSurfaceScopeSkipKey) {
+            this._lastSurfaceScopeSkipKey = skipKey;
+            PF_Logger.log(`Surface scope active: filters skipped on '${surfaceKey}' surface.`);
+        }
+
+        return false;
     }
 
     _hasTopbarFiltersEnabled() {

@@ -309,6 +309,16 @@ class PureFusionApp {
             hideTravelScenery: false
         };
 
+        effective.surfaceControls = {
+            ...effective.surfaceControls,
+            enabled: false,
+            applyHome: true,
+            applyGroups: true,
+            applyWatch: true,
+            applyMarketplace: true,
+            applyOther: true
+        };
+
         effective.topbarFilters = {
             ...effective.topbarFilters,
             enabled: false,
