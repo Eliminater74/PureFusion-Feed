@@ -81,10 +81,14 @@ class PF_Predictor {
         const root = document.body || document.documentElement;
         if (!root || !root.querySelectorAll) return;
 
-        const posts = Array.from(root.querySelectorAll(PF_SELECTOR_MAP.postContainer));
+        const feedRoot = document.querySelector(PF_SELECTOR_MAP.mainFeedRegion) || root;
+        const rawPosts = Array.from(feedRoot.querySelectorAll(PF_SELECTOR_MAP.postContainer));
+        const posts = this._dedupeNestedPosts(rawPosts.filter((postNode) => this._isLikelyFeedPost(postNode)));
+        const visibleCount = posts.filter((postNode) => this._isElementVisible(postNode)).length;
+
         if (!posts.length) {
             if (debugPreview && forceRescore && window.PF_Helpers && typeof window.PF_Helpers.showToast === 'function') {
-                window.PF_Helpers.showToast('Credibility scan found 0 feed posts on this view.', 'warn', 2600);
+                window.PF_Helpers.showToast('Credibility scan found 0 feed posts in main feed region.', 'warn', 2800);
             }
             return;
         }
@@ -102,8 +106,56 @@ class PF_Predictor {
         this.applyToNodes(posts);
 
         if (debugPreview && forceRescore && window.PF_Helpers && typeof window.PF_Helpers.showToast === 'function') {
-            window.PF_Helpers.showToast(`Credibility scan active: ${posts.length} posts analyzed.`, 'info', 2600);
+            const sampleAuthors = posts
+                .slice(0, 3)
+                .map((postNode) => this._extractAuthor(postNode))
+                .map((name) => String(name || '').trim())
+                .filter((name) => name && name !== 'Unknown')
+                .join(', ');
+
+            const suffix = sampleAuthors ? ` Sample: ${sampleAuthors}` : '';
+            window.PF_Helpers.showToast(
+                `Credibility scan active: ${posts.length} feed posts (${visibleCount} visible).${suffix}`,
+                'info',
+                3600
+            );
         }
+    }
+
+    _dedupeNestedPosts(posts) {
+        if (!Array.isArray(posts) || posts.length <= 1) return Array.isArray(posts) ? posts : [];
+
+        return posts.filter((candidate) => {
+            return !posts.some((other) => other !== candidate && other.contains && other.contains(candidate));
+        });
+    }
+
+    _isLikelyFeedPost(postNode) {
+        if (!postNode || !postNode.matches) return false;
+        if (postNode.matches('[role="dialog"]')) return true;
+
+        const role = String(postNode.getAttribute('role') || '').toLowerCase();
+        if (role === 'article') return true;
+
+        const pagelet = String(postNode.getAttribute('data-pagelet') || '');
+        if (pagelet.startsWith('FeedUnit_') || pagelet.startsWith('AdUnit_')) return true;
+
+        return !!postNode.querySelector(PF_SELECTOR_MAP.postTextBody);
+    }
+
+    _isElementVisible(element) {
+        if (!element || !element.getBoundingClientRect) return false;
+
+        const style = window.getComputedStyle ? window.getComputedStyle(element) : null;
+        if (style && (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0')) {
+            return false;
+        }
+
+        const rect = element.getBoundingClientRect();
+        const hasSize = rect.width > 40 && rect.height > 40;
+        if (!hasSize) return false;
+
+        return rect.bottom > 0 && rect.top < (window.innerHeight || document.documentElement.clientHeight || 0);
     }
 
     _processSingleNode(node) {
