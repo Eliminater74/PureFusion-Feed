@@ -70,6 +70,12 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 6) Per-surface controls (medium)
 - Separate behavior for Home feed vs Groups vs Watch vs Marketplace surfaces.
 
+7) Auto comment preview v2 (medium)
+- Expand first comment batch inline for visible posts only.
+- Use IntersectionObserver + guarded click strategy to avoid opening full post pages.
+- Add rate limiting and per-post retry cap to avoid bot-like behavior.
+- Keep OFF by default and expose as an explicit advanced toggle.
+
 ## Implementation Order (Next)
 
 1) Post-type filter pack v2
@@ -88,6 +94,11 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 
 4) Diagnostics mode
 - Add optional debug toggle and small overlay/log panel.
+
+5) Auto comment preview v2 hardening
+- Restrict to safe inline triggers and avoid modal/page navigation links.
+- Add cooldown between auto-click actions.
+- Add per-surface allow/deny list (Home yes, Notifications no by default).
 
 ## Safety Rules (Do Not Remove)
 
