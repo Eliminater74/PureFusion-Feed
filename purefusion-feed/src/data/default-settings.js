@@ -166,6 +166,7 @@ const DEFAULT_SETTINGS = {
     diagnostics: {
         enabled: false,
         showOverlay: true,
+        compactOverlay: false,
         verboseConsole: false,
         maxReasons: 6,
         observerWarnDurationMs: 25,

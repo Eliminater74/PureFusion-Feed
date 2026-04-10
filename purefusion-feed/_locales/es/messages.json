@@ -224,6 +224,7 @@
   "options_data_diag_desc": { "message": "Superposicion local opcional para inspeccionar razones de ocultacion y actividad de filtros." },
   "options_data_diag_enable": { "message": "Activar modo diagnostico" },
   "options_data_diag_overlay": { "message": "Mostrar superposicion de diagnostico" },
+  "options_data_diag_compact": { "message": "Usar superposicion compacta de diagnostico" },
   "options_data_diag_console": { "message": "Diagnostico detallado en consola" },
   "options_data_diag_max_reasons": { "message": "Maximo de filas de razones en superposicion" },
   "options_data_diag_thresholds_title": { "message": "Umbrales de picos del observador" },

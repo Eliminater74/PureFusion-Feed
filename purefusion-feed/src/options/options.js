@@ -255,6 +255,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Diagnostics
         'opt_diag_enabled': { obj: 'diagnostics', prop: 'enabled', type: 'checkbox' },
         'opt_diag_showOverlay': { obj: 'diagnostics', prop: 'showOverlay', type: 'checkbox' },
+        'opt_diag_compactOverlay': { obj: 'diagnostics', prop: 'compactOverlay', type: 'checkbox' },
         'opt_diag_verboseConsole': { obj: 'diagnostics', prop: 'verboseConsole', type: 'checkbox' },
         'opt_diag_maxReasons': { obj: 'diagnostics', prop: 'maxReasons', type: 'number', fallback: 6 },
         'opt_diag_warnDurationMs': { obj: 'diagnostics', prop: 'observerWarnDurationMs', type: 'number', fallback: 25 },

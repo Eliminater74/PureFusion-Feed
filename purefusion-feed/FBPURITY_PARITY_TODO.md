@@ -76,7 +76,8 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Added: mini observer workload trend sparkline (rolling window with warn/severe guide lines).
 - Added: quick-reset actions in diagnostics overlay (clear observer history, reset all counters).
 - Added: optional copy-to-clipboard action for diagnostics snapshot JSON (with fallback copy path).
-- Next: add optional compact diagnostics mode for smaller screens.
+- Added: optional compact diagnostics overlay mode for smaller screens.
+- Next: add optional draggable diagnostics overlay position + remember placement.
 
 6) Per-surface controls (medium)
 - Separate behavior for Home feed vs Groups vs Watch vs Marketplace surfaces.

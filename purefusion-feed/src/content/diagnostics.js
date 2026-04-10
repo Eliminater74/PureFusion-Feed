@@ -156,6 +156,10 @@ class PF_Diagnostics {
         return !!this.settings?.diagnostics?.enabled;
     }
 
+    _isCompactOverlayEnabled() {
+        return !!this.settings?.diagnostics?.compactOverlay;
+    }
+
     _syncOverlayState() {
         if (!this._isEnabled() || !this.settings?.diagnostics?.showOverlay) {
             this._removeOverlay();
@@ -163,6 +167,7 @@ class PF_Diagnostics {
         }
 
         this._ensureOverlay();
+        this._applyOverlayModeClass();
     }
 
     _ensureOverlay() {
@@ -243,8 +248,20 @@ class PF_Diagnostics {
         this.overlay = null;
     }
 
+    _applyOverlayModeClass() {
+        if (!this.overlay) return;
+
+        if (this._isCompactOverlayEnabled()) {
+            this.overlay.classList.add('pf-diag-compact');
+        } else {
+            this.overlay.classList.remove('pf-diag-compact');
+        }
+    }
+
     _render() {
         if (!this.overlay || !document.contains(this.overlay)) return;
+
+        this._applyOverlayModeClass();
 
         const totalEl = this.overlay.querySelector('#pfDiagTotal');
         const listEl = this.overlay.querySelector('#pfDiagReasons');
@@ -309,7 +326,10 @@ class PF_Diagnostics {
             }).join('')
             : '<li><span>No spikes yet.</span><strong>Stable</strong></li>';
 
-        const maxReasons = Math.max(1, Math.min(12, Number(this.settings?.diagnostics?.maxReasons || 6)));
+        const configuredMaxReasons = Math.max(1, Math.min(12, Number(this.settings?.diagnostics?.maxReasons || 6)));
+        const maxReasons = this._isCompactOverlayEnabled()
+            ? Math.min(4, configuredMaxReasons)
+            : configuredMaxReasons;
         const top = Array.from(this.reasonCounts.entries())
             .sort((a, b) => b[1] - a[1])
             .slice(0, maxReasons);
@@ -334,6 +354,7 @@ class PF_Diagnostics {
             diagnostics: {
                 enabled: this._isEnabled(),
                 showOverlay: !!this.settings?.diagnostics?.showOverlay,
+                compactOverlay: this._isCompactOverlayEnabled(),
                 verboseConsole: !!this.settings?.diagnostics?.verboseConsole,
                 maxReasons: Number(this.settings?.diagnostics?.maxReasons || 6)
             },
@@ -681,6 +702,14 @@ class PF_Diagnostics {
                 box-shadow: 0 10px 32px rgba(0, 0, 0, 0.45);
             }
 
+            #pf-diagnostics-overlay.pf-diag-compact {
+                width: min(310px, calc(100vw - 20px));
+                max-height: 36vh;
+                padding: 8px 9px;
+                font-size: 11px;
+                line-height: 1.25;
+            }
+
             #pf-diagnostics-overlay .pf-diag-title {
                 font-weight: 800;
                 color: #9fe7ff;
@@ -690,6 +719,10 @@ class PF_Diagnostics {
             #pf-diagnostics-overlay .pf-diag-total {
                 margin-bottom: 8px;
                 color: #d7e4fb;
+            }
+
+            #pf-diagnostics-overlay.pf-diag-compact .pf-diag-total {
+                margin-bottom: 6px;
             }
 
             #pf-diagnostics-overlay .pf-diag-meta {
@@ -714,6 +747,11 @@ class PF_Diagnostics {
                 letter-spacing: 0.04em;
             }
 
+            #pf-diagnostics-overlay.pf-diag-compact .pf-diag-subtitle {
+                margin-bottom: 4px;
+                font-size: 10px;
+            }
+
             #pf-diagnostics-overlay .pf-diag-thresholds {
                 margin-bottom: 8px;
                 color: #95a8ca;
@@ -728,10 +766,19 @@ class PF_Diagnostics {
                 padding: 6px 8px;
             }
 
+            #pf-diagnostics-overlay.pf-diag-compact .pf-diag-trend {
+                margin-bottom: 8px;
+                padding: 5px 6px;
+            }
+
             #pf-diagnostics-overlay .pf-diag-trend svg {
                 display: block;
                 width: 100%;
                 height: 56px;
+            }
+
+            #pf-diagnostics-overlay.pf-diag-compact .pf-diag-trend svg {
+                height: 42px;
             }
 
             #pf-diagnostics-overlay .pf-diag-trend-meta {
@@ -739,6 +786,11 @@ class PF_Diagnostics {
                 font-size: 11px;
                 color: #b8c9e8;
                 font-weight: 600;
+            }
+
+            #pf-diagnostics-overlay.pf-diag-compact .pf-diag-trend-meta {
+                margin-top: 4px;
+                font-size: 10px;
             }
 
             #pf-diagnostics-overlay .pf-diag-list {
@@ -810,6 +862,11 @@ class PF_Diagnostics {
                 flex-wrap: wrap;
             }
 
+            #pf-diagnostics-overlay.pf-diag-compact .pf-diag-actions {
+                margin-top: 8px;
+                gap: 4px;
+            }
+
             #pf-diagnostics-overlay .pf-diag-actions button {
                 appearance: none;
                 border: 1px solid #4a5a78;
@@ -819,6 +876,11 @@ class PF_Diagnostics {
                 font: 700 11px/1.2 "Segoe UI", sans-serif;
                 padding: 6px 10px;
                 cursor: pointer;
+            }
+
+            #pf-diagnostics-overlay.pf-diag-compact .pf-diag-actions button {
+                font-size: 10px;
+                padding: 5px 7px;
             }
 
             #pf-diagnostics-overlay .pf-diag-actions button:hover {

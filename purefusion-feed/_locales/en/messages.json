@@ -224,6 +224,7 @@
   "options_data_diag_desc": { "message": "Optional local debug overlay to inspect hide reasons and filter activity." },
   "options_data_diag_enable": { "message": "Enable diagnostics mode" },
   "options_data_diag_overlay": { "message": "Show in-page diagnostics overlay" },
+  "options_data_diag_compact": { "message": "Use compact diagnostics overlay" },
   "options_data_diag_console": { "message": "Verbose diagnostics in console" },
   "options_data_diag_max_reasons": { "message": "Overlay max reason rows" },
   "options_data_diag_thresholds_title": { "message": "Observer Spike Thresholds" },

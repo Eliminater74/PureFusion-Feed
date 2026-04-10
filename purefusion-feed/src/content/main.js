@@ -327,6 +327,7 @@ class PureFusionApp {
             ...effective.diagnostics,
             enabled: false,
             showOverlay: false,
+            compactOverlay: false,
             verboseConsole: false,
             maxReasons: 6,
             observerWarnDurationMs: 25,
