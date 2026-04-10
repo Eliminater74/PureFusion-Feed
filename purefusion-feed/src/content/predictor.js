@@ -221,7 +221,7 @@ class PF_Predictor {
     }
 
     _processSingleNode(node) {
-        const predictVersion = 'v5-cred-debug-targeting';
+        const predictVersion = 'v6-cred-dialog-anchor';
 
         if (node.dataset.pfPredictProcessed === predictVersion) {
             this._refreshPredictionDecorations(node);
@@ -594,12 +594,7 @@ class PF_Predictor {
             wrapper.setAttribute('aria-label', `Verify source warning. PF score ${score}. ${summary}`);
         }
 
-        const anchor = postNode.querySelector('[data-pagelet], h3, h4, strong') || postNode;
-        if (anchor.parentElement) {
-            anchor.parentElement.appendChild(wrapper);
-        } else {
-            postNode.prepend(wrapper);
-        }
+        this._insertCredibilityElement(postNode, wrapper);
 
         postNode.dataset.pfCredBadgeInjected = 'true';
     }
@@ -634,9 +629,54 @@ class PF_Predictor {
             badge.setAttribute('aria-label', `Credibility debug ${status}. Points ${points}. PF score ${score}. ${sourceHint}`);
         }
 
-        postNode.prepend(badge);
+        this._insertCredibilityElement(postNode, badge);
 
         postNode.dataset.pfCredDebugInjected = 'true';
+    }
+
+    _insertCredibilityElement(postNode, element) {
+        if (!postNode || !element) return;
+
+        const visualHost = this._resolvePostVisualHost(postNode);
+        if (!visualHost) {
+            postNode.prepend(element);
+            return;
+        }
+
+        const textBody = visualHost.querySelector(PF_SELECTOR_MAP.postTextBody);
+        if (textBody && textBody.parentElement) {
+            textBody.parentElement.insertBefore(element, textBody);
+            return;
+        }
+
+        const headline = visualHost.querySelector('h3, h4');
+        if (headline && headline.parentElement) {
+            headline.parentElement.appendChild(element);
+            return;
+        }
+
+        visualHost.prepend(element);
+    }
+
+    _resolvePostVisualHost(postNode) {
+        if (!postNode) return null;
+
+        if (!postNode.matches || !postNode.matches('[role="dialog"]')) {
+            return postNode;
+        }
+
+        const dialogCandidates = Array.from(postNode.querySelectorAll('[role="article"], [data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"]'));
+        for (const candidate of dialogCandidates) {
+            if (!candidate || !candidate.querySelector) continue;
+            const hasText = !!candidate.querySelector(PF_SELECTOR_MAP.postTextBody);
+            const hasMedia = !!candidate.querySelector('img, video');
+            const hasHeader = !!candidate.querySelector('h3, h4');
+            if ((hasText || hasMedia) && hasHeader) {
+                return candidate;
+            }
+        }
+
+        return postNode;
     }
 
     _applyScoreEffects(postNode, score, scoreDetails) {
