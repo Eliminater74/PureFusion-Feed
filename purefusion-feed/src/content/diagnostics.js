@@ -201,6 +201,7 @@ class PF_Diagnostics {
             <div class="pf-diag-actions">
                 <button id="pfDiagClearObserverBtn" type="button">Clear observer history</button>
                 <button id="pfDiagResetBtn" type="button">Reset all counters</button>
+                <button id="pfDiagCopyBtn" type="button">Copy snapshot JSON</button>
                 <button id="pfDiagExportBtn" type="button">Export snapshot</button>
             </div>
         `;
@@ -208,6 +209,7 @@ class PF_Diagnostics {
         const exportBtn = this.overlay.querySelector('#pfDiagExportBtn');
         const resetBtn = this.overlay.querySelector('#pfDiagResetBtn');
         const clearObserverBtn = this.overlay.querySelector('#pfDiagClearObserverBtn');
+        const copyBtn = this.overlay.querySelector('#pfDiagCopyBtn');
         if (exportBtn) {
             exportBtn.addEventListener('click', () => {
                 this._exportSnapshot();
@@ -223,6 +225,12 @@ class PF_Diagnostics {
         if (resetBtn) {
             resetBtn.addEventListener('click', () => {
                 this._resetAllDiagnosticsData();
+            });
+        }
+
+        if (copyBtn) {
+            copyBtn.addEventListener('click', () => {
+                void this._copySnapshotToClipboard();
             });
         }
 
@@ -541,8 +549,7 @@ class PF_Diagnostics {
 
     _exportSnapshot() {
         try {
-            const payload = this._buildSnapshot();
-            const pretty = JSON.stringify(payload, null, 2);
+            const pretty = this._buildSnapshotJson();
             const blob = new Blob([pretty], { type: 'application/json' });
             const blobUrl = URL.createObjectURL(blob);
 
@@ -564,6 +571,67 @@ class PF_Diagnostics {
             if (window.PF_Helpers && typeof window.PF_Helpers.showToast === 'function') {
                 window.PF_Helpers.showToast('Diagnostics export failed.', 'error');
             }
+        }
+    }
+
+    _buildSnapshotJson() {
+        return JSON.stringify(this._buildSnapshot(), null, 2);
+    }
+
+    async _copySnapshotToClipboard() {
+        try {
+            const pretty = this._buildSnapshotJson();
+            let copied = false;
+
+            if (navigator?.clipboard?.writeText) {
+                try {
+                    await navigator.clipboard.writeText(pretty);
+                    copied = true;
+                } catch (err) {
+                    copied = false;
+                }
+            }
+
+            if (!copied) {
+                copied = this._copyTextViaTextarea(pretty);
+            }
+
+            if (copied) {
+                if (window.PF_Helpers && typeof window.PF_Helpers.showToast === 'function') {
+                    window.PF_Helpers.showToast('Diagnostics snapshot copied.', 'success');
+                }
+            } else if (window.PF_Helpers && typeof window.PF_Helpers.showToast === 'function') {
+                window.PF_Helpers.showToast('Copy failed. Use Export snapshot instead.', 'error');
+            }
+        } catch (err) {
+            PF_Logger.warn('Diagnostics clipboard copy failed:', err);
+            if (window.PF_Helpers && typeof window.PF_Helpers.showToast === 'function') {
+                window.PF_Helpers.showToast('Copy failed. Use Export snapshot instead.', 'error');
+            }
+        }
+    }
+
+    _copyTextViaTextarea(text) {
+        try {
+            const area = document.createElement('textarea');
+            area.value = String(text || '');
+            area.setAttribute('readonly', 'readonly');
+            area.style.position = 'fixed';
+            area.style.left = '-9999px';
+            area.style.top = '0';
+            document.body.appendChild(area);
+            area.focus();
+            area.select();
+
+            let copied = false;
+            if (document.execCommand) {
+                copied = document.execCommand('copy');
+            }
+
+            area.remove();
+            return copied;
+        } catch (err) {
+            return false;
         }
     }
 

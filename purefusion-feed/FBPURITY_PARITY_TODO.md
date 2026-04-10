@@ -75,7 +75,8 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Added: user-configurable observer spike thresholds in Diagnostics settings (warn/severe for ms, nodes, records).
 - Added: mini observer workload trend sparkline (rolling window with warn/severe guide lines).
 - Added: quick-reset actions in diagnostics overlay (clear observer history, reset all counters).
-- Next: add optional copy-to-clipboard action for diagnostics snapshot JSON.
+- Added: optional copy-to-clipboard action for diagnostics snapshot JSON (with fallback copy path).
+- Next: add optional compact diagnostics mode for smaller screens.
 
 6) Per-surface controls (medium)
 - Separate behavior for Home feed vs Groups vs Watch vs Marketplace surfaces.
