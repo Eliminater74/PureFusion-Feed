@@ -16,13 +16,21 @@ class PF_Diagnostics {
         this.lastResweepAt = 0;
         this.settingsUpdateCount = 0;
         this.lastSettingsUpdateAt = 0;
+        this.observerBatchCount = 0;
+        this.observerNodesTotal = 0;
+        this.observerMutationTotal = 0;
+        this.observerDurationTotal = 0;
+        this.observerDurationPeak = 0;
+        this.lastObserverBatch = null;
         this.boundHiddenHandler = this._onElementHidden.bind(this);
         this.boundResweepHandler = this._onResweepPass.bind(this);
         this.boundSettingsUpdateHandler = this._onSettingsUpdate.bind(this);
+        this.boundObserverBatchHandler = this._onObserverBatch.bind(this);
 
         window.addEventListener('pf:element_hidden', this.boundHiddenHandler);
         window.addEventListener('pf:resweep_pass', this.boundResweepHandler);
         window.addEventListener('pf:settings_update', this.boundSettingsUpdateHandler);
+        window.addEventListener('pf:observer_batch', this.boundObserverBatchHandler);
         this._syncOverlayState();
     }
 
@@ -85,6 +93,32 @@ class PF_Diagnostics {
         this._render();
     }
 
+    _onObserverBatch(event) {
+        if (!this._isEnabled()) return;
+
+        const nodes = Math.max(0, Number(event?.detail?.nodes || 0));
+        const mutationRecords = Math.max(0, Number(event?.detail?.mutationRecords || 0));
+        const durationMs = Math.max(0, Number(event?.detail?.durationMs || 0));
+
+        this.observerBatchCount += 1;
+        this.observerNodesTotal += nodes;
+        this.observerMutationTotal += mutationRecords;
+        this.observerDurationTotal += durationMs;
+        this.observerDurationPeak = Math.max(this.observerDurationPeak, durationMs);
+        this.lastObserverBatch = {
+            nodes,
+            mutationRecords,
+            durationMs,
+            ts: Date.now()
+        };
+
+        if (this.settings?.diagnostics?.verboseConsole) {
+            PF_Logger.log(`[Diagnostics] Observer batch: ${nodes} nodes, ${mutationRecords} records, ${durationMs.toFixed(2)}ms`);
+        }
+
+        this._render();
+    }
+
     _isEnabled() {
         return !!this.settings?.diagnostics?.enabled;
     }
@@ -113,9 +147,27 @@ class PF_Diagnostics {
                 <div>Last sync: <span id="pfDiagLastSync">-</span></div>
                 <div>Last resweep: <span id="pfDiagLastResweep">-</span></div>
             </div>
+            <div class="pf-diag-subtitle">Observer workload</div>
+            <div class="pf-diag-meta">
+                <div>Batches: <strong id="pfDiagObserverBatches">0</strong></div>
+                <div>Nodes seen: <strong id="pfDiagObserverNodes">0</strong></div>
+                <div>Records seen: <strong id="pfDiagObserverRecords">0</strong></div>
+                <div>Avg/Peak batch: <strong id="pfDiagObserverAvgMs">0.00ms</strong> / <strong id="pfDiagObserverPeakMs">0.00ms</strong></div>
+                <div>Last batch: <span id="pfDiagObserverLastBatch">-</span></div>
+            </div>
             <div class="pf-diag-subtitle">Top hide reasons</div>
             <ol id="pfDiagReasons" class="pf-diag-list"></ol>
+            <div class="pf-diag-actions">
+                <button id="pfDiagExportBtn" type="button">Export snapshot</button>
+            </div>
         `;
+
+        const exportBtn = this.overlay.querySelector('#pfDiagExportBtn');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', () => {
+                this._exportSnapshot();
+            });
+        }
 
         document.body.appendChild(this.overlay);
     }
@@ -136,7 +188,13 @@ class PF_Diagnostics {
         const followupsEl = this.overlay.querySelector('#pfDiagResweepFollowups');
         const lastSyncEl = this.overlay.querySelector('#pfDiagLastSync');
         const lastResweepEl = this.overlay.querySelector('#pfDiagLastResweep');
-        if (!totalEl || !listEl || !syncEl || !resweepEl || !followupsEl || !lastSyncEl || !lastResweepEl) return;
+        const observerBatchesEl = this.overlay.querySelector('#pfDiagObserverBatches');
+        const observerNodesEl = this.overlay.querySelector('#pfDiagObserverNodes');
+        const observerRecordsEl = this.overlay.querySelector('#pfDiagObserverRecords');
+        const observerAvgMsEl = this.overlay.querySelector('#pfDiagObserverAvgMs');
+        const observerPeakMsEl = this.overlay.querySelector('#pfDiagObserverPeakMs');
+        const observerLastBatchEl = this.overlay.querySelector('#pfDiagObserverLastBatch');
+        if (!totalEl || !listEl || !syncEl || !resweepEl || !followupsEl || !lastSyncEl || !lastResweepEl || !observerBatchesEl || !observerNodesEl || !observerRecordsEl || !observerAvgMsEl || !observerPeakMsEl || !observerLastBatchEl) return;
 
         totalEl.textContent = String(this.hiddenTotal);
         syncEl.textContent = String(this.settingsUpdateCount);
@@ -144,6 +202,21 @@ class PF_Diagnostics {
         followupsEl.textContent = String(this.liveResweepFollowups);
         lastSyncEl.textContent = this._formatTime(this.lastSettingsUpdateAt);
         lastResweepEl.textContent = this._formatTime(this.lastResweepAt);
+        observerBatchesEl.textContent = String(this.observerBatchCount);
+        observerNodesEl.textContent = String(this.observerNodesTotal);
+        observerRecordsEl.textContent = String(this.observerMutationTotal);
+
+        const avgMs = this.observerBatchCount > 0
+            ? this.observerDurationTotal / this.observerBatchCount
+            : 0;
+        observerAvgMsEl.textContent = `${avgMs.toFixed(2)}ms`;
+        observerPeakMsEl.textContent = `${this.observerDurationPeak.toFixed(2)}ms`;
+
+        if (!this.lastObserverBatch) {
+            observerLastBatchEl.textContent = '-';
+        } else {
+            observerLastBatchEl.textContent = `${this.lastObserverBatch.nodes} nodes, ${this.lastObserverBatch.mutationRecords} records, ${this.lastObserverBatch.durationMs.toFixed(2)}ms @ ${this._formatTime(this.lastObserverBatch.ts)}`;
+        }
 
         const maxReasons = Math.max(1, Math.min(12, Number(this.settings?.diagnostics?.maxReasons || 6)));
         const top = Array.from(this.reasonCounts.entries())
@@ -153,6 +226,81 @@ class PF_Diagnostics {
         listEl.innerHTML = top.length
             ? top.map(([reason, count]) => `<li><span>${this._escapeHtml(reason)}</span><strong>${count}</strong></li>`).join('')
             : '<li><span>No hide actions yet.</span><strong>0</strong></li>';
+    }
+
+    _buildSnapshot() {
+        const reasonCounts = Array.from(this.reasonCounts.entries())
+            .sort((a, b) => b[1] - a[1])
+            .map(([reason, count]) => ({ reason, count }));
+
+        const avgObserverDurationMs = this.observerBatchCount > 0
+            ? this.observerDurationTotal / this.observerBatchCount
+            : 0;
+
+        return {
+            generatedAt: new Date().toISOString(),
+            page: window.location.href,
+            diagnostics: {
+                enabled: this._isEnabled(),
+                showOverlay: !!this.settings?.diagnostics?.showOverlay,
+                verboseConsole: !!this.settings?.diagnostics?.verboseConsole,
+                maxReasons: Number(this.settings?.diagnostics?.maxReasons || 6)
+            },
+            counters: {
+                hiddenTotal: this.hiddenTotal,
+                settingsUpdateCount: this.settingsUpdateCount,
+                liveResweepTotal: this.liveResweepTotal,
+                liveResweepFollowups: this.liveResweepFollowups
+            },
+            timings: {
+                lastSettingsUpdateAt: this.lastSettingsUpdateAt ? new Date(this.lastSettingsUpdateAt).toISOString() : null,
+                lastResweepAt: this.lastResweepAt ? new Date(this.lastResweepAt).toISOString() : null
+            },
+            observer: {
+                batchCount: this.observerBatchCount,
+                nodesSeen: this.observerNodesTotal,
+                recordsSeen: this.observerMutationTotal,
+                avgBatchDurationMs: Number(avgObserverDurationMs.toFixed(3)),
+                peakBatchDurationMs: Number(this.observerDurationPeak.toFixed(3)),
+                lastBatch: this.lastObserverBatch
+                    ? {
+                        nodes: this.lastObserverBatch.nodes,
+                        mutationRecords: this.lastObserverBatch.mutationRecords,
+                        durationMs: Number(this.lastObserverBatch.durationMs.toFixed(3)),
+                        ts: new Date(this.lastObserverBatch.ts).toISOString()
+                    }
+                    : null
+            },
+            topReasons: reasonCounts
+        };
+    }
+
+    _exportSnapshot() {
+        try {
+            const payload = this._buildSnapshot();
+            const pretty = JSON.stringify(payload, null, 2);
+            const blob = new Blob([pretty], { type: 'application/json' });
+            const blobUrl = URL.createObjectURL(blob);
+
+            const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+            const anchor = document.createElement('a');
+            anchor.href = blobUrl;
+            anchor.download = `purefusion-diagnostics-${stamp}.json`;
+            document.body.appendChild(anchor);
+            anchor.click();
+            anchor.remove();
+
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+
+            if (window.PF_Helpers && typeof window.PF_Helpers.showToast === 'function') {
+                window.PF_Helpers.showToast('Diagnostics snapshot exported.', 'success');
+            }
+        } catch (err) {
+            PF_Logger.warn('Diagnostics export failed:', err);
+            if (window.PF_Helpers && typeof window.PF_Helpers.showToast === 'function') {
+                window.PF_Helpers.showToast('Diagnostics export failed.', 'error');
+            }
+        }
     }
 
     _formatTime(timestamp) {
@@ -257,6 +405,28 @@ class PF_Diagnostics {
             #pf-diagnostics-overlay .pf-diag-list strong {
                 color: #74f0ff;
                 font-weight: 800;
+            }
+
+            #pf-diagnostics-overlay .pf-diag-actions {
+                margin-top: 10px;
+                display: flex;
+                justify-content: flex-end;
+            }
+
+            #pf-diagnostics-overlay .pf-diag-actions button {
+                appearance: none;
+                border: 1px solid #4a5a78;
+                border-radius: 8px;
+                background: #1d2635;
+                color: #dbe8ff;
+                font: 700 11px/1.2 "Segoe UI", sans-serif;
+                padding: 6px 10px;
+                cursor: pointer;
+            }
+
+            #pf-diagnostics-overlay .pf-diag-actions button:hover {
+                border-color: #79d9ff;
+                color: #ffffff;
             }
         `;
 

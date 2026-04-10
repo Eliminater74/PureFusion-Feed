@@ -68,7 +68,9 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Status: initial implementation complete.
 - Implemented: optional in-page diagnostics overlay with per-reason hide counters and optional verbose console mode.
 - Added: live settings-sync telemetry (sync count, resweep count, follow-up pass count, and last-sync timestamps).
-- Next: add observer workload timing + export snapshot.
+- Added: observer workload timing (batch count, records/nodes, avg/peak batch ms, last batch summary).
+- Added: one-click diagnostics snapshot export (JSON) from the overlay.
+- Next: add persistent history ring buffer for recent observer spikes.
 
 6) Per-surface controls (medium)
 - Separate behavior for Home feed vs Groups vs Watch vs Marketplace surfaces.

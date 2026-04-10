@@ -15,6 +15,7 @@ class PF_Observer {
         // grouping multiple node insertions into a single batch 150ms window.
         this.processBatch = PF_Helpers.debounce(this._processBatch.bind(this), 150);
         this.queuedNodes = new Set();
+        this.pendingMutationRecords = 0;
     }
 
     start() {
@@ -26,6 +27,7 @@ class PF_Observer {
 
         this.observer = new MutationObserver((mutations) => {
             let shouldProcess = false;
+            this.pendingMutationRecords += mutations.length;
 
             for (const mutation of mutations) {
                 if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
@@ -65,12 +67,37 @@ class PF_Observer {
         if (this.queuedNodes.size === 0) return;
 
         const nodesToProcess = Array.from(this.queuedNodes);
+        const nodeCount = nodesToProcess.length;
+        const mutationRecords = this.pendingMutationRecords;
         this.queuedNodes.clear();
+        this.pendingMutationRecords = 0;
 
         // Pass to the master orchestrator or trigger custom events.
         // For architectural decoupling, we dispatch a custom event.
+        const startedAt = (typeof performance !== 'undefined' && performance.now)
+            ? performance.now()
+            : Date.now();
+
         const event = new CustomEvent('pf:nodes_added', { detail: { nodes: nodesToProcess } });
         document.dispatchEvent(event);
+
+        const endedAt = (typeof performance !== 'undefined' && performance.now)
+            ? performance.now()
+            : Date.now();
+        const durationMs = Math.max(0, endedAt - startedAt);
+
+        try {
+            window.dispatchEvent(new CustomEvent('pf:observer_batch', {
+                detail: {
+                    nodes: nodeCount,
+                    mutationRecords,
+                    durationMs,
+                    ts: Date.now()
+                }
+            }));
+        } catch (err) {
+            // no-op when diagnostics event dispatch is unavailable
+        }
     }
 }
 
