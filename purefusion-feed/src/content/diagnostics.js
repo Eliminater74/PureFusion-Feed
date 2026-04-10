@@ -26,15 +26,24 @@ class PF_Diagnostics {
         this.observerSpikeHistoryLimit = 10;
         this.observerTrendHistory = [];
         this.observerTrendHistoryLimit = 36;
+        this.overlayPosition = null;
+        this.overlayPositionStorageKey = 'pf_diag_overlay_position_v1';
+        this.dragState = null;
         this.boundHiddenHandler = this._onElementHidden.bind(this);
         this.boundResweepHandler = this._onResweepPass.bind(this);
         this.boundSettingsUpdateHandler = this._onSettingsUpdate.bind(this);
         this.boundObserverBatchHandler = this._onObserverBatch.bind(this);
+        this.boundDragStartHandler = this._onDragStart.bind(this);
+        this.boundDragMoveHandler = this._onDragMove.bind(this);
+        this.boundDragEndHandler = this._onDragEnd.bind(this);
+        this.boundWindowResizeHandler = this._onWindowResize.bind(this);
 
         window.addEventListener('pf:element_hidden', this.boundHiddenHandler);
         window.addEventListener('pf:resweep_pass', this.boundResweepHandler);
         window.addEventListener('pf:settings_update', this.boundSettingsUpdateHandler);
         window.addEventListener('pf:observer_batch', this.boundObserverBatchHandler);
+        window.addEventListener('resize', this.boundWindowResizeHandler);
+        void this._loadSavedOverlayPosition();
         this._syncOverlayState();
     }
 
@@ -168,6 +177,7 @@ class PF_Diagnostics {
 
         this._ensureOverlay();
         this._applyOverlayModeClass();
+        this._applyOverlayPosition();
     }
 
     _ensureOverlay() {
@@ -204,6 +214,7 @@ class PF_Diagnostics {
             <div class="pf-diag-subtitle">Top hide reasons</div>
             <ol id="pfDiagReasons" class="pf-diag-list"></ol>
             <div class="pf-diag-actions">
+                <button id="pfDiagResetPositionBtn" type="button">Reset overlay position</button>
                 <button id="pfDiagClearObserverBtn" type="button">Clear observer history</button>
                 <button id="pfDiagResetBtn" type="button">Reset all counters</button>
                 <button id="pfDiagCopyBtn" type="button">Copy snapshot JSON</button>
@@ -215,6 +226,8 @@ class PF_Diagnostics {
         const resetBtn = this.overlay.querySelector('#pfDiagResetBtn');
         const clearObserverBtn = this.overlay.querySelector('#pfDiagClearObserverBtn');
         const copyBtn = this.overlay.querySelector('#pfDiagCopyBtn');
+        const resetPositionBtn = this.overlay.querySelector('#pfDiagResetPositionBtn');
+        const titleEl = this.overlay.querySelector('.pf-diag-title');
         if (exportBtn) {
             exportBtn.addEventListener('click', () => {
                 this._exportSnapshot();
@@ -239,11 +252,23 @@ class PF_Diagnostics {
             });
         }
 
+        if (resetPositionBtn) {
+            resetPositionBtn.addEventListener('click', () => {
+                void this._resetOverlayPosition();
+            });
+        }
+
+        if (titleEl) {
+            titleEl.addEventListener('pointerdown', this.boundDragStartHandler);
+        }
+
         document.body.appendChild(this.overlay);
+        this._applyOverlayPosition();
     }
 
     _removeOverlay() {
         if (!this.overlay) return;
+        this._cleanupDragListeners();
         if (this.overlay.remove) this.overlay.remove();
         this.overlay = null;
     }
@@ -262,6 +287,7 @@ class PF_Diagnostics {
         if (!this.overlay || !document.contains(this.overlay)) return;
 
         this._applyOverlayModeClass();
+        this._applyOverlayPosition();
 
         const totalEl = this.overlay.querySelector('#pfDiagTotal');
         const listEl = this.overlay.querySelector('#pfDiagReasons');
@@ -356,7 +382,13 @@ class PF_Diagnostics {
                 showOverlay: !!this.settings?.diagnostics?.showOverlay,
                 compactOverlay: this._isCompactOverlayEnabled(),
                 verboseConsole: !!this.settings?.diagnostics?.verboseConsole,
-                maxReasons: Number(this.settings?.diagnostics?.maxReasons || 6)
+                maxReasons: Number(this.settings?.diagnostics?.maxReasons || 6),
+                overlayPosition: this.overlayPosition
+                    ? {
+                        left: this.overlayPosition.left,
+                        top: this.overlayPosition.top
+                    }
+                    : null
             },
             counters: {
                 hiddenTotal: this.hiddenTotal,
@@ -529,6 +561,216 @@ class PF_Diagnostics {
         const parsed = Number(value);
         if (!Number.isFinite(parsed)) return fallback;
         return Math.max(min, Math.min(max, Math.round(parsed)));
+    }
+
+    _normalizeOverlayPosition(value) {
+        const left = Number(value?.left);
+        const top = Number(value?.top);
+        if (!Number.isFinite(left) || !Number.isFinite(top)) return null;
+
+        return {
+            left: Math.round(left),
+            top: Math.round(top)
+        };
+    }
+
+    _clampOverlayPosition(position) {
+        const normalized = this._normalizeOverlayPosition(position);
+        if (!normalized) return null;
+
+        const margin = 8;
+        const viewportWidth = Math.max(320, window.innerWidth || 0);
+        const viewportHeight = Math.max(240, window.innerHeight || 0);
+        const overlayRect = this.overlay ? this.overlay.getBoundingClientRect() : null;
+        const overlayWidth = Math.max(220, Math.round(overlayRect?.width || 320));
+        const overlayHeight = Math.max(140, Math.round(overlayRect?.height || 220));
+
+        const maxLeft = Math.max(margin, viewportWidth - overlayWidth - margin);
+        const maxTop = Math.max(margin, viewportHeight - overlayHeight - margin);
+
+        return {
+            left: Math.max(margin, Math.min(maxLeft, normalized.left)),
+            top: Math.max(margin, Math.min(maxTop, normalized.top))
+        };
+    }
+
+    _applyOverlayPosition() {
+        if (!this.overlay) return;
+
+        if (!this.overlayPosition) {
+            this.overlay.style.left = '';
+            this.overlay.style.top = '';
+            this.overlay.style.right = '14px';
+            this.overlay.style.bottom = '14px';
+            return;
+        }
+
+        const clamped = this._clampOverlayPosition(this.overlayPosition);
+        if (!clamped) {
+            this.overlayPosition = null;
+            this.overlay.style.left = '';
+            this.overlay.style.top = '';
+            this.overlay.style.right = '14px';
+            this.overlay.style.bottom = '14px';
+            return;
+        }
+
+        this.overlayPosition = clamped;
+        this.overlay.style.left = `${clamped.left}px`;
+        this.overlay.style.top = `${clamped.top}px`;
+        this.overlay.style.right = 'auto';
+        this.overlay.style.bottom = 'auto';
+    }
+
+    async _loadSavedOverlayPosition() {
+        try {
+            let saved = null;
+
+            if (window.PF_Storage && typeof window.PF_Storage.getLocalData === 'function') {
+                saved = await window.PF_Storage.getLocalData(this.overlayPositionStorageKey);
+            } else if (window.localStorage) {
+                const raw = window.localStorage.getItem(this.overlayPositionStorageKey);
+                saved = raw ? JSON.parse(raw) : null;
+            }
+
+            const normalized = this._normalizeOverlayPosition(saved);
+            this.overlayPosition = normalized;
+            this._applyOverlayPosition();
+        } catch (err) {
+            this.overlayPosition = null;
+        }
+    }
+
+    async _persistOverlayPosition() {
+        if (!this.overlayPosition) return;
+
+        const payload = {
+            left: this.overlayPosition.left,
+            top: this.overlayPosition.top,
+            updatedAt: Date.now()
+        };
+
+        try {
+            if (window.PF_Storage && typeof window.PF_Storage.setLocalData === 'function') {
+                await window.PF_Storage.setLocalData(this.overlayPositionStorageKey, payload);
+                return;
+            }
+
+            if (window.localStorage) {
+                window.localStorage.setItem(this.overlayPositionStorageKey, JSON.stringify(payload));
+            }
+        } catch (err) {
+            // no-op if storage write fails
+        }
+    }
+
+    async _clearSavedOverlayPosition() {
+        try {
+            if (window.PF_Storage && typeof window.PF_Storage.setLocalData === 'function') {
+                await window.PF_Storage.setLocalData(this.overlayPositionStorageKey, null);
+                return;
+            }
+
+            if (window.localStorage) {
+                window.localStorage.removeItem(this.overlayPositionStorageKey);
+            }
+        } catch (err) {
+            // no-op if storage clear fails
+        }
+    }
+
+    async _resetOverlayPosition() {
+        this.overlayPosition = null;
+        this._applyOverlayPosition();
+        await this._clearSavedOverlayPosition();
+
+        if (window.PF_Helpers && typeof window.PF_Helpers.showToast === 'function') {
+            window.PF_Helpers.showToast('Overlay position reset.', 'success');
+        }
+    }
+
+    _cleanupDragListeners() {
+        window.removeEventListener('pointermove', this.boundDragMoveHandler);
+        window.removeEventListener('pointerup', this.boundDragEndHandler);
+        window.removeEventListener('pointercancel', this.boundDragEndHandler);
+        if (this.overlay) {
+            this.overlay.classList.remove('pf-diag-dragging');
+        }
+        this.dragState = null;
+    }
+
+    _onDragStart(event) {
+        if (!this.overlay) return;
+        if (event && typeof event.button === 'number' && event.button !== 0) return;
+
+        const rect = this.overlay.getBoundingClientRect();
+        this.dragState = {
+            pointerId: event?.pointerId,
+            startX: event?.clientX || 0,
+            startY: event?.clientY || 0,
+            startLeft: rect.left,
+            startTop: rect.top,
+            moved: false
+        };
+
+        this.overlay.classList.add('pf-diag-dragging');
+
+        if (event?.target?.setPointerCapture && typeof event.pointerId === 'number') {
+            try {
+                event.target.setPointerCapture(event.pointerId);
+            } catch (err) {
+                // ignore pointer capture failures
+            }
+        }
+
+        window.addEventListener('pointermove', this.boundDragMoveHandler);
+        window.addEventListener('pointerup', this.boundDragEndHandler);
+        window.addEventListener('pointercancel', this.boundDragEndHandler);
+
+        if (event?.preventDefault) {
+            event.preventDefault();
+        }
+    }
+
+    _onDragMove(event) {
+        if (!this.overlay || !this.dragState) return;
+
+        const deltaX = (event?.clientX || 0) - this.dragState.startX;
+        const deltaY = (event?.clientY || 0) - this.dragState.startY;
+        if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
+            this.dragState.moved = true;
+        }
+
+        const next = this._clampOverlayPosition({
+            left: this.dragState.startLeft + deltaX,
+            top: this.dragState.startTop + deltaY
+        });
+
+        if (!next) return;
+        this.overlayPosition = next;
+        this._applyOverlayPosition();
+    }
+
+    _onDragEnd() {
+        if (!this.dragState) return;
+
+        const moved = !!this.dragState.moved;
+        this._cleanupDragListeners();
+
+        if (moved) {
+            void this._persistOverlayPosition();
+        }
+    }
+
+    _onWindowResize() {
+        if (!this.overlayPosition) return;
+
+        const clamped = this._clampOverlayPosition(this.overlayPosition);
+        if (!clamped) return;
+
+        this.overlayPosition = clamped;
+        this._applyOverlayPosition();
+        void this._persistOverlayPosition();
     }
 
     _clearObserverHistory() {
@@ -714,6 +956,13 @@ class PF_Diagnostics {
                 font-weight: 800;
                 color: #9fe7ff;
                 margin-bottom: 4px;
+                cursor: grab;
+                user-select: none;
+                touch-action: none;
+            }
+
+            #pf-diagnostics-overlay.pf-diag-dragging .pf-diag-title {
+                cursor: grabbing;
             }
 
             #pf-diagnostics-overlay .pf-diag-total {

@@ -77,7 +77,8 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Added: quick-reset actions in diagnostics overlay (clear observer history, reset all counters).
 - Added: optional copy-to-clipboard action for diagnostics snapshot JSON (with fallback copy path).
 - Added: optional compact diagnostics overlay mode for smaller screens.
-- Next: add optional draggable diagnostics overlay position + remember placement.
+- Added: draggable diagnostics overlay position with persisted placement.
+- Next: add tiny per-minute batch rate metric in diagnostics header.
 
 6) Per-surface controls (medium)
 - Separate behavior for Home feed vs Groups vs Watch vs Marketplace surfaces.
