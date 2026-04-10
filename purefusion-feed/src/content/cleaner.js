@@ -713,7 +713,10 @@ class PF_Cleaner {
 
         // 1. Static known containers
         const staticAds = rightCol.querySelectorAll('[data-pagelet="RightRailAdUnits"], [data-pagelet="EgoPane"]');
-        staticAds.forEach((ad) => this._hideNodeSafely(ad, "Right Rail Target"));
+        staticAds.forEach((ad) => {
+            if (this._looksLikeContactsModule(ad)) return;
+            this._hideNodeSafely(ad, "Right Rail Target");
+        });
 
         // 2. Deep traverse for obfuscated text injection
         // FB injects "Sponsored" as literal text nodes in the sidebar
@@ -723,12 +726,72 @@ class PF_Cleaner {
         adSpans.forEach(el => {
             // Verify exact match to prevent false positives if someone's name contains the word
             if (this._isSponsoredLabel(el.textContent)) {
-                const targetWrap = PF_Helpers.getClosest(el, 'div[data-pagelet]') || el.parentElement.parentElement;
+                const targetWrap = this._findRightRailAdContainer(el, rightCol);
                 if (targetWrap && !targetWrap.dataset.pfHidden) {
                     this._hideNodeSafely(targetWrap, "Right Rail Heuristics");
                 }
             }
         });
+    }
+
+    _findRightRailAdContainer(markerNode, rightCol) {
+        if (!markerNode) return null;
+
+        const strictPagelet = PF_Helpers.getClosest(markerNode, '[data-pagelet="RightRailAdUnits"], [data-pagelet="EgoPane"]', 8);
+        if (strictPagelet && !this._looksLikeContactsModule(strictPagelet)) {
+            return strictPagelet;
+        }
+
+        const listItem = PF_Helpers.getClosest(markerNode, '[role="listitem"], li', 6);
+        if (listItem && !this._looksLikeContactsModule(listItem) && this._isLikelyAdCardContainer(listItem)) {
+            return listItem;
+        }
+
+        let current = markerNode.parentElement;
+        let depth = 0;
+        while (current && current !== rightCol && depth < 9) {
+            if (this._looksLikeContactsModule(current)) return null;
+            if (this._isLikelyAdCardContainer(current)) return current;
+            current = current.parentElement;
+            depth += 1;
+        }
+
+        return null;
+    }
+
+    _looksLikeContactsModule(node) {
+        if (!node || !node.querySelector) return false;
+
+        if (node.querySelector('[aria-label="Contacts"], [aria-label="Contactos"]')) return true;
+
+        const heading = node.querySelector('h2, h3, [role="heading"]');
+        const headingText = this._normalizeComparableText(heading?.textContent || '');
+        if (headingText === 'contacts' || headingText === 'contactos') return true;
+
+        const text = this._normalizeComparableText((node.textContent || '').slice(0, 800));
+        if (!text) return false;
+
+        const hasContactsToken = text.includes('contacts') || text.includes('contactos');
+        const manyLinks = node.querySelectorAll('a[role="link"], a[href]').length >= 8;
+        return hasContactsToken && manyLinks;
+    }
+
+    _isLikelyAdCardContainer(node) {
+        if (!node || !node.getBoundingClientRect) return false;
+
+        const rect = node.getBoundingClientRect();
+        if (rect.width < 140 || rect.width > 560) return false;
+        if (rect.height < 40 || rect.height > 760) return false;
+
+        const text = this._normalizeComparableText((node.textContent || '').slice(0, 900));
+        const hasSponsoredToken = this.sponsoredTokens.some((token) => text.includes(this._normalizeComparableText(token)));
+        const hasOutboundLinks = node.querySelectorAll('a[href]').length >= 1;
+        const hasMedia = !!node.querySelector('img, video, canvas');
+
+        if (this._looksLikeContactsModule(node)) return false;
+        if (hasSponsoredToken) return true;
+
+        return hasOutboundLinks && hasMedia;
     }
 
     /**
@@ -1292,7 +1355,14 @@ class PF_Cleaner {
 
             const reason = String(node.dataset.pfReason || '');
             const isNavReason = reason.startsWith('Left Nav:') || reason.startsWith('Right Sidebar:');
-            if (isNavReason && !this._hasSidebarVisibilityFilters()) {
+            if (isNavReason && !this._shouldKeepNavReasonHidden(reason)) {
+                node.style.removeProperty('display');
+                delete node.dataset.pfHidden;
+                delete node.dataset.pfReason;
+                return;
+            }
+
+            if (reason.startsWith('Right Rail') && this._looksLikeContactsModule(node)) {
                 node.style.removeProperty('display');
                 delete node.dataset.pfHidden;
                 delete node.dataset.pfReason;
@@ -1323,6 +1393,26 @@ class PF_Cleaner {
             delete node.dataset.pfHidden;
             delete node.dataset.pfReason;
         });
+    }
+
+    _shouldKeepNavReasonHidden(reason) {
+        if (!reason) return false;
+
+        const sidebar = this.settings?.sidebar;
+        if (!sidebar || !sidebar.enableModuleFilters) return false;
+
+        if (reason.startsWith('Left Nav: Marketplace')) return !!sidebar.hideLeftMarketplace;
+        if (reason.startsWith('Left Nav: Watch')) return !!sidebar.hideLeftWatch;
+        if (reason.startsWith('Left Nav: Gaming')) return !!sidebar.hideLeftGaming;
+        if (reason.startsWith('Left Nav: Memories')) return !!sidebar.hideLeftMemories;
+        if (reason.startsWith('Left Nav: Meta AI')) return !!sidebar.hideLeftMetaAI;
+
+        if (reason.startsWith('Right Sidebar: Trending')) return !!sidebar.hideRightTrending;
+        if (reason.startsWith('Right Sidebar: Contacts')) return !!sidebar.hideRightContacts;
+        if (reason.startsWith('Right Sidebar: Events')) return !!sidebar.hideRightEvents;
+        if (reason.startsWith('Right Sidebar: Birthdays')) return !!sidebar.hideRightBirthdays;
+
+        return false;
     }
 
     _shouldKeepTopbarReasonHidden(reason) {
