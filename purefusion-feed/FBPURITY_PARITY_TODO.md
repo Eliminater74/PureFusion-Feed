@@ -144,6 +144,12 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Define extension-safe plugin hooks for custom filters and post scoring modules.
 - Gate behind developer mode first.
 
+14) Daily Feed Report (medium)
+- Status: initial implementation complete.
+- Implemented: optional session impact report (hidden items, reels blocked, top reason, estimated minutes saved).
+- Added: auto-report interval + manual report button on session timer + keyboard shortcut (Alt+Shift+R).
+- Hardened: shortcut no longer triggers while typing, and auto-report stays quiet when no items were filtered.
+
 ## Implementation Order (Next)
 
 1) Post-type filter pack v2

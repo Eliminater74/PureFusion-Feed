@@ -286,6 +286,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_wb_scrollStop': { obj: 'wellbeing', prop: 'infiniteScrollStopper', type: 'checkbox' },
         'opt_wb_scrollLimit': { obj: 'wellbeing', prop: 'scrollLimitPosts', type: 'number' },
         'opt_wb_sessionTimer': { obj: 'wellbeing', prop: 'sessionTimer', type: 'checkbox' },
+        'opt_wb_dailyFeedReportEnabled': { obj: 'wellbeing', prop: 'dailyFeedReportEnabled', type: 'checkbox' },
+        'opt_wb_dailyFeedReportAutoMinutes': { obj: 'wellbeing', prop: 'dailyFeedReportAutoMinutes', type: 'number', fallback: 30 },
         'opt_wb_reelsLimiterEnabled': { obj: 'wellbeing', prop: 'reelsLimiterEnabled', type: 'checkbox' },
         'opt_wb_reelsSessionLimit': { obj: 'wellbeing', prop: 'reelsSessionLimit', type: 'number' },
         'opt_wb_reelsHardLock': { obj: 'wellbeing', prop: 'reelsHardLock', type: 'checkbox' },
@@ -562,8 +564,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         if (currentSettings.wellbeing) {
+            const parsedScrollLimit = Number(currentSettings.wellbeing.scrollLimitPosts);
+            currentSettings.wellbeing.scrollLimitPosts = Math.max(10, Math.min(100, Number.isFinite(parsedScrollLimit) ? Math.round(parsedScrollLimit) : 20));
+
             const parsedReelsLimit = Number(currentSettings.wellbeing.reelsSessionLimit);
             currentSettings.wellbeing.reelsSessionLimit = Math.max(1, Math.min(20, Number.isFinite(parsedReelsLimit) ? parsedReelsLimit : 3));
+
+            const parsedReportMinutes = Number(currentSettings.wellbeing.dailyFeedReportAutoMinutes);
+            currentSettings.wellbeing.dailyFeedReportAutoMinutes = Math.max(5, Math.min(180, Number.isFinite(parsedReportMinutes) ? Math.round(parsedReportMinutes) : 30));
+            currentSettings.wellbeing.dailyFeedReportEnabled = !!currentSettings.wellbeing.dailyFeedReportEnabled;
         }
 
         let providerPermissionDenied = false;

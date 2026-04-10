@@ -191,6 +191,8 @@
   "options_wellbeing_scroll_stopper": { "message": "Infinite Scroll Stopper" },
   "options_wellbeing_break_wall": { "message": "Posts until Break Wall" },
   "options_wellbeing_session_timer": { "message": "Visible Session Timer Clock" },
+  "options_wellbeing_daily_report_enable": { "message": "Enable Daily Feed Report" },
+  "options_wellbeing_daily_report_minutes": { "message": "Auto report interval (minutes)" },
   "options_wellbeing_reels_limit_title": { "message": "Reels Session Limiter" },
   "options_wellbeing_reels_limit_desc": { "message": "Allow only a limited number of Reels per session, then block additional Reels." },
   "options_wellbeing_reels_limit_enable": { "message": "Enable Reels session limiter" },

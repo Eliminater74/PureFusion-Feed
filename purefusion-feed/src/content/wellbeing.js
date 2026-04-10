@@ -12,6 +12,17 @@ class PF_Wellbeing {
         this.isPaused = false;
         this.sessionStart = Date.now();
         this.timerIntervalId = null;
+        this.reportIntervalId = null;
+        this.lastReportShownAt = 0;
+        this.hiddenReasonCounts = new Map();
+        this.reelsHiddenCount = 0;
+        this.boundHiddenHandler = this._onElementHidden.bind(this);
+        this.boundReportShortcutHandler = this._onReportShortcut.bind(this);
+        this.boundReportRequestHandler = this._onReportRequest.bind(this);
+
+        window.addEventListener('pf:element_hidden', this.boundHiddenHandler);
+        window.addEventListener('keydown', this.boundReportShortcutHandler);
+        window.addEventListener('pf:show_feed_report', this.boundReportRequestHandler);
         
         this.initDocumentLevel();
     }
@@ -34,11 +45,112 @@ class PF_Wellbeing {
         } else {
             this._removeSessionTimer();
         }
+
+        this._syncFeedReportLoop();
     }
 
     updateSettings(settings) {
         this.settings = settings;
         this.initDocumentLevel();
+    }
+
+    _onElementHidden(event) {
+        const reason = String(event?.detail?.reason || 'Unknown');
+        this.hiddenReasonCounts.set(reason, (this.hiddenReasonCounts.get(reason) || 0) + 1);
+
+        if (reason.includes('Reels Session')) {
+            this.reelsHiddenCount += 1;
+        }
+    }
+
+    _onReportShortcut(event) {
+        if (!event || event.defaultPrevented) return;
+        if (!event.altKey || !event.shiftKey) return;
+        if (String(event.key || '').toLowerCase() !== 'r') return;
+
+        const active = document.activeElement;
+        if (active) {
+            const tag = String(active.tagName || '').toLowerCase();
+            const editable = active.isContentEditable || tag === 'input' || tag === 'textarea' || tag === 'select';
+            if (editable) return;
+        }
+
+        event.preventDefault();
+        this._showFeedReportToast('manual');
+    }
+
+    _onReportRequest() {
+        this._showFeedReportToast('manual');
+    }
+
+    _syncFeedReportLoop() {
+        if (this.reportIntervalId) {
+            clearInterval(this.reportIntervalId);
+            this.reportIntervalId = null;
+        }
+
+        if (!this.settings?.wellbeing?.dailyFeedReportEnabled) return;
+
+        const intervalMs = this._getReportIntervalMs();
+        this.reportIntervalId = setInterval(() => {
+            if (document.hidden) return;
+
+            const sinceLastReport = Date.now() - this.lastReportShownAt;
+            const elapsed = Date.now() - this.sessionStart;
+            if (elapsed < intervalMs) return;
+            if (sinceLastReport < intervalMs) return;
+
+            this._showFeedReportToast('auto');
+        }, 30000);
+    }
+
+    _getReportIntervalMs() {
+        const minutes = this._clampInt(this.settings?.wellbeing?.dailyFeedReportAutoMinutes, 5, 180, 30);
+        return minutes * 60 * 1000;
+    }
+
+    _clampInt(value, min, max, fallback) {
+        const parsed = Number(value);
+        if (!Number.isFinite(parsed)) return fallback;
+        return Math.max(min, Math.min(max, Math.round(parsed)));
+    }
+
+    _buildFeedReportSnapshot() {
+        const hiddenTotal = Array.from(this.hiddenReasonCounts.values()).reduce((sum, count) => sum + count, 0);
+        const sortedReasons = Array.from(this.hiddenReasonCounts.entries())
+            .sort((a, b) => b[1] - a[1]);
+
+        const topReason = sortedReasons.length ? `${sortedReasons[0][0]} (${sortedReasons[0][1]})` : 'No filters triggered yet';
+        const nonReelHidden = Math.max(0, hiddenTotal - this.reelsHiddenCount);
+        const estimatedSecondsSaved = (nonReelHidden * 6) + (this.reelsHiddenCount * 20);
+        const estimatedMinutesSaved = Math.max(0, Math.round((estimatedSecondsSaved / 60) * 10) / 10);
+
+        return {
+            hiddenTotal,
+            reelsHidden: this.reelsHiddenCount,
+            topReason,
+            estimatedMinutesSaved
+        };
+    }
+
+    _showFeedReportToast(trigger = 'manual') {
+        if (!this.settings?.wellbeing?.dailyFeedReportEnabled) {
+            PF_Helpers.showToast('Daily Feed Report is disabled. Enable it in Digital Wellbeing.', 'info', 3200);
+            return;
+        }
+
+        const snapshot = this._buildFeedReportSnapshot();
+
+        if (trigger === 'auto' && snapshot.hiddenTotal === 0 && snapshot.reelsHidden === 0) {
+            this.lastReportShownAt = Date.now();
+            return;
+        }
+
+        this.lastReportShownAt = Date.now();
+
+        const label = trigger === 'auto' ? 'Daily Feed Report' : 'Session Feed Report';
+        const message = `${label}: hidden ${snapshot.hiddenTotal} items, reels blocked ${snapshot.reelsHidden}, top reason ${snapshot.topReason}, est. ${snapshot.estimatedMinutesSaved} min saved.`;
+        PF_Helpers.showToast(message, 'info', 5600);
     }
 
     /**
@@ -118,7 +230,11 @@ class PF_Wellbeing {
     }
 
     _injectSessionTimer() {
-        if (document.getElementById('pf-session-timer')) return;
+        const existing = document.getElementById('pf-session-timer');
+        if (existing) {
+            this._syncSessionTimerReportButton(existing);
+            return;
+        }
 
         const timerEl = document.createElement('div');
         timerEl.id = 'pf-session-timer';
@@ -128,7 +244,7 @@ class PF_Wellbeing {
             border: 1px solid #3E4042; border-radius: 20px; padding: 8px 16px;
             color: #E4E6EB; font-family: monospace; font-size: 13px; font-weight: bold;
             display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            pointer-events: none;
+            pointer-events: auto;
         `;
         
         const dot = document.createElement('div');
@@ -139,6 +255,7 @@ class PF_Wellbeing {
 
         timerEl.appendChild(dot);
         timerEl.appendChild(timeText);
+        this._syncSessionTimerReportButton(timerEl);
         document.body.appendChild(timerEl);
 
         this.timerIntervalId = setInterval(() => {
@@ -168,6 +285,36 @@ class PF_Wellbeing {
             clearInterval(this.timerIntervalId);
             this.timerIntervalId = null;
         }
+    }
+
+    _syncSessionTimerReportButton(timerEl) {
+        if (!timerEl) return;
+
+        let reportBtn = timerEl.querySelector('#pf-session-report-btn');
+        if (this.settings?.wellbeing?.dailyFeedReportEnabled) {
+            if (!reportBtn) {
+                reportBtn = document.createElement('button');
+                reportBtn.id = 'pf-session-report-btn';
+                reportBtn.type = 'button';
+                reportBtn.textContent = 'Report';
+                reportBtn.style.cssText = `
+                    border: 1px solid rgba(0, 212, 255, 0.5);
+                    background: rgba(0, 212, 255, 0.12);
+                    color: #9fefff;
+                    border-radius: 999px;
+                    padding: 2px 8px;
+                    font: 700 11px/1.2 "Segoe UI", sans-serif;
+                    cursor: pointer;
+                `;
+                reportBtn.addEventListener('click', () => {
+                    this._showFeedReportToast('manual');
+                });
+                timerEl.appendChild(reportBtn);
+            }
+            return;
+        }
+
+        if (reportBtn) reportBtn.remove();
     }
 }
 

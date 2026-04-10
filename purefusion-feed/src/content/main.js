@@ -357,6 +357,8 @@ class PureFusionApp {
             grayscaleMode: false,
             infiniteScrollStopper: false,
             sessionTimer: false,
+            dailyFeedReportEnabled: false,
+            dailyFeedReportAutoMinutes: 30,
             reelsLimiterEnabled: false,
             reelsSessionLimit: 3,
             reelsHardLock: false,
