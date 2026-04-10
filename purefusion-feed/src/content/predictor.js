@@ -244,7 +244,7 @@ class PF_Predictor {
     }
 
     _processSingleNode(node) {
-        const predictVersion = 'v9-cred-upsert';
+        const predictVersion = 'v10-cred-dialog-persist';
 
         if (node.dataset.pfPredictProcessed === predictVersion) {
             this._refreshPredictionDecorations(node);
@@ -288,11 +288,11 @@ class PF_Predictor {
             score: Number.isFinite(score) ? score : 0
         };
 
-        if (!postNode.querySelector('.pf-cred-block')) {
+        if (!this._hasCredBlockElement(postNode)) {
             delete postNode.dataset.pfCredBadgeInjected;
         }
 
-        if (!postNode.querySelector('.pf-cred-debug-chip')) {
+        if (!this._hasCredDebugElement(postNode)) {
             delete postNode.dataset.pfCredDebugInjected;
         }
 
@@ -317,6 +317,13 @@ class PF_Predictor {
         postNode.querySelectorAll('.pf-score-badge, .pf-cred-block, .pf-cred-debug-chip, .pf-cred-inline-anchor, .pf-cred-dialog-anchor').forEach((node) => {
             if (node && node.remove) node.remove();
         });
+
+        const dialogHost = this._getDialogHost(postNode);
+        if (dialogHost && dialogHost.querySelectorAll) {
+            dialogHost.querySelectorAll('.pf-cred-dialog-anchor').forEach((node) => {
+                if (node && node.remove) node.remove();
+            });
+        }
 
         if (postNode.dataset.pfCollapsedLowScore) {
             postNode.style.removeProperty('display');
@@ -668,9 +675,7 @@ class PF_Predictor {
     _insertCredibilityElement(postNode, element) {
         if (!postNode || !element) return;
 
-        const dialogHost = (postNode.matches && postNode.matches('[role="dialog"]'))
-            ? postNode
-            : (postNode.closest ? postNode.closest('[role="dialog"]') : null);
+        const dialogHost = this._getDialogHost(postNode);
 
         if (dialogHost) {
             this._insertIntoDialogAnchor(dialogHost, element);
@@ -690,7 +695,7 @@ class PF_Predictor {
     _ensureInlineCredAnchor(visualHost) {
         if (!visualHost) return null;
 
-        const existing = visualHost.querySelector(':scope > .pf-cred-inline-anchor');
+        const existing = Array.from(visualHost.children || []).find((child) => child.classList && child.classList.contains('pf-cred-inline-anchor'));
         if (existing) return existing;
 
         const anchor = document.createElement('div');
@@ -715,7 +720,15 @@ class PF_Predictor {
     _insertIntoDialogAnchor(dialogHost, element) {
         if (!dialogHost || !element) return;
 
-        let anchor = dialogHost.querySelector(':scope > .pf-cred-dialog-anchor');
+        const anchors = Array.from(dialogHost.querySelectorAll('.pf-cred-dialog-anchor'));
+        let anchor = anchors[0] || null;
+
+        if (anchors.length > 1) {
+            anchors.slice(1).forEach((extra) => {
+                if (extra && extra.remove) extra.remove();
+            });
+        }
+
         if (!anchor) {
             anchor = document.createElement('div');
             anchor.className = 'pf-cred-dialog-anchor';
@@ -730,6 +743,42 @@ class PF_Predictor {
         }
 
         this._upsertCredElement(anchor, element);
+    }
+
+    _getDialogHost(postNode) {
+        if (!postNode) return null;
+
+        if (postNode.matches && postNode.matches('[role="dialog"]')) {
+            return postNode;
+        }
+
+        if (postNode.closest) {
+            return postNode.closest('[role="dialog"]');
+        }
+
+        return null;
+    }
+
+    _hasCredDebugElement(postNode) {
+        if (!postNode) return false;
+
+        const dialogHost = this._getDialogHost(postNode);
+        if (dialogHost) {
+            return !!dialogHost.querySelector('.pf-cred-debug-chip');
+        }
+
+        return !!postNode.querySelector('.pf-cred-debug-chip');
+    }
+
+    _hasCredBlockElement(postNode) {
+        if (!postNode) return false;
+
+        const dialogHost = this._getDialogHost(postNode);
+        if (dialogHost) {
+            return !!dialogHost.querySelector('.pf-cred-block');
+        }
+
+        return !!postNode.querySelector('.pf-cred-block');
     }
 
     _upsertCredElement(anchor, element) {

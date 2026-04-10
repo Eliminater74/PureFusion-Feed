@@ -114,6 +114,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Fixed: chip refresh stability improvements for rerendered dialogs + image-heavy posts.
 - Fixed: stable anchor rows for credibility/debug chips (dialog header anchor + inline post anchor) to survive UI rerenders.
 - Fixed: duplicate dialog debug chips replaced via upsert (single debug + single verify block per post view).
+- Fixed: dialog-persist checks now detect chips anchored outside post body and reattach after rerenders.
 
 9) Feed mode presets (high)
 - Status: initial implementation complete.
