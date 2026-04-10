@@ -245,6 +245,7 @@ class PF_Predictor {
             postNode.dataset.pfCredibilitySummary = credibility.summary;
             postNode.dataset.pfCredibilityReasons = (credibility.reasons || []).join('||');
             postNode.dataset.pfCredibilityClaimSeed = credibility.claimSeed || '';
+            postNode.dataset.pfCredibilitySourceHint = credibility.sourceHint || '';
 
             reasonSignals.push({
                 short: `-${credibility.penalty} verify`,
@@ -255,6 +256,7 @@ class PF_Predictor {
             delete postNode.dataset.pfCredibilitySummary;
             delete postNode.dataset.pfCredibilityReasons;
             delete postNode.dataset.pfCredibilityClaimSeed;
+            delete postNode.dataset.pfCredibilitySourceHint;
         }
 
         // Clamp 0 to 100
@@ -343,6 +345,7 @@ class PF_Predictor {
             .filter(Boolean)
             .slice(0, 4);
         const claimSeed = String(postNode.dataset.pfCredibilityClaimSeed || '').trim();
+        const sourceHint = String(postNode.dataset.pfCredibilitySourceHint || '').trim();
         const verificationUrl = this._buildVerificationSearchUrl(claimSeed || summary);
 
         const wrapper = document.createElement('div');
@@ -361,7 +364,7 @@ class PF_Predictor {
         const details = document.createElement('div');
         details.className = 'pf-cred-details';
         details.hidden = true;
-        details.innerHTML = this._buildCredibilityDetailsHtml(summary, reasons, verificationUrl);
+        details.innerHTML = this._buildCredibilityDetailsHtml(summary, reasons, verificationUrl, sourceHint);
 
         whyBtn.addEventListener('click', () => {
             const isHidden = details.hidden;
@@ -540,12 +543,28 @@ class PF_Predictor {
             }
         }
 
-        const hasOutboundSourceLink = !!postNode?.querySelector('a[href^="http"], a[href*="/l.php?u="]');
+        const sourceInfo = this._analyzeSourceDomain(postNode);
+        const hasOutboundSourceLink = !!sourceInfo.hasSource;
         const claimWords = ['proof', 'exposed', 'leak', 'revealed', 'cure', 'hoax', 'scam', 'truth'];
         const hasClaimWord = claimWords.some((word) => lower.includes(word));
         if (hasClaimWord && !hasOutboundSourceLink) {
             points += 1;
             triggers.push('strong claim without source link');
+        }
+
+        if (sourceInfo.tier === 'shortener') {
+            points += 2;
+            triggers.push('opaque short-link source');
+        }
+
+        if (hasClaimWord && sourceInfo.tier === 'unknown') {
+            points += 1;
+            triggers.push('claim tied to unverified source domain');
+        }
+
+        if (sourceInfo.tier === 'high-trust' && points > 0) {
+            points = Math.max(0, points - 1);
+            triggers.push('contains recognized source domain');
         }
 
         if (points < 3) {
@@ -559,14 +578,114 @@ class PF_Predictor {
         const uniqueReasons = Array.from(new Set(triggers));
         const summary = this._formatCredibilitySummary(uniqueReasons);
         const claimSeed = this._buildClaimSeed(text);
+        const sourceHint = sourceInfo.hint || '';
 
         return {
             penalty,
             level,
             summary,
             reasons: uniqueReasons,
-            claimSeed
+            claimSeed,
+            sourceHint
         };
+    }
+
+    _analyzeSourceDomain(postNode) {
+        const result = {
+            hasSource: false,
+            domain: '',
+            tier: 'none',
+            hint: ''
+        };
+
+        if (!postNode || !postNode.querySelectorAll) return result;
+
+        const anchors = Array.from(postNode.querySelectorAll('a[href]'));
+        if (!anchors.length) return result;
+
+        const knownHighTrustDomains = [
+            'apnews.com',
+            'reuters.com',
+            'bbc.com',
+            'nytimes.com',
+            'npr.org',
+            'who.int',
+            'cdc.gov',
+            'snopes.com',
+            'factcheck.org',
+            'politifact.com'
+        ];
+
+        const shortenerDomains = [
+            'bit.ly',
+            'tinyurl.com',
+            't.co',
+            'ow.ly',
+            'rb.gy',
+            'is.gd',
+            'cutt.ly'
+        ];
+
+        for (const anchor of anchors) {
+            const rawHref = String(anchor.getAttribute('href') || '').trim();
+            if (!rawHref) continue;
+
+            const resolvedUrl = this._resolveOutboundUrl(rawHref);
+            if (!resolvedUrl) continue;
+
+            const domain = this._extractDomainFromUrl(resolvedUrl);
+            if (!domain) continue;
+            if (domain.includes('facebook.com') || domain.includes('fb.com') || domain.includes('messenger.com')) {
+                continue;
+            }
+
+            result.hasSource = true;
+            result.domain = domain;
+
+            if (shortenerDomains.some((known) => domain === known || domain.endsWith(`.${known}`))) {
+                result.tier = 'shortener';
+                result.hint = `Source uses short-link domain: ${domain}`;
+                return result;
+            }
+
+            if (knownHighTrustDomains.some((known) => domain === known || domain.endsWith(`.${known}`))) {
+                result.tier = 'high-trust';
+                result.hint = `Recognized source domain: ${domain}`;
+                return result;
+            }
+
+            result.tier = 'unknown';
+            result.hint = `Unverified source domain: ${domain}`;
+            return result;
+        }
+
+        return result;
+    }
+
+    _resolveOutboundUrl(rawHref) {
+        try {
+            const absolute = new URL(rawHref, window.location.origin);
+
+            if (absolute.pathname === '/l.php') {
+                const encodedTarget = absolute.searchParams.get('u');
+                if (encodedTarget) {
+                    return decodeURIComponent(encodedTarget);
+                }
+            }
+
+            return absolute.href;
+        } catch (err) {
+            return '';
+        }
+    }
+
+    _extractDomainFromUrl(url) {
+        try {
+            const parsed = new URL(url);
+            return String(parsed.hostname || '').toLowerCase().replace(/^www\./, '');
+        } catch (err) {
+            return '';
+        }
     }
 
     _formatCredibilitySummary(triggers) {
@@ -578,12 +697,13 @@ class PF_Predictor {
         return unique.slice(0, 3).join(', ');
     }
 
-    _buildCredibilityDetailsHtml(summary, reasons, verificationUrl = '') {
+    _buildCredibilityDetailsHtml(summary, reasons, verificationUrl = '', sourceHint = '') {
         const safeSummary = this._escapeHtml(summary || 'suspicious claim pattern');
         const reasonItems = Array.isArray(reasons) && reasons.length
             ? reasons.map((reason) => `<li>${this._escapeHtml(reason)}</li>`).join('')
             : '<li>Suspicious claim pattern</li>';
         const safeVerificationUrl = this._escapeHtml(verificationUrl || '');
+        const safeSourceHint = this._escapeHtml(sourceHint || 'No outbound source domain detected.');
         const verificationAction = safeVerificationUrl
             ? `<div class="pf-cred-actions"><a class="pf-cred-action-link" href="${safeVerificationUrl}" target="_blank" rel="noopener noreferrer">Verify this claim</a></div>`
             : '';
@@ -592,6 +712,7 @@ class PF_Predictor {
             <div class="pf-cred-details-title">Why this was flagged</div>
             <p>${safeSummary}</p>
             <ul>${reasonItems}</ul>
+            <p class="pf-cred-source-hint">${safeSourceHint}</p>
             ${verificationAction}
             <p class="pf-cred-details-tip">Tip: Verify with trusted outlets or official sources before resharing.</p>
         `;
@@ -724,6 +845,12 @@ class PF_Predictor {
                 color: #b9c9e8 !important;
             }
 
+            .pf-cred-source-hint {
+                margin-bottom: 6px !important;
+                color: #c2d3f0 !important;
+                font-weight: 700;
+            }
+
             .pf-cred-actions {
                 margin-bottom: 6px;
             }
@@ -746,13 +873,13 @@ class PF_Predictor {
                 background: rgba(39, 77, 132, 0.52);
             }
 
-            .pf-cred-chip.pf-cred-warn {
+            .pf-cred-block.pf-cred-warn .pf-cred-chip {
                 color: #ffd166;
                 background: rgba(110, 82, 18, 0.22);
                 border-color: rgba(255, 209, 102, 0.7);
             }
 
-            .pf-cred-chip.pf-cred-high {
+            .pf-cred-block.pf-cred-high .pf-cred-chip {
                 color: #ff8fa1;
                 background: rgba(94, 28, 40, 0.3);
                 border-color: rgba(255, 143, 161, 0.8);
