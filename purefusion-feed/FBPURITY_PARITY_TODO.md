@@ -26,17 +26,22 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - PureFusion status: WIP (safe mode).
 - Notes: module-level toggles are implemented with master enable; selector paths still being tightened per-module over time.
 
-3) Notification popup filtering
+3) Top header micro-controls
+- FBP parity need: granular top bar icon controls without hiding the header shell.
+- PureFusion status: WIP (safe mode).
+- Implemented: master toggle + per-icon toggles (Home, Friends, Watch, Marketplace, Groups, Messenger, Notifications, Menu, Create).
+
+4) Notification popup filtering
 - FBP parity need: hide low-value notification categories.
 - PureFusion status: DONE.
 - Implemented: games, birthdays, marketplace, algorithmic engagement nags.
 
-4) Search popup suppression
+5) Search popup suppression
 - FBP parity need: suppress trending/recent/typeahead noise.
 - PureFusion status: DONE.
 - Implemented: hide all suggestions, hide trending suggestions, hide recent section.
 
-5) Image subject filtering (classification-like)
+6) Image subject filtering (classification-like)
 - FBP parity need: hide image-heavy categories based on image descriptors.
 - PureFusion status: WIP (safe mode).
 - Implemented categories: sports, food, pets, vehicles, memes/screenshots, travel/scenery.
@@ -48,6 +53,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Add dedicated toggles for: profile picture updates, cover photo updates, life events, check-ins, milestones, job/work updates, relationship updates, group activity variants.
 
 2) Top header micro-controls (high priority)
+- Status: initial implementation complete; continue tightening per-locale aria label mapping.
 - Granular controls for top bar modules and jewels (without hiding banner/header containers).
 
 3) Advanced custom UI engine (medium-high)
@@ -74,6 +80,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 2) Header/top-nav controls
 - Add safe-mode master toggle + per-item toggles.
 - Only allow compact item-level hides, never hide `role=banner`.
+- Validate icon mapping across account locales and alternate nav layouts.
 
 3) Custom UI engine (experimental)
 - Add "Advanced Custom CSS" textarea with clear warning.

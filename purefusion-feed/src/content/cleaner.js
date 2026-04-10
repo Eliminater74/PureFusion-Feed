@@ -120,6 +120,10 @@ class PF_Cleaner {
         if (this._hasSidebarVisibilityFilters()) {
             this.removeNavigationModules(rootNode);
         }
+
+        if (this._hasTopbarFiltersEnabled()) {
+            this.removeTopbarModules(rootNode);
+        }
         
         // Hide features like Reels, Marketplace, Stories if toggled
         if (this.settings.filters.hideReels) this.removeReelsTray(rootNode);
@@ -203,6 +207,25 @@ class PF_Cleaner {
             || sidebar.hideRightContacts
             || sidebar.hideRightEvents
             || sidebar.hideRightBirthdays
+        );
+    }
+
+    _hasTopbarFiltersEnabled() {
+        if (this._panicMode) return false;
+
+        const topbar = this.settings?.topbarFilters;
+        if (!topbar || !topbar.enabled) return false;
+
+        return !!(
+            topbar.hideHome
+            || topbar.hideFriends
+            || topbar.hideWatch
+            || topbar.hideMarketplace
+            || topbar.hideGroups
+            || topbar.hideMessenger
+            || topbar.hideNotifications
+            || topbar.hideMenu
+            || topbar.hideCreate
         );
     }
 
@@ -460,6 +483,84 @@ class PF_Cleaner {
         }
     }
 
+    removeTopbarModules(rootNode) {
+        const topbar = this.settings?.topbarFilters;
+        if (!topbar || !topbar.enabled) return;
+
+        const banner = rootNode.matches && rootNode.matches('[role="banner"]')
+            ? rootNode
+            : (rootNode.querySelector && rootNode.querySelector('[role="banner"]'));
+
+        if (!banner) return;
+
+        if (topbar.hideHome) {
+            this._hideTopbarByAriaLabels(banner, ['home', 'inicio'], 'Topbar: Home');
+        }
+        if (topbar.hideFriends) {
+            this._hideTopbarByAriaLabels(banner, ['friends', 'amigos'], 'Topbar: Friends');
+        }
+        if (topbar.hideWatch) {
+            this._hideTopbarByAriaLabels(banner, ['watch', 'video'], 'Topbar: Watch');
+        }
+        if (topbar.hideMarketplace) {
+            this._hideTopbarByAriaLabels(banner, ['marketplace'], 'Topbar: Marketplace');
+        }
+        if (topbar.hideGroups) {
+            this._hideTopbarByAriaLabels(banner, ['groups', 'grupos'], 'Topbar: Groups');
+        }
+        if (topbar.hideMessenger) {
+            this._hideTopbarByAriaLabels(banner, ['messenger'], 'Topbar: Messenger');
+        }
+        if (topbar.hideNotifications) {
+            this._hideTopbarByAriaLabels(banner, ['notifications', 'notificaciones'], 'Topbar: Notifications');
+        }
+        if (topbar.hideMenu) {
+            this._hideTopbarByAriaLabels(banner, ['menu'], 'Topbar: Menu');
+        }
+        if (topbar.hideCreate) {
+            this._hideTopbarByAriaLabels(banner, ['create', 'crear'], 'Topbar: Create');
+        }
+    }
+
+    _hideTopbarByAriaLabels(scopeNode, labels, reason) {
+        if (!scopeNode || !scopeNode.querySelectorAll || !Array.isArray(labels) || labels.length === 0) return;
+
+        const normalizedLabels = labels
+            .map((label) => this._normalizeComparableText(label))
+            .filter(Boolean);
+        if (!normalizedLabels.length) return;
+
+        scopeNode.querySelectorAll('[aria-label]').forEach((node) => {
+            const aria = this._normalizeComparableText(node.getAttribute('aria-label') || '');
+            if (!aria) return;
+            if (!normalizedLabels.some((label) => aria === label || aria.startsWith(`${label} `))) return;
+
+            const target = this._findTopbarHideTarget(node, scopeNode);
+            if (!target) return;
+
+            this._hideNodeSafely(target, reason);
+        });
+    }
+
+    _findTopbarHideTarget(node, scopeNode) {
+        if (!node) return null;
+
+        const clickable = PF_Helpers.getClosest(node, 'a[role="link"], [role="button"]', 4) || node;
+        if (!clickable || clickable === scopeNode) return null;
+        if (clickable.querySelector && clickable.querySelector('[role="banner"]')) return null;
+
+        if (clickable.getBoundingClientRect) {
+            const rect = clickable.getBoundingClientRect();
+            if (rect.width < 18 || rect.width > 220) return null;
+            if (rect.height < 18 || rect.height > 120) return null;
+        }
+
+        const inBanner = !!PF_Helpers.getClosest(clickable, '[role="banner"]', 8);
+        if (!inBanner) return null;
+
+        return clickable;
+    }
+
     _hideLeftNavByHref(scopeNode, hrefTokens, reason) {
         if (!scopeNode || !scopeNode.querySelectorAll || !Array.isArray(hrefTokens) || hrefTokens.length === 0) return;
 
@@ -581,8 +682,24 @@ class PF_Cleaner {
 
     _hideNodeSafely(node, reason) {
         if (!node || node.dataset.pfHidden === 'true') return;
+        if (reason && reason.startsWith('Topbar:') && !this._isReasonableTopbarTarget(node)) return;
         if (!this._isSafeHideTargetNode(node)) return;
         PF_Helpers.hideElement(node, reason);
+    }
+
+    _isReasonableTopbarTarget(node) {
+        if (!node || !node.getBoundingClientRect) return false;
+        if (node.matches && node.matches('[role="banner"]')) return false;
+        if (node.querySelector && node.querySelector('[role="banner"]')) return false;
+
+        const rect = node.getBoundingClientRect();
+        if (rect.width < 18 || rect.width > 220) return false;
+        if (rect.height < 18 || rect.height > 120) return false;
+
+        const inBanner = !!PF_Helpers.getClosest(node, '[role="banner"]', 8);
+        if (!inBanner) return false;
+
+        return true;
     }
 
     /**
@@ -1182,6 +1299,13 @@ class PF_Cleaner {
                 return;
             }
 
+            if (reason.startsWith('Topbar:') && !this._shouldKeepTopbarReasonHidden(reason)) {
+                node.style.removeProperty('display');
+                delete node.dataset.pfHidden;
+                delete node.dataset.pfReason;
+                return;
+            }
+
             const isCritical = node.matches && node.matches('html, body, [role="main"], [role="feed"]');
             const containsFeed = !!(node.querySelector && node.querySelector('[role="feed"]'));
             const containsMain = !!(node.querySelector && node.querySelector('[role="main"]'));
@@ -1199,6 +1323,25 @@ class PF_Cleaner {
             delete node.dataset.pfHidden;
             delete node.dataset.pfReason;
         });
+    }
+
+    _shouldKeepTopbarReasonHidden(reason) {
+        if (!reason) return false;
+
+        const topbar = this.settings?.topbarFilters;
+        if (!topbar || !topbar.enabled) return false;
+
+        if (reason.startsWith('Topbar: Home')) return !!topbar.hideHome;
+        if (reason.startsWith('Topbar: Friends')) return !!topbar.hideFriends;
+        if (reason.startsWith('Topbar: Watch')) return !!topbar.hideWatch;
+        if (reason.startsWith('Topbar: Marketplace')) return !!topbar.hideMarketplace;
+        if (reason.startsWith('Topbar: Groups')) return !!topbar.hideGroups;
+        if (reason.startsWith('Topbar: Messenger')) return !!topbar.hideMessenger;
+        if (reason.startsWith('Topbar: Notifications')) return !!topbar.hideNotifications;
+        if (reason.startsWith('Topbar: Menu')) return !!topbar.hideMenu;
+        if (reason.startsWith('Topbar: Create')) return !!topbar.hideCreate;
+
+        return false;
     }
 
     _startRecoveryWatchdog() {

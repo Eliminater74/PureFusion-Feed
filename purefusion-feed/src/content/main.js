@@ -245,6 +245,20 @@ class PureFusionApp {
             hideTravelScenery: false
         };
 
+        effective.topbarFilters = {
+            ...effective.topbarFilters,
+            enabled: false,
+            hideHome: false,
+            hideFriends: false,
+            hideWatch: false,
+            hideMarketplace: false,
+            hideGroups: false,
+            hideMessenger: false,
+            hideNotifications: false,
+            hideMenu: false,
+            hideCreate: false
+        };
+
         effective.wellbeing = {
             ...effective.wellbeing,
             grayscaleMode: false,

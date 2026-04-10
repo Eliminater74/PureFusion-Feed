@@ -130,6 +130,22 @@ const DEFAULT_SETTINGS = {
     },
 
     // ------------------------------------------------------------------------
+    // TOP HEADER CONTROLS
+    // ------------------------------------------------------------------------
+    topbarFilters: {
+        enabled: false,
+        hideHome: false,
+        hideFriends: false,
+        hideWatch: false,
+        hideMarketplace: false,
+        hideGroups: false,
+        hideMessenger: false,
+        hideNotifications: false,
+        hideMenu: false,
+        hideCreate: false
+    },
+
+    // ------------------------------------------------------------------------
     // SOCIAL & NOTIFICATIONS
     // ------------------------------------------------------------------------
     social: {

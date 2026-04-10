@@ -229,6 +229,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_sidebar_hideRightEvents': { obj: 'sidebar', prop: 'hideRightEvents', type: 'checkbox' },
         'opt_sidebar_hideRightBirthdays': { obj: 'sidebar', prop: 'hideRightBirthdays', type: 'checkbox' },
 
+        // Topbar Visibility
+        'opt_topbar_enabled': { obj: 'topbarFilters', prop: 'enabled', type: 'checkbox' },
+        'opt_topbar_hideHome': { obj: 'topbarFilters', prop: 'hideHome', type: 'checkbox' },
+        'opt_topbar_hideFriends': { obj: 'topbarFilters', prop: 'hideFriends', type: 'checkbox' },
+        'opt_topbar_hideWatch': { obj: 'topbarFilters', prop: 'hideWatch', type: 'checkbox' },
+        'opt_topbar_hideMarketplace': { obj: 'topbarFilters', prop: 'hideMarketplace', type: 'checkbox' },
+        'opt_topbar_hideGroups': { obj: 'topbarFilters', prop: 'hideGroups', type: 'checkbox' },
+        'opt_topbar_hideMessenger': { obj: 'topbarFilters', prop: 'hideMessenger', type: 'checkbox' },
+        'opt_topbar_hideNotifications': { obj: 'topbarFilters', prop: 'hideNotifications', type: 'checkbox' },
+        'opt_topbar_hideMenu': { obj: 'topbarFilters', prop: 'hideMenu', type: 'checkbox' },
+        'opt_topbar_hideCreate': { obj: 'topbarFilters', prop: 'hideCreate', type: 'checkbox' },
+
         // Wellbeing
         'opt_wb_grayscale': { obj: 'wellbeing', prop: 'grayscaleMode', type: 'checkbox' },
         'opt_wb_scrollStop': { obj: 'wellbeing', prop: 'infiniteScrollStopper', type: 'checkbox' },
