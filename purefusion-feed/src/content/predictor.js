@@ -53,7 +53,10 @@ class PF_Predictor {
     // =========================================================================
 
     applyToNodes(nodes) {
-        if (!this.settings.predictions.enabled) return;
+        const predictions = this.settings?.predictions || {};
+        const scoringEnabled = !!predictions.enabled;
+        const credibilityEnabled = !!predictions.credibilitySignalsEnabled;
+        if (!scoringEnabled && !credibilityEnabled) return;
 
         nodes.forEach(node => {
             // Ensure we ONLY process actual posts, or search inside injected wrappers
@@ -69,13 +72,22 @@ class PF_Predictor {
     }
 
     sweepDocument(forceRescore = true) {
-        if (!this.settings.predictions.enabled) return;
+        const predictions = this.settings?.predictions || {};
+        const scoringEnabled = !!predictions.enabled;
+        const credibilityEnabled = !!predictions.credibilitySignalsEnabled;
+        if (!scoringEnabled && !credibilityEnabled) return;
+        const debugPreview = !!predictions.showCredibilityDebugPreview;
 
         const root = document.body || document.documentElement;
         if (!root || !root.querySelectorAll) return;
 
         const posts = Array.from(root.querySelectorAll(PF_SELECTOR_MAP.postContainer));
-        if (!posts.length) return;
+        if (!posts.length) {
+            if (debugPreview && forceRescore && window.PF_Helpers && typeof window.PF_Helpers.showToast === 'function') {
+                window.PF_Helpers.showToast('Credibility scan found 0 feed posts on this view.', 'warn', 2600);
+            }
+            return;
+        }
 
         if (forceRescore) {
             posts.forEach((postNode) => {
@@ -88,10 +100,14 @@ class PF_Predictor {
         }
 
         this.applyToNodes(posts);
+
+        if (debugPreview && forceRescore && window.PF_Helpers && typeof window.PF_Helpers.showToast === 'function') {
+            window.PF_Helpers.showToast(`Credibility scan active: ${posts.length} posts analyzed.`, 'info', 2600);
+        }
     }
 
     _processSingleNode(node) {
-        const predictVersion = 'v2-cred-debug';
+        const predictVersion = 'v3-cred-debug-visible';
 
         if (node.dataset.pfPredictProcessed === predictVersion) {
             this._refreshPredictionDecorations(node);
@@ -101,20 +117,26 @@ class PF_Predictor {
         node.dataset.pfPredictProcessed = predictVersion;
 
         // 1. Analyze text for trend mapping
-        this._analyzeForTrends(node);
+        if (this.settings?.predictions?.enabled) {
+            this._analyzeForTrends(node);
+        }
 
         // 2. Score the post based on history
         const scoreDetails = this._scorePost(node);
         const score = scoreDetails.score;
 
-        this._applyScoreEffects(node, score, scoreDetails);
+        if (this.settings?.predictions?.enabled) {
+            this._applyScoreEffects(node, score, scoreDetails);
+        }
 
         // 3. Apply Visual Badges and True-Affinity Flexbox Sorting
-        this._injectBadge(node, score, scoreDetails);
+        if (this.settings?.predictions?.enabled) {
+            this._injectBadge(node, score, scoreDetails);
+        }
         this._injectCredibilityBadge(node, scoreDetails);
         this._injectCredibilityDebugBadge(node, scoreDetails);
 
-        if (this.settings.predictions.trueAffinitySort) {
+        if (this.settings?.predictions?.enabled && this.settings.predictions.trueAffinitySort) {
             this._applyNativeAffinitySort(node, score);
         }
 
@@ -498,12 +520,7 @@ class PF_Predictor {
             badge.setAttribute('aria-label', `Credibility debug ${status}. Points ${points}. PF score ${score}. ${sourceHint}`);
         }
 
-        const anchor = postNode.querySelector('[data-pagelet], h3, h4, strong') || postNode;
-        if (anchor.parentElement) {
-            anchor.parentElement.appendChild(badge);
-        } else {
-            postNode.prepend(badge);
-        }
+        postNode.prepend(badge);
 
         postNode.dataset.pfCredDebugInjected = 'true';
     }
@@ -934,14 +951,18 @@ class PF_Predictor {
             }
 
             .pf-cred-debug-chip {
-                display: inline-block;
-                margin-left: 8px;
+                display: inline-flex;
+                align-items: center;
+                margin: 6px 8px 4px;
                 padding: 2px 8px;
                 border-radius: 999px;
                 font: 800 10px/1.2 "Segoe UI Variable Text", "Segoe UI", sans-serif;
                 letter-spacing: 0.02em;
                 text-transform: uppercase;
                 border: 1px solid;
+                width: fit-content;
+                position: relative;
+                z-index: 1;
             }
 
             .pf-cred-debug-chip.pf-cred-debug-ok {

@@ -105,6 +105,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Added: source-domain trust hints (recognized source / unverified domain / short-link warnings).
 - Added: optional credibility debug preview chip to show detector status on scanned posts.
 - Added: full-document predictor resweep on boot/settings update to ensure debug/credibility chips render on already-loaded posts.
+- Added: visibility hardening for debug chips (prepend placement + rescore version bump + scan status toast).
 
 9) Feed mode presets (high)
 - Status: initial implementation complete.
