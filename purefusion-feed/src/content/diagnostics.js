@@ -24,6 +24,8 @@ class PF_Diagnostics {
         this.lastObserverBatch = null;
         this.observerSpikeHistory = [];
         this.observerSpikeHistoryLimit = 10;
+        this.observerTrendHistory = [];
+        this.observerTrendHistoryLimit = 36;
         this.boundHiddenHandler = this._onElementHidden.bind(this);
         this.boundResweepHandler = this._onResweepPass.bind(this);
         this.boundSettingsUpdateHandler = this._onSettingsUpdate.bind(this);
@@ -130,6 +132,19 @@ class PF_Diagnostics {
             }
         }
 
+        this.observerTrendHistory.push({
+            nodes,
+            mutationRecords,
+            durationMs,
+            ts: this.lastObserverBatch.ts,
+            severity,
+            score: this._calculateObserverTrendScore(durationMs, nodes, mutationRecords, thresholds)
+        });
+
+        if (this.observerTrendHistory.length > this.observerTrendHistoryLimit) {
+            this.observerTrendHistory.splice(0, this.observerTrendHistory.length - this.observerTrendHistoryLimit);
+        }
+
         if (this.settings?.diagnostics?.verboseConsole) {
             PF_Logger.log(`[Diagnostics] Observer batch: ${nodes} nodes, ${mutationRecords} records, ${durationMs.toFixed(2)}ms (${severity})`);
         }
@@ -174,6 +189,11 @@ class PF_Diagnostics {
                 <div>Last batch: <span id="pfDiagObserverLastBatch">-</span></div>
             </div>
             <div id="pfDiagObserverThresholds" class="pf-diag-thresholds">Warn if batch >= 25ms, 220 nodes, or 120 records.</div>
+            <div class="pf-diag-subtitle">Observer trend</div>
+            <div class="pf-diag-trend">
+                <svg id="pfDiagObserverTrend" viewBox="0 0 228 56" preserveAspectRatio="none" aria-hidden="true"></svg>
+                <div id="pfDiagObserverTrendMeta" class="pf-diag-trend-meta">Waiting for observer batches...</div>
+            </div>
             <div class="pf-diag-subtitle">Recent observer spikes</div>
             <ul id="pfDiagObserverSpikes" class="pf-diag-spike-list"></ul>
             <div class="pf-diag-subtitle">Top hide reasons</div>
@@ -217,7 +237,9 @@ class PF_Diagnostics {
         const observerLastBatchEl = this.overlay.querySelector('#pfDiagObserverLastBatch');
         const observerSpikesEl = this.overlay.querySelector('#pfDiagObserverSpikes');
         const observerThresholdsEl = this.overlay.querySelector('#pfDiagObserverThresholds');
-        if (!totalEl || !listEl || !syncEl || !resweepEl || !followupsEl || !lastSyncEl || !lastResweepEl || !observerBatchesEl || !observerNodesEl || !observerRecordsEl || !observerAvgMsEl || !observerPeakMsEl || !observerLastBatchEl || !observerSpikesEl || !observerThresholdsEl) return;
+        const observerTrendEl = this.overlay.querySelector('#pfDiagObserverTrend');
+        const observerTrendMetaEl = this.overlay.querySelector('#pfDiagObserverTrendMeta');
+        if (!totalEl || !listEl || !syncEl || !resweepEl || !followupsEl || !lastSyncEl || !lastResweepEl || !observerBatchesEl || !observerNodesEl || !observerRecordsEl || !observerAvgMsEl || !observerPeakMsEl || !observerLastBatchEl || !observerSpikesEl || !observerThresholdsEl || !observerTrendEl || !observerTrendMetaEl) return;
 
         const thresholds = this._getObserverThresholds();
 
@@ -240,6 +262,7 @@ class PF_Diagnostics {
         observerPeakMsEl.className = this._severityClassName(this._classifyObserverSeverity(this.observerDurationPeak, 0, 0, thresholds));
 
         observerThresholdsEl.textContent = `Warn if batch >= ${thresholds.warnDurationMs}ms, ${thresholds.warnNodes} nodes, or ${thresholds.warnRecords} records.`;
+        this._renderObserverTrend(observerTrendEl, observerTrendMetaEl);
 
         if (!this.lastObserverBatch) {
             observerLastBatchEl.textContent = '-';
@@ -321,10 +344,89 @@ class PF_Diagnostics {
                     durationMs: Number(entry.durationMs.toFixed(3)),
                     severity: entry.severity,
                     ts: new Date(entry.ts).toISOString()
+                })),
+                trendHistory: this.observerTrendHistory.map((entry) => ({
+                    nodes: entry.nodes,
+                    mutationRecords: entry.mutationRecords,
+                    durationMs: Number(entry.durationMs.toFixed(3)),
+                    severity: entry.severity,
+                    score: Number(entry.score.toFixed(3)),
+                    ts: new Date(entry.ts).toISOString()
                 }))
             },
             topReasons: reasonCounts
         };
+    }
+
+    _renderObserverTrend(svgEl, metaEl) {
+        if (!svgEl || !metaEl) return;
+
+        const samples = this.observerTrendHistory;
+        const width = 228;
+        const height = 56;
+
+        if (!samples.length) {
+            svgEl.innerHTML = `<line x1="0" y1="${height - 1}" x2="${width}" y2="${height - 1}" stroke="rgba(140, 160, 192, 0.35)" stroke-width="1" />`;
+            metaEl.textContent = 'Waiting for observer batches...';
+            metaEl.className = 'pf-diag-trend-meta';
+            return;
+        }
+
+        const maxScore = Math.max(2.25, ...samples.map((sample) => Number(sample.score) || 0));
+        const sampleCount = samples.length;
+        const points = samples.map((sample, index) => {
+            const x = sampleCount === 1 ? 0 : (index * (width / (sampleCount - 1)));
+            const clampedScore = Math.max(0, Math.min(maxScore, Number(sample.score) || 0));
+            const y = height - ((clampedScore / maxScore) * height);
+            return {
+                x,
+                y
+            };
+        });
+
+        const linePoints = points.map((point) => `${point.x.toFixed(2)},${point.y.toFixed(2)}`).join(' ');
+        const areaPoints = `0,${height} ${linePoints} ${width},${height}`;
+        const warnY = (height - ((1 / maxScore) * height)).toFixed(2);
+        const severeY = (height - ((2 / maxScore) * height)).toFixed(2);
+
+        const lastSample = samples[samples.length - 1];
+        const lastPoint = points[points.length - 1];
+        const trendColor = this._severityColor(lastSample.severity);
+
+        svgEl.innerHTML = `
+            <line x1="0" y1="${warnY}" x2="${width}" y2="${warnY}" stroke="rgba(255, 209, 102, 0.45)" stroke-width="1" stroke-dasharray="3 3" />
+            <line x1="0" y1="${severeY}" x2="${width}" y2="${severeY}" stroke="rgba(255, 122, 144, 0.5)" stroke-width="1" stroke-dasharray="3 3" />
+            <polygon points="${areaPoints}" fill="rgba(116, 240, 255, 0.18)" />
+            <polyline points="${linePoints}" fill="none" stroke="${trendColor}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+            <circle cx="${lastPoint.x.toFixed(2)}" cy="${lastPoint.y.toFixed(2)}" r="2.6" fill="${trendColor}" />
+        `;
+
+        metaEl.textContent = `Window ${sampleCount} | Last ${lastSample.durationMs.toFixed(2)}ms, ${lastSample.nodes} nodes, ${lastSample.mutationRecords} records`;
+        metaEl.className = `pf-diag-trend-meta ${this._severityClassName(lastSample.severity)}`;
+    }
+
+    _calculateObserverTrendScore(durationMs, nodes, mutationRecords, thresholds) {
+        const durationScore = this._scaleSeverityValue(durationMs, thresholds.warnDurationMs, thresholds.severeDurationMs);
+        const nodesScore = this._scaleSeverityValue(nodes, thresholds.warnNodes, thresholds.severeNodes);
+        const recordsScore = this._scaleSeverityValue(mutationRecords, thresholds.warnRecords, thresholds.severeRecords);
+        return Math.max(durationScore, nodesScore, recordsScore);
+    }
+
+    _scaleSeverityValue(value, warnThreshold, severeThreshold) {
+        const safeWarn = Math.max(1, Number(warnThreshold) || 1);
+        const safeSevere = Math.max(safeWarn + 1, Number(severeThreshold) || (safeWarn + 1));
+        const numeric = Math.max(0, Number(value) || 0);
+
+        if (numeric <= safeWarn) {
+            return numeric / safeWarn;
+        }
+
+        if (numeric <= safeSevere) {
+            const range = safeSevere - safeWarn;
+            return 1 + ((numeric - safeWarn) / range);
+        }
+
+        return 2 + Math.min(1, (numeric - safeSevere) / safeSevere);
     }
 
     _getObserverThresholds() {
@@ -370,6 +472,12 @@ class PF_Diagnostics {
         if (severity === 'severe') return 'pf-diag-value-severe';
         if (severity === 'warn') return 'pf-diag-value-warn';
         return 'pf-diag-value-ok';
+    }
+
+    _severityColor(severity) {
+        if (severity === 'severe') return '#ff7a90';
+        if (severity === 'warn') return '#ffd166';
+        return '#74f0ff';
     }
 
     _clampInt(value, min, max, fallback) {
@@ -489,6 +597,27 @@ class PF_Diagnostics {
                 margin-bottom: 8px;
                 color: #95a8ca;
                 font-size: 11px;
+            }
+
+            #pf-diagnostics-overlay .pf-diag-trend {
+                margin: 0 0 10px;
+                border: 1px solid rgba(113, 135, 170, 0.32);
+                border-radius: 8px;
+                background: rgba(15, 20, 30, 0.7);
+                padding: 6px 8px;
+            }
+
+            #pf-diagnostics-overlay .pf-diag-trend svg {
+                display: block;
+                width: 100%;
+                height: 56px;
+            }
+
+            #pf-diagnostics-overlay .pf-diag-trend-meta {
+                margin-top: 6px;
+                font-size: 11px;
+                color: #b8c9e8;
+                font-weight: 600;
             }
 
             #pf-diagnostics-overlay .pf-diag-list {
