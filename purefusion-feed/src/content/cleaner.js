@@ -430,16 +430,10 @@ class PF_Cleaner {
         const sidebar = this.settings?.sidebar;
         if (!sidebar || !sidebar.enableModuleFilters) return;
 
-        const leftSelector = PF_SELECTOR_MAP.leftSidebar || '[role="navigation"][aria-label="Facebook"]';
         const rightSelector = PF_SELECTOR_MAP.rightSidebar || '[role="complementary"]';
 
-        const leftNav = rootNode.matches && rootNode.matches(leftSelector)
-            ? rootNode
-            : rootNode.querySelector(leftSelector);
-
-        const rightNav = rootNode.matches && rootNode.matches(rightSelector)
-            ? rootNode
-            : rootNode.querySelector(rightSelector);
+        const leftNav = this._resolveLeftNavigationContainer(rootNode);
+        const rightNav = this._resolveScopedContainer(rootNode, rightSelector);
 
         if (leftNav) {
             if (sidebar.hideLeftMarketplace) {
@@ -457,6 +451,7 @@ class PF_Cleaner {
             if (sidebar.hideLeftMetaAI) {
                 this._hideLeftNavByHref(leftNav, ['/ai', 'meta.ai'], 'Left Nav: Meta AI');
                 this._hideLeftNavByExactLabel(leftNav, ['meta ai', 'meta ia'], 'Left Nav: Meta AI');
+                this._hideLeftAIModules(leftNav, 'Left Nav: Meta AI');
             }
         }
 
@@ -481,6 +476,66 @@ class PF_Cleaner {
                 this._hideRightModuleByLink(rightNav, ['/events/birthdays/', '/birthdays/'], 'Right Sidebar: Birthdays');
             }
         }
+    }
+
+    _resolveScopedContainer(rootNode, selector) {
+        if (!selector) return null;
+
+        if (rootNode?.matches && rootNode.matches(selector)) {
+            return rootNode;
+        }
+
+        if (rootNode?.querySelector) {
+            const inside = rootNode.querySelector(selector);
+            if (inside) return inside;
+        }
+
+        if (rootNode?.closest) {
+            const ancestor = rootNode.closest(selector);
+            if (ancestor) return ancestor;
+        }
+
+        return document.querySelector(selector);
+    }
+
+    _resolveLeftNavigationContainer(rootNode) {
+        const strictSelector = PF_SELECTOR_MAP.leftSidebar || '[role="navigation"][aria-label="Facebook"]';
+
+        const strict = this._resolveScopedContainer(rootNode, strictSelector);
+        if (strict) return strict;
+
+        const candidates = Array.from(document.querySelectorAll('[role="navigation"]'))
+            .filter((node) => node && this._isLikelyLeftNavRegion(node));
+
+        if (candidates.length === 0) return null;
+
+        const withShortcuts = candidates.find((node) => this._hasShortcutsHeading(node));
+        if (withShortcuts) return withShortcuts;
+
+        return candidates[0] || null;
+    }
+
+    _isLikelyLeftNavRegion(node) {
+        if (!node || !node.getBoundingClientRect) return false;
+
+        const rect = node.getBoundingClientRect();
+        if (rect.width < 180 || rect.width > 520) return false;
+        if (rect.height < 240) return false;
+        if (rect.left > window.innerWidth * 0.42) return false;
+
+        if (node.querySelector('[role="feed"], [role="complementary"], [role="banner"]')) return false;
+
+        const linkCount = node.querySelectorAll('a[role="link"], a[href], [role="link"]').length;
+        return linkCount >= 6;
+    }
+
+    _hasShortcutsHeading(node) {
+        if (!node || !node.querySelectorAll) return false;
+
+        return Array.from(node.querySelectorAll('h2, h3, [role="heading"], span, div')).some((el) => {
+            const text = this._normalizeComparableText(el.textContent || '');
+            return text === 'your shortcuts' || text === 'tus accesos directos';
+        });
     }
 
     removeTopbarModules(rootNode) {
@@ -593,6 +648,90 @@ class PF_Cleaner {
         });
     }
 
+    _hideLeftAIModules(scopeNode, reason) {
+        const navScopes = [];
+        if (scopeNode && scopeNode.querySelectorAll) navScopes.push(scopeNode);
+
+        document.querySelectorAll('[role="navigation"]').forEach((node) => {
+            if (!node || navScopes.includes(node)) return;
+            if (!this._isLikelyLeftNavRegion(node)) return;
+            navScopes.push(node);
+        });
+
+        if (!navScopes.length) return;
+
+        navScopes.forEach((navScope) => {
+            const shortcutsHeading = Array.from(navScope.querySelectorAll('h2, h3, [role="heading"], span, div')).find((node) => {
+                const text = this._normalizeComparableText(node.textContent || '');
+                return text === 'your shortcuts' || text === 'tus accesos directos';
+            });
+
+            const shortcutsTop = shortcutsHeading?.getBoundingClientRect ? shortcutsHeading.getBoundingClientRect().top : null;
+
+            navScope.querySelectorAll('a[role="link"], a[href], [role="link"], [role="button"]').forEach((entry) => {
+                if (!entry || !this._isVisibleNavRow(entry)) return;
+
+                if (shortcutsTop !== null && entry.getBoundingClientRect) {
+                    const top = entry.getBoundingClientRect().top;
+                    if (top >= shortcutsTop - 4) return;
+                }
+
+                const text = this._normalizeComparableText(entry.textContent || '');
+                if (!text || text.length < 2 || text.length > 48) return;
+
+                const href = (entry.getAttribute && entry.getAttribute('href') ? entry.getAttribute('href') : '').toLowerCase();
+                if (!this._isLikelyLeftAIItem(text, href)) return;
+
+                const target = this._findLeftNavRowContainer(entry, navScope);
+                this._hideNodeSafely(target, reason);
+            });
+        });
+    }
+
+    _findLeftNavRowContainer(entry, navScope) {
+        if (!entry) return null;
+
+        const clickable = entry.matches && entry.matches('a, [role="button"], [role="link"]')
+            ? entry
+            : (PF_Helpers.getClosest(entry, 'a, [role="button"], [role="link"]', 4) || entry);
+
+        let current = clickable;
+        let depth = 0;
+        while (current && current !== navScope && depth < 8) {
+            if (this._isVisibleNavRow(current)) {
+                return current;
+            }
+            current = current.parentElement;
+            depth += 1;
+        }
+
+        return clickable;
+    }
+
+    _isVisibleNavRow(node) {
+        if (!node || !node.getBoundingClientRect) return false;
+
+        const rect = node.getBoundingClientRect();
+        if (rect.width < 70 || rect.width > 560) return false;
+        if (rect.height < 20 || rect.height > 120) return false;
+        if (rect.bottom < 0 || rect.top > window.innerHeight) return false;
+
+        return true;
+    }
+
+    _isLikelyLeftAIItem(text, href) {
+        if (!text) return false;
+
+        const exact = new Set(['meta ai', 'meta ia', 'manus ai', 'my ai']);
+        if (exact.has(text)) return true;
+
+        if (href && (href.includes('/ai') || href.includes('meta.ai') || href.includes('assistant'))) {
+            return true;
+        }
+
+        return /(^ai\b|\bai$|\bassistant ai\b|\bchat ai\b|\bia\b)/.test(text);
+    }
+
     _hideRightModuleByAriaLabel(scopeNode, labels, reason) {
         if (!scopeNode || !scopeNode.querySelectorAll || !Array.isArray(labels) || labels.length === 0) return;
 
@@ -657,6 +796,13 @@ class PF_Cleaner {
 
     _findCompactNavContainer(node, scopeNode) {
         if (!node) return null;
+
+        if (node.getBoundingClientRect) {
+            const ownRect = node.getBoundingClientRect();
+            if (ownRect.height >= 24 && ownRect.height <= 140 && ownRect.width >= 80 && ownRect.width <= 560) {
+                return node;
+            }
+        }
 
         const listItem = PF_Helpers.getClosest(node, '[role="listitem"], li', 6);
         if (listItem && listItem !== scopeNode) return listItem;
@@ -898,6 +1044,13 @@ class PF_Cleaner {
         // 2. Messenger Sparkle & AI Chats
         this.hideTarget(rootNode, PF_SELECTOR_MAP.metaAIMessengerSparkle, "Meta AI Messenger Sparkle");
         this.hideTarget(rootNode, PF_SELECTOR_MAP.metaAIHeader, "Meta AI Header");
+
+        // 3. Left navigation AI modules (Meta AI / Manus AI / similar)
+        const leftNav = this._resolveLeftNavigationContainer(rootNode);
+
+        if (leftNav) {
+            this._hideLeftAIModules(leftNav, 'Social: Hide Meta AI');
+        }
     }
 
     removeSuggestedPosts(rootNode) {
@@ -1370,6 +1523,13 @@ class PF_Cleaner {
             }
 
             if (reason.startsWith('Topbar:') && !this._shouldKeepTopbarReasonHidden(reason)) {
+                node.style.removeProperty('display');
+                delete node.dataset.pfHidden;
+                delete node.dataset.pfReason;
+                return;
+            }
+
+            if (reason.startsWith('Social: Hide Meta AI') && !this.settings?.social?.hideMetaAI) {
                 node.style.removeProperty('display');
                 delete node.dataset.pfHidden;
                 delete node.dataset.pfReason;
