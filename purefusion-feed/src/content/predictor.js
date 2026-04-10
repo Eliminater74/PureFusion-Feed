@@ -82,6 +82,7 @@ class PF_Predictor {
             ...Array.from(document.querySelectorAll('[role="dialog"]'))
         ];
         const posts = this._dedupeNestedPosts(rawPosts.filter((postNode) => this._isLikelyFeedPost(postNode)));
+        this._cleanupLeakedDebugChips(posts);
         const visibleCount = posts.filter((postNode) => this._isElementVisible(postNode)).length;
 
         if (!posts.length) {
@@ -124,7 +125,7 @@ class PF_Predictor {
         if (!Array.isArray(posts) || posts.length <= 1) return Array.isArray(posts) ? posts : [];
 
         return posts.filter((candidate) => {
-            return !posts.some((other) => other !== candidate && other.contains && other.contains(candidate));
+            return !posts.some((other) => other !== candidate && candidate.contains && candidate.contains(other));
         });
     }
 
@@ -141,8 +142,9 @@ class PF_Predictor {
         const role = String(postNode.getAttribute('role') || '').toLowerCase();
         if (role === 'article') {
             const insideFeed = !!postNode.closest(PF_SELECTOR_MAP.mainFeedRegion);
+            const insideDialog = !!postNode.closest('[role="dialog"]');
             const hasPostText = !!postNode.querySelector(PF_SELECTOR_MAP.postTextBody);
-            return insideFeed && hasPostText;
+            return (insideFeed || insideDialog) && hasPostText;
         }
 
         return !!postNode.querySelector(PF_SELECTOR_MAP.postTextBody);
@@ -192,11 +194,12 @@ class PF_Predictor {
         return this._dedupeNestedPosts(candidates);
     }
 
-    _cleanupLeakedDebugChips() {
+    _cleanupLeakedDebugChips(activePosts = []) {
+        const activeSet = new Set(Array.isArray(activePosts) ? activePosts : []);
         const leaked = Array.from(document.querySelectorAll('.pf-cred-debug-chip, .pf-cred-block'));
         leaked.forEach((chip) => {
             const host = chip.closest('[data-pagelet], [role="article"], [role="dialog"]');
-            if (!host || !this._isLikelyFeedPost(host)) {
+            if (!host || !this._isLikelyFeedPost(host) || (activeSet.size > 0 && !activeSet.has(host))) {
                 chip.remove();
             }
         });
@@ -218,7 +221,7 @@ class PF_Predictor {
     }
 
     _processSingleNode(node) {
-        const predictVersion = 'v4-cred-debug-dialog';
+        const predictVersion = 'v5-cred-debug-targeting';
 
         if (node.dataset.pfPredictProcessed === predictVersion) {
             this._refreshPredictionDecorations(node);

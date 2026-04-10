@@ -109,6 +109,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Added: feed-region-only scan counting with visible-post count and sample author hints in scan toast.
 - Fixed: debug/credibility chips no longer attach to comment rows in post dialogs.
 - Fixed: post dialogs are now recognized as valid credibility scan targets (without tagging comment rows).
+- Fixed: nested target resolution now prefers real post nodes over outer dialog wrappers (restores dialog chip placement).
 
 9) Feed mode presets (high)
 - Status: initial implementation complete.
