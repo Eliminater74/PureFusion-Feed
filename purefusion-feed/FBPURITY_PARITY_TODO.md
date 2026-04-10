@@ -98,6 +98,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Keep transparent with "why hidden" reasons.
 - Status: polish slice started.
 - Added: user controls for low/high score thresholds and optional score-reason hints on PF score badges.
+- Added: optional low-score post collapsing with one-click reveal chip.
 
 9) Feed mode presets (high)
 - Status: initial implementation complete.

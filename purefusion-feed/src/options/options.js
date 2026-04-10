@@ -212,6 +212,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_pred_showBadge': { obj: 'predictions', prop: 'showBadge', type: 'checkbox' },
         'opt_pred_showScoreReasons': { obj: 'predictions', prop: 'showScoreReasons', type: 'checkbox' },
         'opt_pred_dimLowInterest': { obj: 'predictions', prop: 'dimLowInterest', type: 'checkbox' },
+        'opt_pred_collapseLowInterest': { obj: 'predictions', prop: 'collapseLowInterest', type: 'checkbox' },
         'opt_pred_highlightHighInterest': { obj: 'predictions', prop: 'highlightHighInterest', type: 'checkbox' },
         'opt_pred_showTrending': { obj: 'predictions', prop: 'showTrending', type: 'checkbox' },
         'opt_pred_lowThreshold': { obj: 'predictions', prop: 'lowThreshold', type: 'number', fallback: 20 },
@@ -520,6 +521,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             p.showScoreReasons = p.showScoreReasons !== false;
+            p.collapseLowInterest = !!p.collapseLowInterest;
         }
 
         if (currentSettings.wellbeing) {

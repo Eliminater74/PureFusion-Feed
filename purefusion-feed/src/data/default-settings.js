@@ -114,6 +114,7 @@ const DEFAULT_SETTINGS = {
         showBadge: true,                // Display "PF Score" on posts
         showScoreReasons: true,         // Show compact signal reasons on PF badge
         dimLowInterest: true,           // Dim posts scoring below threshold
+        collapseLowInterest: false,     // Hide low-score posts behind reveal chip
         highlightHighInterest: true,    // Glow posts scoring above threshold
         lowThreshold: 20,
         highThreshold: 80,

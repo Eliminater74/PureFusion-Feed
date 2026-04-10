@@ -18,7 +18,9 @@ class PF_Predictor {
         this._stateDirty = false;
         this.syncIntervalId = null;
         this.boundVisibilityHandler = null;
+        this._stylesInjected = false;
         
+        this._injectPredictorStyles();
         this.init();
     }
 
@@ -76,6 +78,8 @@ class PF_Predictor {
         // 2. Score the post based on history
         const scoreDetails = this._scorePost(node);
         const score = scoreDetails.score;
+
+        this._applyScoreEffects(node, score, scoreDetails);
 
         // 3. Apply Visual Badges and True-Affinity Flexbox Sorting
         this._injectBadge(node, score, scoreDetails);
@@ -256,21 +260,11 @@ class PF_Predictor {
         if (postNode.dataset.pfRagebait === "true") {
             scoreColor = '#ff4444'; 
             flair = ' ⚠️ Rage-Bait';
-            PF_Helpers.dimElement(postNode);
-            // Deeply blur rage bait
-            postNode.style.filter = 'blur(4px)';
-            postNode.addEventListener('mouseenter', () => postNode.style.filter = 'none', { once: true });
         } else if (score >= this.settings.predictions.highThreshold) {
             scoreColor = '#00D4FF'; // Cyan
             flair = ' 🔥';
-            if (this.settings.predictions.highlightHighInterest) {
-                postNode.style.borderLeft = `4px solid ${scoreColor}`;
-            }
         } else if (score <= this.settings.predictions.lowThreshold) {
             scoreColor = '#ff4444'; // Red
-            if (this.settings.predictions.dimLowInterest) {
-                PF_Helpers.dimElement(postNode);
-            }
         } else {
             scoreColor = '#6C3FC5'; // Neutral Purple
         }
@@ -311,6 +305,86 @@ class PF_Predictor {
         postNode.dataset.pfScored = score;
     }
 
+    _applyScoreEffects(postNode, score, scoreDetails) {
+        const predictions = this.settings?.predictions || {};
+
+        if (postNode.dataset.pfRagebait === 'true') {
+            PF_Helpers.dimElement(postNode);
+            postNode.style.filter = 'blur(4px)';
+            postNode.addEventListener('mouseenter', () => {
+                postNode.style.filter = 'none';
+            }, { once: true });
+            return;
+        }
+
+        if (score >= Number(predictions.highThreshold || 80)) {
+            if (predictions.highlightHighInterest) {
+                postNode.style.borderLeft = '4px solid #00D4FF';
+            }
+            return;
+        }
+
+        if (score <= Number(predictions.lowThreshold || 20)) {
+            if (predictions.collapseLowInterest) {
+                this._collapseLowScorePost(postNode, score, scoreDetails);
+                return;
+            }
+
+            if (predictions.dimLowInterest) {
+                PF_Helpers.dimElement(postNode);
+            }
+        }
+    }
+
+    _collapseLowScorePost(postNode, score, scoreDetails) {
+        if (!postNode || postNode.dataset.pfCollapsedLowScore === 'true') return;
+
+        const summary = this._escapeHtml(scoreDetails?.reasonSummary || 'low interest');
+        const chip = document.createElement('div');
+        chip.className = 'pf-predict-chip';
+        chip.innerHTML = `
+            <span>Hidden low-score post (<strong>${score}</strong>)${summary ? ` - ${summary}` : ''}</span>
+            <button type="button">Show post</button>
+        `;
+
+        const revealBtn = chip.querySelector('button');
+        if (revealBtn) {
+            revealBtn.addEventListener('click', () => {
+                this._restoreCollapsedLowScorePost(postNode, chip);
+            });
+        }
+
+        postNode.style.setProperty('display', 'none', 'important');
+        postNode.dataset.pfCollapsedLowScore = 'true';
+        postNode.dataset.pfCollapsedReason = summary || 'low interest score';
+
+        postNode.parentElement?.insertBefore(chip, postNode);
+        this._emitPredictorHiddenEvent('Low Interest Score Collapse');
+    }
+
+    _restoreCollapsedLowScorePost(postNode, chip) {
+        if (!postNode) return;
+
+        postNode.style.removeProperty('display');
+        postNode.dataset.pfCollapsedLowScore = 'revealed';
+        if (chip && chip.remove) chip.remove();
+    }
+
+    _emitPredictorHiddenEvent(reason) {
+        try {
+            window.dispatchEvent(new CustomEvent('pf:element_hidden', {
+                detail: {
+                    reason: String(reason || 'Predictor Hidden'),
+                    tag: 'ARTICLE',
+                    role: 'feed-item',
+                    pagelet: 'predictor'
+                }
+            }));
+        } catch (err) {
+            // no-op diagnostics event fallback
+        }
+    }
+
     _summarizeReasonSignals(signals) {
         if (!Array.isArray(signals) || signals.length === 0) return '';
 
@@ -330,6 +404,47 @@ class PF_Predictor {
             .replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#39;');
+    }
+
+    _injectPredictorStyles() {
+        if (this._stylesInjected || document.getElementById('pf-predictor-styles')) return;
+
+        const style = document.createElement('style');
+        style.id = 'pf-predictor-styles';
+        style.textContent = `
+            .pf-predict-chip {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 10px;
+                margin: 8px 0;
+                padding: 8px 10px;
+                border-radius: 10px;
+                border: 1px solid rgba(255, 90, 105, 0.45);
+                background: rgba(37, 24, 29, 0.9);
+                color: #ffe9ec;
+                font: 700 12px/1.3 "Segoe UI Variable Text", "Segoe UI", sans-serif;
+            }
+
+            .pf-predict-chip button {
+                appearance: none;
+                border: 1px solid rgba(255, 132, 146, 0.65);
+                background: rgba(76, 34, 42, 0.96);
+                color: #ffd6dc;
+                border-radius: 999px;
+                padding: 4px 10px;
+                cursor: pointer;
+                font: 700 11px/1.2 "Segoe UI Variable Text", "Segoe UI", sans-serif;
+            }
+
+            .pf-predict-chip button:hover {
+                border-color: rgba(255, 171, 180, 0.95);
+                color: #ffffff;
+            }
+        `;
+
+        document.head.appendChild(style);
+        this._stylesInjected = true;
     }
 
     // =========================================================================

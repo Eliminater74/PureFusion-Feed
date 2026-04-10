@@ -106,6 +106,7 @@
   "options_ai_show_pf_badge": { "message": "Mostrar insignia \"PF Score\" en publicaciones" },
   "options_ai_show_reasons": { "message": "Mostrar pistas de razones de puntuacion en insignias PF" },
   "options_ai_dim_low_interest": { "message": "Atenuar/colapsar publicaciones de bajo interés (Puntuación < 20)" },
+  "options_ai_collapse_low_interest": { "message": "Colapsar publicaciones de bajo interes con boton de mostrar" },
   "options_ai_highlight_high_interest": { "message": "Resaltar publicaciones de alto interés (Puntuación > 80)" },
   "options_ai_analyze_trends": { "message": "Analizar tendencias y palabras clave locales" },
   "options_ai_low_threshold": { "message": "Umbral de puntuacion baja" },
