@@ -244,7 +244,7 @@ class PF_Predictor {
     }
 
     _processSingleNode(node) {
-        const predictVersion = 'v7-cred-refresh-stable';
+        const predictVersion = 'v8-cred-anchor-stable';
 
         if (node.dataset.pfPredictProcessed === predictVersion) {
             this._refreshPredictionDecorations(node);
@@ -314,7 +314,7 @@ class PF_Predictor {
     _clearPredictionDecorations(postNode) {
         if (!postNode || !postNode.querySelectorAll) return;
 
-        postNode.querySelectorAll('.pf-score-badge, .pf-cred-block, .pf-cred-debug-chip').forEach((node) => {
+        postNode.querySelectorAll('.pf-score-badge, .pf-cred-block, .pf-cred-debug-chip, .pf-cred-inline-anchor, .pf-cred-dialog-anchor').forEach((node) => {
             if (node && node.remove) node.remove();
         });
 
@@ -668,25 +668,68 @@ class PF_Predictor {
     _insertCredibilityElement(postNode, element) {
         if (!postNode || !element) return;
 
+        const dialogHost = (postNode.matches && postNode.matches('[role="dialog"]'))
+            ? postNode
+            : (postNode.closest ? postNode.closest('[role="dialog"]') : null);
+
+        if (dialogHost) {
+            this._insertIntoDialogAnchor(dialogHost, element);
+            return;
+        }
+
         const visualHost = this._resolvePostVisualHost(postNode);
         if (!visualHost) {
             postNode.prepend(element);
             return;
         }
 
-        const textBody = visualHost.querySelector(PF_SELECTOR_MAP.postTextBody);
-        if (textBody && textBody.parentElement) {
-            textBody.parentElement.insertBefore(element, textBody);
-            return;
-        }
+        const inlineAnchor = this._ensureInlineCredAnchor(visualHost);
+        inlineAnchor.appendChild(element);
+    }
+
+    _ensureInlineCredAnchor(visualHost) {
+        if (!visualHost) return null;
+
+        const existing = visualHost.querySelector(':scope > .pf-cred-inline-anchor');
+        if (existing) return existing;
+
+        const anchor = document.createElement('div');
+        anchor.className = 'pf-cred-inline-anchor';
 
         const headline = visualHost.querySelector('h3, h4');
         if (headline && headline.parentElement) {
-            headline.parentElement.appendChild(element);
-            return;
+            headline.parentElement.appendChild(anchor);
+            return anchor;
         }
 
-        visualHost.prepend(element);
+        const textBody = visualHost.querySelector(PF_SELECTOR_MAP.postTextBody);
+        if (textBody && textBody.parentElement) {
+            textBody.parentElement.insertBefore(anchor, textBody);
+            return anchor;
+        }
+
+        visualHost.prepend(anchor);
+        return anchor;
+    }
+
+    _insertIntoDialogAnchor(dialogHost, element) {
+        if (!dialogHost || !element) return;
+
+        let anchor = dialogHost.querySelector(':scope > .pf-cred-dialog-anchor');
+        if (!anchor) {
+            anchor = document.createElement('div');
+            anchor.className = 'pf-cred-dialog-anchor';
+
+            const titleNode = dialogHost.querySelector('h2, h3');
+            if (titleNode && titleNode.parentElement && titleNode.parentElement.parentElement) {
+                const titleRow = titleNode.parentElement;
+                titleRow.parentElement.insertBefore(anchor, titleRow.nextSibling);
+            } else {
+                dialogHost.prepend(anchor);
+            }
+        }
+
+        anchor.appendChild(element);
     }
 
     _resolvePostVisualHost(postNode) {
@@ -1166,6 +1209,25 @@ class PF_Predictor {
                 color: #ff95a6;
                 background: rgba(111, 32, 47, 0.28);
                 border-color: rgba(255, 149, 166, 0.78);
+            }
+
+            .pf-cred-inline-anchor {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                align-items: center;
+                margin-top: 4px;
+            }
+
+            .pf-cred-dialog-anchor {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                align-items: center;
+                padding: 4px 10px 6px;
+                border-top: 1px solid rgba(129, 144, 168, 0.35);
+                border-bottom: 1px solid rgba(129, 144, 168, 0.2);
+                background: rgba(25, 30, 38, 0.66);
             }
 
             .pf-cred-block {
