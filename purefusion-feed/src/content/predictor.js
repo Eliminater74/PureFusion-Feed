@@ -244,7 +244,7 @@ class PF_Predictor {
     }
 
     _processSingleNode(node) {
-        const predictVersion = 'v8-cred-anchor-stable';
+        const predictVersion = 'v9-cred-upsert';
 
         if (node.dataset.pfPredictProcessed === predictVersion) {
             this._refreshPredictionDecorations(node);
@@ -684,7 +684,7 @@ class PF_Predictor {
         }
 
         const inlineAnchor = this._ensureInlineCredAnchor(visualHost);
-        inlineAnchor.appendChild(element);
+        this._upsertCredElement(inlineAnchor, element);
     }
 
     _ensureInlineCredAnchor(visualHost) {
@@ -727,6 +727,24 @@ class PF_Predictor {
             } else {
                 dialogHost.prepend(anchor);
             }
+        }
+
+        this._upsertCredElement(anchor, element);
+    }
+
+    _upsertCredElement(anchor, element) {
+        if (!anchor || !element || !element.classList) return;
+
+        if (element.classList.contains('pf-cred-debug-chip')) {
+            anchor.querySelectorAll('.pf-cred-debug-chip').forEach((existing) => {
+                if (existing && existing.remove) existing.remove();
+            });
+        }
+
+        if (element.classList.contains('pf-cred-block')) {
+            anchor.querySelectorAll('.pf-cred-block').forEach((existing) => {
+                if (existing && existing.remove) existing.remove();
+            });
         }
 
         anchor.appendChild(element);
