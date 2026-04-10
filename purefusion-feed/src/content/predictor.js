@@ -243,6 +243,7 @@ class PF_Predictor {
             score -= credibility.penalty;
             postNode.dataset.pfCredibilityLevel = credibility.level;
             postNode.dataset.pfCredibilitySummary = credibility.summary;
+            postNode.dataset.pfCredibilityReasons = (credibility.reasons || []).join('||');
 
             reasonSignals.push({
                 short: `-${credibility.penalty} verify`,
@@ -251,6 +252,7 @@ class PF_Predictor {
         } else {
             delete postNode.dataset.pfCredibilityLevel;
             delete postNode.dataset.pfCredibilitySummary;
+            delete postNode.dataset.pfCredibilityReasons;
         }
 
         // Clamp 0 to 100
@@ -332,21 +334,51 @@ class PF_Predictor {
         if (!level) return;
 
         const summary = String(postNode.dataset.pfCredibilitySummary || 'suspicious claim pattern');
-        const chip = document.createElement('div');
-        chip.className = `pf-cred-chip ${level === 'high' ? 'pf-cred-high' : 'pf-cred-warn'}`;
-        chip.textContent = level === 'high' ? 'VERIFY SOURCE (high risk)' : 'VERIFY SOURCE';
-        chip.title = `PureFusion credibility signal: ${summary}`;
+        const reasonsRaw = String(postNode.dataset.pfCredibilityReasons || '');
+        const reasons = reasonsRaw
+            .split('||')
+            .map((item) => item.trim())
+            .filter(Boolean)
+            .slice(0, 4);
+
+        const wrapper = document.createElement('div');
+        wrapper.className = `pf-cred-block ${level === 'high' ? 'pf-cred-high' : 'pf-cred-warn'}`;
+
+        const label = document.createElement('span');
+        label.className = 'pf-cred-chip';
+        label.textContent = level === 'high' ? 'VERIFY SOURCE (high risk)' : 'VERIFY SOURCE';
+        label.title = `PureFusion credibility signal: ${summary}`;
+
+        const whyBtn = document.createElement('button');
+        whyBtn.type = 'button';
+        whyBtn.className = 'pf-cred-why-btn';
+        whyBtn.textContent = 'Why?';
+
+        const details = document.createElement('div');
+        details.className = 'pf-cred-details';
+        details.hidden = true;
+        details.innerHTML = this._buildCredibilityDetailsHtml(summary, reasons);
+
+        whyBtn.addEventListener('click', () => {
+            const isHidden = details.hidden;
+            details.hidden = !isHidden;
+            whyBtn.textContent = isHidden ? 'Hide' : 'Why?';
+        });
+
+        wrapper.appendChild(label);
+        wrapper.appendChild(whyBtn);
+        wrapper.appendChild(details);
 
         const score = Number(scoreDetails?.score);
         if (Number.isFinite(score)) {
-            chip.setAttribute('aria-label', `Verify source warning. PF score ${score}. ${summary}`);
+            wrapper.setAttribute('aria-label', `Verify source warning. PF score ${score}. ${summary}`);
         }
 
         const anchor = postNode.querySelector('[data-pagelet], h3, h4, strong') || postNode;
         if (anchor.parentElement) {
-            anchor.parentElement.appendChild(chip);
+            anchor.parentElement.appendChild(wrapper);
         } else {
-            postNode.prepend(chip);
+            postNode.prepend(wrapper);
         }
 
         postNode.dataset.pfCredBadgeInjected = 'true';
@@ -455,10 +487,10 @@ class PF_Predictor {
 
     _analyzeCredibilitySignals(textContent, postNode) {
         const predictions = this.settings?.predictions || {};
-        if (!predictions.credibilitySignalsEnabled) return { penalty: 0, level: '', summary: '' };
+        if (!predictions.credibilitySignalsEnabled) return { penalty: 0, level: '', summary: '', reasons: [] };
 
         const text = String(textContent || '').trim();
-        if (!text) return { penalty: 0, level: '', summary: '' };
+        if (!text) return { penalty: 0, level: '', summary: '', reasons: [] };
 
         const lower = text.toLowerCase();
         let points = 0;
@@ -513,19 +545,21 @@ class PF_Predictor {
         }
 
         if (points < 3) {
-            return { penalty: 0, level: '', summary: '' };
+            return { penalty: 0, level: '', summary: '', reasons: [] };
         }
 
         const strict = !!predictions.strictCredibilityPenalty;
         const level = points >= 6 ? 'high' : 'warn';
         const basePenalty = strict ? (points * 4) : (points * 3);
         const penalty = Math.max(6, Math.min(strict ? 36 : 24, basePenalty));
-        const summary = this._formatCredibilitySummary(triggers);
+        const uniqueReasons = Array.from(new Set(triggers));
+        const summary = this._formatCredibilitySummary(uniqueReasons);
 
         return {
             penalty,
             level,
-            summary
+            summary,
+            reasons: uniqueReasons
         };
     }
 
@@ -536,6 +570,20 @@ class PF_Predictor {
 
         const unique = Array.from(new Set(triggers));
         return unique.slice(0, 3).join(', ');
+    }
+
+    _buildCredibilityDetailsHtml(summary, reasons) {
+        const safeSummary = this._escapeHtml(summary || 'suspicious claim pattern');
+        const reasonItems = Array.isArray(reasons) && reasons.length
+            ? reasons.map((reason) => `<li>${this._escapeHtml(reason)}</li>`).join('')
+            : '<li>Suspicious claim pattern</li>';
+
+        return `
+            <div class="pf-cred-details-title">Why this was flagged</div>
+            <p>${safeSummary}</p>
+            <ul>${reasonItems}</ul>
+            <p class="pf-cred-details-tip">Tip: Verify with trusted outlets or official sources before resharing.</p>
+        `;
     }
 
     _injectPredictorStyles() {
@@ -576,13 +624,75 @@ class PF_Predictor {
 
             .pf-cred-chip {
                 display: inline-block;
-                margin-left: 8px;
+                margin-left: 0;
                 padding: 2px 8px;
                 border-radius: 999px;
                 font: 800 10px/1.2 "Segoe UI Variable Text", "Segoe UI", sans-serif;
                 letter-spacing: 0.03em;
                 text-transform: uppercase;
                 border: 1px solid;
+            }
+
+            .pf-cred-block {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                margin-left: 8px;
+                flex-wrap: wrap;
+            }
+
+            .pf-cred-why-btn {
+                appearance: none;
+                border: 1px solid rgba(126, 138, 160, 0.65);
+                background: rgba(24, 29, 39, 0.94);
+                color: #dce6fb;
+                border-radius: 999px;
+                padding: 2px 8px;
+                cursor: pointer;
+                font: 700 10px/1.2 "Segoe UI Variable Text", "Segoe UI", sans-serif;
+            }
+
+            .pf-cred-why-btn:hover {
+                border-color: rgba(177, 196, 224, 0.95);
+                color: #ffffff;
+            }
+
+            .pf-cred-details {
+                width: min(360px, calc(100vw - 40px));
+                margin-top: 4px;
+                padding: 8px 10px;
+                border-radius: 10px;
+                border: 1px solid rgba(126, 138, 160, 0.4);
+                background: rgba(22, 26, 34, 0.96);
+                color: #ecf1ff;
+                font: 600 11px/1.35 "Segoe UI Variable Text", "Segoe UI", sans-serif;
+            }
+
+            .pf-cred-details[hidden] {
+                display: none;
+            }
+
+            .pf-cred-details-title {
+                margin-bottom: 4px;
+                font-weight: 800;
+                color: #e8efff;
+            }
+
+            .pf-cred-details p {
+                margin: 0 0 6px;
+                color: #cfdaef;
+            }
+
+            .pf-cred-details ul {
+                margin: 0 0 6px 16px;
+                padding: 0;
+                display: grid;
+                gap: 2px;
+            }
+
+            .pf-cred-details-tip {
+                margin-bottom: 0 !important;
+                color: #b9c9e8 !important;
             }
 
             .pf-cred-chip.pf-cred-warn {
