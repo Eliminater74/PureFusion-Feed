@@ -203,6 +203,15 @@ const DEFAULT_SETTINGS = {
         trackDeactivated: true,         // Surf for missing/404 friends
         notificationDigestMode: false,  // If true, groups notifications by hour
         autoCommentPreview: false,      // Auto-expand inline comments for visible feed posts
+        commentPreviewCooldownMs: 1200, // Min delay between simulated preview clicks
+        commentPreviewRetryCap: 4,      // Max retries per post before giving up
+        commentPreviewMaxPostsPerSweep: 30,
+        commentPreviewAllowHome: true,
+        commentPreviewAllowGroups: false,
+        commentPreviewAllowWatch: false,
+        commentPreviewAllowMarketplace: false,
+        commentPreviewAllowNotifications: false,
+        commentPreviewAllowOther: false,
         hideMetaAI: true,               // Nuke gradient icons and sparkle buttons
         hideMessengerTyping: true,      // Hide typing indicators (DOM level)
         messengerPrivacyBlur: false,    // Blur chat previews until hover

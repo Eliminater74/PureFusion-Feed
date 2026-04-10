@@ -91,6 +91,9 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Use IntersectionObserver + guarded click strategy to avoid opening full post pages.
 - Add rate limiting and per-post retry cap to avoid bot-like behavior.
 - Keep OFF by default and expose as an explicit advanced toggle.
+- Status: hardening slice started.
+- Added: configurable cooldown, retry cap, and max-posts-per-sweep controls.
+- Added: per-surface allow list (Home/Groups/Watch/Marketplace/Notifications/Other).
 
 8) Smart feed quality scoring (medium-high)
 - Detect likely ragebait/engagement bait/low-value repost patterns and assign a quality score.

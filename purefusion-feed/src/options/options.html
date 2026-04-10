@@ -333,6 +333,47 @@
                     <label data-i18n="options_social_auto_comment_preview">Auto Comment Preview (Beta)</label>
                     <input type="checkbox" id="opt_social_autoCommentPreview" class="pf-toggle">
                 </div>
+
+                <p class="pf-desc" data-i18n="options_social_comment_preview_desc">Expand inline comments safely with cooldown and per-surface scope controls.</p>
+                <div class="pf-setting-row auto-height">
+                    <label data-i18n="options_social_comment_preview_cooldown">Comment preview cooldown (ms)</label>
+                    <input type="number" id="opt_social_commentPreviewCooldownMs" min="300" max="5000" class="pf-input-number">
+                </div>
+                <div class="pf-setting-row auto-height">
+                    <label data-i18n="options_social_comment_preview_retry_cap">Retry cap per post</label>
+                    <input type="number" id="opt_social_commentPreviewRetryCap" min="1" max="10" class="pf-input-number">
+                </div>
+                <div class="pf-setting-row auto-height">
+                    <label data-i18n="options_social_comment_preview_sweep_cap">Max posts per sweep</label>
+                    <input type="number" id="opt_social_commentPreviewMaxPostsPerSweep" min="10" max="60" class="pf-input-number">
+                </div>
+                <div class="pf-setting-row">
+                    <label data-i18n="options_social_comment_preview_home">Allow on Home feed</label>
+                    <input type="checkbox" id="opt_social_commentPreviewAllowHome" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row">
+                    <label data-i18n="options_social_comment_preview_groups">Allow on Groups</label>
+                    <input type="checkbox" id="opt_social_commentPreviewAllowGroups" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row">
+                    <label data-i18n="options_social_comment_preview_watch">Allow on Watch</label>
+                    <input type="checkbox" id="opt_social_commentPreviewAllowWatch" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row">
+                    <label data-i18n="options_social_comment_preview_marketplace">Allow on Marketplace</label>
+                    <input type="checkbox" id="opt_social_commentPreviewAllowMarketplace" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row">
+                    <label data-i18n="options_social_comment_preview_notifications">Allow on Notifications</label>
+                    <input type="checkbox" id="opt_social_commentPreviewAllowNotifications" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row">
+                    <label data-i18n="options_social_comment_preview_other">Allow on Other surfaces</label>
+                    <input type="checkbox" id="opt_social_commentPreviewAllowOther" class="pf-toggle">
+                </div>
+
+                <hr class="pf-hr">
+
                 <div class="pf-setting-row">
                     <label data-i18n="options_social_nuke_meta">Nuke Meta AI (Remove all gradient icons & sparkle buttons)</label>
                     <input type="checkbox" id="opt_social_hideMetaAI" class="pf-toggle">

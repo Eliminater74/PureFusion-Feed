@@ -13,13 +13,19 @@ class PF_CommentPreview {
         this.postAttempts = new WeakMap();
         this.retryTimers = new WeakMap();
         this.intersectionObserver = null;
-        this.maxAttemptsPerPost = 8;
+        this.maxAttemptsPerPost = 4;
+        this.maxPostsPerSweep = 30;
+        this.minActionGapMs = 1200;
+        this.lastActionAt = 0;
+
+        this._syncRuntimeConfig();
 
         this._initIntersectionObserver();
     }
 
     updateSettings(settings) {
         this.settings = settings;
+        this._syncRuntimeConfig();
     }
 
     sweepDocument() {
@@ -29,7 +35,7 @@ class PF_CommentPreview {
         let count = 0;
 
         posts.forEach((post) => {
-            if (count >= 30) return;
+            if (count >= this.maxPostsPerSweep) return;
             this._queuePost(post);
             count += 1;
         });
@@ -87,14 +93,22 @@ class PF_CommentPreview {
         if (!post || !document.contains(post)) return;
         if (this.processedPosts.has(post)) return;
 
+        if (this._isCoolingDown()) {
+            this._scheduleRetry(post, this._remainingCooldownMs() + 120);
+            return;
+        }
+
         const attempts = (this.postAttempts.get(post) || 0) + 1;
         this.postAttempts.set(post, attempts);
 
         const trigger = this._findInlineCommentTrigger(post);
         if (trigger) {
-            this._safeClick(trigger);
-            post.dataset.pfCommentPreview = 'true';
-            this._finalizePost(post);
+            if (this._safeClick(trigger)) {
+                post.dataset.pfCommentPreview = 'true';
+                this._finalizePost(post);
+            } else if (attempts < this.maxAttemptsPerPost) {
+                this._scheduleRetry(post, this._remainingCooldownMs() + 180);
+            }
             return;
         }
 
@@ -102,8 +116,11 @@ class PF_CommentPreview {
         // inline comment section first, then retry once comments hydrate.
         const primer = this._findInlineCommentPrimer(post);
         if (primer) {
-            this._safeClick(primer);
-            this._scheduleRetry(post, 900);
+            if (this._safeClick(primer)) {
+                this._scheduleRetry(post, 900);
+            } else if (attempts < this.maxAttemptsPerPost) {
+                this._scheduleRetry(post, this._remainingCooldownMs() + 180);
+            }
             return;
         }
 
@@ -298,6 +315,8 @@ class PF_CommentPreview {
     }
 
     _safeClick(el) {
+        if (this._isCoolingDown()) return false;
+
         try {
             const target = (el.closest && (el.closest('div[role="button"], span[role="button"], button, a[role="link"]') || el)) || el;
 
@@ -308,8 +327,12 @@ class PF_CommentPreview {
                     view: window
                 }));
             });
+
+            this.lastActionAt = Date.now();
+            return true;
         } catch (err) {
             PF_Logger.warn('PF_CommentPreview: click failed.', err);
+            return false;
         }
     }
 
@@ -326,7 +349,56 @@ class PF_CommentPreview {
     }
 
     _isEnabled() {
-        return !!this.settings?.social?.autoCommentPreview;
+        return !!this.settings?.social?.autoCommentPreview && this._isSurfaceAllowed();
+    }
+
+    _syncRuntimeConfig() {
+        const social = this.settings?.social || {};
+
+        this.maxAttemptsPerPost = this._clampInt(social.commentPreviewRetryCap, 1, 10, 4);
+        this.maxPostsPerSweep = this._clampInt(social.commentPreviewMaxPostsPerSweep, 10, 60, 30);
+        this.minActionGapMs = this._clampInt(social.commentPreviewCooldownMs, 300, 5000, 1200);
+    }
+
+    _clampInt(value, min, max, fallback) {
+        const parsed = Number(value);
+        if (!Number.isFinite(parsed)) return fallback;
+        return Math.max(min, Math.min(max, Math.round(parsed)));
+    }
+
+    _isCoolingDown() {
+        if (!this.lastActionAt) return false;
+        return (Date.now() - this.lastActionAt) < this.minActionGapMs;
+    }
+
+    _remainingCooldownMs() {
+        if (!this.lastActionAt) return 0;
+        return Math.max(0, this.minActionGapMs - (Date.now() - this.lastActionAt));
+    }
+
+    _isSurfaceAllowed() {
+        const social = this.settings?.social || {};
+        const key = this._getCurrentSurfaceKey();
+
+        switch (key) {
+            case 'home': return social.commentPreviewAllowHome !== false;
+            case 'groups': return !!social.commentPreviewAllowGroups;
+            case 'watch': return !!social.commentPreviewAllowWatch;
+            case 'marketplace': return !!social.commentPreviewAllowMarketplace;
+            case 'notifications': return !!social.commentPreviewAllowNotifications;
+            default: return !!social.commentPreviewAllowOther;
+        }
+    }
+
+    _getCurrentSurfaceKey() {
+        const pathname = String(window?.location?.pathname || '/').toLowerCase();
+
+        if (pathname === '/' || pathname === '/home.php') return 'home';
+        if (pathname.startsWith('/groups')) return 'groups';
+        if (pathname.startsWith('/watch')) return 'watch';
+        if (pathname.startsWith('/marketplace')) return 'marketplace';
+        if (pathname.startsWith('/notifications')) return 'notifications';
+        return 'other';
     }
 }
 

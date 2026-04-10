@@ -296,6 +296,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_social_trackUnfriends': { obj: 'social', prop: 'trackUnfriends', type: 'checkbox' },
         'opt_social_notificationDigestMode': { obj: 'social', prop: 'notificationDigestMode', type: 'checkbox' },
         'opt_social_autoCommentPreview': { obj: 'social', prop: 'autoCommentPreview', type: 'checkbox' },
+        'opt_social_commentPreviewCooldownMs': { obj: 'social', prop: 'commentPreviewCooldownMs', type: 'number', fallback: 1200 },
+        'opt_social_commentPreviewRetryCap': { obj: 'social', prop: 'commentPreviewRetryCap', type: 'number', fallback: 4 },
+        'opt_social_commentPreviewMaxPostsPerSweep': { obj: 'social', prop: 'commentPreviewMaxPostsPerSweep', type: 'number', fallback: 30 },
+        'opt_social_commentPreviewAllowHome': { obj: 'social', prop: 'commentPreviewAllowHome', type: 'checkbox' },
+        'opt_social_commentPreviewAllowGroups': { obj: 'social', prop: 'commentPreviewAllowGroups', type: 'checkbox' },
+        'opt_social_commentPreviewAllowWatch': { obj: 'social', prop: 'commentPreviewAllowWatch', type: 'checkbox' },
+        'opt_social_commentPreviewAllowMarketplace': { obj: 'social', prop: 'commentPreviewAllowMarketplace', type: 'checkbox' },
+        'opt_social_commentPreviewAllowNotifications': { obj: 'social', prop: 'commentPreviewAllowNotifications', type: 'checkbox' },
+        'opt_social_commentPreviewAllowOther': { obj: 'social', prop: 'commentPreviewAllowOther', type: 'checkbox' },
         'opt_social_hideMetaAI': { obj: 'social', prop: 'hideMetaAI', type: 'checkbox' },
         'opt_social_hideMessengerTyping': { obj: 'social', prop: 'hideMessengerTyping', type: 'checkbox' },
         'opt_social_messengerPrivacyBlur': { obj: 'social', prop: 'messengerPrivacyBlur', type: 'checkbox' },
@@ -530,6 +539,26 @@ document.addEventListener('DOMContentLoaded', async () => {
             p.showCredibilityBadge = p.showCredibilityBadge !== false;
             p.strictCredibilityPenalty = !!p.strictCredibilityPenalty;
             p.showCredibilityDebugPreview = !!p.showCredibilityDebugPreview;
+        }
+
+        if (currentSettings.social) {
+            const s = currentSettings.social;
+            const clampInt = (value, min, max, fallback) => {
+                const parsed = Number(value);
+                if (!Number.isFinite(parsed)) return fallback;
+                return Math.max(min, Math.min(max, Math.round(parsed)));
+            };
+
+            s.commentPreviewCooldownMs = clampInt(s.commentPreviewCooldownMs, 300, 5000, 1200);
+            s.commentPreviewRetryCap = clampInt(s.commentPreviewRetryCap, 1, 10, 4);
+            s.commentPreviewMaxPostsPerSweep = clampInt(s.commentPreviewMaxPostsPerSweep, 10, 60, 30);
+
+            s.commentPreviewAllowHome = s.commentPreviewAllowHome !== false;
+            s.commentPreviewAllowGroups = !!s.commentPreviewAllowGroups;
+            s.commentPreviewAllowWatch = !!s.commentPreviewAllowWatch;
+            s.commentPreviewAllowMarketplace = !!s.commentPreviewAllowMarketplace;
+            s.commentPreviewAllowNotifications = !!s.commentPreviewAllowNotifications;
+            s.commentPreviewAllowOther = !!s.commentPreviewAllowOther;
         }
 
         if (currentSettings.wellbeing) {
