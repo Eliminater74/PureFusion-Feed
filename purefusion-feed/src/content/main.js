@@ -53,6 +53,7 @@ class PureFusionApp {
                 this.uiTweaks.applyDocumentLevelTweaks();
                 this.diagnostics.applyDocumentLevelTweaks();
                 this.commentPreview.sweepDocument();
+                if (this.llmFeatures) this.llmFeatures.sweepDocument();
                 if (this.predictor) this.predictor.sweepDocument();
 
                 // Start MutationObserver for dynamically injected feed elements
@@ -174,6 +175,7 @@ class PureFusionApp {
         if (this.uiTweaks) this.uiTweaks.applyDocumentLevelTweaks();
         if (this.diagnostics) this.diagnostics.applyDocumentLevelTweaks();
         if (this.commentPreview) this.commentPreview.sweepDocument();
+        if (this.llmFeatures) this.llmFeatures.sweepDocument();
 
         this._dispatchDiagnosticsEvent('pf:resweep_pass', {
             phase,

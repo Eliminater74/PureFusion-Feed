@@ -12,6 +12,10 @@ class PF_LLMFeatures {
         this.engine = new window.PF_LLMEngine(settings);
     }
 
+    sweepDocument() {
+        this.applyToNodes([document.body || document.documentElement]);
+    }
+
     applyToNodes(nodes) {
         // We do NOT bypass if the engine isn't ready. 
         // We want the AI tools (like the wand and TL;DR) to inject visually so the user knows they exist.
@@ -42,12 +46,17 @@ class PF_LLMFeatures {
         const textNodes = rootNode.querySelectorAll(window.PF_SELECTOR_MAP.postTextBody);
         
         textNodes.forEach(textContainer => {
-            if (textContainer.dataset.pfTldrInjected) return;
-            const textContent = textContainer.textContent;
+            const postHost = this._resolvePostHost(textContainer);
+            if (!postHost) return;
+
+            const existingBtn = postHost.querySelector('.pf-tldr-btn');
+            if (existingBtn) return;
+
+            const textContent = this._extractPostText(postHost) || textContainer.textContent || '';
             
-            // Only inject TL;DR if post is significantly long (e.g. > 600 chars)
-            if (textContent.length > 600) {
-                textContainer.dataset.pfTldrInjected = "true";
+            // Only inject TL;DR if post is long enough to benefit from summarization
+            if (textContent.length > 260) {
+                postHost.dataset.pfTldrInjected = "true";
 
                 const btn = document.createElement('div');
                 btn.className = "pf-tldr-btn";
@@ -70,6 +79,12 @@ class PF_LLMFeatures {
                         PF_Helpers.showToast('AI is not configured. Set a provider in PureFusion settings.', 'warn');
                         return;
                     }
+
+                    const latestText = this._extractPostText(postHost) || textContent;
+                    if (!latestText || latestText.length < 60) {
+                        PF_Helpers.showToast('Not enough post text to summarize.', 'warn');
+                        return;
+                    }
                     
                     btn.innerHTML = `<span style="margin-right: 4px;">⏳</span> Analyzing...`;
                     btn.style.opacity = '0.7';
@@ -77,7 +92,7 @@ class PF_LLMFeatures {
 
                     try {
                         const systemContext = "You are a direct, concise summarizer. Read the user's post and summarize the core point in exactly one short, bulleted sentence. Do not add conversational filler.";
-                        const summary = await this.engine.prompt(systemContext, textContent);
+                        const summary = await this.engine.prompt(systemContext, latestText);
                         
                         btn.style.background = '#242526';
                         btn.style.border = '1px solid #00D4FF';
@@ -91,9 +106,55 @@ class PF_LLMFeatures {
                     }
                 });
 
-                textContainer.parentNode.insertBefore(btn, textContainer);
+                const anchor = this._ensureTLDRAnchor(postHost);
+                anchor.appendChild(btn);
             }
         });
+    }
+
+    _resolvePostHost(node) {
+        if (!node || !node.closest) return null;
+
+        return node.closest('[role="dialog"], [data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"], [role="article"]');
+    }
+
+    _extractPostText(postHost) {
+        if (!postHost || !postHost.querySelectorAll) return '';
+
+        const chunks = Array.from(postHost.querySelectorAll(window.PF_SELECTOR_MAP.postTextBody))
+            .map((el) => String(el.textContent || '').trim())
+            .filter(Boolean);
+
+        if (chunks.length > 0) {
+            return chunks.join(' ');
+        }
+
+        const fallback = postHost.querySelector('h2, h3, h4, span[dir="auto"], div[dir="auto"]');
+        return String(fallback?.textContent || '').trim();
+    }
+
+    _ensureTLDRAnchor(postHost) {
+        let anchor = postHost.querySelector(':scope > .pf-tldr-anchor');
+        if (anchor) return anchor;
+
+        anchor = document.createElement('div');
+        anchor.className = 'pf-tldr-anchor';
+        anchor.style.cssText = 'display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:6px 0 6px;';
+
+        const textBody = postHost.querySelector(window.PF_SELECTOR_MAP.postTextBody);
+        if (textBody && textBody.parentElement) {
+            textBody.parentElement.insertBefore(anchor, textBody);
+            return anchor;
+        }
+
+        const headerNode = postHost.querySelector('h3, h4');
+        if (headerNode && headerNode.parentElement) {
+            headerNode.parentElement.appendChild(anchor);
+            return anchor;
+        }
+
+        postHost.prepend(anchor);
+        return anchor;
     }
 
     injectCommentCopilot(rootNode) {
