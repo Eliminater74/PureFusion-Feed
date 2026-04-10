@@ -78,7 +78,8 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Added: optional copy-to-clipboard action for diagnostics snapshot JSON (with fallback copy path).
 - Added: optional compact diagnostics overlay mode for smaller screens.
 - Added: draggable diagnostics overlay position with persisted placement.
-- Next: add tiny per-minute batch rate metric in diagnostics header.
+- Added: per-minute observer batch rate metric in diagnostics header.
+- Next: pivot back to non-diagnostics roadmap items (per-surface controls or smart feed scoring polish).
 
 6) Per-surface controls (medium)
 - Separate behavior for Home feed vs Groups vs Watch vs Marketplace surfaces.

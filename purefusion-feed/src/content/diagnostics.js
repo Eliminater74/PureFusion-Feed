@@ -22,6 +22,7 @@ class PF_Diagnostics {
         this.observerDurationTotal = 0;
         this.observerDurationPeak = 0;
         this.lastObserverBatch = null;
+        this.observerBatchTimestamps = [];
         this.observerSpikeHistory = [];
         this.observerSpikeHistoryLimit = 10;
         this.observerTrendHistory = [];
@@ -126,6 +127,9 @@ class PF_Diagnostics {
             ts: Date.now()
         };
 
+        this.observerBatchTimestamps.push(this.lastObserverBatch.ts);
+        this._pruneObserverBatchTimestamps(this.lastObserverBatch.ts);
+
         const severity = this._classifyObserverSeverity(durationMs, nodes, mutationRecords, thresholds);
         if (severity !== 'ok') {
             this.observerSpikeHistory.unshift({
@@ -198,6 +202,7 @@ class PF_Diagnostics {
             <div class="pf-diag-subtitle">Observer workload</div>
             <div class="pf-diag-meta">
                 <div>Batches: <strong id="pfDiagObserverBatches">0</strong></div>
+                <div>Rate (1m): <strong id="pfDiagObserverRate">0/min</strong></div>
                 <div>Nodes seen: <strong id="pfDiagObserverNodes">0</strong></div>
                 <div>Records seen: <strong id="pfDiagObserverRecords">0</strong></div>
                 <div>Avg/Peak batch: <strong id="pfDiagObserverAvgMs">0.00ms</strong> / <strong id="pfDiagObserverPeakMs">0.00ms</strong></div>
@@ -297,6 +302,7 @@ class PF_Diagnostics {
         const lastSyncEl = this.overlay.querySelector('#pfDiagLastSync');
         const lastResweepEl = this.overlay.querySelector('#pfDiagLastResweep');
         const observerBatchesEl = this.overlay.querySelector('#pfDiagObserverBatches');
+        const observerRateEl = this.overlay.querySelector('#pfDiagObserverRate');
         const observerNodesEl = this.overlay.querySelector('#pfDiagObserverNodes');
         const observerRecordsEl = this.overlay.querySelector('#pfDiagObserverRecords');
         const observerAvgMsEl = this.overlay.querySelector('#pfDiagObserverAvgMs');
@@ -306,7 +312,7 @@ class PF_Diagnostics {
         const observerThresholdsEl = this.overlay.querySelector('#pfDiagObserverThresholds');
         const observerTrendEl = this.overlay.querySelector('#pfDiagObserverTrend');
         const observerTrendMetaEl = this.overlay.querySelector('#pfDiagObserverTrendMeta');
-        if (!totalEl || !listEl || !syncEl || !resweepEl || !followupsEl || !lastSyncEl || !lastResweepEl || !observerBatchesEl || !observerNodesEl || !observerRecordsEl || !observerAvgMsEl || !observerPeakMsEl || !observerLastBatchEl || !observerSpikesEl || !observerThresholdsEl || !observerTrendEl || !observerTrendMetaEl) return;
+        if (!totalEl || !listEl || !syncEl || !resweepEl || !followupsEl || !lastSyncEl || !lastResweepEl || !observerBatchesEl || !observerRateEl || !observerNodesEl || !observerRecordsEl || !observerAvgMsEl || !observerPeakMsEl || !observerLastBatchEl || !observerSpikesEl || !observerThresholdsEl || !observerTrendEl || !observerTrendMetaEl) return;
 
         const thresholds = this._getObserverThresholds();
 
@@ -317,6 +323,9 @@ class PF_Diagnostics {
         lastSyncEl.textContent = this._formatTime(this.lastSettingsUpdateAt);
         lastResweepEl.textContent = this._formatTime(this.lastResweepAt);
         observerBatchesEl.textContent = String(this.observerBatchCount);
+        const ratePerMinute = this._getObserverBatchRatePerMinute();
+        observerRateEl.textContent = `${ratePerMinute}/min`;
+        observerRateEl.className = this._severityClassName(this._classifyObserverRateSeverity(ratePerMinute));
         observerNodesEl.textContent = String(this.observerNodesTotal);
         observerRecordsEl.textContent = String(this.observerMutationTotal);
 
@@ -403,6 +412,7 @@ class PF_Diagnostics {
             observer: {
                 thresholds: this._getObserverThresholds(),
                 batchCount: this.observerBatchCount,
+                batchRatePerMinute: this._getObserverBatchRatePerMinute(),
                 nodesSeen: this.observerNodesTotal,
                 recordsSeen: this.observerMutationTotal,
                 avgBatchDurationMs: Number(avgObserverDurationMs.toFixed(3)),
@@ -504,6 +514,23 @@ class PF_Diagnostics {
         }
 
         return 2 + Math.min(1, (numeric - safeSevere) / safeSevere);
+    }
+
+    _pruneObserverBatchTimestamps(referenceTs = Date.now()) {
+        const cutoff = Number(referenceTs || Date.now()) - 60000;
+        this.observerBatchTimestamps = this.observerBatchTimestamps.filter((ts) => Number(ts) >= cutoff);
+    }
+
+    _getObserverBatchRatePerMinute(referenceTs = Date.now()) {
+        this._pruneObserverBatchTimestamps(referenceTs);
+        return this.observerBatchTimestamps.length;
+    }
+
+    _classifyObserverRateSeverity(ratePerMinute) {
+        const rate = Math.max(0, Number(ratePerMinute) || 0);
+        if (rate >= 220) return 'severe';
+        if (rate >= 120) return 'warn';
+        return 'ok';
     }
 
     _getObserverThresholds() {
@@ -774,6 +801,7 @@ class PF_Diagnostics {
     }
 
     _clearObserverHistory() {
+        this.observerBatchTimestamps = [];
         this.observerSpikeHistory = [];
         this.observerTrendHistory = [];
         this.lastObserverBatch = null;
@@ -800,6 +828,7 @@ class PF_Diagnostics {
         this.observerDurationTotal = 0;
         this.observerDurationPeak = 0;
         this.lastObserverBatch = null;
+        this.observerBatchTimestamps = [];
         this.observerSpikeHistory = [];
         this.observerTrendHistory = [];
 
