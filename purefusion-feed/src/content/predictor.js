@@ -74,10 +74,11 @@ class PF_Predictor {
         this._analyzeForTrends(node);
 
         // 2. Score the post based on history
-        const score = this._scorePost(node);
+        const scoreDetails = this._scorePost(node);
+        const score = scoreDetails.score;
 
         // 3. Apply Visual Badges and True-Affinity Flexbox Sorting
-        this._injectBadge(node, score);
+        this._injectBadge(node, score, scoreDetails);
 
         if (this.settings.predictions.trueAffinitySort) {
             this._applyNativeAffinitySort(node, score);
@@ -158,6 +159,9 @@ class PF_Predictor {
 
     _scorePost(postNode) {
         let score = 50; // Base neutral score
+        const reasonSignals = [
+            { short: 'base', detail: 'Base score: 50' }
+        ];
 
         const authorInfo = this._extractAuthor(postNode);
         const textContent = this._extractText(postNode);
@@ -165,10 +169,16 @@ class PF_Predictor {
         // --- Model A: Author Affinity ---
         if (authorInfo && this.engagementProfiles[authorInfo]) {
             const p = this.engagementProfiles[authorInfo];
+            const authorBonus = (p.reactions * 2) + (p.comments * 5) + (p.clicks * 1);
             // Simple weighted linear addition
-            score += (p.reactions * 2);
-            score += (p.comments * 5);
-            score += (p.clicks * 1);
+            score += authorBonus;
+
+            if (authorBonus !== 0) {
+                reasonSignals.push({
+                    short: `+${Math.round(authorBonus)} author`,
+                    detail: `+${Math.round(authorBonus)} from author affinity (${p.reactions} reactions, ${p.comments} comments, ${p.clicks} clicks)`
+                });
+            }
         }
 
         // --- Model B: Keyword Sentiment/Match ---
@@ -183,11 +193,25 @@ class PF_Predictor {
                 }
             });
             score += Math.min(keywordBonus, 15); // max 15 points from keyword affinity
+
+            const roundedKeywordBonus = Math.round(Math.min(keywordBonus, 15));
+            if (roundedKeywordBonus > 0) {
+                reasonSignals.push({
+                    short: `+${roundedKeywordBonus} keywords`,
+                    detail: `+${roundedKeywordBonus} from keyword affinity trends`
+                });
+            }
         }
 
         // --- Model C: Length/Effort multiplier ---
-        if (textContent.length > 500) score += 5; // Long form text
-        else if (textContent.length < 20) score -= 5; // Low effort text
+        if (textContent.length > 500) {
+            score += 5; // Long form text
+            reasonSignals.push({ short: '+5 long-form', detail: '+5 for long-form post length' });
+        }
+        else if (textContent.length < 20) {
+            score -= 5; // Low effort text
+            reasonSignals.push({ short: '-5 short text', detail: '-5 for very short post text' });
+        }
 
         // --- Model D: Rage-Bait Detection (Phase 10) ---
         if (this.settings.wellbeing && this.settings.wellbeing.ragebaitDetector) {
@@ -204,14 +228,25 @@ class PF_Predictor {
                 // Severely penalize it to break engagement farming.
                 score -= 40; 
                 postNode.dataset.pfRagebait = "true";
+                reasonSignals.push({ short: '-40 ragebait', detail: `-40 ragebait signal (${rageHits} trigger terms)` });
             }
         }
 
         // Clamp 0 to 100
-        return Math.max(0, Math.min(100, Math.round(score)));
+        const rawRounded = Math.round(score);
+        const finalScore = Math.max(0, Math.min(100, rawRounded));
+        if (finalScore !== rawRounded) {
+            reasonSignals.push({ short: 'clamped', detail: `Score clamped into range: ${finalScore}` });
+        }
+
+        return {
+            score: finalScore,
+            reasonSummary: this._summarizeReasonSignals(reasonSignals),
+            reasonDetails: reasonSignals.map((signal) => signal.detail)
+        };
     }
 
-    _injectBadge(postNode, score) {
+    _injectBadge(postNode, score, scoreDetails = null) {
         if (!this.settings.predictions.showBadge) return;
         if (postNode.dataset.pfScored) return; // already injected
 
@@ -220,14 +255,14 @@ class PF_Predictor {
 
         if (postNode.dataset.pfRagebait === "true") {
             scoreColor = '#ff4444'; 
-            flair = '⚠️ Rage-Bait Predicted';
+            flair = ' ⚠️ Rage-Bait';
             PF_Helpers.dimElement(postNode);
             // Deeply blur rage bait
             postNode.style.filter = 'blur(4px)';
             postNode.addEventListener('mouseenter', () => postNode.style.filter = 'none', { once: true });
         } else if (score >= this.settings.predictions.highThreshold) {
             scoreColor = '#00D4FF'; // Cyan
-            flair = '🔥 ';
+            flair = ' 🔥';
             if (this.settings.predictions.highlightHighInterest) {
                 postNode.style.borderLeft = `4px solid ${scoreColor}`;
             }
@@ -241,13 +276,26 @@ class PF_Predictor {
         }
 
         const badge = document.createElement('div');
+        const showReasons = this.settings?.predictions?.showScoreReasons !== false;
+        const reasonSummary = showReasons ? String(scoreDetails?.reasonSummary || '') : '';
+        const reasonDetails = Array.isArray(scoreDetails?.reasonDetails) ? scoreDetails.reasonDetails : [];
+
         badge.style.cssText = `
             display: inline-block; vertical-align: middle; margin-left: 8px;
             background: var(--surface-background, #fff); border: 1px solid ${scoreColor};
             border-radius: 12px; padding: 2px 8px; font-size: 11px; font-weight: bold;
             color: ${scoreColor}; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         `;
-        badge.innerHTML = `PF <span style="margin-left:4px; font-family: monospace;">${score}</span>${flair}`;
+        const safeReasonSummary = this._escapeHtml(reasonSummary);
+        const reasonSnippet = showReasons && safeReasonSummary
+            ? `<span style="margin-left:6px; font-size:10px; font-weight:600; opacity:0.86;">${safeReasonSummary}</span>`
+            : '';
+        badge.innerHTML = `PF <span style="margin-left:4px; font-family: monospace;">${score}</span>${flair}${reasonSnippet}`;
+
+        if (showReasons && reasonDetails.length) {
+            badge.title = reasonDetails.join(' | ');
+            badge.setAttribute('aria-label', `PF score ${score}. ${reasonDetails.join('. ')}`);
+        }
         
         // Find a safe place to inject inline (Header area near Author)
         const authorNodes = postNode.querySelectorAll('h3, h4, strong');
@@ -261,6 +309,27 @@ class PF_Predictor {
         }
         
         postNode.dataset.pfScored = score;
+    }
+
+    _summarizeReasonSignals(signals) {
+        if (!Array.isArray(signals) || signals.length === 0) return '';
+
+        const compact = signals
+            .map((signal) => String(signal?.short || '').trim())
+            .filter((text) => text && text !== 'base' && text !== 'clamped')
+            .slice(0, 2);
+
+        if (compact.length === 0) return 'neutral';
+        return compact.join(', ');
+    }
+
+    _escapeHtml(value) {
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
     }
 
     // =========================================================================

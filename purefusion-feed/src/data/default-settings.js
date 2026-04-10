@@ -112,6 +112,7 @@ const DEFAULT_SETTINGS = {
         enabled: true,                  // Master switch for local prediction AI
         trueAffinitySort: false,
         showBadge: true,                // Display "PF Score" on posts
+        showScoreReasons: true,         // Show compact signal reasons on PF badge
         dimLowInterest: true,           // Dim posts scoring below threshold
         highlightHighInterest: true,    // Glow posts scoring above threshold
         lowThreshold: 20,

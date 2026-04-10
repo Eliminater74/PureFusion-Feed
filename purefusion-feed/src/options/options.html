@@ -412,6 +412,10 @@
                     <input type="checkbox" id="opt_pred_showBadge" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
+                    <label data-i18n="options_ai_show_reasons">Show score reason hints on PF badges</label>
+                    <input type="checkbox" id="opt_pred_showScoreReasons" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row">
                     <label data-i18n="options_ai_dim_low_interest">Dim/Collapse Low Interest Posts (Score < 20)</label>
                     <input type="checkbox" id="opt_pred_dimLowInterest" class="pf-toggle">
                 </div>
@@ -422,6 +426,14 @@
                 <div class="pf-setting-row">
                     <label data-i18n="options_ai_analyze_trends">Analyze Local Trends & Keywords</label>
                     <input type="checkbox" id="opt_pred_showTrending" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row auto-height">
+                    <label data-i18n="options_ai_low_threshold">Low score threshold</label>
+                    <input type="number" id="opt_pred_lowThreshold" min="0" max="95" class="pf-input-number">
+                </div>
+                <div class="pf-setting-row auto-height">
+                    <label data-i18n="options_ai_high_threshold">High score threshold</label>
+                    <input type="number" id="opt_pred_highThreshold" min="5" max="100" class="pf-input-number">
                 </div>
             </div>
 

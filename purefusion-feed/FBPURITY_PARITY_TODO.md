@@ -96,6 +96,8 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Detect likely ragebait/engagement bait/low-value repost patterns and assign a quality score.
 - Use score thresholds to collapse/dim/hide posts.
 - Keep transparent with "why hidden" reasons.
+- Status: polish slice started.
+- Added: user controls for low/high score thresholds and optional score-reason hints on PF score badges.
 
 9) Feed mode presets (high)
 - Status: initial implementation complete.

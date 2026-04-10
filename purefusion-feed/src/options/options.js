@@ -210,9 +210,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Predictions
         'opt_pred_enabled': { obj: 'predictions', prop: 'enabled', type: 'checkbox' },
         'opt_pred_showBadge': { obj: 'predictions', prop: 'showBadge', type: 'checkbox' },
+        'opt_pred_showScoreReasons': { obj: 'predictions', prop: 'showScoreReasons', type: 'checkbox' },
         'opt_pred_dimLowInterest': { obj: 'predictions', prop: 'dimLowInterest', type: 'checkbox' },
         'opt_pred_highlightHighInterest': { obj: 'predictions', prop: 'highlightHighInterest', type: 'checkbox' },
         'opt_pred_showTrending': { obj: 'predictions', prop: 'showTrending', type: 'checkbox' },
+        'opt_pred_lowThreshold': { obj: 'predictions', prop: 'lowThreshold', type: 'number', fallback: 20 },
+        'opt_pred_highThreshold': { obj: 'predictions', prop: 'highThreshold', type: 'number', fallback: 80 },
 
         // UI Mode
         'opt_widescreen': { obj: 'uiMode', prop: 'widescreenMode', type: 'checkbox' },
@@ -502,6 +505,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (diagnostics.observerSevereRecords <= diagnostics.observerWarnRecords) {
                 diagnostics.observerSevereRecords = Math.min(3000, diagnostics.observerWarnRecords + 20);
             }
+        }
+
+        if (currentSettings.predictions) {
+            const p = currentSettings.predictions;
+            const low = Number(p.lowThreshold);
+            const high = Number(p.highThreshold);
+
+            p.lowThreshold = Math.max(0, Math.min(95, Number.isFinite(low) ? Math.round(low) : 20));
+            p.highThreshold = Math.max(5, Math.min(100, Number.isFinite(high) ? Math.round(high) : 80));
+
+            if (p.highThreshold <= p.lowThreshold) {
+                p.highThreshold = Math.min(100, p.lowThreshold + 5);
+            }
+
+            p.showScoreReasons = p.showScoreReasons !== false;
         }
 
         if (currentSettings.wellbeing) {
