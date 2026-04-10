@@ -203,8 +203,11 @@ class PF_Cleaner {
             || sidebar.hideLeftWatch
             || sidebar.hideLeftMemories
             || sidebar.hideLeftMetaAI
+            || sidebar.hideLeftManusAI
             || sidebar.hideRightTrending
             || sidebar.hideRightContacts
+            || sidebar.hideRightMetaAIContact
+            || sidebar.hideRightManusAIContact
             || sidebar.hideRightEvents
             || sidebar.hideRightBirthdays
         );
@@ -451,7 +454,16 @@ class PF_Cleaner {
             if (sidebar.hideLeftMetaAI) {
                 this._hideLeftNavByHref(leftNav, ['/ai', 'meta.ai'], 'Left Nav: Meta AI');
                 this._hideLeftNavByExactLabel(leftNav, ['meta ai', 'meta ia'], 'Left Nav: Meta AI');
-                this._hideLeftAIModules(leftNav, 'Left Nav: Meta AI');
+                this._hideLeftAIModules(leftNav, 'Left Nav: Meta AI', {
+                    labels: ['meta ai', 'meta ia'],
+                    hrefTokens: ['meta.ai', '/ai']
+                });
+            }
+            if (sidebar.hideLeftManusAI) {
+                this._hideLeftAIModules(leftNav, 'Left Nav: Manus AI', {
+                    labels: ['manus ai'],
+                    hrefTokens: ['/manus']
+                });
             }
         }
 
@@ -464,6 +476,14 @@ class PF_Cleaner {
             if (sidebar.hideRightContacts) {
                 this._hideRightModuleByAriaLabel(rightNav, ['contacts', 'contactos'], 'Right Sidebar: Contacts');
                 this._hideRightModuleByHeading(rightNav, ['contacts', 'contactos'], 'Right Sidebar: Contacts');
+            }
+
+            if (sidebar.hideRightMetaAIContact) {
+                this._hideRightContactsByNames(rightNav, ['meta ai', 'meta ia'], 'Right Sidebar: Meta AI Contact');
+            }
+
+            if (sidebar.hideRightManusAIContact) {
+                this._hideRightContactsByNames(rightNav, ['manus ai'], 'Right Sidebar: Manus AI Contact');
             }
 
             if (sidebar.hideRightEvents) {
@@ -648,7 +668,10 @@ class PF_Cleaner {
         });
     }
 
-    _hideLeftAIModules(scopeNode, reason) {
+    _hideLeftAIModules(scopeNode, reason, config = {}) {
+        const labels = Array.isArray(config.labels) ? config.labels : [];
+        const hrefTokens = Array.isArray(config.hrefTokens) ? config.hrefTokens : [];
+
         const navScopes = [];
         if (scopeNode && scopeNode.querySelectorAll) navScopes.push(scopeNode);
 
@@ -680,7 +703,7 @@ class PF_Cleaner {
                 if (!text || text.length < 2 || text.length > 48) return;
 
                 const href = (entry.getAttribute && entry.getAttribute('href') ? entry.getAttribute('href') : '').toLowerCase();
-                if (!this._isLikelyLeftAIItem(text, href)) return;
+                if (!this._isLikelyLeftAIItem(text, href, labels, hrefTokens)) return;
 
                 const target = this._findLeftNavRowContainer(entry, navScope);
                 this._hideNodeSafely(target, reason);
@@ -719,17 +742,27 @@ class PF_Cleaner {
         return true;
     }
 
-    _isLikelyLeftAIItem(text, href) {
+    _isLikelyLeftAIItem(text, href, labels = [], hrefTokens = []) {
         if (!text) return false;
 
-        const exact = new Set(['meta ai', 'meta ia', 'manus ai', 'my ai']);
-        if (exact.has(text)) return true;
-
-        if (href && (href.includes('/ai') || href.includes('meta.ai') || href.includes('assistant'))) {
-            return true;
+        const normalizedLabels = labels.map((label) => this._normalizeComparableText(label)).filter(Boolean);
+        if (normalizedLabels.length > 0) {
+            if (normalizedLabels.some((label) => text === label || text.startsWith(`${label} `))) {
+                return true;
+            }
         }
 
-        return /(^ai\b|\bai$|\bassistant ai\b|\bchat ai\b|\bia\b)/.test(text);
+        if (href && hrefTokens.length > 0) {
+            const normalizedHrefTokens = hrefTokens
+                .map((token) => String(token || '').toLowerCase())
+                .filter(Boolean);
+
+            if (normalizedHrefTokens.some((token) => href.includes(token))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     _hideRightModuleByAriaLabel(scopeNode, labels, reason) {
@@ -779,6 +812,24 @@ class PF_Cleaner {
             if (!hrefTokens.some((token) => href.includes(token))) return;
 
             const target = this._findRightModuleContainer(anchor, scopeNode);
+            this._hideNodeSafely(target, reason);
+        });
+    }
+
+    _hideRightContactsByNames(scopeNode, names, reason) {
+        if (!scopeNode || !scopeNode.querySelectorAll || !Array.isArray(names) || names.length === 0) return;
+
+        const normalized = names.map((name) => this._normalizeComparableText(name)).filter(Boolean);
+        if (!normalized.length) return;
+
+        scopeNode.querySelectorAll('a[role="link"], a[href], [role="button"], [role="link"]').forEach((entry) => {
+            if (!entry || !this._isVisibleNavRow(entry)) return;
+
+            const text = this._normalizeComparableText(entry.textContent || '');
+            if (!text || text.length < 3 || text.length > 48) return;
+            if (!normalized.some((value) => text === value || text.startsWith(`${value} `))) return;
+
+            const target = this._findCompactNavContainer(entry, scopeNode);
             this._hideNodeSafely(target, reason);
         });
     }
@@ -1049,7 +1100,16 @@ class PF_Cleaner {
         const leftNav = this._resolveLeftNavigationContainer(rootNode);
 
         if (leftNav) {
-            this._hideLeftAIModules(leftNav, 'Social: Hide Meta AI');
+            this._hideLeftAIModules(leftNav, 'Social: Hide Meta AI', {
+                labels: ['meta ai', 'meta ia'],
+                hrefTokens: ['meta.ai', '/ai']
+            });
+        }
+
+        const rightSelector = PF_SELECTOR_MAP.rightSidebar || '[role="complementary"]';
+        const rightNav = this._resolveScopedContainer(rootNode, rightSelector);
+        if (rightNav) {
+            this._hideRightContactsByNames(rightNav, ['meta ai', 'meta ia'], 'Social: Hide Meta AI');
         }
     }
 
@@ -1566,9 +1626,12 @@ class PF_Cleaner {
         if (reason.startsWith('Left Nav: Gaming')) return !!sidebar.hideLeftGaming;
         if (reason.startsWith('Left Nav: Memories')) return !!sidebar.hideLeftMemories;
         if (reason.startsWith('Left Nav: Meta AI')) return !!sidebar.hideLeftMetaAI;
+        if (reason.startsWith('Left Nav: Manus AI')) return !!sidebar.hideLeftManusAI;
 
         if (reason.startsWith('Right Sidebar: Trending')) return !!sidebar.hideRightTrending;
         if (reason.startsWith('Right Sidebar: Contacts')) return !!sidebar.hideRightContacts;
+        if (reason.startsWith('Right Sidebar: Meta AI Contact')) return !!sidebar.hideRightMetaAIContact;
+        if (reason.startsWith('Right Sidebar: Manus AI Contact')) return !!sidebar.hideRightManusAIContact;
         if (reason.startsWith('Right Sidebar: Events')) return !!sidebar.hideRightEvents;
         if (reason.startsWith('Right Sidebar: Birthdays')) return !!sidebar.hideRightBirthdays;
 

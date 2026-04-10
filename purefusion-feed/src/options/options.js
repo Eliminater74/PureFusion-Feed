@@ -224,8 +224,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_sidebar_hideLeftWatch': { obj: 'sidebar', prop: 'hideLeftWatch', type: 'checkbox' },
         'opt_sidebar_hideLeftMemories': { obj: 'sidebar', prop: 'hideLeftMemories', type: 'checkbox' },
         'opt_sidebar_hideLeftMetaAI': { obj: 'sidebar', prop: 'hideLeftMetaAI', type: 'checkbox' },
+        'opt_sidebar_hideLeftManusAI': { obj: 'sidebar', prop: 'hideLeftManusAI', type: 'checkbox' },
         'opt_sidebar_hideRightTrending': { obj: 'sidebar', prop: 'hideRightTrending', type: 'checkbox' },
         'opt_sidebar_hideRightContacts': { obj: 'sidebar', prop: 'hideRightContacts', type: 'checkbox' },
+        'opt_sidebar_hideRightMetaAIContact': { obj: 'sidebar', prop: 'hideRightMetaAIContact', type: 'checkbox' },
+        'opt_sidebar_hideRightManusAIContact': { obj: 'sidebar', prop: 'hideRightManusAIContact', type: 'checkbox' },
         'opt_sidebar_hideRightEvents': { obj: 'sidebar', prop: 'hideRightEvents', type: 'checkbox' },
         'opt_sidebar_hideRightBirthdays': { obj: 'sidebar', prop: 'hideRightBirthdays', type: 'checkbox' },
 

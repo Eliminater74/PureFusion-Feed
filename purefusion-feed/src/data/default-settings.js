@@ -117,6 +117,7 @@ const DEFAULT_SETTINGS = {
         hideLeftWatch: false,
         hideLeftMemories: false,
         hideLeftMetaAI: false,
+        hideLeftManusAI: false,
         fixTimestamps: true,
         showLinkPreviews: true,
         disableCommentAutofocus: true,
@@ -125,6 +126,8 @@ const DEFAULT_SETTINGS = {
         // Right Col
         hideRightTrending: false,
         hideRightContacts: false,
+        hideRightMetaAIContact: false,
+        hideRightManusAIContact: false,
         hideRightEvents: false,
         hideRightBirthdays: false,
     },
