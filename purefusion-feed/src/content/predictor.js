@@ -78,7 +78,8 @@ class PF_Predictor {
         this._cleanupLeakedDebugChips();
         const rawPosts = [
             ...Array.from(feedRoot.querySelectorAll(PF_SELECTOR_MAP.postContainer)),
-            ...Array.from(feedRoot.querySelectorAll('[role="article"]')).filter((node) => !!node.querySelector(PF_SELECTOR_MAP.postTextBody))
+            ...Array.from(feedRoot.querySelectorAll('[role="article"]')).filter((node) => !!node.querySelector(PF_SELECTOR_MAP.postTextBody)),
+            ...Array.from(document.querySelectorAll('[role="dialog"]'))
         ];
         const posts = this._dedupeNestedPosts(rawPosts.filter((postNode) => this._isLikelyFeedPost(postNode)));
         const visibleCount = posts.filter((postNode) => this._isElementVisible(postNode)).length;
@@ -134,7 +135,7 @@ class PF_Predictor {
         if (pagelet.startsWith('FeedUnit_') || pagelet.startsWith('AdUnit_')) return true;
 
         if (postNode.matches('[role="dialog"]')) {
-            return !!postNode.querySelector(PF_SELECTOR_MAP.postTextBody);
+            return this._isLikelyPostDialog(postNode);
         }
 
         const role = String(postNode.getAttribute('role') || '').toLowerCase();
@@ -145,6 +146,22 @@ class PF_Predictor {
         }
 
         return !!postNode.querySelector(PF_SELECTOR_MAP.postTextBody);
+    }
+
+    _isLikelyPostDialog(dialogNode) {
+        if (!dialogNode || !dialogNode.querySelector) return false;
+
+        const hasPostText = !!dialogNode.querySelector(PF_SELECTOR_MAP.postTextBody);
+        if (hasPostText) return true;
+
+        const hasCommentComposer = !!dialogNode.querySelector('div[role="textbox"][contenteditable="true"]');
+        const commentArticleCount = dialogNode.querySelectorAll('[role="article"]').length;
+        const hasCommentRows = commentArticleCount >= 2;
+
+        const headingText = String(dialogNode.querySelector('h2, h3')?.textContent || '').toLowerCase();
+        const hasPostHeading = headingText.includes('post') || headingText.includes('publicacion') || headingText.includes('publicación');
+
+        return (hasCommentComposer && hasCommentRows) || (hasPostHeading && hasCommentRows);
     }
 
     _collectPostCandidatesFromNode(node) {
@@ -201,7 +218,7 @@ class PF_Predictor {
     }
 
     _processSingleNode(node) {
-        const predictVersion = 'v3-cred-debug-visible';
+        const predictVersion = 'v4-cred-debug-dialog';
 
         if (node.dataset.pfPredictProcessed === predictVersion) {
             this._refreshPredictionDecorations(node);

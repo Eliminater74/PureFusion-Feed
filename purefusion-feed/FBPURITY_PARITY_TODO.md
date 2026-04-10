@@ -108,6 +108,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Added: visibility hardening for debug chips (prepend placement + rescore version bump + scan status toast).
 - Added: feed-region-only scan counting with visible-post count and sample author hints in scan toast.
 - Fixed: debug/credibility chips no longer attach to comment rows in post dialogs.
+- Fixed: post dialogs are now recognized as valid credibility scan targets (without tagging comment rows).
 
 9) Feed mode presets (high)
 - Status: initial implementation complete.
