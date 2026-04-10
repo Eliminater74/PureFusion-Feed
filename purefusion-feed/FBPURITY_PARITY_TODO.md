@@ -74,7 +74,8 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Added: threshold-based severity highlighting in diagnostics (OK/Warn/Severe).
 - Added: user-configurable observer spike thresholds in Diagnostics settings (warn/severe for ms, nodes, records).
 - Added: mini observer workload trend sparkline (rolling window with warn/severe guide lines).
-- Next: add quick-reset actions for diagnostics counters/history.
+- Added: quick-reset actions in diagnostics overlay (clear observer history, reset all counters).
+- Next: add optional copy-to-clipboard action for diagnostics snapshot JSON.
 
 6) Per-surface controls (medium)
 - Separate behavior for Home feed vs Groups vs Watch vs Marketplace surfaces.

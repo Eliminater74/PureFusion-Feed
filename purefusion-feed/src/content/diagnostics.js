@@ -199,14 +199,30 @@ class PF_Diagnostics {
             <div class="pf-diag-subtitle">Top hide reasons</div>
             <ol id="pfDiagReasons" class="pf-diag-list"></ol>
             <div class="pf-diag-actions">
+                <button id="pfDiagClearObserverBtn" type="button">Clear observer history</button>
+                <button id="pfDiagResetBtn" type="button">Reset all counters</button>
                 <button id="pfDiagExportBtn" type="button">Export snapshot</button>
             </div>
         `;
 
         const exportBtn = this.overlay.querySelector('#pfDiagExportBtn');
+        const resetBtn = this.overlay.querySelector('#pfDiagResetBtn');
+        const clearObserverBtn = this.overlay.querySelector('#pfDiagClearObserverBtn');
         if (exportBtn) {
             exportBtn.addEventListener('click', () => {
                 this._exportSnapshot();
+            });
+        }
+
+        if (clearObserverBtn) {
+            clearObserverBtn.addEventListener('click', () => {
+                this._clearObserverHistory();
+            });
+        }
+
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                this._resetAllDiagnosticsData();
             });
         }
 
@@ -486,6 +502,43 @@ class PF_Diagnostics {
         return Math.max(min, Math.min(max, Math.round(parsed)));
     }
 
+    _clearObserverHistory() {
+        this.observerSpikeHistory = [];
+        this.observerTrendHistory = [];
+        this.lastObserverBatch = null;
+
+        this._render();
+
+        if (window.PF_Helpers && typeof window.PF_Helpers.showToast === 'function') {
+            window.PF_Helpers.showToast('Observer history cleared.', 'success');
+        }
+    }
+
+    _resetAllDiagnosticsData() {
+        this.hiddenTotal = 0;
+        this.reasonCounts.clear();
+        this.liveResweepTotal = 0;
+        this.liveResweepFollowups = 0;
+        this.lastResweepAt = 0;
+        this.settingsUpdateCount = 0;
+        this.lastSettingsUpdateAt = 0;
+
+        this.observerBatchCount = 0;
+        this.observerNodesTotal = 0;
+        this.observerMutationTotal = 0;
+        this.observerDurationTotal = 0;
+        this.observerDurationPeak = 0;
+        this.lastObserverBatch = null;
+        this.observerSpikeHistory = [];
+        this.observerTrendHistory = [];
+
+        this._render();
+
+        if (window.PF_Helpers && typeof window.PF_Helpers.showToast === 'function') {
+            window.PF_Helpers.showToast('Diagnostics counters reset.', 'success');
+        }
+    }
+
     _exportSnapshot() {
         try {
             const payload = this._buildSnapshot();
@@ -685,6 +738,8 @@ class PF_Diagnostics {
                 margin-top: 10px;
                 display: flex;
                 justify-content: flex-end;
+                gap: 6px;
+                flex-wrap: wrap;
             }
 
             #pf-diagnostics-overlay .pf-diag-actions button {
