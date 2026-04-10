@@ -216,6 +216,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_uiMode_notificationJewelStyle': { obj: 'uiMode', prop: 'notificationJewelStyle', type: 'select' },
         'opt_uiMode_theme': { obj: 'uiMode', prop: 'theme', type: 'select' },
         'opt_uiMode_fontSizeScale': { obj: 'uiMode', prop: 'fontSizeScale', type: 'number' },
+        'opt_uiMode_customStylingEnabled': { obj: 'uiMode', prop: 'customStylingEnabled', type: 'checkbox' },
+        'opt_uiMode_customFontFamily': { obj: 'uiMode', prop: 'customFontFamily', type: 'text' },
+        'opt_uiMode_customAccentColor': { obj: 'uiMode', prop: 'customAccentColor', type: 'text' },
+        'opt_uiMode_customBackground': { obj: 'uiMode', prop: 'customBackground', type: 'text' },
+        'opt_uiMode_customCss': { obj: 'uiMode', prop: 'customCss', type: 'text' },
 
         // Sidebar Visibility
         'opt_sidebar_enableModuleFilters': { obj: 'sidebar', prop: 'enableModuleFilters', type: 'checkbox' },

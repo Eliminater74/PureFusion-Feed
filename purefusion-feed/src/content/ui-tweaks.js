@@ -78,7 +78,77 @@ class PF_UiTweaks {
                 } \n`;
         }
 
+        css += this._buildCustomStylingCss();
+
         this.styleTag.textContent = css;
+    }
+
+    _buildCustomStylingCss() {
+        const ui = this.settings?.uiMode;
+        if (!ui || !ui.customStylingEnabled) return '';
+
+        let css = '';
+
+        const fontFamily = String(ui.customFontFamily || '').trim();
+        if (fontFamily && fontFamily.length <= 140) {
+            css += `body, [role="main"], [role="feed"] { font-family: ${fontFamily} !important; }\n`;
+        }
+
+        const accent = this._normalizeColor(ui.customAccentColor);
+        if (accent) {
+            css += `a, [role="link"] { color: ${accent} !important; }\n`;
+            css += `[role="button"]:focus-visible, button:focus-visible { outline-color: ${accent} !important; }\n`;
+        }
+
+        const background = this._sanitizeBackgroundValue(ui.customBackground);
+        if (background) {
+            css += `body { background: ${background} !important; }\n`;
+        }
+
+        const customCss = this._sanitizeCustomCss(ui.customCss);
+        if (customCss) {
+            css += `\n/* PureFusion custom CSS */\n${customCss}\n`;
+        }
+
+        return css;
+    }
+
+    _sanitizeCustomCss(value) {
+        let css = String(value || '');
+        if (!css) return '';
+
+        css = css.replace(/<\/?style[^>]*>/gi, '');
+        css = css.replace(/@import/gi, '');
+        css = css.replace(/javascript:/gi, '');
+        css = css.replace(/expression\s*\(/gi, '');
+
+        if (css.length > 12000) {
+            css = css.slice(0, 12000);
+        }
+
+        return css.trim();
+    }
+
+    _sanitizeBackgroundValue(value) {
+        const background = String(value || '').trim();
+        if (!background || background.length > 180) return '';
+
+        if (/javascript:|expression\s*\(/i.test(background)) return '';
+
+        return background;
+    }
+
+    _normalizeColor(value) {
+        const color = String(value || '').trim();
+        if (!color || color.length > 40) return '';
+
+        const hex = /^#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
+        const rgb = /^rgba?\([\d\s.,%]+\)$/i;
+        const hsl = /^hsla?\([\d\s.,%]+\)$/i;
+
+        if (hex.test(color) || rgb.test(color) || hsl.test(color)) return color;
+
+        return '';
     }
 }
 

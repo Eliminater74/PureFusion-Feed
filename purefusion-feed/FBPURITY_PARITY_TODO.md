@@ -57,8 +57,8 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Granular controls for top bar modules and jewels (without hiding banner/header containers).
 
 3) Advanced custom UI engine (medium-high)
-- User custom CSS field.
-- Font override, color variables, optional background/image overrides.
+- Status: initial implementation complete (safe mode, disabled by default).
+- Implemented: custom CSS field, custom font family, custom accent color, custom background.
 - Keep disabled by default and sandboxed to avoid layout breakage.
 
 4) Broader multilingual phrase packs (medium)
@@ -91,6 +91,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 3) Custom UI engine (experimental)
 - Add "Advanced Custom CSS" textarea with clear warning.
 - Validate and apply CSS in isolated style tag.
+- Expand with optional preset snippets and finer variable controls.
 
 4) Diagnostics mode
 - Add optional debug toggle and small overlay/log panel.

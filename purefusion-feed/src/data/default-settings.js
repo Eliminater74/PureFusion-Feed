@@ -70,6 +70,11 @@ const DEFAULT_SETTINGS = {
         widescreenMode: false,          // Expand feed width for ultrawide monitors
         fontSizeScale: 100,             // Numeric percentage (80 - 140)
         theme: 'default',               // 'default', 'darkPro', 'amoled', 'classicBlue'
+        customStylingEnabled: false,
+        customFontFamily: '',
+        customAccentColor: '',
+        customBackground: '',
+        customCss: '',
         commentSortDefault: 'All Comments', // 'All Comments', 'Newest', 'Top Comments'
         disableCommentAutofocus: true,  // Stop FB from hijacking focus
         showLinkPreviews: true,         // Anti-phishing real destination hover

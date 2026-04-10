@@ -487,6 +487,33 @@
                     <label data-i18n="options_ui_font_scale_label">Font Size Scaling (%)</label>
                     <input type="number" id="opt_uiMode_fontSizeScale" min="80" max="150" class="pf-input-number">
                 </div>
+
+                <hr class="pf-hr">
+
+                <h3 data-i18n="options_ui_custom_style_title">Advanced Custom Styling</h3>
+                <p class="pf-desc" data-i18n="options_ui_custom_style_desc">Optional overrides for font, accent color, background, and custom CSS.</p>
+                <p class="pf-desc pf-warn-text" data-i18n="options_ui_custom_style_warn">Use valid CSS only. Bad rules can break page layout.</p>
+
+                <div class="pf-setting-row">
+                    <label data-i18n="options_ui_custom_style_enable">Enable advanced custom styling</label>
+                    <input type="checkbox" id="opt_uiMode_customStylingEnabled" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row auto-height">
+                    <label data-i18n="options_ui_custom_font">Custom font family</label>
+                    <input type="text" id="opt_uiMode_customFontFamily" class="pf-input-number" placeholder="'Segoe UI', sans-serif">
+                </div>
+                <div class="pf-setting-row auto-height">
+                    <label data-i18n="options_ui_custom_accent">Custom accent color</label>
+                    <input type="text" id="opt_uiMode_customAccentColor" class="pf-input-number" placeholder="#22c1ff">
+                </div>
+                <div class="pf-setting-row auto-height">
+                    <label data-i18n="options_ui_custom_background">Custom page background</label>
+                    <input type="text" id="opt_uiMode_customBackground" class="pf-input-number" placeholder="linear-gradient(...) or #111111">
+                </div>
+                <div class="pf-form-group mt-2">
+                    <label data-i18n="options_ui_custom_css">Custom CSS</label>
+                    <textarea id="opt_uiMode_customCss" class="pf-textarea" rows="6" placeholder=".selector { display: none !important; }"></textarea>
+                </div>
             </div>
 
             <div class="pf-card mt-4">

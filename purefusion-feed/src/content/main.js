@@ -210,7 +210,12 @@ class PureFusionApp {
             forceMostRecent: false,
             enforceChronologicalFeed: false,
             hideMessengerSeen: false,
-            notificationJewelStyle: 'classic'
+            notificationJewelStyle: 'classic',
+            customStylingEnabled: false,
+            customFontFamily: '',
+            customAccentColor: '',
+            customBackground: '',
+            customCss: ''
         };
 
         effective.social = {
