@@ -304,7 +304,25 @@ class PF_Predictor {
             return;
         }
 
+        if (this._hasInsightElement(postNode)) {
+            postNode.dataset.pfInsightChipInjected = 'true';
+            return;
+        }
+
+        delete postNode.dataset.pfInsightChipInjected;
+
         this._injectUnifiedInsightChip(postNode, scoreDetails);
+    }
+
+    _hasInsightElement(postNode) {
+        if (!postNode) return false;
+
+        const dialogHost = this._getDialogHost(postNode);
+        if (dialogHost && dialogHost.querySelector) {
+            return !!dialogHost.querySelector('.pf-insight-chip');
+        }
+
+        return !!(postNode.querySelector && postNode.querySelector('.pf-insight-chip'));
     }
 
     _clearPredictionDecorations(postNode) {
