@@ -121,6 +121,8 @@ const DEFAULT_SETTINGS = {
         showScoreReasons: true,         // Show compact signal reasons on PF badge
         dimLowInterest: true,           // Dim posts scoring below threshold
         collapseLowInterest: false,     // Hide low-score posts behind reveal chip
+        neverEmptyFeedGuard: true,      // Keep at least N feed posts visible when low-score collapse is active
+        neverEmptyFeedMinVisiblePosts: 3,
         highlightHighInterest: true,    // Glow posts scoring above threshold
         credibilitySignalsEnabled: false, // Heuristic claim-risk detector (local only)
         showCredibilityBadge: true,     // Show "verify" marker on suspicious claims

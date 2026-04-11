@@ -319,6 +319,9 @@ class PF_Predictor {
             delete postNode.dataset.pfCollapsedReason;
         }
 
+        delete postNode.dataset.pfCollapseGuardBypass;
+        delete postNode.dataset.pfCollapseGuardFloor;
+
         const prev = postNode.previousElementSibling;
         if (prev && prev.classList && prev.classList.contains('pf-predict-chip') && prev.remove) {
             prev.remove();
@@ -630,7 +633,9 @@ class PF_Predictor {
             verificationUrl,
             debugEnabled: !!predictions.showCredibilityDebugPreview,
             points: Math.max(0, Number(postNode.dataset.pfCredibilityPoints || 0)),
-            sourceTier: String(postNode.dataset.pfCredibilitySourceTier || 'none')
+            sourceTier: String(postNode.dataset.pfCredibilitySourceTier || 'none'),
+            collapseGuardBypass: postNode.dataset.pfCollapseGuardBypass === 'true',
+            collapseGuardFloor: Number(postNode.dataset.pfCollapseGuardFloor || 0)
         });
 
         chip.innerHTML = `
@@ -725,6 +730,11 @@ class PF_Predictor {
             const tier = this._escapeHtml(String(data.sourceTier || 'none'));
             const points = Math.max(0, Number(data.points || 0));
             items.push(`<p class="pf-insight-debug"><strong>Debug:</strong> points ${points}, source tier ${tier}</p>`);
+        }
+
+        if (data.collapseGuardBypass) {
+            const floor = Math.max(1, Number(data.collapseGuardFloor || 0) || 1);
+            items.push(`<p class="pf-insight-debug"><strong>Guard:</strong> kept visible to maintain at least ${floor} posts on screen.</p>`);
         }
 
         if (!items.length) {
@@ -1002,8 +1012,8 @@ class PF_Predictor {
 
         if (score <= Number(predictions.lowThreshold || 20)) {
             if (predictions.collapseLowInterest) {
-                this._collapseLowScorePost(postNode, score, scoreDetails);
-                return;
+                const collapsed = this._collapseLowScorePost(postNode, score, scoreDetails);
+                if (collapsed) return;
             }
 
             if (predictions.dimLowInterest) {
@@ -1013,7 +1023,20 @@ class PF_Predictor {
     }
 
     _collapseLowScorePost(postNode, score, scoreDetails) {
-        if (!postNode || postNode.dataset.pfCollapsedLowScore === 'true') return;
+        if (!postNode || postNode.dataset.pfCollapsedLowScore === 'true') return false;
+
+        const guard = this._getNeverEmptyGuardConfig();
+        if (guard.enabled) {
+            const visibleCount = this._countRenderableFeedPosts(postNode);
+            if (visibleCount <= guard.minVisiblePosts) {
+                postNode.dataset.pfCollapseGuardBypass = 'true';
+                postNode.dataset.pfCollapseGuardFloor = String(guard.minVisiblePosts);
+                return false;
+            }
+        }
+
+        delete postNode.dataset.pfCollapseGuardBypass;
+        delete postNode.dataset.pfCollapseGuardFloor;
 
         const summary = this._escapeHtml(scoreDetails?.reasonSummary || 'low interest');
         const chip = document.createElement('div');
@@ -1036,6 +1059,7 @@ class PF_Predictor {
 
         postNode.parentElement?.insertBefore(chip, postNode);
         this._emitPredictorHiddenEvent('Low Interest Score Collapse');
+        return true;
     }
 
     _restoreCollapsedLowScorePost(postNode, chip) {
@@ -1044,6 +1068,46 @@ class PF_Predictor {
         postNode.style.removeProperty('display');
         postNode.dataset.pfCollapsedLowScore = 'revealed';
         if (chip && chip.remove) chip.remove();
+    }
+
+    _getNeverEmptyGuardConfig() {
+        const predictions = this.settings?.predictions || {};
+        const enabled = predictions.neverEmptyFeedGuard !== false;
+        const rawMin = Number(predictions.neverEmptyFeedMinVisiblePosts);
+        const minVisiblePosts = Math.max(1, Math.min(25, Number.isFinite(rawMin) ? Math.round(rawMin) : 3));
+
+        return { enabled, minVisiblePosts };
+    }
+
+    _countRenderableFeedPosts(sampleNode) {
+        const scopeRoot = (sampleNode && sampleNode.closest && sampleNode.closest(PF_SELECTOR_MAP.mainFeedRegion))
+            || document.querySelector(PF_SELECTOR_MAP.mainFeedRegion)
+            || document.body
+            || document.documentElement;
+
+        if (!scopeRoot || !scopeRoot.querySelectorAll) return 0;
+
+        const raw = [
+            ...Array.from(scopeRoot.querySelectorAll(PF_SELECTOR_MAP.postContainer)),
+            ...Array.from(scopeRoot.querySelectorAll('[role="article"]'))
+        ];
+
+        const candidates = this._dedupeNestedPosts(raw.filter((node) => this._isLikelyFeedPost(node)));
+
+        return candidates.reduce((count, node) => {
+            if (!node || node.dataset?.pfHidden === 'true') return count;
+            if (node.dataset?.pfCollapsedLowScore === 'true') return count;
+
+            const style = window.getComputedStyle ? window.getComputedStyle(node) : null;
+            if (style && (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0')) {
+                return count;
+            }
+
+            const rect = node.getBoundingClientRect ? node.getBoundingClientRect() : null;
+            if (rect && (rect.width < 24 || rect.height < 24)) return count;
+
+            return count + 1;
+        }, 0);
     }
 
     _emitPredictorHiddenEvent(reason) {

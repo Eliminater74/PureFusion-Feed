@@ -118,6 +118,8 @@
   "options_ai_show_reasons": { "message": "Show score reason hints on PF badges" },
   "options_ai_dim_low_interest": { "message": "Dim/Collapse Low Interest Posts (Score < 20)" },
   "options_ai_collapse_low_interest": { "message": "Collapse Low Interest Posts with reveal chip" },
+  "options_ai_never_empty_guard": { "message": "Never-empty feed guard (keep minimum visible posts)" },
+  "options_ai_never_empty_min": { "message": "Minimum visible posts to keep" },
   "options_ai_highlight_high_interest": { "message": "Highlight High Interest Posts (Score > 80)" },
   "options_ai_analyze_trends": { "message": "Analyze Local Trends & Keywords" },
   "options_ai_low_threshold": { "message": "Low score threshold" },

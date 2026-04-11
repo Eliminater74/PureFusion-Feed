@@ -217,6 +217,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_pred_showScoreReasons': { obj: 'predictions', prop: 'showScoreReasons', type: 'checkbox' },
         'opt_pred_dimLowInterest': { obj: 'predictions', prop: 'dimLowInterest', type: 'checkbox' },
         'opt_pred_collapseLowInterest': { obj: 'predictions', prop: 'collapseLowInterest', type: 'checkbox' },
+        'opt_pred_neverEmptyFeedGuard': { obj: 'predictions', prop: 'neverEmptyFeedGuard', type: 'checkbox' },
+        'opt_pred_neverEmptyFeedMinVisiblePosts': { obj: 'predictions', prop: 'neverEmptyFeedMinVisiblePosts', type: 'number', fallback: 3 },
         'opt_pred_highlightHighInterest': { obj: 'predictions', prop: 'highlightHighInterest', type: 'checkbox' },
         'opt_pred_showTrending': { obj: 'predictions', prop: 'showTrending', type: 'checkbox' },
         'opt_pred_lowThreshold': { obj: 'predictions', prop: 'lowThreshold', type: 'number', fallback: 20 },
@@ -618,6 +620,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             p.showScoreReasons = p.showScoreReasons !== false;
             p.collapseLowInterest = !!p.collapseLowInterest;
+            p.neverEmptyFeedGuard = p.neverEmptyFeedGuard !== false;
+            const keepVisible = Number(p.neverEmptyFeedMinVisiblePosts);
+            p.neverEmptyFeedMinVisiblePosts = Math.max(1, Math.min(25, Number.isFinite(keepVisible) ? Math.round(keepVisible) : 3));
             p.credibilitySignalsEnabled = !!p.credibilitySignalsEnabled;
             p.showCredibilityBadge = p.showCredibilityBadge !== false;
             p.strictCredibilityPenalty = !!p.strictCredibilityPenalty;

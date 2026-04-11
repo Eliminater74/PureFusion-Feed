@@ -118,6 +118,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Added: one-click "Verify this claim" web search action from credibility details panel.
 - Added: source-domain trust hints (recognized source / unverified domain / short-link warnings).
 - Added: optional credibility debug preview chip to show detector status on scanned posts.
+- Added: never-empty feed guard for low-score collapse (configurable minimum visible posts floor).
 - Added: full-document predictor resweep on boot/settings update to ensure debug/credibility chips render on already-loaded posts.
 - Added: visibility hardening for debug chips (prepend placement + rescore version bump + scan status toast).
 - Added: feed-region-only scan counting with visible-post count and sample author hints in scan toast.

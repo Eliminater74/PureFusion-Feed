@@ -608,6 +608,8 @@ class PureFusionApp {
                     showCredibilityBadge: true,
                     strictCredibilityPenalty: true,
                     showCredibilityDebugPreview: false,
+                    neverEmptyFeedGuard: true,
+                    neverEmptyFeedMinVisiblePosts: 3,
                     lowThreshold: 28,
                     highThreshold: 74
                 },
