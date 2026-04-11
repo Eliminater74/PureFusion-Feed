@@ -14,6 +14,11 @@ class PF_UiTweaks {
         this.init();
     }
 
+    updateSettings(settings) {
+        this.settings = settings;
+        this.update();
+    }
+
     init() {
         this.styleTag = document.createElement('style');
         this.styleTag.id = 'purefusion-ui-tweaks';
@@ -28,6 +33,9 @@ class PF_UiTweaks {
     applyToNodes(nodes) {
         // Most UI tweaks are global CSS based, so we just ensure update() is current
         // if settings were to change dynamically.
+        if (this.settings?.uiMode?.fixTimestamps) {
+            this._syncAbsoluteTimestamps(nodes);
+        }
     }
 
     update() {
@@ -80,7 +88,121 @@ class PF_UiTweaks {
 
         css += this._buildCustomStylingCss();
 
+        css += `
+            .pf-abs-date-label {
+                margin-left: 5px;
+                color: var(--secondary-text, #b0b3b8) !important;
+                font: 600 11px/1.2 "Segoe UI Variable Text", "Segoe UI", sans-serif;
+                white-space: nowrap;
+                opacity: 0.92;
+            }
+        `;
+
         this.styleTag.textContent = css;
+
+        if (this.settings?.uiMode?.fixTimestamps) {
+            this._syncAbsoluteTimestamps();
+        } else {
+            this._clearAbsoluteTimestampLabels();
+        }
+    }
+
+    _syncAbsoluteTimestamps(nodes = null) {
+        const roots = this._resolveTimestampRoots(nodes);
+
+        roots.forEach((root) => {
+            if (!root || !root.querySelectorAll) return;
+
+            const anchors = root.querySelectorAll('a[role="link"][aria-label], a[href][aria-label]');
+            anchors.forEach((anchor) => {
+                if (!anchor || !anchor.isConnected) return;
+                if (anchor.closest('.pf-insight-chip, #pf-feed-report-panel, #pf-session-timer')) return;
+
+                const host = anchor.closest('[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"], [role="dialog"], [role="article"]');
+                if (!host) return;
+                if (!this._isLikelyTimestampAnchor(anchor, host)) return;
+
+                const absoluteText = this._extractAbsoluteTimestampText(anchor);
+                if (!absoluteText) return;
+
+                let label = anchor.nextElementSibling;
+                if (!label || !label.classList || !label.classList.contains('pf-abs-date-label')) {
+                    label = document.createElement('span');
+                    label.className = 'pf-abs-date-label';
+                    anchor.insertAdjacentElement('afterend', label);
+                }
+
+                label.textContent = `- ${absoluteText}`;
+            });
+        });
+    }
+
+    _resolveTimestampRoots(nodes) {
+        if (!Array.isArray(nodes) || !nodes.length) {
+            return [document];
+        }
+
+        const roots = [];
+        const seen = new Set();
+
+        nodes.forEach((node) => {
+            if (!node || node.nodeType !== Node.ELEMENT_NODE) return;
+            if (seen.has(node)) return;
+            seen.add(node);
+            roots.push(node);
+        });
+
+        return roots.length ? roots : [document];
+    }
+
+    _isLikelyTimestampAnchor(anchor, host) {
+        const text = String(anchor.textContent || '').trim().toLowerCase();
+        const aria = String(anchor.getAttribute('aria-label') || '').trim().toLowerCase();
+        const href = String(anchor.getAttribute('href') || '').toLowerCase();
+
+        if (!aria || aria.length < 6 || aria.length > 140) return false;
+
+        const likelyPostLink = [
+            '/posts/', '/permalink/', '/videos/', '/photo', '/photos/', '/reel/', '/story.php', 'story_fbid=', 'fbid='
+        ].some((token) => href.includes(token));
+
+        const relativeText = /^(\d+[smhdwy]|\d+\s*(sec|min|h|d|w|mo|y|yr)s?|now|just now|ayer|hoy|today|yesterday)$/i.test(text);
+        const hasDateHints = /\d{4}|\d{1,2}:\d{2}|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|ene|feb|mar|abr|may|jun|jul|ago|sept|oct|nov|dic|am|pm/i.test(aria);
+
+        if (!likelyPostLink && !relativeText && !hasDateHints) return false;
+
+        if (anchor.getBoundingClientRect && host.getBoundingClientRect) {
+            const aRect = anchor.getBoundingClientRect();
+            const hRect = host.getBoundingClientRect();
+            const topDelta = aRect.top - hRect.top;
+
+            if (topDelta < -12 || topDelta > 280) return false;
+            if (aRect.width > 260 || aRect.height > 42) return false;
+        }
+
+        return true;
+    }
+
+    _extractAbsoluteTimestampText(anchor) {
+        const candidates = [
+            anchor.getAttribute('aria-label'),
+            anchor.getAttribute('title'),
+            anchor.querySelector && anchor.querySelector('[aria-label]') ? anchor.querySelector('[aria-label]').getAttribute('aria-label') : '',
+            anchor.querySelector && anchor.querySelector('[title]') ? anchor.querySelector('[title]').getAttribute('title') : ''
+        ];
+
+        for (const rawCandidate of candidates) {
+            const cleaned = String(rawCandidate || '').replace(/\s+/g, ' ').trim();
+            if (!cleaned || cleaned.length < 6 || cleaned.length > 140) continue;
+            if (!/\d/.test(cleaned)) continue;
+            return cleaned;
+        }
+
+        return '';
+    }
+
+    _clearAbsoluteTimestampLabels() {
+        document.querySelectorAll('.pf-abs-date-label').forEach((el) => el.remove());
     }
 
     _buildCustomStylingCss() {
