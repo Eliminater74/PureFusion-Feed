@@ -207,6 +207,13 @@ class PF_Wellbeing {
 
         const breakWall = document.createElement('div');
         breakWall.id = 'pf-scroll-stopper';
+        const breakTitle = this._t('wellbeing_break_title', 'Take a Breath');
+        const breakMessage = this._t(
+            'wellbeing_break_body_template',
+            `You've just scrolled past <strong>${this.scrollCount}</strong> posts. PureFusion has temporarily paused the feed to help you avoid doom-scrolling. Is it time to do something else?`,
+            [`<strong>${this.scrollCount}</strong>`]
+        );
+        const resumeLabel = this._t('wellbeing_break_resume_btn', 'Continue Scrolling Anyway');
         breakWall.style.cssText = `
             margin: 40px auto; padding: 40px 20px; text-align: center;
             background: linear-gradient(135deg, rgba(20,20,21,1) 0%, rgba(30,30,32,1) 100%);
@@ -214,17 +221,15 @@ class PF_Wellbeing {
             color: white; max-width: 600px; font-family: -apple-system, system-ui, sans-serif;
         `;
         breakWall.innerHTML = `
-            <div style="font-size: 32px; margin-bottom: 10px;">🛑 Take a Breath</div>
+            <div style="font-size: 32px; margin-bottom: 10px;">🛑 ${breakTitle}</div>
             <p style="color: #B0B3B8; font-size: 16px; margin-bottom: 20px;">
-                You've just scrolled past <strong>${this.scrollCount}</strong> posts. 
-                PureFusion has temporarily paused the feed to help you avoid doom-scrolling. 
-                Is it time to do something else?
+                ${breakMessage}
             </p>
             <button id="pf-btn-resume" style="
                 background: #6C3FC5; color: white; border: none; padding: 12px 24px;
                 font-size: 14px; font-weight: bold; border-radius: 8px; cursor: pointer;
                 transition: background 0.2s;
-            ">Continue Scrolling Anyway</button>
+            ">${resumeLabel}</button>
         `;
 
         feed.appendChild(breakWall);
@@ -271,7 +276,8 @@ class PF_Wellbeing {
         dot.style.cssText = `width: 8px; height: 8px; border-radius: 50%; background: #00D4FF; box-shadow: 0 0 8px #00D4FF;`;
         
         const timeText = document.createElement('span');
-        timeText.textContent = "00:00";
+        const sessionLabel = this._t('wellbeing_session_timer_prefix', 'Session');
+        timeText.textContent = `${sessionLabel}: 00:00`;
 
         timerEl.appendChild(dot);
         timerEl.appendChild(timeText);
@@ -284,7 +290,7 @@ class PF_Wellbeing {
             const elapsed = Math.floor((Date.now() - this.sessionStart) / 1000);
             const m = Math.floor(elapsed / 60).toString().padStart(2, '0');
             const s = (elapsed % 60).toString().padStart(2, '0');
-            timeText.textContent = `Session: ${m}:${s}`;
+            timeText.textContent = `${sessionLabel}: ${m}:${s}`;
             
             // Turn color to warning orange after 15 mins
             if (elapsed > 900) {
