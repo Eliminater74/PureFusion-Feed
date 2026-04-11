@@ -58,8 +58,10 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Granular controls for top bar modules and jewels (without hiding banner/header containers).
 
 3) Advanced custom UI engine (medium-high)
-- Status: initial implementation complete (safe mode, disabled by default).
+- Status: hardening slice in progress (safe mode, disabled by default).
 - Implemented: custom CSS field, custom font family, custom accent color, custom background.
+- Hardened: stricter CSS sanitization (risky directives removed + critical hide-rule stripping).
+- Added: optional CSS snippet presets + finer custom style controls (text color and post-card background).
 - Keep disabled by default and sandboxed to avoid layout breakage.
 
 4) Broader multilingual phrase packs (medium)
@@ -173,8 +175,10 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 
 3) Custom UI engine (experimental)
 - Add "Advanced Custom CSS" textarea with clear warning.
+- Hardened: added preset snippet loader in options for safe starter custom CSS blocks.
+- Hardened: added custom text color + post-card background controls.
+- Hardened: strengthened custom CSS/background/font sanitization before style injection.
 - Validate and apply CSS in isolated style tag.
-- Expand with optional preset snippets and finer variable controls.
 
 4) Diagnostics mode
 - Add optional debug toggle and small overlay/log panel.

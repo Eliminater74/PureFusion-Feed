@@ -281,6 +281,8 @@ class PureFusionApp {
             customStylingEnabled: false,
             customFontFamily: '',
             customAccentColor: '',
+            customTextColor: '',
+            customCardBackground: '',
             customBackground: '',
             customCss: ''
         };

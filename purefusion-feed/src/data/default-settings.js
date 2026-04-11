@@ -96,6 +96,8 @@ const DEFAULT_SETTINGS = {
         customStylingEnabled: false,
         customFontFamily: '',
         customAccentColor: '',
+        customTextColor: '',
+        customCardBackground: '',
         customBackground: '',
         customCss: '',
         commentSortDefault: 'All Comments', // 'All Comments', 'Newest', 'Top Comments'

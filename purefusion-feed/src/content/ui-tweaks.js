@@ -89,15 +89,28 @@ class PF_UiTweaks {
 
         let css = '';
 
-        const fontFamily = String(ui.customFontFamily || '').trim();
-        if (fontFamily && fontFamily.length <= 140) {
+        const fontFamily = this._sanitizeFontFamilyValue(ui.customFontFamily);
+        if (fontFamily) {
             css += `body, [role="main"], [role="feed"] { font-family: ${fontFamily} !important; }\n`;
         }
 
         const accent = this._normalizeColor(ui.customAccentColor);
         if (accent) {
-            css += `a, [role="link"] { color: ${accent} !important; }\n`;
-            css += `[role="button"]:focus-visible, button:focus-visible { outline-color: ${accent} !important; }\n`;
+            css += `:root { --pf-custom-accent: ${accent}; }\n`;
+            css += `a, [role="link"] { color: var(--pf-custom-accent) !important; }\n`;
+            css += `[role="button"]:focus-visible, button:focus-visible { outline-color: var(--pf-custom-accent) !important; }\n`;
+        }
+
+        const textColor = this._normalizeColor(ui.customTextColor);
+        if (textColor) {
+            css += `:root { --pf-custom-text-color: ${textColor}; }\n`;
+            css += `body, [role="main"], [role="feed"], [role="article"] { color: var(--pf-custom-text-color) !important; }\n`;
+        }
+
+        const cardBackground = this._normalizeColor(ui.customCardBackground);
+        if (cardBackground) {
+            css += `:root { --pf-custom-card-bg: ${cardBackground}; }\n`;
+            css += `[role="feed"] [role="article"], [data-pagelet^="FeedUnit_"] [role="article"] { background-color: var(--pf-custom-card-bg) !important; }\n`;
         }
 
         const background = this._sanitizeBackgroundValue(ui.customBackground);
@@ -119,8 +132,16 @@ class PF_UiTweaks {
 
         css = css.replace(/<\/?style[^>]*>/gi, '');
         css = css.replace(/@import/gi, '');
+        css = css.replace(/@charset/gi, '');
+        css = css.replace(/@namespace/gi, '');
         css = css.replace(/javascript:/gi, '');
+        css = css.replace(/vbscript:/gi, '');
         css = css.replace(/expression\s*\(/gi, '');
+        css = css.replace(/-moz-binding\s*:/gi, '');
+        css = css.replace(/\bbehavior\s*:/gi, '');
+        css = css.replace(/url\s*\([^)]*\)/gi, '');
+
+        css = this._removeCriticalHideRules(css);
 
         if (css.length > 12000) {
             css = css.slice(0, 12000);
@@ -129,13 +150,56 @@ class PF_UiTweaks {
         return css.trim();
     }
 
+    _removeCriticalHideRules(css) {
+        if (!css) return '';
+
+        const hideDeclaration = /(display\s*:\s*none|visibility\s*:\s*hidden|opacity\s*:\s*0(?:\D|$)|max-height\s*:\s*0(?:\D|$)|height\s*:\s*0(?:\D|$))/i;
+
+        return css.replace(/([^{}]+)\{([^{}]*)\}/g, (fullRule, selector, declarations) => {
+            const normalizedSelector = String(selector || '').replace(/["']/g, '').toLowerCase();
+            const hasCriticalRole = normalizedSelector.includes('[role=main]')
+                || normalizedSelector.includes('[role=feed]')
+                || normalizedSelector.includes('[role=banner]')
+                || normalizedSelector.includes('[role=navigation]')
+                || normalizedSelector.includes('[role=complementary]');
+
+            const hasRootCritical = /(^|[\s,>+~])html([#.\[:\s>+~]|$)|(^|[\s,>+~])body([#.\[:\s>+~]|$)/i.test(selector);
+            if (!hasCriticalRole && !hasRootCritical) return fullRule;
+
+            if (!hideDeclaration.test(declarations)) return fullRule;
+            return '';
+        });
+    }
+
     _sanitizeBackgroundValue(value) {
         const background = String(value || '').trim();
         if (!background || background.length > 180) return '';
 
-        if (/javascript:|expression\s*\(/i.test(background)) return '';
+        if (/javascript:|vbscript:|expression\s*\(|url\s*\(|@import|;|\{|\}/i.test(background)) return '';
+
+        const allowedPatterns = [
+            /^#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i,
+            /^rgba?\([\d\s.,%]+\)$/i,
+            /^hsla?\([\d\s.,%]+\)$/i,
+            /^(linear|radial|conic)-gradient\(.+\)$/i,
+            /^var\(--[a-z0-9_-]+\)$/i,
+            /^(transparent|currentcolor|inherit|initial|unset)$/i,
+            /^[a-z]{3,24}$/i
+        ];
+
+        if (!allowedPatterns.some((rx) => rx.test(background))) return '';
 
         return background;
+    }
+
+    _sanitizeFontFamilyValue(value) {
+        const fontFamily = String(value || '').trim();
+        if (!fontFamily || fontFamily.length > 140) return '';
+
+        if (/url\s*\(|javascript:|@import|;|\{|\}/i.test(fontFamily)) return '';
+        if (!/^[a-z0-9\s,'"._()-]+$/i.test(fontFamily)) return '';
+
+        return fontFamily;
     }
 
     _normalizeColor(value) {

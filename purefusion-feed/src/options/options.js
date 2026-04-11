@@ -242,6 +242,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_uiMode_customStylingEnabled': { obj: 'uiMode', prop: 'customStylingEnabled', type: 'checkbox' },
         'opt_uiMode_customFontFamily': { obj: 'uiMode', prop: 'customFontFamily', type: 'text' },
         'opt_uiMode_customAccentColor': { obj: 'uiMode', prop: 'customAccentColor', type: 'text' },
+        'opt_uiMode_customTextColor': { obj: 'uiMode', prop: 'customTextColor', type: 'text' },
+        'opt_uiMode_customCardBackground': { obj: 'uiMode', prop: 'customCardBackground', type: 'text' },
         'opt_uiMode_customBackground': { obj: 'uiMode', prop: 'customBackground', type: 'text' },
         'opt_uiMode_customCss': { obj: 'uiMode', prop: 'customCss', type: 'text' },
 
@@ -340,6 +342,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const themePreviewCard = document.getElementById('pfThemePreviewCard');
     const presetSelect = document.getElementById('opt_preset_pack');
     const btnApplyPreset = document.getElementById('btnApplyPreset');
+    const customCssSnippetSelect = document.getElementById('opt_uiMode_customCssSnippet');
+    const btnApplyCustomCssSnippet = document.getElementById('btnApplyCustomCssSnippet');
+    const customCssTextarea = document.getElementById('opt_uiMode_customCss');
+    const customStylingToggle = document.getElementById('opt_uiMode_customStylingEnabled');
 
     const themeNames = {
         default: t('options_ui_theme_default', 'Facebook Default'),
@@ -437,6 +443,39 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
+    const customCssSnippets = {
+        subtleCards: {
+            label: t('options_ui_custom_css_preset_subtle_cards', 'Subtle card polish'),
+            css: `[role="feed"] [role="article"] {
+  border-radius: 14px !important;
+  border: 1px solid rgba(120, 132, 154, 0.25) !important;
+  box-shadow: 0 10px 26px rgba(10, 16, 28, 0.16) !important;
+}`
+        },
+        calmerMotion: {
+            label: t('options_ui_custom_css_preset_calmer_motion', 'Calmer motion'),
+            css: `*,
+*::before,
+*::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.08s !important;
+  scroll-behavior: auto !important;
+}`
+        },
+        readabilityBoost: {
+            label: t('options_ui_custom_css_preset_readability_boost', 'Readability boost'),
+            css: `[role="feed"] [role="article"] {
+  line-height: 1.55 !important;
+  letter-spacing: 0.01em !important;
+}
+
+[role="feed"] [role="article"] div[dir="auto"] {
+  max-width: 70ch !important;
+}`
+        }
+    };
+
     function renderThemePreview(theme, scale) {
         if (!themePreview || !themePreviewCard || !themePreviewMode) return;
 
@@ -485,6 +524,25 @@ document.addEventListener('DOMContentLoaded', async () => {
             } else if (mapping.type === 'text') {
                 currentSettings[mapping.obj][mapping.prop] = el.value.trim();
             }
+        }
+
+        if (currentSettings.uiMode) {
+            const ui = currentSettings.uiMode;
+            const clampInt = (value, min, max, fallback) => {
+                const parsed = Number(value);
+                if (!Number.isFinite(parsed)) return fallback;
+                return Math.max(min, Math.min(max, Math.round(parsed)));
+            };
+
+            const trimLen = (value, maxLen) => String(value || '').trim().slice(0, maxLen);
+
+            ui.fontSizeScale = clampInt(ui.fontSizeScale, 80, 150, 100);
+            ui.customFontFamily = trimLen(ui.customFontFamily, 140);
+            ui.customAccentColor = trimLen(ui.customAccentColor, 40);
+            ui.customTextColor = trimLen(ui.customTextColor, 40);
+            ui.customCardBackground = trimLen(ui.customCardBackground, 40);
+            ui.customBackground = trimLen(ui.customBackground, 180);
+            ui.customCss = trimLen(ui.customCss, 12000);
         }
 
         // Parse Keyword comma-separated Arrays
@@ -649,6 +707,27 @@ document.addEventListener('DOMContentLoaded', async () => {
             currentSettings = mergeDeep(currentSettings, JSON.parse(JSON.stringify(preset)));
             loadUIFromSettings();
             await saveSettingsFromUI(t('options_toast_preset_applied', 'Preset applied successfully.'));
+        });
+    }
+
+    if (btnApplyCustomCssSnippet && customCssSnippetSelect && customCssTextarea) {
+        btnApplyCustomCssSnippet.addEventListener('click', () => {
+            const selected = customCssSnippetSelect.value;
+            const snippet = customCssSnippets[selected];
+            if (!snippet) return;
+
+            const block = `/* PureFusion snippet: ${snippet.label} */\n${snippet.css}`;
+            const current = String(customCssTextarea.value || '').trim();
+
+            if (!current) {
+                customCssTextarea.value = block;
+            } else if (!current.includes(snippet.css)) {
+                customCssTextarea.value = `${current}\n\n${block}`;
+            }
+
+            if (customStylingToggle) customStylingToggle.checked = true;
+            customCssSnippetSelect.value = '';
+            showSaveToast(t('options_toast_custom_css_snippet_loaded', 'Custom CSS snippet loaded. Click Save to apply.'));
         });
     }
 

@@ -673,15 +673,38 @@
                 </div>
                 <div class="pf-setting-row auto-height">
                     <label data-i18n="options_ui_custom_accent">Custom accent color</label>
-                    <input type="text" id="opt_uiMode_customAccentColor" class="pf-input-number" placeholder="#22c1ff">
+                    <input type="text" id="opt_uiMode_customAccentColor" class="pf-input-number" data-i18n-placeholder="options_ui_custom_accent_placeholder" placeholder="#22c1ff">
+                </div>
+                <div class="pf-setting-row auto-height">
+                    <label data-i18n="options_ui_custom_text_color">Custom text color</label>
+                    <input type="text" id="opt_uiMode_customTextColor" class="pf-input-number" data-i18n-placeholder="options_ui_custom_text_color_placeholder" placeholder="#f2f5ff">
+                </div>
+                <div class="pf-setting-row auto-height">
+                    <label data-i18n="options_ui_custom_card_background">Custom post card background</label>
+                    <input type="text" id="opt_uiMode_customCardBackground" class="pf-input-number" data-i18n-placeholder="options_ui_custom_card_background_placeholder" placeholder="rgba(24, 31, 42, 0.92)">
                 </div>
                 <div class="pf-setting-row auto-height">
                     <label data-i18n="options_ui_custom_background">Custom page background</label>
-                    <input type="text" id="opt_uiMode_customBackground" class="pf-input-number" placeholder="linear-gradient(...) or #111111">
+                    <input type="text" id="opt_uiMode_customBackground" class="pf-input-number" data-i18n-placeholder="options_ui_custom_background_placeholder" placeholder="linear-gradient(...) or #111111">
                 </div>
                 <div class="pf-form-group mt-2">
                     <label data-i18n="options_ui_custom_css">Custom CSS</label>
-                    <textarea id="opt_uiMode_customCss" class="pf-textarea" rows="6" placeholder=".selector { display: none !important; }"></textarea>
+                    <textarea id="opt_uiMode_customCss" class="pf-textarea" rows="6" data-i18n-placeholder="options_ui_custom_css_placeholder" placeholder=".selector { display: none !important; }"></textarea>
+                </div>
+                <div class="pf-setting-row auto-height">
+                    <div>
+                        <label data-i18n="options_ui_custom_css_preset_label">Custom CSS snippet presets</label>
+                        <p class="pf-desc" data-i18n="options_ui_custom_css_preset_desc">Load a starter snippet into the custom CSS box, then review and save.</p>
+                    </div>
+                    <div class="pf-form-group">
+                        <select id="opt_uiMode_customCssSnippet" class="pf-select">
+                            <option value="" data-i18n="options_ui_custom_css_preset_none">Select a snippet</option>
+                            <option value="subtleCards" data-i18n="options_ui_custom_css_preset_subtle_cards">Subtle card polish</option>
+                            <option value="calmerMotion" data-i18n="options_ui_custom_css_preset_calmer_motion">Calmer motion</option>
+                            <option value="readabilityBoost" data-i18n="options_ui_custom_css_preset_readability_boost">Readability boost</option>
+                        </select>
+                        <button id="btnApplyCustomCssSnippet" class="pf-btn pf-btn-secondary mt-2" data-i18n="options_ui_custom_css_preset_apply">Load Snippet</button>
+                    </div>
                 </div>
             </div>
 
