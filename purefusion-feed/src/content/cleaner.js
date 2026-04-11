@@ -125,6 +125,10 @@ class PF_Cleaner {
         }
         if (this.settings.filters.removeSuggested) this.removeSuggestedPosts(rootNode); // Shared logic for suggested, pymk, groups
 
+        if (this._hasPostTypeFiltersEnabled()) {
+            this.removePostTypePosts(rootNode);
+        }
+
         if (this._hasStoryActivityFiltersEnabled()) {
             this.removeStoryActivityPosts(rootNode);
         }
@@ -232,6 +236,20 @@ class PF_Cleaner {
             || sidebar.hideRightManusAIContact
             || sidebar.hideRightEvents
             || sidebar.hideRightBirthdays
+        );
+    }
+
+    _hasPostTypeFiltersEnabled() {
+        if (this._panicMode) return false;
+
+        const filters = this.settings?.filters;
+        if (!filters) return false;
+
+        return !!(
+            filters.hideVideoPosts
+            || filters.hidePhotoPosts
+            || filters.hideLinkPosts
+            || filters.hideTextOnlyPosts
         );
     }
 
@@ -427,6 +445,74 @@ class PF_Cleaner {
         const maxHide = Math.max(4, Math.floor(scannedCount * 0.45));
         if ((scannedCount > 2 && matchedPosts.length >= scannedCount) || matchedPosts.length > maxHide) {
             PF_Logger.warn(`Story activity filter safety bailout: matched ${matchedPosts.length}/${scannedCount}.`);
+            return;
+        }
+
+        matchedPosts.forEach(({ node, reason }) => {
+            this._hidePostNode(node, reason);
+        });
+    }
+
+    removePostTypePosts(rootNode) {
+        const filters = this.settings?.filters;
+        if (!filters) return;
+
+        const rules = [
+            {
+                enabled: !!filters.hideVideoPosts,
+                reason: 'Post Type: Video',
+                key: 'video'
+            },
+            {
+                enabled: !!filters.hidePhotoPosts,
+                reason: 'Post Type: Photo',
+                key: 'photo'
+            },
+            {
+                enabled: !!filters.hideLinkPosts,
+                reason: 'Post Type: Link Share',
+                key: 'link'
+            },
+            {
+                enabled: !!filters.hideTextOnlyPosts,
+                reason: 'Post Type: Text Only',
+                key: 'textOnly'
+            }
+        ].filter((rule) => rule.enabled);
+
+        if (!rules.length) return;
+
+        const strictPostSelector = '[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"]';
+        const postCandidates = this._getPostCandidates(rootNode)
+            .filter((postWrapper) => {
+                if (!postWrapper || postWrapper.dataset.pfHidden) return false;
+                if (!postWrapper.matches || !postWrapper.matches(strictPostSelector)) return false;
+                if (!this._isLikelySingleFeedPost(postWrapper)) return false;
+                return true;
+            });
+
+        if (!postCandidates.length) return;
+
+        const matchedPosts = [];
+
+        postCandidates.forEach((postWrapper) => {
+            const classification = this._classifyPostType(postWrapper);
+            if (!classification) return;
+
+            for (const rule of rules) {
+                if (classification[rule.key]) {
+                    matchedPosts.push({ node: postWrapper, reason: rule.reason });
+                    break;
+                }
+            }
+        });
+
+        if (!matchedPosts.length) return;
+
+        const scannedCount = postCandidates.length;
+        const maxHide = Math.max(3, Math.floor(scannedCount * 0.4));
+        if ((scannedCount > 2 && matchedPosts.length >= scannedCount) || matchedPosts.length > maxHide) {
+            PF_Logger.warn(`Post-type filter safety bailout: matched ${matchedPosts.length}/${scannedCount}.`);
             return;
         }
 
@@ -1657,6 +1743,106 @@ class PF_Cleaner {
         });
 
         return parts;
+    }
+
+    _classifyPostType(node) {
+        if (!node || !node.querySelectorAll) return null;
+
+        const anchors = this._extractPostTypeAnchors(node);
+        const anchorText = anchors.join(' ');
+
+        const hasVideoSelector = !!node.querySelector(
+            'video, a[href*="/watch/"], a[href*="/videos/"], a[href*="/reel/"], [data-pagelet*="Video"], [data-pagelet*="Reels"], [data-pagelet*="Shorts"]'
+        );
+
+        const hasPhotoSelector = !!node.querySelector(
+            'a[href*="/photo/"], a[href*="/photos/"], a[href*="fbid="][href*="/photo"], a[href*="/media/set/"], [data-pagelet*="Photo"]'
+        );
+
+        const hasExternalLinkSelector = this._hasExternalLinkTarget(node);
+
+        const hasVideoAnchor = /(shared (a )?video|watch(ing)?( now)?|reels?|short videos?|video en vivo|compartio (un )?video|ver video|videos? cortos?)/.test(anchorText);
+        const hasPhotoAnchor = /(shared (a )?(photo|album)|photo(s)?( update)?|image(s)?|album|compartio (una )?(foto|imagen)|compartio (un )?album|fotos?|imagenes?)/.test(anchorText);
+        const hasLinkAnchor = /(shared (a )?link|read more|link preview|open link|enlace|leer mas|articulo)/.test(anchorText)
+            || /\bhttps?:\/\/|www\./.test(anchorText);
+
+        const video = hasVideoSelector || (hasVideoAnchor && !hasPhotoSelector);
+        const photo = !video && (hasPhotoSelector || hasPhotoAnchor);
+        const link = !video && !photo && (hasExternalLinkSelector || hasLinkAnchor);
+
+        const textLength = this._extractPostText(node).length;
+        const hasMeaningfulText = textLength >= 30;
+        const textOnly = hasMeaningfulText && !video && !photo && !link;
+
+        return {
+            video,
+            photo,
+            link,
+            textOnly
+        };
+    }
+
+    _extractPostTypeAnchors(node) {
+        if (!node || !node.querySelectorAll) return [];
+
+        const parts = [];
+        const seen = new Set();
+        const selectors = 'h2, h3, h4, [role="heading"], a[role="link"], span[dir="auto"], div[dir="auto"]';
+
+        node.querySelectorAll(selectors).forEach((el) => {
+            if (parts.length >= 24) return;
+
+            const comparable = this._normalizeComparableText(el.textContent || '');
+            if (!comparable || comparable.length < 4 || comparable.length > 180) return;
+            if (seen.has(comparable)) return;
+            if (!this._looksLikePostTypeAnchor(comparable)) return;
+
+            seen.add(comparable);
+            parts.push(comparable);
+        });
+
+        return parts;
+    }
+
+    _looksLikePostTypeAnchor(text) {
+        if (!text) return false;
+
+        return /(video|watch|reel|short video|photo|photos|image|album|shared a link|link preview|read more|enlace|leer mas|articulo|compartio|fotos?|imagenes?)/.test(text);
+    }
+
+    _hasExternalLinkTarget(node) {
+        if (!node || !node.querySelectorAll) return false;
+
+        const anchors = node.querySelectorAll('a[href]');
+        for (const anchor of anchors) {
+            const href = String(anchor.getAttribute('href') || '').trim();
+            if (!href || href === '#' || href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:')) {
+                continue;
+            }
+
+            const lowered = href.toLowerCase();
+            if (lowered.includes('/l.php?u=')) return true;
+
+            let url;
+            try {
+                url = new URL(href, window.location.origin);
+            } catch (err) {
+                continue;
+            }
+
+            const host = String(url.hostname || '').toLowerCase();
+            if (!host) continue;
+
+            const isFacebookHost = host === 'facebook.com'
+                || host.endsWith('.facebook.com')
+                || host === 'messenger.com'
+                || host.endsWith('.messenger.com')
+                || host === 'm.facebook.com';
+
+            if (!isFacebookHost) return true;
+        }
+
+        return false;
     }
 
     _looksLikeImageDescriptor(text) {

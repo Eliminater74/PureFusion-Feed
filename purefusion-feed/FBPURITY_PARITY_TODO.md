@@ -155,6 +155,9 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 ## Implementation Order (Next)
 
 1) Post-type filter pack v2
+- Status: first implementation slice complete.
+- Added: dedicated Core Filter toggles (video, photo/image, link/share, text-only).
+- Added: strict `[data-pagelet^="FeedUnit_"]` / `AdUnit` targeting + anchor-based type detection + global safety bailout.
 - Add new toggle group in Core Filters.
 - Implement strict per-type selectors + phrase anchors.
 - Keep global safety bailout active.

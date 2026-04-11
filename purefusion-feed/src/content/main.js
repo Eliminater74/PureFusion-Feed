@@ -265,6 +265,10 @@ class PureFusionApp {
             hideMarketplace: false,
             hideStories: false,
             hideFundraisers: false,
+            hideVideoPosts: false,
+            hidePhotoPosts: false,
+            hideLinkPosts: false,
+            hideTextOnlyPosts: false,
             removeColoredBackgrounds: false
         };
 

@@ -23,6 +23,10 @@ const DEFAULT_SETTINGS = {
         hideStories: false,             // Stories bar top of feed
         hideMemories: false,            // "Memories" posts
         hideFundraisers: true,          // Fundraiser posts
+        hideVideoPosts: false,          // Hide feed posts primarily classified as video
+        hidePhotoPosts: false,          // Hide feed posts primarily classified as photo/image
+        hideLinkPosts: false,           // Hide feed posts primarily classified as external link/share
+        hideTextOnlyPosts: false,       // Hide feed posts classified as text-only status updates
         removeColoredBackgrounds: true, // Giant font/colored posts -> standard text
         removeLargeReactions: true,     // Downsize large emoji reactions
     },
