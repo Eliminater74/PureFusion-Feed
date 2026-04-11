@@ -342,72 +342,86 @@ class PF_Cleaner {
             {
                 enabled: sf.hideBecameFriends,
                 reason: 'Story Type: Became Friends',
-                rx: /\b(became friends|are now friends|now friends with|celebrating friendship|se hicieron amigos|ahora son amigos)\b/
+                rx: /\b(became friends|are now friends|now friends with|celebrating friendship|se hicieron amigos|ahora son amigos)\b/,
+                tokens: ['sont maintenant amis', 'agora sao amigos', 'sind jetzt befreundet', 'ora sono amici']
             },
             {
                 enabled: sf.hideJoinedGroups,
                 reason: 'Story Type: Joined Groups',
-                rx: /\b(joined (a )?group|joined .* group|se unio a(l)? (un )?grupo)\b/
+                rx: /\b(joined (a )?group|joined .* group|se unio a(l)? (un )?grupo)\b/,
+                tokens: ['a rejoint le groupe', 'entrou no grupo', 'der gruppe beigetreten', 'si e unito al gruppo']
             },
             {
                 enabled: sf.hideCommentedOnThis,
                 reason: 'Story Type: Commented On This',
-                rx: /\b(commented on this|ha comentado|comento en esto)\b/
+                rx: /\b(commented on this|ha comentado|comento en esto)\b/,
+                tokens: ['a commente ceci', 'comentou isto', 'dies kommentiert', 'ha commentato questo']
             },
             {
                 enabled: sf.hideLikedThis,
                 reason: 'Story Type: Liked This',
-                rx: /\b(liked this|reacted to this|le gusto esto|reacciono a esto)\b/
+                rx: /\b(liked this|reacted to this|le gusto esto|reacciono a esto)\b/,
+                tokens: ['a aime ceci', 'curtiu isto', 'gefallt das', 'messo mi piace a questo']
             },
             {
                 enabled: sf.hideAttendingEvents,
                 reason: 'Story Type: Event Attendance',
-                rx: /\b(is going to (an )?event|is interested in (an )?event|attending (an )?event|attended (an )?event|interesado en (un )?evento|asistira a (un )?evento|asistio a (un )?evento)\b/
+                rx: /\b(is going to (an )?event|is interested in (an )?event|attending (an )?event|attended (an )?event|interesado en (un )?evento|asistira a (un )?evento|asistio a (un )?evento)\b/,
+                tokens: ['participe a un evenement', 'interesse par un evenement', 'vai a um evento', 'interessado em um evento', 'nimmt an einer veranstaltung teil', 'interessiert an einer veranstaltung', 'partecipera a un evento', 'interessato a un evento']
             },
             {
                 enabled: sf.hideSharedMemories,
                 reason: 'Story Type: Shared Memory',
-                rx: /\b(shared a memory|your memories on facebook|compartio un recuerdo|recuerdos en facebook)\b/
+                rx: /\b(shared a memory|your memories on facebook|compartio un recuerdo|recuerdos en facebook)\b/,
+                tokens: ['a partage un souvenir', 'souvenirs sur facebook', 'compartilhou uma lembranca', 'lembrancas no facebook', 'hat eine erinnerung geteilt', 'erinnerungen auf facebook', 'ha condiviso un ricordo', 'ricordi su facebook']
             },
             {
                 enabled: sf.hideProfilePhotoUpdates,
                 reason: 'Story Type: Profile Photo Update',
-                rx: /\b(updated (his|her|their) profile picture|updated profile picture|changed profile picture|actualizo su foto de perfil|cambio su foto de perfil)\b/
+                rx: /\b(updated (his|her|their) profile picture|updated profile picture|changed profile picture|actualizo su foto de perfil|cambio su foto de perfil)\b/,
+                tokens: ['a mis a jour sa photo de profil', 'a change sa photo de profil', 'atualizou a foto do perfil', 'alterou a foto do perfil', 'hat sein profilbild aktualisiert', 'profilbild aktualisiert', 'ha aggiornato la foto del profilo', 'ha cambiato la foto del profilo']
             },
             {
                 enabled: sf.hideCoverPhotoUpdates,
                 reason: 'Story Type: Cover Photo Update',
-                rx: /\b(updated (his|her|their) cover photo|updated cover photo|changed cover photo|actualizo su foto de portada|cambio su foto de portada)\b/
+                rx: /\b(updated (his|her|their) cover photo|updated cover photo|changed cover photo|actualizo su foto de portada|cambio su foto de portada)\b/,
+                tokens: ['a mis a jour sa photo de couverture', 'a change sa photo de couverture', 'atualizou a foto de capa', 'alterou a foto de capa', 'hat sein titelbild aktualisiert', 'titelbild aktualisiert', 'ha aggiornato la foto di copertina', 'ha cambiato la foto di copertina']
             },
             {
                 enabled: sf.hideLifeEvents,
                 reason: 'Story Type: Life Event',
-                rx: /\b(added a life event|life event|evento importante|agrego un evento importante)\b/
+                rx: /\b(added a life event|life event|evento importante|agrego un evento importante)\b/,
+                tokens: ['a ajoute un evenement marquant', 'adicionou um evento importante', 'hat ein lebensereignis hinzugefugt', 'ha aggiunto un evento importante']
             },
             {
                 enabled: sf.hideCheckIns,
                 reason: 'Story Type: Check-In',
-                rx: /\b(checked in at|check-in|is at .* with|registro en|se registro en|esta en .* con)\b/
+                rx: /\b(checked in at|check-in|is at .* with|registro en|se registro en|esta en .* con)\b/,
+                tokens: ['s est enregistre a', 'fez check in em', 'hat eingecheckt bei', 'ha fatto il check in a']
             },
             {
                 enabled: sf.hideMilestones,
                 reason: 'Story Type: Milestone',
-                rx: /\b(milestone|celebrating .* milestone|hito|celebrando un hito)\b/
+                rx: /\b(milestone|celebrating .* milestone|hito|celebrando un hito)\b/,
+                tokens: ['etape importante', 'marco importante', 'meilenstein', 'traguardo']
             },
             {
                 enabled: sf.hideJobWorkUpdates,
                 reason: 'Story Type: Job/Work Update',
-                rx: /\b(started working at|works at|new job|job update|comenzo a trabajar en|trabaja en|nuevo trabajo|actualizacion laboral)\b/
+                rx: /\b(started working at|works at|new job|job update|comenzo a trabajar en|trabaja en|nuevo trabajo|actualizacion laboral)\b/,
+                tokens: ['a commence a travailler chez', 'travaille chez', 'comecou a trabalhar na', 'trabalha na', 'arbeitet bei', 'hat einen neuen job', 'ha iniziato a lavorare presso', 'lavora presso']
             },
             {
                 enabled: sf.hideRelationshipUpdates,
                 reason: 'Story Type: Relationship Update',
-                rx: /\b(is in a relationship|got engaged|got married|relationship status|esta en una relacion|se comprometio|se caso|estado de relacion)\b/
+                rx: /\b(is in a relationship|got engaged|got married|relationship status|esta en una relacion|se comprometio|se caso|estado de relacion)\b/,
+                tokens: ['est en couple', 's est fiance', 's est marie', 'status relationnel', 'esta em um relacionamento', 'ficou noivo', 'beziehungsstatus', 'ist in einer beziehung', 'hat sich verlobt', 'hat geheiratet', 'ha una relazione', 'si e fidanzato', 'si e sposato', 'stato sentimentale']
             },
             {
                 enabled: sf.hideGroupActivityPosts,
                 reason: 'Story Type: Group Activity Post',
-                rx: /\b(posted in .* group|shared in .* group|publico en .* grupo|compartio en .* grupo)\b/
+                rx: /\b(posted in .* group|shared in .* group|publico en .* grupo|compartio en .* grupo)\b/,
+                tokens: ['a publie dans le groupe', 'a partage dans le groupe', 'publicou em um grupo', 'compartilhou em um grupo', 'hat in einer gruppe gepostet', 'hat in einer gruppe geteilt', 'ha pubblicato nel gruppo', 'ha condiviso nel gruppo']
             }
         ].filter((r) => r.enabled);
 
@@ -431,7 +445,7 @@ class PF_Cleaner {
             if (!headerSignals.length) return;
 
             for (const rule of rules) {
-                if (headerSignals.some((signal) => rule.rx.test(signal))) {
+                if (headerSignals.some((signal) => rule.rx.test(signal) || this._containsAnyToken(signal, rule.tokens))) {
                     matchedPosts.push({ node: postWrapper, reason: rule.reason });
                     break;
                 }
@@ -1874,7 +1888,7 @@ class PF_Cleaner {
     _looksLikeStoryActivitySignal(text) {
         if (!text) return false;
 
-        return /(friends?|group|commented|liked|reacted|shared a memory|memories on facebook|event|attending|interested in|going to|amigos?|grupo|comento|comentado|gusto|reacciono|recuerdo|recuerdos|evento|asistio|asistira|interesado)/.test(text);
+        return /(friends?|group|commented|liked|reacted|shared a memory|memories on facebook|event|attending|interested in|going to|amigos?|grupo|comento|comentado|gusto|reacciono|recuerdo|recuerdos|evento|asistio|asistira|interesado|amis|groupe|commente|aime|souvenir|evenement|freund|gruppe|kommentiert|gefallt|erinnerung|veranstaltung|interessiert|interessato|partecipa|relazione)/.test(text);
     }
 
     _extractImageSubjectSignals(node) {
@@ -1916,9 +1930,9 @@ class PF_Cleaner {
 
         const hasExternalLinkSelector = this._hasExternalLinkTarget(node);
 
-        const hasVideoAnchor = /(shared (a )?video|watch(ing)?( now)?|reels?|short videos?|video en vivo|compartio (un )?video|ver video|videos? cortos?)/.test(anchorText);
-        const hasPhotoAnchor = /(shared (a )?(photo|album)|photo(s)?( update)?|image(s)?|album|compartio (una )?(foto|imagen)|compartio (un )?album|fotos?|imagenes?)/.test(anchorText);
-        const hasLinkAnchor = /(shared (a )?link|read more|link preview|open link|enlace|leer mas|articulo)/.test(anchorText)
+        const hasVideoAnchor = /(shared (a )?video|watch(ing)?( now)?|reels?|short videos?|video en vivo|compartio (un )?video|ver video|videos? cortos?|a partage (une )?video|video en direct|regarder|partilhou (um )?video|video ao vivo|video curto|kurzvideos?|hat (ein )?video geteilt|ha condiviso (un )?video|guarda (il )?video)/.test(anchorText);
+        const hasPhotoAnchor = /(shared (a )?(photo|album)|photo(s)?( update)?|image(s)?|album|compartio (una )?(foto|imagen)|compartio (un )?album|fotos?|imagenes?|a partage (une )?(photo|image|album)|photo de profil|partilhou (uma )?(foto|imagem|album)|fotos? de perfil|hat (ein )?(foto|bild|album) geteilt|profilbild|titelbild|ha condiviso (una )?(foto|immagine|album)|foto del profilo)/.test(anchorText);
+        const hasLinkAnchor = /(shared (a )?link|read more|link preview|open link|enlace|leer mas|articulo|a partage (un )?lien|lire la suite|apercu du lien|partilhou (um )?link|ler mais|previa do link|hat (einen )?link geteilt|mehr lesen|linkvorschau|ha condiviso (un )?link|leggi di piu|anteprima link)/.test(anchorText)
             || /\bhttps?:\/\/|www\./.test(anchorText);
 
         const evidence = {
@@ -1986,7 +2000,7 @@ class PF_Cleaner {
     _looksLikePostTypeAnchor(text) {
         if (!text) return false;
 
-        return /(video|watch|reel|short video|photo|photos|image|album|shared a link|link preview|read more|enlace|leer mas|articulo|compartio|fotos?|imagenes?)/.test(text);
+        return /(video|watch|reel|short video|photo|photos|image|album|shared a link|link preview|read more|enlace|leer mas|articulo|compartio|fotos?|imagenes?|lien|lire la suite|apercu|partage|linkvorschau|mehr lesen|geteilt|immagine|leggi di piu|anteprima|partilhou|ler mais|previa do link)/.test(text);
     }
 
     _hasExternalLinkTarget(node) {

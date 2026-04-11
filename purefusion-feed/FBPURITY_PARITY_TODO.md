@@ -65,6 +65,9 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Keep disabled by default and sandboxed to avoid layout breakage.
 
 4) Broader multilingual phrase packs (medium)
+- Status: hardening slice in progress.
+- Added: FR/PT/DE/IT phrase coverage for story-activity detection using token-assisted matching.
+- Added: FR/PT/DE/IT phrase coverage for post-type anchor detection (video/photo/link hints).
 - Improve rule coverage across additional locales and synonym variants.
 
 5) Rule diagnostics panel (medium)
