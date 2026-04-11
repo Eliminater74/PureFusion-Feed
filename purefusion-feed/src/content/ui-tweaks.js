@@ -89,8 +89,8 @@ class PF_UiTweaks {
         css += this._buildCustomStylingCss();
 
         css += `
-            .pf-abs-date-label {
-                margin-left: 5px;
+            a.pf-abs-date-anchor::after {
+                content: " - " attr(data-pf-abs-date);
                 color: var(--secondary-text, #b0b3b8) !important;
                 font: 600 11px/1.2 "Segoe UI Variable Text", "Segoe UI", sans-serif;
                 white-space: nowrap;
@@ -113,6 +113,12 @@ class PF_UiTweaks {
         roots.forEach((root) => {
             if (!root || !root.querySelectorAll) return;
 
+            root.querySelectorAll('.pf-abs-date-label').forEach((legacy) => legacy.remove());
+            root.querySelectorAll('a.pf-abs-date-anchor').forEach((anchor) => {
+                anchor.classList.remove('pf-abs-date-anchor');
+                anchor.removeAttribute('data-pf-abs-date');
+            });
+
             const anchors = root.querySelectorAll('a[role="link"][aria-label], a[href][aria-label]');
             anchors.forEach((anchor) => {
                 if (!anchor || !anchor.isConnected) return;
@@ -125,14 +131,8 @@ class PF_UiTweaks {
                 const absoluteText = this._extractAbsoluteTimestampText(anchor);
                 if (!absoluteText) return;
 
-                let label = anchor.nextElementSibling;
-                if (!label || !label.classList || !label.classList.contains('pf-abs-date-label')) {
-                    label = document.createElement('span');
-                    label.className = 'pf-abs-date-label';
-                    anchor.insertAdjacentElement('afterend', label);
-                }
-
-                label.textContent = `- ${absoluteText}`;
+                anchor.classList.add('pf-abs-date-anchor');
+                anchor.setAttribute('data-pf-abs-date', absoluteText);
             });
         });
     }
@@ -203,6 +203,10 @@ class PF_UiTweaks {
 
     _clearAbsoluteTimestampLabels() {
         document.querySelectorAll('.pf-abs-date-label').forEach((el) => el.remove());
+        document.querySelectorAll('a.pf-abs-date-anchor').forEach((anchor) => {
+            anchor.classList.remove('pf-abs-date-anchor');
+            anchor.removeAttribute('data-pf-abs-date');
+        });
     }
 
     _buildCustomStylingCss() {
