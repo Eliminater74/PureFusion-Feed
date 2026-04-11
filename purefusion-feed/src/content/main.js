@@ -478,7 +478,7 @@ class PureFusionApp {
             effective.experienceMode = { active: 'custom' };
         }
 
-        const allowedModes = new Set(['custom', 'clean', 'focus', 'smart', 'classic']);
+        const allowedModes = new Set(['custom', 'clean', 'focus', 'ultrafast', 'smart', 'classic']);
         const requestedMode = String(effective.experienceMode.active || 'custom').toLowerCase();
         const mode = allowedModes.has(requestedMode) ? requestedMode : 'custom';
         effective.experienceMode.active = mode;
@@ -588,6 +588,58 @@ class PureFusionApp {
                     applyWatch: false,
                     applyMarketplace: false,
                     applyOther: false
+                }
+            },
+            ultrafast: {
+                filters: {
+                    removeAds: true,
+                    removeSuggested: true,
+                    removePYMK: true,
+                    removeGroupSuggestions: true,
+                    removePageSuggestions: true,
+                    hideReels: true,
+                    hideStories: true,
+                    hideFundraisers: true,
+                    hideVideoPosts: true,
+                    hidePhotoPosts: true,
+                    removeColoredBackgrounds: true
+                },
+                uiMode: {
+                    compactMode: true,
+                    showLinkPreviews: false
+                },
+                predictions: {
+                    enabled: false,
+                    showBadge: false,
+                    showScoreReasons: false,
+                    showTrending: false,
+                    credibilitySignalsEnabled: false,
+                    showCredibilityBadge: false,
+                    showCredibilityDebugPreview: false
+                },
+                social: {
+                    autoCommentPreview: false,
+                    hideSearchPopupSuggestions: true,
+                    hideSearchTrending: true,
+                    hideSearchRecent: true
+                },
+                llm: {
+                    tldrEnabled: false,
+                    smartCommentEnabled: false,
+                    clickbaitDecoder: false
+                },
+                surfaceControls: {
+                    enabled: true,
+                    applyHome: true,
+                    applyGroups: false,
+                    applyWatch: false,
+                    applyMarketplace: false,
+                    applyOther: false
+                },
+                topbarFilters: {
+                    enabled: true,
+                    hideWatch: true,
+                    hideMarketplace: true
                 }
             },
             smart: {

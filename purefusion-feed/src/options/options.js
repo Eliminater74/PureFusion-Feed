@@ -498,6 +498,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             custom: t('options_mode_profile_custom', 'Uses your exact saved toggles with no additional mode overrides.'),
             clean: t('options_mode_profile_clean', 'Strips ad/suggested clutter and social noise while keeping prediction visuals off for a calmer feed.'),
             focus: t('options_mode_profile_focus', 'Home-first deep focus profile: aggressive clutter cuts, chronology on, and scroll-break guard enabled.'),
+            ultrafast: t('options_mode_profile_ultrafast', 'Text-first speed profile: strips heavy media surfaces, suppresses image/video post types, and minimizes extra UI processing.'),
             smart: t('options_mode_profile_smart', 'Keeps core feed cleanup on while enabling scoring, collapsing low-value posts, and credibility verification signals.'),
             classic: t('options_mode_profile_classic', 'Prioritizes chronological classic feed behavior and suppresses modern algorithmic surfaces like Watch/Marketplace.'),
         };
