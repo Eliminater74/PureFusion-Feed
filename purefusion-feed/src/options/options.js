@@ -390,6 +390,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const btnApplyPreset = document.getElementById('btnApplyPreset');
     const experienceModeSelect = document.getElementById('opt_experience_mode');
     const experienceModeProfile = document.getElementById('pfExperienceModeProfile');
+    const modeRecommendationBadge = document.getElementById('pfModeRecommendationBadge');
     const performanceModeHint = document.getElementById('pfPerformanceModeHint');
     const btnApplyUltraFastRecommendation = document.getElementById('btnApplyUltraFastRecommendation');
     const customCssSnippetSelect = document.getElementById('opt_uiMode_customCssSnippet');
@@ -592,6 +593,40 @@ document.addEventListener('DOMContentLoaded', async () => {
         btnApplyUltraFastRecommendation.style.display = 'inline-flex';
     }
 
+    function renderModeRecommendationBadge(mode) {
+        if (!modeRecommendationBadge) return;
+
+        const activeMode = String(mode || 'custom').toLowerCase();
+        const tier = getDevicePerformanceTier();
+
+        modeRecommendationBadge.classList.remove('rec-low', 'rec-mid', 'rec-ok');
+
+        if (tier === 'high') {
+            modeRecommendationBadge.textContent = t('options_mode_recommendation_balanced', 'Balanced: current mode is fine');
+            modeRecommendationBadge.classList.add('rec-ok');
+            modeRecommendationBadge.style.display = 'inline-flex';
+            return;
+        }
+
+        if (activeMode === 'ultrafast') {
+            modeRecommendationBadge.textContent = t('options_mode_recommendation_active', 'Recommended mode active');
+            modeRecommendationBadge.classList.add('rec-ok');
+            modeRecommendationBadge.style.display = 'inline-flex';
+            return;
+        }
+
+        if (tier === 'low') {
+            modeRecommendationBadge.textContent = t('options_mode_recommendation_low', 'Recommended: Ultra Fast');
+            modeRecommendationBadge.classList.add('rec-low');
+            modeRecommendationBadge.style.display = 'inline-flex';
+            return;
+        }
+
+        modeRecommendationBadge.textContent = t('options_mode_recommendation_mid', 'Optional: Ultra Fast for heavy sessions');
+        modeRecommendationBadge.classList.add('rec-mid');
+        modeRecommendationBadge.style.display = 'inline-flex';
+    }
+
     async function applyQuickMode(mode, successToast) {
         if (!experienceModeSelect) return;
         experienceModeSelect.value = mode;
@@ -623,6 +658,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const activeMode = currentSettings.experienceMode?.active || (experienceModeSelect ? experienceModeSelect.value : 'custom');
         renderExperienceModeProfile(activeMode);
         renderPerformanceModeHint(activeMode);
+        renderModeRecommendationBadge(activeMode);
     }
 
     async function saveSettingsFromUI(successMessageInput = null) {
@@ -827,12 +863,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         experienceModeSelect.addEventListener('change', () => {
             renderExperienceModeProfile(experienceModeSelect.value);
             renderPerformanceModeHint(experienceModeSelect.value);
+            renderModeRecommendationBadge(experienceModeSelect.value);
         });
     }
 
     if (btnApplyUltraFastRecommendation && experienceModeSelect) {
         btnApplyUltraFastRecommendation.addEventListener('click', async () => {
             await applyQuickMode('ultrafast', t('options_toast_ultrafast_applied', 'Ultra Fast Mode applied for this device.'));
+            renderModeRecommendationBadge('ultrafast');
         });
     }
 
