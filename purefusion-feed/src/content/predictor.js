@@ -735,7 +735,7 @@ class PF_Predictor {
         if (String(postNode?.dataset?.pfRagebait || '') === 'true') {
             return {
                 severity: 'high',
-                label: 'Likely Engagement Bait',
+                label: 'Looks like engagement bait',
                 tone: 'high emotional manipulation pattern'
             };
         }
@@ -743,7 +743,7 @@ class PF_Predictor {
         if (credibilityLevel === 'high') {
             return {
                 severity: 'high',
-                label: 'Suspicious Claim Risk',
+                label: 'Possible misleading claim',
                 tone: 'multiple credibility risk signals'
             };
         }
@@ -751,7 +751,7 @@ class PF_Predictor {
         if (credibilityLevel === 'warn') {
             return {
                 severity: 'warn',
-                label: 'Verify Source First',
+                label: 'Source needs verification',
                 tone: 'credibility caution detected'
             };
         }
@@ -759,7 +759,7 @@ class PF_Predictor {
         if (predictions.enabled && score <= lowThreshold) {
             return {
                 severity: 'warn',
-                label: 'Low-Value Content',
+                label: 'Likely low-value content',
                 tone: 'low relevance for your profile'
             };
         }

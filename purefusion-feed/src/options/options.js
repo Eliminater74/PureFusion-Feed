@@ -390,6 +390,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const btnApplyPreset = document.getElementById('btnApplyPreset');
     const experienceModeSelect = document.getElementById('opt_experience_mode');
     const experienceModeProfile = document.getElementById('pfExperienceModeProfile');
+    const performanceModeHint = document.getElementById('pfPerformanceModeHint');
+    const btnApplyUltraFastRecommendation = document.getElementById('btnApplyUltraFastRecommendation');
     const customCssSnippetSelect = document.getElementById('opt_uiMode_customCssSnippet');
     const btnApplyCustomCssSnippet = document.getElementById('btnApplyCustomCssSnippet');
     const customCssTextarea = document.getElementById('opt_uiMode_customCss');
@@ -551,6 +553,42 @@ document.addEventListener('DOMContentLoaded', async () => {
         experienceModeProfile.textContent = profiles[key] || profiles.custom;
     }
 
+    function getDevicePerformanceTier() {
+        const cores = Number(navigator.hardwareConcurrency || 0);
+        const memory = Number(navigator.deviceMemory || 0);
+
+        const low = (cores > 0 && cores <= 4) || (memory > 0 && memory <= 4);
+        if (low) return 'low';
+
+        const moderate = (cores > 0 && cores <= 6) || (memory > 0 && memory <= 8);
+        return moderate ? 'moderate' : 'high';
+    }
+
+    function renderPerformanceModeHint(mode) {
+        if (!performanceModeHint || !btnApplyUltraFastRecommendation) return;
+
+        const activeMode = String(mode || 'custom').toLowerCase();
+        const tier = getDevicePerformanceTier();
+
+        if (activeMode === 'ultrafast' || tier === 'high') {
+            performanceModeHint.style.display = 'none';
+            performanceModeHint.textContent = '';
+            btnApplyUltraFastRecommendation.style.display = 'none';
+            return;
+        }
+
+        if (tier === 'low') {
+            performanceModeHint.textContent = t('options_mode_perf_hint_low', 'This device may perform better with Ultra Fast Mode (text-first, lower CPU/GPU load).');
+            performanceModeHint.style.display = 'block';
+            btnApplyUltraFastRecommendation.style.display = 'inline-flex';
+            return;
+        }
+
+        performanceModeHint.textContent = t('options_mode_perf_hint_mid', 'Ultra Fast Mode can reduce lag during heavy sessions on this device.');
+        performanceModeHint.style.display = 'block';
+        btnApplyUltraFastRecommendation.style.display = 'inline-flex';
+    }
+
     function loadUIFromSettings() {
         // Handle mapped standard inputs
         for (const [domId, mapping] of Object.entries(uiMap)) {
@@ -571,7 +609,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('opt_keywords_allowlistFriends').value = (currentSettings.keywords.allowlistFriends || []).join(', ');
 
         renderThemePreview(currentSettings.uiMode.theme, currentSettings.uiMode.fontSizeScale);
-        renderExperienceModeProfile(currentSettings.experienceMode?.active || (experienceModeSelect ? experienceModeSelect.value : 'custom'));
+        const activeMode = currentSettings.experienceMode?.active || (experienceModeSelect ? experienceModeSelect.value : 'custom');
+        renderExperienceModeProfile(activeMode);
+        renderPerformanceModeHint(activeMode);
     }
 
     async function saveSettingsFromUI(successMessageInput = null) {
@@ -775,6 +815,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (experienceModeSelect) {
         experienceModeSelect.addEventListener('change', () => {
             renderExperienceModeProfile(experienceModeSelect.value);
+            renderPerformanceModeHint(experienceModeSelect.value);
+        });
+    }
+
+    if (btnApplyUltraFastRecommendation && experienceModeSelect) {
+        btnApplyUltraFastRecommendation.addEventListener('click', async () => {
+            experienceModeSelect.value = 'ultrafast';
+            renderExperienceModeProfile('ultrafast');
+            renderPerformanceModeHint('ultrafast');
+            await saveSettingsFromUI(t('options_toast_ultrafast_applied', 'Ultra Fast Mode applied for this device.'));
         });
     }
 

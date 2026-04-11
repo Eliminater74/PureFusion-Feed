@@ -136,6 +136,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Fixed: TL;DR "Summarize with AI" now uses stable post anchors and full-document LLM sweep to reduce modal rerender vanish.
 - Hardened: unified post-level PureFusion Insight chip now consolidates score + credibility + verify/debug details under one expandable surface.
 - Polish: insight chip status copy now uses clearer user-facing phrasing (engagement bait / suspicious claim risk / low-value / high relevance).
+- Polish: insight chip labels further humanized ("looks like engagement bait", "possible misleading claim", "likely low-value content").
 - Fixed: absolute timestamp visibility toggle now actively renders readable post date labels next to post timestamps.
 - Fixed: timestamp enhancement no longer injects sibling DOM nodes into Facebook metadata row (prevents timestamp line flicker/vanish).
 - Hardened: timestamp matcher now targets only compact date/time anchors near post headers and avoids mutating non-timestamp author/action links.
@@ -151,6 +152,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Hardened: stronger per-mode behavior differentiation (Home-first Focus profile, smarter Smart scoring posture, cleaner Classic/Clean algorithm suppression).
 - Added: options-side live mode profile helper text so each mode intent is explicit before saving.
 - Added: Ultra Fast mode patch for text-first performance posture (aggressive media suppression + reduced prediction/LLM overhead + Home-first surface scope).
+- Added: device-aware Ultra Fast recommendation hint + one-click apply action in options (low/moderate hardware guidance).
 
 10) Performance layer (high)
 - Mutation batching and pre-filter passes before expensive processing.
