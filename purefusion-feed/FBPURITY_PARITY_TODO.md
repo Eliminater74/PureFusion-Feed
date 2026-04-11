@@ -137,6 +137,8 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Implemented: persistent mode selector with Custom, Clean, Focus, Smart, Classic.
 - Scope mode behavior to existing filters + predictions + keyword rules.
 - Keep mode switching instant and reversible.
+- Hardened: stronger per-mode behavior differentiation (Home-first Focus profile, smarter Smart scoring posture, cleaner Classic/Clean algorithm suppression).
+- Added: options-side live mode profile helper text so each mode intent is explicit before saving.
 
 10) Performance layer (high)
 - Mutation batching and pre-filter passes before expensive processing.

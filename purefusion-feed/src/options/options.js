@@ -342,6 +342,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const themePreviewCard = document.getElementById('pfThemePreviewCard');
     const presetSelect = document.getElementById('opt_preset_pack');
     const btnApplyPreset = document.getElementById('btnApplyPreset');
+    const experienceModeSelect = document.getElementById('opt_experience_mode');
+    const experienceModeProfile = document.getElementById('pfExperienceModeProfile');
     const customCssSnippetSelect = document.getElementById('opt_uiMode_customCssSnippet');
     const btnApplyCustomCssSnippet = document.getElementById('btnApplyCustomCssSnippet');
     const customCssTextarea = document.getElementById('opt_uiMode_customCss');
@@ -487,6 +489,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         themePreviewCard.style.fontSize = `${previewScale}%`;
     }
 
+    function renderExperienceModeProfile(mode) {
+        if (!experienceModeProfile) return;
+
+        const profiles = {
+            custom: t('options_mode_profile_custom', 'Uses your exact saved toggles with no additional mode overrides.'),
+            clean: t('options_mode_profile_clean', 'Strips ad/suggested clutter and social noise while keeping prediction visuals off for a calmer feed.'),
+            focus: t('options_mode_profile_focus', 'Home-first deep focus profile: aggressive clutter cuts, chronology on, and scroll-break guard enabled.'),
+            smart: t('options_mode_profile_smart', 'Keeps core feed cleanup on while enabling scoring, collapsing low-value posts, and credibility verification signals.'),
+            classic: t('options_mode_profile_classic', 'Prioritizes chronological classic feed behavior and suppresses modern algorithmic surfaces like Watch/Marketplace.'),
+        };
+
+        const key = String(mode || 'custom').toLowerCase();
+        experienceModeProfile.textContent = profiles[key] || profiles.custom;
+    }
+
     function loadUIFromSettings() {
         // Handle mapped standard inputs
         for (const [domId, mapping] of Object.entries(uiMap)) {
@@ -507,6 +524,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('opt_keywords_allowlistFriends').value = (currentSettings.keywords.allowlistFriends || []).join(', ');
 
         renderThemePreview(currentSettings.uiMode.theme, currentSettings.uiMode.fontSizeScale);
+        renderExperienceModeProfile(currentSettings.experienceMode?.active || (experienceModeSelect ? experienceModeSelect.value : 'custom'));
     }
 
     async function saveSettingsFromUI(successMessageInput = null) {
@@ -694,6 +712,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (themeSelect) {
         themeSelect.addEventListener('change', () => {
             renderThemePreview(themeSelect.value, fontScaleInput ? fontScaleInput.value : 100);
+        });
+    }
+
+    if (experienceModeSelect) {
+        experienceModeSelect.addEventListener('change', () => {
+            renderExperienceModeProfile(experienceModeSelect.value);
         });
     }
 

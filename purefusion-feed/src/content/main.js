@@ -498,9 +498,36 @@ class PureFusionApp {
                     hideStories: true,
                     hideFundraisers: true
                 },
+                storyFilters: {
+                    hideBecameFriends: true,
+                    hideJoinedGroups: true,
+                    hideCommentedOnThis: true,
+                    hideLikedThis: true
+                },
                 sidebar: {
                     enableModuleFilters: true,
                     hideRightTrending: true
+                },
+                social: {
+                    hideSearchPopupSuggestions: true,
+                    hideSearchTrending: true,
+                    hideSearchRecent: true,
+                    autoCommentPreview: false
+                },
+                predictions: {
+                    enabled: false,
+                    showBadge: false,
+                    credibilitySignalsEnabled: false,
+                    showCredibilityBadge: false,
+                    showCredibilityDebugPreview: false
+                },
+                surfaceControls: {
+                    enabled: true,
+                    applyHome: true,
+                    applyGroups: true,
+                    applyWatch: false,
+                    applyMarketplace: false,
+                    applyOther: true
                 }
             },
             focus: {
@@ -512,7 +539,24 @@ class PureFusionApp {
                     removePageSuggestions: true,
                     hideReels: true,
                     hideMarketplace: true,
-                    hideStories: true
+                    hideStories: true,
+                    hideFundraisers: true
+                },
+                storyFilters: {
+                    hideBecameFriends: true,
+                    hideJoinedGroups: true,
+                    hideCommentedOnThis: true,
+                    hideLikedThis: true,
+                    hideAttendingEvents: true,
+                    hideSharedMemories: true,
+                    hideProfilePhotoUpdates: true,
+                    hideCoverPhotoUpdates: true,
+                    hideLifeEvents: true,
+                    hideCheckIns: true,
+                    hideMilestones: true,
+                    hideJobWorkUpdates: true,
+                    hideRelationshipUpdates: true,
+                    hideGroupActivityPosts: true
                 },
                 uiMode: {
                     friendsOnlyMode: true,
@@ -520,24 +564,62 @@ class PureFusionApp {
                     enforceChronologicalFeed: true
                 },
                 predictions: {
-                    enabled: false
+                    enabled: false,
+                    showBadge: false,
+                    credibilitySignalsEnabled: false,
+                    showCredibilityBadge: false,
+                    showCredibilityDebugPreview: false
+                },
+                social: {
+                    autoCommentPreview: false,
+                    hideSearchPopupSuggestions: true,
+                    hideSearchTrending: true,
+                    hideSearchRecent: true
+                },
+                wellbeing: {
+                    infiniteScrollStopper: true,
+                    scrollLimitPosts: 18,
+                    sessionTimer: true
+                },
+                surfaceControls: {
+                    enabled: true,
+                    applyHome: true,
+                    applyGroups: false,
+                    applyWatch: false,
+                    applyMarketplace: false,
+                    applyOther: false
                 }
             },
             smart: {
                 filters: {
                     removeAds: true,
+                    removeSuggested: true,
                     hideFundraisers: true
                 },
                 predictions: {
                     enabled: true,
                     showBadge: true,
+                    showScoreReasons: true,
                     dimLowInterest: true,
+                    collapseLowInterest: true,
                     highlightHighInterest: true,
-                    showTrending: true
+                    showTrending: true,
+                    credibilitySignalsEnabled: true,
+                    showCredibilityBadge: true,
+                    strictCredibilityPenalty: true,
+                    showCredibilityDebugPreview: false,
+                    lowThreshold: 28,
+                    highThreshold: 74
                 },
                 storyFilters: {
                     hideLikedThis: true,
-                    hideCommentedOnThis: true
+                    hideCommentedOnThis: true,
+                    hideGroupActivityPosts: true
+                },
+                wellbeing: {
+                    clickbaitBlocker: true,
+                    ragebaitDetector: true,
+                    dailyFeedReportEnabled: true
                 }
             },
             classic: {
@@ -552,12 +634,41 @@ class PureFusionApp {
                     hideStories: true,
                     hideFundraisers: true
                 },
+                storyFilters: {
+                    hideBecameFriends: true,
+                    hideJoinedGroups: true,
+                    hideCommentedOnThis: true,
+                    hideLikedThis: true
+                },
                 uiMode: {
                     enforceChronologicalFeed: true,
                     compactMode: true
                 },
                 social: {
-                    hideSearchPopupSuggestions: true
+                    hideSearchPopupSuggestions: true,
+                    hideSearchTrending: true,
+                    hideSearchRecent: true,
+                    autoCommentPreview: false
+                },
+                predictions: {
+                    enabled: false,
+                    showBadge: false,
+                    credibilitySignalsEnabled: false,
+                    showCredibilityBadge: false,
+                    showCredibilityDebugPreview: false
+                },
+                topbarFilters: {
+                    enabled: true,
+                    hideWatch: true,
+                    hideMarketplace: true
+                },
+                surfaceControls: {
+                    enabled: true,
+                    applyHome: true,
+                    applyGroups: true,
+                    applyWatch: false,
+                    applyMarketplace: false,
+                    applyOther: true
                 }
             }
         };
