@@ -97,6 +97,7 @@ class PF_Predictor {
                 this._clearPredictionDecorations(postNode);
                 delete postNode.dataset.pfPredictProcessed;
                 delete postNode.dataset.pfScored;
+                delete postNode.dataset.pfInsightChipInjected;
                 delete postNode.dataset.pfCredBadgeInjected;
                 delete postNode.dataset.pfCredDebugInjected;
             });
@@ -212,7 +213,7 @@ class PF_Predictor {
 
     _cleanupLeakedDebugChips(activePosts = []) {
         const activeSet = new Set(Array.isArray(activePosts) ? activePosts : []);
-        const leaked = Array.from(document.querySelectorAll('.pf-cred-debug-chip, .pf-cred-block'));
+        const leaked = Array.from(document.querySelectorAll('.pf-cred-debug-chip, .pf-cred-block, .pf-insight-chip'));
         leaked.forEach((chip) => {
             const host = chip.closest('[data-pagelet], [role="article"], [role="dialog"]');
             const relatedToActive = activeSet.size === 0
@@ -244,7 +245,7 @@ class PF_Predictor {
     }
 
     _processSingleNode(node) {
-        const predictVersion = 'v10-cred-dialog-persist';
+        const predictVersion = 'v11-unified-insight-chip';
 
         if (node.dataset.pfPredictProcessed === predictVersion) {
             this._refreshPredictionDecorations(node);
@@ -261,17 +262,14 @@ class PF_Predictor {
         // 2. Score the post based on history
         const scoreDetails = this._scorePost(node);
         const score = scoreDetails.score;
+        node.dataset.pfScored = String(score);
 
         if (this.settings?.predictions?.enabled) {
             this._applyScoreEffects(node, score, scoreDetails);
         }
 
         // 3. Apply Visual Badges and True-Affinity Flexbox Sorting
-        if (this.settings?.predictions?.enabled) {
-            this._injectBadge(node, score, scoreDetails);
-        }
-        this._injectCredibilityBadge(node, scoreDetails);
-        this._injectCredibilityDebugBadge(node, scoreDetails);
+        this._injectUnifiedInsightChip(node, scoreDetails);
 
         if (this.settings?.predictions?.enabled && this.settings.predictions.trueAffinitySort) {
             this._applyNativeAffinitySort(node, score);
@@ -288,33 +286,23 @@ class PF_Predictor {
             score: Number.isFinite(score) ? score : 0
         };
 
-        if (!this._hasCredBlockElement(postNode)) {
-            delete postNode.dataset.pfCredBadgeInjected;
+        const shouldShowScore = !!predictions.enabled && predictions.showBadge !== false;
+        const shouldShowCred = !!predictions.credibilitySignalsEnabled
+            && (predictions.showCredibilityBadge !== false || !!predictions.showCredibilityDebugPreview);
+
+        if (!shouldShowScore && !shouldShowCred) {
+            postNode.querySelectorAll('.pf-insight-chip').forEach((node) => node.remove());
+            delete postNode.dataset.pfInsightChipInjected;
+            return;
         }
 
-        if (!this._hasCredDebugElement(postNode)) {
-            delete postNode.dataset.pfCredDebugInjected;
-        }
-
-        if (!predictions.credibilitySignalsEnabled || predictions.showCredibilityBadge === false) {
-            postNode.querySelectorAll('.pf-cred-block').forEach((node) => node.remove());
-            delete postNode.dataset.pfCredBadgeInjected;
-        } else {
-            this._injectCredibilityBadge(postNode, scoreDetails);
-        }
-
-        if (!predictions.credibilitySignalsEnabled || !predictions.showCredibilityDebugPreview) {
-            postNode.querySelectorAll('.pf-cred-debug-chip').forEach((node) => node.remove());
-            delete postNode.dataset.pfCredDebugInjected;
-        } else {
-            this._injectCredibilityDebugBadge(postNode, scoreDetails);
-        }
+        this._injectUnifiedInsightChip(postNode, scoreDetails);
     }
 
     _clearPredictionDecorations(postNode) {
         if (!postNode || !postNode.querySelectorAll) return;
 
-        postNode.querySelectorAll('.pf-score-badge, .pf-cred-block, .pf-cred-debug-chip, .pf-cred-inline-anchor, .pf-cred-dialog-anchor').forEach((node) => {
+        postNode.querySelectorAll('.pf-score-badge, .pf-cred-block, .pf-cred-debug-chip, .pf-insight-chip, .pf-cred-inline-anchor, .pf-cred-dialog-anchor').forEach((node) => {
             if (node && node.remove) node.remove();
         });
 
@@ -335,6 +323,8 @@ class PF_Predictor {
         if (prev && prev.classList && prev.classList.contains('pf-predict-chip') && prev.remove) {
             prev.remove();
         }
+
+        delete postNode.dataset.pfInsightChipInjected;
     }
 
     _applyNativeAffinitySort(postNode, score) {
@@ -579,6 +569,171 @@ class PF_Predictor {
         postNode.dataset.pfScored = score;
     }
 
+    _injectUnifiedInsightChip(postNode, scoreDetails = null) {
+        if (!postNode || postNode.dataset.pfCollapsedLowScore === 'true') return;
+
+        const predictions = this.settings?.predictions || {};
+        const shouldShowScore = !!predictions.enabled && predictions.showBadge !== false;
+        const shouldShowCred = !!predictions.credibilitySignalsEnabled
+            && (predictions.showCredibilityBadge !== false || !!predictions.showCredibilityDebugPreview);
+        if (!shouldShowScore && !shouldShowCred) return;
+
+        const scoreValue = Number(scoreDetails?.score);
+        const score = Number.isFinite(scoreValue)
+            ? scoreValue
+            : Math.max(0, Number(postNode.dataset.pfScored || 0));
+
+        const insight = this._resolveUnifiedInsightState(postNode, score);
+        const reasonSummary = String(scoreDetails?.reasonSummary || '').trim();
+        const reasonDetails = Array.isArray(scoreDetails?.reasonDetails) ? scoreDetails.reasonDetails : [];
+
+        const credibilitySummary = String(postNode.dataset.pfCredibilitySummary || '').trim();
+        const reasons = String(postNode.dataset.pfCredibilityReasons || '')
+            .split('||')
+            .map((item) => item.trim())
+            .filter(Boolean)
+            .slice(0, 4);
+        const claimSeed = String(postNode.dataset.pfCredibilityClaimSeed || '').trim();
+        const sourceHint = String(postNode.dataset.pfCredibilitySourceHint || '').trim();
+        const verificationUrl = this._buildVerificationSearchUrl(claimSeed || credibilitySummary);
+
+        const chip = document.createElement('div');
+        chip.className = `pf-insight-chip pf-insight-${insight.severity}`;
+
+        const showReasons = predictions.showScoreReasons !== false;
+        const summaryBits = [];
+
+        if (shouldShowScore) {
+            summaryBits.push(`PF ${score}`);
+        }
+
+        if (showReasons && reasonSummary) {
+            summaryBits.push(reasonSummary);
+        }
+
+        if (credibilitySummary) {
+            summaryBits.push(credibilitySummary);
+        }
+
+        const summaryText = summaryBits.join(' | ') || insight.label;
+        const safeSummaryText = this._escapeHtml(summaryText);
+        const safeStatusText = this._escapeHtml(insight.label);
+        const toneText = this._escapeHtml(insight.tone);
+        const detailHtml = this._buildUnifiedInsightDetailsHtml({
+            score,
+            shouldShowScore,
+            reasonDetails,
+            showReasons,
+            credibilitySummary,
+            credibilityReasons: reasons,
+            sourceHint,
+            verificationUrl,
+            debugEnabled: !!predictions.showCredibilityDebugPreview,
+            points: Math.max(0, Number(postNode.dataset.pfCredibilityPoints || 0)),
+            sourceTier: String(postNode.dataset.pfCredibilitySourceTier || 'none')
+        });
+
+        chip.innerHTML = `
+            <div class="pf-insight-row">
+                <span class="pf-insight-status">${safeStatusText}</span>
+                <span class="pf-insight-summary" title="${safeSummaryText}">${safeSummaryText}</span>
+                <button type="button" class="pf-insight-toggle">Details</button>
+            </div>
+            <div class="pf-insight-meta">Signal: ${toneText}</div>
+            <div class="pf-insight-details" hidden>${detailHtml}</div>
+        `;
+
+        const toggle = chip.querySelector('.pf-insight-toggle');
+        const details = chip.querySelector('.pf-insight-details');
+        if (toggle && details) {
+            toggle.addEventListener('click', () => {
+                const isHidden = !!details.hidden;
+                details.hidden = !isHidden;
+                toggle.textContent = isHidden ? 'Hide' : 'Details';
+            });
+        }
+
+        this._insertCredibilityElement(postNode, chip);
+        postNode.dataset.pfInsightChipInjected = 'true';
+    }
+
+    _resolveUnifiedInsightState(postNode, score) {
+        const predictions = this.settings?.predictions || {};
+        const lowThreshold = Number(predictions.lowThreshold || 20);
+        const highThreshold = Number(predictions.highThreshold || 80);
+        const credibilityLevel = String(postNode?.dataset?.pfCredibilityLevel || '').toLowerCase();
+
+        if (String(postNode?.dataset?.pfRagebait || '') === 'true') {
+            return { severity: 'high', label: 'Engagement Bait', tone: 'high-risk pattern' };
+        }
+
+        if (credibilityLevel === 'high') {
+            return { severity: 'high', label: 'Suspicious Claim', tone: 'credibility warning' };
+        }
+
+        if (credibilityLevel === 'warn') {
+            return { severity: 'warn', label: 'Verify Source', tone: 'credibility caution' };
+        }
+
+        if (predictions.enabled && score <= lowThreshold) {
+            return { severity: 'warn', label: 'Low Value', tone: 'low-interest score' };
+        }
+
+        if (predictions.enabled && score >= highThreshold) {
+            return { severity: 'ok', label: 'High Quality', tone: 'high-interest score' };
+        }
+
+        return { severity: 'ok', label: 'Neutral', tone: 'balanced signals' };
+    }
+
+    _buildUnifiedInsightDetailsHtml(data) {
+        const items = [];
+
+        if (data.shouldShowScore) {
+            items.push(`<p><strong>PF Score:</strong> ${Number(data.score || 0)}</p>`);
+        }
+
+        if (data.showReasons && Array.isArray(data.reasonDetails) && data.reasonDetails.length) {
+            const scoreItems = data.reasonDetails
+                .slice(0, 4)
+                .map((reason) => `<li>${this._escapeHtml(reason)}</li>`)
+                .join('');
+            items.push(`<div class="pf-insight-section"><div class="pf-insight-section-title">Score signals</div><ul>${scoreItems}</ul></div>`);
+        }
+
+        if (data.credibilitySummary) {
+            items.push(`<p><strong>Credibility:</strong> ${this._escapeHtml(data.credibilitySummary)}</p>`);
+        }
+
+        if (Array.isArray(data.credibilityReasons) && data.credibilityReasons.length) {
+            const credItems = data.credibilityReasons
+                .map((reason) => `<li>${this._escapeHtml(reason)}</li>`)
+                .join('');
+            items.push(`<div class="pf-insight-section"><div class="pf-insight-section-title">Why flagged</div><ul>${credItems}</ul></div>`);
+        }
+
+        if (data.sourceHint) {
+            items.push(`<p class="pf-insight-source"><strong>Source hint:</strong> ${this._escapeHtml(data.sourceHint)}</p>`);
+        }
+
+        if (data.verificationUrl) {
+            const safeUrl = this._escapeHtml(data.verificationUrl);
+            items.push(`<div class="pf-insight-actions"><a class="pf-insight-action-link" href="${safeUrl}" target="_blank" rel="noopener noreferrer">Verify this claim</a></div>`);
+        }
+
+        if (data.debugEnabled) {
+            const tier = this._escapeHtml(String(data.sourceTier || 'none'));
+            const points = Math.max(0, Number(data.points || 0));
+            items.push(`<p class="pf-insight-debug"><strong>Debug:</strong> points ${points}, source tier ${tier}</p>`);
+        }
+
+        if (!items.length) {
+            return '<p>No additional details yet.</p>';
+        }
+
+        return items.join('');
+    }
+
     _injectCredibilityBadge(postNode, scoreDetails = null) {
         const predictions = this.settings?.predictions || {};
         if (!predictions.credibilitySignalsEnabled) return;
@@ -783,6 +938,12 @@ class PF_Predictor {
 
     _upsertCredElement(anchor, element) {
         if (!anchor || !element || !element.classList) return;
+
+        if (element.classList.contains('pf-insight-chip')) {
+            anchor.querySelectorAll('.pf-insight-chip, .pf-cred-debug-chip, .pf-cred-block, .pf-score-badge').forEach((existing) => {
+                if (existing && existing.remove) existing.remove();
+            });
+        }
 
         if (element.classList.contains('pf-cred-debug-chip')) {
             anchor.querySelectorAll('.pf-cred-debug-chip').forEach((existing) => {
@@ -1232,6 +1393,156 @@ class PF_Predictor {
             .pf-predict-chip button:hover {
                 border-color: rgba(255, 171, 180, 0.95);
                 color: #ffffff;
+            }
+
+            .pf-insight-chip {
+                display: block;
+                width: min(480px, calc(100vw - 48px));
+                margin: 6px 8px 4px;
+                padding: 6px 8px;
+                border-radius: 12px;
+                border: 1px solid rgba(126, 151, 188, 0.5);
+                background: rgba(20, 26, 38, 0.95);
+                color: #d9e7fb;
+                font: 700 11px/1.32 "Segoe UI Variable Text", "Segoe UI", sans-serif;
+                position: relative;
+                z-index: 1;
+            }
+
+            .pf-insight-chip.pf-insight-ok {
+                border-color: rgba(126, 226, 255, 0.56);
+                background: rgba(23, 41, 56, 0.93);
+            }
+
+            .pf-insight-chip.pf-insight-warn {
+                border-color: rgba(255, 209, 102, 0.62);
+                background: rgba(60, 45, 22, 0.93);
+            }
+
+            .pf-insight-chip.pf-insight-high {
+                border-color: rgba(255, 142, 160, 0.72);
+                background: rgba(66, 26, 36, 0.94);
+            }
+
+            .pf-insight-row {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .pf-insight-status {
+                display: inline-flex;
+                align-items: center;
+                border-radius: 999px;
+                padding: 2px 8px;
+                border: 1px solid rgba(165, 190, 226, 0.62);
+                background: rgba(25, 34, 52, 0.65);
+                font-weight: 800;
+                letter-spacing: 0.03em;
+                text-transform: uppercase;
+                flex-shrink: 0;
+            }
+
+            .pf-insight-summary {
+                flex: 1;
+                min-width: 0;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                color: #deebff;
+                font-weight: 700;
+            }
+
+            .pf-insight-toggle {
+                appearance: none;
+                border: 1px solid rgba(171, 190, 221, 0.62);
+                background: rgba(24, 31, 44, 0.94);
+                color: #e4eeff;
+                border-radius: 999px;
+                padding: 2px 9px;
+                cursor: pointer;
+                font: 700 10px/1.2 "Segoe UI Variable Text", "Segoe UI", sans-serif;
+                flex-shrink: 0;
+            }
+
+            .pf-insight-toggle:hover {
+                border-color: rgba(210, 226, 255, 0.92);
+                color: #ffffff;
+            }
+
+            .pf-insight-meta {
+                margin-top: 3px;
+                color: #bad0ef;
+                font-size: 10px;
+                font-weight: 700;
+            }
+
+            .pf-insight-details {
+                margin-top: 6px;
+                padding-top: 6px;
+                border-top: 1px solid rgba(144, 166, 198, 0.28);
+                color: #e8f0ff;
+                font: 600 10px/1.34 "Segoe UI Variable Text", "Segoe UI", sans-serif;
+            }
+
+            .pf-insight-details[hidden] {
+                display: none;
+            }
+
+            .pf-insight-details p {
+                margin: 0 0 6px;
+                color: #d4e3fa;
+            }
+
+            .pf-insight-section {
+                margin: 0 0 6px;
+            }
+
+            .pf-insight-section-title {
+                margin-bottom: 2px;
+                color: #f0f6ff;
+                font-weight: 800;
+                text-transform: uppercase;
+                letter-spacing: 0.03em;
+                font-size: 10px;
+            }
+
+            .pf-insight-section ul {
+                margin: 0 0 0 15px;
+                padding: 0;
+                display: grid;
+                gap: 2px;
+            }
+
+            .pf-insight-source {
+                color: #c6daf8 !important;
+            }
+
+            .pf-insight-debug {
+                color: #9bcff9 !important;
+                margin-bottom: 0 !important;
+            }
+
+            .pf-insight-actions {
+                margin-bottom: 6px;
+            }
+
+            .pf-insight-action-link {
+                display: inline-flex;
+                align-items: center;
+                text-decoration: none;
+                border: 1px solid rgba(136, 188, 255, 0.6);
+                border-radius: 999px;
+                padding: 3px 10px;
+                background: rgba(29, 58, 102, 0.35);
+                color: #d5e8ff;
+                font: 700 10px/1.2 "Segoe UI Variable Text", "Segoe UI", sans-serif;
+            }
+
+            .pf-insight-action-link:hover {
+                border-color: rgba(162, 210, 255, 0.95);
+                color: #ffffff;
+                background: rgba(39, 77, 132, 0.52);
             }
 
             .pf-cred-chip {

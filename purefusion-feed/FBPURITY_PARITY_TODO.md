@@ -130,6 +130,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Fixed: duplicate dialog debug chips replaced via upsert (single debug + single verify block per post view).
 - Fixed: dialog-persist checks now detect chips anchored outside post body and reattach after rerenders.
 - Fixed: TL;DR "Summarize with AI" now uses stable post anchors and full-document LLM sweep to reduce modal rerender vanish.
+- Hardened: unified post-level PureFusion Insight chip now consolidates score + credibility + verify/debug details under one expandable surface.
 
 9) Feed mode presets (high)
 - Status: initial implementation complete.
