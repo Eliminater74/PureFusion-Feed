@@ -18,6 +18,7 @@ class PF_Predictor {
         this._stateDirty = false;
         this.syncIntervalId = null;
         this.boundVisibilityHandler = null;
+        this.boundInsightToggleHandler = null;
         this._stylesInjected = false;
         
         this._injectPredictorStyles();
@@ -45,6 +46,11 @@ class PF_Predictor {
                 if (!document.hidden) this._syncState();
             };
             document.addEventListener('visibilitychange', this.boundVisibilityHandler);
+        }
+
+        if (!this.boundInsightToggleHandler) {
+            this.boundInsightToggleHandler = this._onInsightToggleClick.bind(this);
+            document.addEventListener('click', this.boundInsightToggleHandler, true);
         }
     }
 
@@ -654,22 +660,35 @@ class PF_Predictor {
             <div class="pf-insight-details"${detailsHiddenAttr}>${detailHtml}</div>
         `;
 
-        const toggle = chip.querySelector('.pf-insight-toggle');
-        const details = chip.querySelector('.pf-insight-details');
-        if (toggle && details) {
-            toggle.addEventListener('click', (event) => {
-                if (event && event.preventDefault) event.preventDefault();
-                if (event && event.stopPropagation) event.stopPropagation();
-
-                const willOpen = !!details.hidden;
-                details.hidden = !willOpen;
-                toggle.textContent = willOpen ? 'Hide' : 'Details';
-                postNode.dataset.pfInsightExpanded = willOpen ? 'true' : 'false';
-            });
-        }
-
         this._insertCredibilityElement(postNode, chip);
         postNode.dataset.pfInsightChipInjected = 'true';
+    }
+
+    _onInsightToggleClick(event) {
+        const target = event?.target;
+        if (!target || !target.closest) return;
+
+        const toggle = target.closest('.pf-insight-toggle');
+        if (!toggle) return;
+
+        if (event.preventDefault) event.preventDefault();
+        if (event.stopPropagation) event.stopPropagation();
+        if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+
+        const chip = toggle.closest('.pf-insight-chip');
+        if (!chip) return;
+
+        const details = chip.querySelector('.pf-insight-details');
+        if (!details) return;
+
+        const willOpen = !!details.hidden;
+        details.hidden = !willOpen;
+        toggle.textContent = willOpen ? 'Hide' : 'Details';
+
+        const postNode = chip.closest('[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"], [role="article"], [role="dialog"]');
+        if (postNode && postNode.dataset) {
+            postNode.dataset.pfInsightExpanded = willOpen ? 'true' : 'false';
+        }
     }
 
     _resolveUnifiedInsightState(postNode, score) {
@@ -1538,6 +1557,9 @@ class PF_Predictor {
                 cursor: pointer;
                 font: 700 10px/1.2 "Segoe UI Variable Text", "Segoe UI", sans-serif;
                 flex-shrink: 0;
+                pointer-events: auto;
+                position: relative;
+                z-index: 3;
             }
 
             .pf-insight-toggle:hover {
