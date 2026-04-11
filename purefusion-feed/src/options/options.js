@@ -112,6 +112,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         titleStatus.textContent = cleanedTabTitle(link.textContent);
     }
 
+    function activateTabById(tabId) {
+        const id = String(tabId || '').trim();
+        if (!id) return;
+
+        const link = Array.from(navLinks).find((candidate) => candidate.getAttribute('data-tab') === id);
+        if (link) activateTab(link);
+    }
+
     if (navList) navList.setAttribute('role', 'tablist');
     tabContents.forEach((tab) => tab.setAttribute('role', 'tabpanel'));
 
@@ -153,6 +161,39 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const initialActiveTab = Array.from(navLinks).find((link) => link.classList.contains('active')) || navLinks[0];
     if (initialActiveTab) activateTab(initialActiveTab);
+
+    if (!document.getElementById('pf-options-nav-highlight-style')) {
+        const highlightStyle = document.createElement('style');
+        highlightStyle.id = 'pf-options-nav-highlight-style';
+        highlightStyle.textContent = `
+            .pf-options-nav-highlight {
+                box-shadow: 0 0 0 2px rgba(121, 235, 255, 0.96), 0 0 16px rgba(121, 235, 255, 0.55) !important;
+                transition: box-shadow 0.18s ease;
+            }
+        `;
+        document.head.appendChild(highlightStyle);
+    }
+
+    window.addEventListener('message', (event) => {
+        const data = event?.data;
+        if (!data || data.type !== 'PF_OPTIONS_NAVIGATE') return;
+
+        const tabId = String(data.tabId || '').trim();
+        if (tabId) activateTabById(tabId);
+
+        const focusSelector = String(data.focusSelector || '').trim();
+        if (!focusSelector) return;
+
+        const target = document.querySelector(focusSelector);
+        if (!target) return;
+
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        target.classList.add('pf-options-nav-highlight');
+        setTimeout(() => target.classList.remove('pf-options-nav-highlight'), 1800);
+        if (typeof target.focus === 'function') {
+            try { target.focus({ preventScroll: true }); } catch (err) { target.focus(); }
+        }
+    });
 
     // =========================================================================
     // Map Storage Object to HTML Elements & Vice Versa

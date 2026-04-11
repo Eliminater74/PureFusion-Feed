@@ -271,6 +271,7 @@
   "wellbeing_report_reason_explain_nav": { "message": "Los controles de navegacion y modulos quitaron elementos de interfaz distractores fuera del feed." },
   "wellbeing_report_reason_explain_keyword": { "message": "Las reglas por palabras clave coincidieron con este elemento y lo filtraron segun tu lista personalizada." },
   "wellbeing_report_reason_explain_generic": { "message": "Esta categoria se filtro con tus reglas activas de PureFusion para mantener el feed mas limpio y enfocado." },
+  "wellbeing_report_reason_open_settings": { "message": "Abrir ajustes relacionados" },
   "wellbeing_weekly_report_toast_template": {
     "message": "$LABEL$: ocultados $HIDDEN$ elementos, reels bloqueados $REELS$, mayor distraccion $REASON$, aprox. $MINUTES$ min ahorrados en 7 dias.",
     "placeholders": {

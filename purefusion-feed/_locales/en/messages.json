@@ -271,6 +271,7 @@
   "wellbeing_report_reason_explain_nav": { "message": "Navigation and module clutter controls removed distracting non-feed UI elements." },
   "wellbeing_report_reason_explain_keyword": { "message": "Keyword rules matched this item and filtered it based on your custom block list." },
   "wellbeing_report_reason_explain_generic": { "message": "This category was filtered by your active PureFusion rules to keep your feed cleaner and more focused." },
+  "wellbeing_report_reason_open_settings": { "message": "Open related settings" },
   "wellbeing_weekly_report_toast_template": {
     "message": "$LABEL$: hidden $HIDDEN$ items, reels blocked $REELS$, top distraction $REASON$, est. $MINUTES$ min saved over 7 days.",
     "placeholders": {

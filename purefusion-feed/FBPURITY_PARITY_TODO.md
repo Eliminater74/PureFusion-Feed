@@ -177,6 +177,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Added: in-page feed report panel UI (session/weekly tabs, refresh/reset actions, and keyboard/timer button entry points).
 - Added: weekly panel trend mini-chart + top 3 distraction reasons list for faster behavior insights.
 - Added: weekly top-reason explain actions with category-level descriptions (why this distraction type is being filtered).
+- Added: top-reason "open related settings" deep-link actions (panel -> advanced settings tab/field focus).
 
 ## Implementation Order (Next)
 

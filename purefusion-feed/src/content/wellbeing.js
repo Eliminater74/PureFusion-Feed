@@ -796,6 +796,10 @@ class PF_Wellbeing {
                 font: 600 11px/1.32 "Segoe UI", sans-serif;
             }
 
+            #pf-feed-report-panel .pf-frp-reason-explain .pf-frp-top-reason-btn {
+                margin-top: 8px;
+            }
+
             #pf-feed-report-panel .pf-frp-footer {
                 display: flex;
                 justify-content: flex-end;
@@ -837,6 +841,17 @@ class PF_Wellbeing {
             const rawReason = String(actionBtn.getAttribute('data-pf-reason') || '');
             this.reportPanelReasonExplain = (this.reportPanelReasonExplain === rawReason) ? '' : rawReason;
             this._renderFeedReportPanel();
+            return;
+        }
+
+        if (action === 'open-related-settings') {
+            const tabId = String(actionBtn.getAttribute('data-pf-tab') || '').trim();
+            const focusSelector = String(actionBtn.getAttribute('data-pf-focus') || '').trim();
+            if (tabId) {
+                window.dispatchEvent(new CustomEvent('pf:open_advanced_settings', {
+                    detail: { tabId, focusSelector }
+                }));
+            }
             return;
         }
 
@@ -953,7 +968,7 @@ class PF_Wellbeing {
         }).join('');
 
         const explainBlock = this.reportPanelReasonExplain
-            ? `<div class="pf-frp-reason-explain">${this._escapeHtml(this._describeReasonForPanel(this.reportPanelReasonExplain))}</div>`
+            ? `<div class="pf-frp-reason-explain">${this._escapeHtml(this._describeReasonForPanel(this.reportPanelReasonExplain))}${this._buildReasonSettingsActionHtml(this.reportPanelReasonExplain)}</div>`
             : '';
 
         return `<ul class="pf-frp-top-list">${listItems}</ul>${explainBlock}`;
@@ -982,6 +997,42 @@ class PF_Wellbeing {
         }
 
         return this._t('wellbeing_report_reason_explain_generic', 'This category was filtered by your active PureFusion rules to keep your feed cleaner and more focused.');
+    }
+
+    _resolveReasonSettingsRoute(reason) {
+        const normalized = String(reason || '').toLowerCase();
+
+        if (normalized.includes('ad') || normalized.includes('sponsored') || normalized.includes('spam')) {
+            return { tabId: 'tab-filters', focusSelector: '#opt_filters_removeAds' };
+        }
+        if (normalized.includes('story type')) {
+            return { tabId: 'tab-filters', focusSelector: '#opt_story_hideLikedThis' };
+        }
+        if (normalized.includes('post type')) {
+            return { tabId: 'tab-filters', focusSelector: '#opt_filters_hideVideoPosts' };
+        }
+        if (normalized.includes('ragebait') || normalized.includes('clickbait')) {
+            return { tabId: 'tab-wellbeing', focusSelector: '#opt_wb_ragebait' };
+        }
+        if (normalized.includes('topbar') || normalized.includes('sidebar') || normalized.includes('nav')) {
+            return { tabId: 'tab-filters', focusSelector: '#opt_topbar_enabled' };
+        }
+        if (normalized.includes('keyword')) {
+            return { tabId: 'tab-keywords', focusSelector: '#opt_keywords_blocklist' };
+        }
+
+        return { tabId: 'tab-filters', focusSelector: '' };
+    }
+
+    _buildReasonSettingsActionHtml(reason) {
+        const route = this._resolveReasonSettingsRoute(reason);
+        if (!route || !route.tabId) return '';
+
+        const btnLabel = this._escapeHtml(this._t('wellbeing_report_reason_open_settings', 'Open related settings'));
+        const tabAttr = this._escapeAttr(route.tabId);
+        const focusAttr = this._escapeAttr(route.focusSelector || '');
+
+        return ` <button type="button" class="pf-frp-top-reason-btn" data-pf-action="open-related-settings" data-pf-tab="${tabAttr}" data-pf-focus="${focusAttr}">${btnLabel}</button>`;
     }
 
     _formatDayShortLabel(dayKey) {
