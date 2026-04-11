@@ -85,6 +85,8 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Added: optional compact diagnostics overlay mode for smaller screens.
 - Added: draggable diagnostics overlay position with persisted placement.
 - Added: per-minute observer batch rate metric in diagnostics header.
+- Added: observer in/out/trimmed node telemetry (batch + cumulative) to tune observer queue caps.
+- Added: pipeline fan-out telemetry (received/dispatched/trimmed + trim ratio) to tune node prefilter caps.
 - Next: pivot back to non-diagnostics roadmap items (per-surface controls or smart feed scoring polish).
 
 6) Per-surface controls (medium)

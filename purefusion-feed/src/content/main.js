@@ -95,7 +95,16 @@ class PureFusionApp {
         document.addEventListener('pf:nodes_added', (e) => {
             if (!this.isEnabled()) return;
 
-            const addedNodes = this._preparePipelineNodes(e?.detail?.nodes);
+            const incomingNodes = Array.isArray(e?.detail?.nodes) ? e.detail.nodes : [];
+            const addedNodes = this._preparePipelineNodes(incomingNodes);
+
+            this._dispatchDiagnosticsEvent('pf:pipeline_batch', {
+                receivedNodes: incomingNodes.length,
+                dispatchedNodes: addedNodes.length,
+                trimmedNodes: Math.max(0, incomingNodes.length - addedNodes.length),
+                ts: Date.now()
+            });
+
             if (!addedNodes.length) return;
 
             // Phase 10: Digital Wellbeing Infinite Scroll Break

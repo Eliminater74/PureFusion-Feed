@@ -77,6 +77,8 @@ class PF_Observer {
 
         const nodesToProcess = this._prioritizeNodesForDispatch(queued);
         if (!nodesToProcess.length) return;
+        const dispatchedCount = nodesToProcess.length;
+        const droppedCount = Math.max(0, nodeCount - dispatchedCount);
 
         // Pass to the master orchestrator or trigger custom events.
         // For architectural decoupling, we dispatch a custom event.
@@ -96,6 +98,8 @@ class PF_Observer {
             window.dispatchEvent(new CustomEvent('pf:observer_batch', {
                 detail: {
                     nodes: nodeCount,
+                    dispatchedNodes: dispatchedCount,
+                    droppedNodes: droppedCount,
                     mutationRecords,
                     durationMs,
                     ts: Date.now()

@@ -18,10 +18,17 @@ class PF_Diagnostics {
         this.lastSettingsUpdateAt = 0;
         this.observerBatchCount = 0;
         this.observerNodesTotal = 0;
+        this.observerDispatchedTotal = 0;
+        this.observerDroppedTotal = 0;
         this.observerMutationTotal = 0;
         this.observerDurationTotal = 0;
         this.observerDurationPeak = 0;
         this.lastObserverBatch = null;
+        this.pipelineBatchCount = 0;
+        this.pipelineNodesReceivedTotal = 0;
+        this.pipelineNodesDispatchedTotal = 0;
+        this.pipelineNodesTrimmedTotal = 0;
+        this.lastPipelineBatch = null;
         this.observerBatchTimestamps = [];
         this.observerSpikeHistory = [];
         this.observerSpikeHistoryLimit = 10;
@@ -34,6 +41,7 @@ class PF_Diagnostics {
         this.boundResweepHandler = this._onResweepPass.bind(this);
         this.boundSettingsUpdateHandler = this._onSettingsUpdate.bind(this);
         this.boundObserverBatchHandler = this._onObserverBatch.bind(this);
+        this.boundPipelineBatchHandler = this._onPipelineBatch.bind(this);
         this.boundDragStartHandler = this._onDragStart.bind(this);
         this.boundDragMoveHandler = this._onDragMove.bind(this);
         this.boundDragEndHandler = this._onDragEnd.bind(this);
@@ -43,6 +51,7 @@ class PF_Diagnostics {
         window.addEventListener('pf:resweep_pass', this.boundResweepHandler);
         window.addEventListener('pf:settings_update', this.boundSettingsUpdateHandler);
         window.addEventListener('pf:observer_batch', this.boundObserverBatchHandler);
+        window.addEventListener('pf:pipeline_batch', this.boundPipelineBatchHandler);
         window.addEventListener('resize', this.boundWindowResizeHandler);
         void this._loadSavedOverlayPosition();
         this._syncOverlayState();
@@ -111,17 +120,23 @@ class PF_Diagnostics {
         if (!this._isEnabled()) return;
 
         const nodes = Math.max(0, Number(event?.detail?.nodes || 0));
+        const dispatchedNodes = Math.max(0, Number(event?.detail?.dispatchedNodes || nodes));
+        const droppedNodes = Math.max(0, Number(event?.detail?.droppedNodes || 0));
         const mutationRecords = Math.max(0, Number(event?.detail?.mutationRecords || 0));
         const durationMs = Math.max(0, Number(event?.detail?.durationMs || 0));
         const thresholds = this._getObserverThresholds();
 
         this.observerBatchCount += 1;
         this.observerNodesTotal += nodes;
+        this.observerDispatchedTotal += dispatchedNodes;
+        this.observerDroppedTotal += droppedNodes;
         this.observerMutationTotal += mutationRecords;
         this.observerDurationTotal += durationMs;
         this.observerDurationPeak = Math.max(this.observerDurationPeak, durationMs);
         this.lastObserverBatch = {
             nodes,
+            dispatchedNodes,
+            droppedNodes,
             mutationRecords,
             durationMs,
             ts: Date.now()
@@ -159,7 +174,32 @@ class PF_Diagnostics {
         }
 
         if (this.settings?.diagnostics?.verboseConsole) {
-            PF_Logger.log(`[Diagnostics] Observer batch: ${nodes} nodes, ${mutationRecords} records, ${durationMs.toFixed(2)}ms (${severity})`);
+            PF_Logger.log(`[Diagnostics] Observer batch: ${nodes} in, ${dispatchedNodes} out, ${droppedNodes} trimmed, ${mutationRecords} records, ${durationMs.toFixed(2)}ms (${severity})`);
+        }
+
+        this._render();
+    }
+
+    _onPipelineBatch(event) {
+        if (!this._isEnabled()) return;
+
+        const receivedNodes = Math.max(0, Number(event?.detail?.receivedNodes || 0));
+        const dispatchedNodes = Math.max(0, Number(event?.detail?.dispatchedNodes || 0));
+        const trimmedNodes = Math.max(0, Number(event?.detail?.trimmedNodes || 0));
+
+        this.pipelineBatchCount += 1;
+        this.pipelineNodesReceivedTotal += receivedNodes;
+        this.pipelineNodesDispatchedTotal += dispatchedNodes;
+        this.pipelineNodesTrimmedTotal += trimmedNodes;
+        this.lastPipelineBatch = {
+            receivedNodes,
+            dispatchedNodes,
+            trimmedNodes,
+            ts: Date.now()
+        };
+
+        if (this.settings?.diagnostics?.verboseConsole) {
+            PF_Logger.log(`[Diagnostics] Pipeline batch: ${receivedNodes} in, ${dispatchedNodes} out, ${trimmedNodes} trimmed`);
         }
 
         this._render();
@@ -204,11 +244,22 @@ class PF_Diagnostics {
                 <div>Batches: <strong id="pfDiagObserverBatches">0</strong></div>
                 <div>Rate (1m): <strong id="pfDiagObserverRate">0/min</strong></div>
                 <div>Nodes seen: <strong id="pfDiagObserverNodes">0</strong></div>
+                <div>Nodes dispatched: <strong id="pfDiagObserverDispatched">0</strong></div>
+                <div>Nodes trimmed: <strong id="pfDiagObserverDropped">0</strong></div>
                 <div>Records seen: <strong id="pfDiagObserverRecords">0</strong></div>
                 <div>Avg/Peak batch: <strong id="pfDiagObserverAvgMs">0.00ms</strong> / <strong id="pfDiagObserverPeakMs">0.00ms</strong></div>
                 <div>Last batch: <span id="pfDiagObserverLastBatch">-</span></div>
             </div>
             <div id="pfDiagObserverThresholds" class="pf-diag-thresholds">Warn if batch >= 25ms, 220 nodes, or 120 records.</div>
+            <div class="pf-diag-subtitle">Pipeline fan-out</div>
+            <div class="pf-diag-meta">
+                <div>Batches: <strong id="pfDiagPipelineBatches">0</strong></div>
+                <div>Nodes received: <strong id="pfDiagPipelineReceived">0</strong></div>
+                <div>Nodes dispatched: <strong id="pfDiagPipelineDispatched">0</strong></div>
+                <div>Nodes trimmed: <strong id="pfDiagPipelineTrimmed">0</strong></div>
+                <div>Trim ratio: <strong id="pfDiagPipelineTrimRatio">0.0%</strong></div>
+                <div>Last batch: <span id="pfDiagPipelineLastBatch">-</span></div>
+            </div>
             <div class="pf-diag-subtitle">Observer trend</div>
             <div class="pf-diag-trend">
                 <svg id="pfDiagObserverTrend" viewBox="0 0 228 56" preserveAspectRatio="none" aria-hidden="true"></svg>
@@ -304,15 +355,23 @@ class PF_Diagnostics {
         const observerBatchesEl = this.overlay.querySelector('#pfDiagObserverBatches');
         const observerRateEl = this.overlay.querySelector('#pfDiagObserverRate');
         const observerNodesEl = this.overlay.querySelector('#pfDiagObserverNodes');
+        const observerDispatchedEl = this.overlay.querySelector('#pfDiagObserverDispatched');
+        const observerDroppedEl = this.overlay.querySelector('#pfDiagObserverDropped');
         const observerRecordsEl = this.overlay.querySelector('#pfDiagObserverRecords');
         const observerAvgMsEl = this.overlay.querySelector('#pfDiagObserverAvgMs');
         const observerPeakMsEl = this.overlay.querySelector('#pfDiagObserverPeakMs');
         const observerLastBatchEl = this.overlay.querySelector('#pfDiagObserverLastBatch');
         const observerSpikesEl = this.overlay.querySelector('#pfDiagObserverSpikes');
         const observerThresholdsEl = this.overlay.querySelector('#pfDiagObserverThresholds');
+        const pipelineBatchesEl = this.overlay.querySelector('#pfDiagPipelineBatches');
+        const pipelineReceivedEl = this.overlay.querySelector('#pfDiagPipelineReceived');
+        const pipelineDispatchedEl = this.overlay.querySelector('#pfDiagPipelineDispatched');
+        const pipelineTrimmedEl = this.overlay.querySelector('#pfDiagPipelineTrimmed');
+        const pipelineTrimRatioEl = this.overlay.querySelector('#pfDiagPipelineTrimRatio');
+        const pipelineLastBatchEl = this.overlay.querySelector('#pfDiagPipelineLastBatch');
         const observerTrendEl = this.overlay.querySelector('#pfDiagObserverTrend');
         const observerTrendMetaEl = this.overlay.querySelector('#pfDiagObserverTrendMeta');
-        if (!totalEl || !listEl || !syncEl || !resweepEl || !followupsEl || !lastSyncEl || !lastResweepEl || !observerBatchesEl || !observerRateEl || !observerNodesEl || !observerRecordsEl || !observerAvgMsEl || !observerPeakMsEl || !observerLastBatchEl || !observerSpikesEl || !observerThresholdsEl || !observerTrendEl || !observerTrendMetaEl) return;
+        if (!totalEl || !listEl || !syncEl || !resweepEl || !followupsEl || !lastSyncEl || !lastResweepEl || !observerBatchesEl || !observerRateEl || !observerNodesEl || !observerDispatchedEl || !observerDroppedEl || !observerRecordsEl || !observerAvgMsEl || !observerPeakMsEl || !observerLastBatchEl || !observerSpikesEl || !observerThresholdsEl || !pipelineBatchesEl || !pipelineReceivedEl || !pipelineDispatchedEl || !pipelineTrimmedEl || !pipelineTrimRatioEl || !pipelineLastBatchEl || !observerTrendEl || !observerTrendMetaEl) return;
 
         const thresholds = this._getObserverThresholds();
 
@@ -327,7 +386,16 @@ class PF_Diagnostics {
         observerRateEl.textContent = `${ratePerMinute}/min`;
         observerRateEl.className = this._severityClassName(this._classifyObserverRateSeverity(ratePerMinute));
         observerNodesEl.textContent = String(this.observerNodesTotal);
+        observerDispatchedEl.textContent = String(this.observerDispatchedTotal);
+        observerDroppedEl.textContent = String(this.observerDroppedTotal);
         observerRecordsEl.textContent = String(this.observerMutationTotal);
+
+        const observerDroppedRatio = this.observerNodesTotal > 0
+            ? (this.observerDroppedTotal / this.observerNodesTotal) * 100
+            : 0;
+        observerDroppedEl.className = this._severityClassName(
+            observerDroppedRatio >= 40 ? 'severe' : (observerDroppedRatio >= 15 ? 'warn' : 'ok')
+        );
 
         const avgMs = this.observerBatchCount > 0
             ? this.observerDurationTotal / this.observerBatchCount
@@ -338,13 +406,40 @@ class PF_Diagnostics {
         observerPeakMsEl.className = this._severityClassName(this._classifyObserverSeverity(this.observerDurationPeak, 0, 0, thresholds));
 
         observerThresholdsEl.textContent = `Warn if batch >= ${thresholds.warnDurationMs}ms, ${thresholds.warnNodes} nodes, or ${thresholds.warnRecords} records.`;
+
+        pipelineBatchesEl.textContent = String(this.pipelineBatchCount);
+        pipelineReceivedEl.textContent = String(this.pipelineNodesReceivedTotal);
+        pipelineDispatchedEl.textContent = String(this.pipelineNodesDispatchedTotal);
+        pipelineTrimmedEl.textContent = String(this.pipelineNodesTrimmedTotal);
+
+        const pipelineTrimRatio = this.pipelineNodesReceivedTotal > 0
+            ? (this.pipelineNodesTrimmedTotal / this.pipelineNodesReceivedTotal) * 100
+            : 0;
+        pipelineTrimRatioEl.textContent = `${pipelineTrimRatio.toFixed(1)}%`;
+        pipelineTrimRatioEl.className = this._severityClassName(
+            pipelineTrimRatio >= 45 ? 'severe' : (pipelineTrimRatio >= 20 ? 'warn' : 'ok')
+        );
+
+        if (!this.lastPipelineBatch) {
+            pipelineLastBatchEl.textContent = '-';
+            pipelineLastBatchEl.className = '';
+        } else {
+            pipelineLastBatchEl.textContent = `${this.lastPipelineBatch.receivedNodes} in, ${this.lastPipelineBatch.dispatchedNodes} out, ${this.lastPipelineBatch.trimmedNodes} trimmed @ ${this._formatTime(this.lastPipelineBatch.ts)}`;
+            const lastTrimRatio = this.lastPipelineBatch.receivedNodes > 0
+                ? (this.lastPipelineBatch.trimmedNodes / this.lastPipelineBatch.receivedNodes) * 100
+                : 0;
+            pipelineLastBatchEl.className = this._severityClassName(
+                lastTrimRatio >= 45 ? 'severe' : (lastTrimRatio >= 20 ? 'warn' : 'ok')
+            );
+        }
+
         this._renderObserverTrend(observerTrendEl, observerTrendMetaEl);
 
         if (!this.lastObserverBatch) {
             observerLastBatchEl.textContent = '-';
             observerLastBatchEl.className = '';
         } else {
-            observerLastBatchEl.textContent = `${this.lastObserverBatch.nodes} nodes, ${this.lastObserverBatch.mutationRecords} records, ${this.lastObserverBatch.durationMs.toFixed(2)}ms @ ${this._formatTime(this.lastObserverBatch.ts)}`;
+            observerLastBatchEl.textContent = `${this.lastObserverBatch.nodes} nodes in, ${this.lastObserverBatch.dispatchedNodes} out, ${this.lastObserverBatch.droppedNodes} trimmed, ${this.lastObserverBatch.mutationRecords} records, ${this.lastObserverBatch.durationMs.toFixed(2)}ms @ ${this._formatTime(this.lastObserverBatch.ts)}`;
             observerLastBatchEl.className = this._severityClassName(this._classifyObserverSeverity(
                 this.lastObserverBatch.durationMs,
                 this.lastObserverBatch.nodes,
@@ -414,12 +509,16 @@ class PF_Diagnostics {
                 batchCount: this.observerBatchCount,
                 batchRatePerMinute: this._getObserverBatchRatePerMinute(),
                 nodesSeen: this.observerNodesTotal,
+                nodesDispatched: this.observerDispatchedTotal,
+                nodesTrimmed: this.observerDroppedTotal,
                 recordsSeen: this.observerMutationTotal,
                 avgBatchDurationMs: Number(avgObserverDurationMs.toFixed(3)),
                 peakBatchDurationMs: Number(this.observerDurationPeak.toFixed(3)),
                 lastBatch: this.lastObserverBatch
                     ? {
                         nodes: this.lastObserverBatch.nodes,
+                        dispatchedNodes: this.lastObserverBatch.dispatchedNodes,
+                        droppedNodes: this.lastObserverBatch.droppedNodes,
                         mutationRecords: this.lastObserverBatch.mutationRecords,
                         durationMs: Number(this.lastObserverBatch.durationMs.toFixed(3)),
                         ts: new Date(this.lastObserverBatch.ts).toISOString()
@@ -440,6 +539,23 @@ class PF_Diagnostics {
                     score: Number(entry.score.toFixed(3)),
                     ts: new Date(entry.ts).toISOString()
                 }))
+            },
+            pipeline: {
+                batchCount: this.pipelineBatchCount,
+                nodesReceived: this.pipelineNodesReceivedTotal,
+                nodesDispatched: this.pipelineNodesDispatchedTotal,
+                nodesTrimmed: this.pipelineNodesTrimmedTotal,
+                trimRatio: this.pipelineNodesReceivedTotal > 0
+                    ? Number(((this.pipelineNodesTrimmedTotal / this.pipelineNodesReceivedTotal) * 100).toFixed(3))
+                    : 0,
+                lastBatch: this.lastPipelineBatch
+                    ? {
+                        receivedNodes: this.lastPipelineBatch.receivedNodes,
+                        dispatchedNodes: this.lastPipelineBatch.dispatchedNodes,
+                        trimmedNodes: this.lastPipelineBatch.trimmedNodes,
+                        ts: new Date(this.lastPipelineBatch.ts).toISOString()
+                    }
+                    : null
             },
             topReasons: reasonCounts
         };
@@ -805,6 +921,7 @@ class PF_Diagnostics {
         this.observerSpikeHistory = [];
         this.observerTrendHistory = [];
         this.lastObserverBatch = null;
+        this.lastPipelineBatch = null;
 
         this._render();
 
@@ -824,10 +941,17 @@ class PF_Diagnostics {
 
         this.observerBatchCount = 0;
         this.observerNodesTotal = 0;
+        this.observerDispatchedTotal = 0;
+        this.observerDroppedTotal = 0;
         this.observerMutationTotal = 0;
         this.observerDurationTotal = 0;
         this.observerDurationPeak = 0;
         this.lastObserverBatch = null;
+        this.pipelineBatchCount = 0;
+        this.pipelineNodesReceivedTotal = 0;
+        this.pipelineNodesDispatchedTotal = 0;
+        this.pipelineNodesTrimmedTotal = 0;
+        this.lastPipelineBatch = null;
         this.observerBatchTimestamps = [];
         this.observerSpikeHistory = [];
         this.observerTrendHistory = [];
