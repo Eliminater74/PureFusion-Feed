@@ -238,11 +238,24 @@
   "wellbeing_break_resume_btn": { "message": "Continue Scrolling Anyway" },
   "wellbeing_session_timer_prefix": { "message": "Session" },
   "wellbeing_report_button": { "message": "Report" },
+  "wellbeing_weekly_report_button": { "message": "Week" },
   "wellbeing_report_disabled": { "message": "Daily Feed Report is disabled. Enable it in Digital Wellbeing." },
   "wellbeing_report_label_auto": { "message": "Daily Feed Report" },
   "wellbeing_report_label_session": { "message": "Session Feed Report" },
+  "wellbeing_weekly_report_label": { "message": "Weekly Feed Report" },
   "wellbeing_report_no_filters": { "message": "No filters triggered yet" },
+  "wellbeing_weekly_report_no_data": { "message": "Weekly report needs more activity data first." },
   "wellbeing_session_awareness_toast_template": { "message": "High scroll pace detected: $1 scrolls in the last minute ($2 min session). Consider a short break." },
+  "wellbeing_weekly_report_toast_template": {
+    "message": "$LABEL$: hidden $HIDDEN$ items, reels blocked $REELS$, top distraction $REASON$, est. $MINUTES$ min saved over 7 days.",
+    "placeholders": {
+      "label": { "content": "$1" },
+      "hidden": { "content": "$2" },
+      "reels": { "content": "$3" },
+      "reason": { "content": "$4" },
+      "minutes": { "content": "$5" }
+    }
+  },
   "wellbeing_report_toast_template": {
     "message": "$LABEL$: hidden $HIDDEN$ items, reels blocked $REELS$, top reason $REASON$, est. $MINUTES$ min saved.",
     "placeholders": {

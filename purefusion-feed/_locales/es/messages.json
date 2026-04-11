@@ -238,11 +238,24 @@
   "wellbeing_break_resume_btn": { "message": "Seguir desplazandome de todos modos" },
   "wellbeing_session_timer_prefix": { "message": "Sesion" },
   "wellbeing_report_button": { "message": "Reporte" },
+  "wellbeing_weekly_report_button": { "message": "Semana" },
   "wellbeing_report_disabled": { "message": "El reporte diario del feed esta desactivado. Activalo en Bienestar digital." },
   "wellbeing_report_label_auto": { "message": "Reporte diario del feed" },
   "wellbeing_report_label_session": { "message": "Reporte de la sesion" },
+  "wellbeing_weekly_report_label": { "message": "Reporte semanal del feed" },
   "wellbeing_report_no_filters": { "message": "Aun no se activaron filtros" },
+  "wellbeing_weekly_report_no_data": { "message": "El reporte semanal necesita mas actividad primero." },
   "wellbeing_session_awareness_toast_template": { "message": "Ritmo alto de scroll detectado: $1 desplazamientos en el ultimo minuto (sesion de $2 min). Considera un descanso corto." },
+  "wellbeing_weekly_report_toast_template": {
+    "message": "$LABEL$: ocultados $HIDDEN$ elementos, reels bloqueados $REELS$, mayor distraccion $REASON$, aprox. $MINUTES$ min ahorrados en 7 dias.",
+    "placeholders": {
+      "label": { "content": "$1" },
+      "hidden": { "content": "$2" },
+      "reels": { "content": "$3" },
+      "reason": { "content": "$4" },
+      "minutes": { "content": "$5" }
+    }
+  },
   "wellbeing_report_toast_template": {
     "message": "$LABEL$: ocultados $HIDDEN$ elementos, reels bloqueados $REELS$, razon principal $REASON$, aprox. $MINUTES$ min ahorrados.",
     "placeholders": {

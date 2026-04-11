@@ -14,6 +14,10 @@ class PF_Wellbeing {
         this.timerIntervalId = null;
         this.reportIntervalId = null;
         this.lastReportShownAt = 0;
+        this.reportHistoryStorageKey = 'pf_feed_report_weekly_v1';
+        this.weeklyStatsCache = { days: {} };
+        this.weeklyStatsLoaded = false;
+        this.weeklyStatsFlushTimer = null;
         this.lastSessionAwarenessPromptAt = 0;
         this.hiddenReasonCounts = new Map();
         this.reelsHiddenCount = 0;
@@ -21,12 +25,17 @@ class PF_Wellbeing {
         this.sessionAwarenessListenerAttached = false;
         this.boundHiddenHandler = this._onElementHidden.bind(this);
         this.boundReportShortcutHandler = this._onReportShortcut.bind(this);
+        this.boundWeeklyReportShortcutHandler = this._onWeeklyReportShortcut.bind(this);
         this.boundReportRequestHandler = this._onReportRequest.bind(this);
+        this.boundWeeklyReportRequestHandler = this._onWeeklyReportRequest.bind(this);
         this.boundSessionAwarenessScrollHandler = this._onSessionAwarenessScroll.bind(this);
 
         window.addEventListener('pf:element_hidden', this.boundHiddenHandler);
         window.addEventListener('keydown', this.boundReportShortcutHandler);
+        window.addEventListener('keydown', this.boundWeeklyReportShortcutHandler);
         window.addEventListener('pf:show_feed_report', this.boundReportRequestHandler);
+        window.addEventListener('pf:show_weekly_feed_report', this.boundWeeklyReportRequestHandler);
+        this._loadWeeklyStatsCache();
         
         this.initDocumentLevel();
     }
@@ -78,6 +87,8 @@ class PF_Wellbeing {
         if (reason.includes('Reels Session')) {
             this.reelsHiddenCount += 1;
         }
+
+        this._recordWeeklyHiddenEvent(reason);
     }
 
     _onReportShortcut(event) {
@@ -85,19 +96,37 @@ class PF_Wellbeing {
         if (!event.altKey || !event.shiftKey) return;
         if (String(event.key || '').toLowerCase() !== 'r') return;
 
-        const active = document.activeElement;
-        if (active) {
-            const tag = String(active.tagName || '').toLowerCase();
-            const editable = active.isContentEditable || tag === 'input' || tag === 'textarea' || tag === 'select';
-            if (editable) return;
-        }
+        if (this._isEditableContext()) return;
 
         event.preventDefault();
         this._showFeedReportToast('manual');
     }
 
+    _onWeeklyReportShortcut(event) {
+        if (!event || event.defaultPrevented) return;
+        if (!event.altKey || !event.shiftKey) return;
+        if (String(event.key || '').toLowerCase() !== 'w') return;
+
+        if (this._isEditableContext()) return;
+
+        event.preventDefault();
+        this._showWeeklyFeedReportToast('manual');
+    }
+
     _onReportRequest() {
         this._showFeedReportToast('manual');
+    }
+
+    _onWeeklyReportRequest() {
+        this._showWeeklyFeedReportToast('manual');
+    }
+
+    _isEditableContext() {
+        const active = document.activeElement;
+        if (!active) return false;
+
+        const tag = String(active.tagName || '').toLowerCase();
+        return active.isContentEditable || tag === 'input' || tag === 'textarea' || tag === 'select';
     }
 
     _syncFeedReportLoop() {
@@ -245,6 +274,231 @@ class PF_Wellbeing {
         PF_Helpers.showToast(message, 'info', 5600);
     }
 
+    _recordWeeklyHiddenEvent(reason) {
+        if (!this.weeklyStatsCache || typeof this.weeklyStatsCache !== 'object') {
+            this.weeklyStatsCache = { days: {} };
+        }
+
+        if (!this.weeklyStatsCache.days || typeof this.weeklyStatsCache.days !== 'object') {
+            this.weeklyStatsCache.days = {};
+        }
+
+        const now = Date.now();
+        const dayKey = this._toDayKey(now);
+        if (!this.weeklyStatsCache.days[dayKey]) {
+            this.weeklyStatsCache.days[dayKey] = {
+                hiddenTotal: 0,
+                reelsHidden: 0,
+                savedSeconds: 0,
+                reasons: {},
+                lastUpdated: now
+            };
+        }
+
+        const bucket = this.weeklyStatsCache.days[dayKey];
+        bucket.hiddenTotal += 1;
+        bucket.reasons[reason] = (bucket.reasons[reason] || 0) + 1;
+
+        const isReel = reason.includes('Reels Session');
+        if (isReel) bucket.reelsHidden += 1;
+        bucket.savedSeconds += isReel ? 20 : 6;
+        bucket.lastUpdated = now;
+
+        this._scheduleWeeklyStatsFlush();
+    }
+
+    _scheduleWeeklyStatsFlush() {
+        if (this.weeklyStatsFlushTimer) return;
+
+        this.weeklyStatsFlushTimer = setTimeout(() => {
+            this.weeklyStatsFlushTimer = null;
+            this._flushWeeklyStatsCache();
+        }, 2500);
+    }
+
+    async _flushWeeklyStatsCache() {
+        if (!window.PF_Storage || typeof window.PF_Storage.setLocalData !== 'function') return;
+
+        const cache = this._pruneWeeklyStats(this.weeklyStatsCache);
+        try {
+            await window.PF_Storage.setLocalData(this.reportHistoryStorageKey, cache);
+        } catch (err) {
+            // no-op
+        }
+    }
+
+    async _loadWeeklyStatsCache() {
+        if (!window.PF_Storage || typeof window.PF_Storage.getLocalData !== 'function') {
+            this.weeklyStatsLoaded = true;
+            return;
+        }
+
+        try {
+            const saved = await window.PF_Storage.getLocalData(this.reportHistoryStorageKey);
+            const normalized = this._normalizeWeeklyStats(saved);
+            this.weeklyStatsCache = this._mergeWeeklyStats(normalized, this.weeklyStatsCache);
+        } catch (err) {
+            // no-op
+        } finally {
+            this.weeklyStatsLoaded = true;
+        }
+    }
+
+    _normalizeWeeklyStats(input) {
+        const rawDays = input && typeof input === 'object' && input.days && typeof input.days === 'object'
+            ? input.days
+            : {};
+
+        const normalized = { days: {} };
+        Object.entries(rawDays).forEach(([dayKey, bucket]) => {
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(String(dayKey))) return;
+            if (!bucket || typeof bucket !== 'object') return;
+
+            const reasons = {};
+            Object.entries(bucket.reasons || {}).forEach(([reason, count]) => {
+                const c = Number(count);
+                if (!reason || !Number.isFinite(c) || c <= 0) return;
+                reasons[String(reason)] = Math.max(1, Math.round(c));
+            });
+
+            normalized.days[dayKey] = {
+                hiddenTotal: Math.max(0, Number.isFinite(Number(bucket.hiddenTotal)) ? Math.round(Number(bucket.hiddenTotal)) : 0),
+                reelsHidden: Math.max(0, Number.isFinite(Number(bucket.reelsHidden)) ? Math.round(Number(bucket.reelsHidden)) : 0),
+                savedSeconds: Math.max(0, Number.isFinite(Number(bucket.savedSeconds)) ? Math.round(Number(bucket.savedSeconds)) : 0),
+                reasons,
+                lastUpdated: Number.isFinite(Number(bucket.lastUpdated)) ? Number(bucket.lastUpdated) : Date.now()
+            };
+        });
+
+        return this._pruneWeeklyStats(normalized);
+    }
+
+    _mergeWeeklyStats(primary, secondary) {
+        const merged = { days: {} };
+
+        const writeBucket = (dayKey, bucket) => {
+            if (!merged.days[dayKey]) {
+                merged.days[dayKey] = {
+                    hiddenTotal: 0,
+                    reelsHidden: 0,
+                    savedSeconds: 0,
+                    reasons: {},
+                    lastUpdated: Date.now()
+                };
+            }
+
+            const target = merged.days[dayKey];
+            target.hiddenTotal += Math.max(0, Number(bucket.hiddenTotal || 0));
+            target.reelsHidden += Math.max(0, Number(bucket.reelsHidden || 0));
+            target.savedSeconds += Math.max(0, Number(bucket.savedSeconds || 0));
+            target.lastUpdated = Math.max(target.lastUpdated, Number(bucket.lastUpdated || 0));
+
+            Object.entries(bucket.reasons || {}).forEach(([reason, count]) => {
+                const c = Math.max(0, Number(count || 0));
+                if (!reason || c <= 0) return;
+                target.reasons[reason] = (target.reasons[reason] || 0) + c;
+            });
+        };
+
+        const sources = [primary, secondary];
+        sources.forEach((source) => {
+            if (!source || typeof source !== 'object' || !source.days) return;
+            Object.entries(source.days).forEach(([dayKey, bucket]) => {
+                if (!bucket || typeof bucket !== 'object') return;
+                writeBucket(dayKey, bucket);
+            });
+        });
+
+        return this._pruneWeeklyStats(merged);
+    }
+
+    _pruneWeeklyStats(stats) {
+        const safe = { days: {} };
+        if (!stats || typeof stats !== 'object' || !stats.days) return safe;
+
+        const dayEntries = Object.entries(stats.days)
+            .filter(([dayKey]) => /^\d{4}-\d{2}-\d{2}$/.test(String(dayKey)))
+            .sort((a, b) => a[0].localeCompare(b[0]));
+
+        const retained = dayEntries.slice(-35);
+        retained.forEach(([dayKey, bucket]) => {
+            safe.days[dayKey] = bucket;
+        });
+
+        return safe;
+    }
+
+    _toDayKey(timestamp) {
+        const date = new Date(timestamp);
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
+
+    _showWeeklyFeedReportToast(trigger = 'manual') {
+        const aggregate = this._buildWeeklyReportSnapshot();
+        if (!aggregate) {
+            PF_Helpers.showToast(this._t('wellbeing_weekly_report_no_data', 'Weekly report needs more activity data first.'), 'info', 3600);
+            return;
+        }
+
+        const label = this._t('wellbeing_weekly_report_label', 'Weekly Feed Report');
+        const message = this._t(
+            'wellbeing_weekly_report_toast_template',
+            `${label}: hidden ${aggregate.hiddenTotal} items, reels blocked ${aggregate.reelsHidden}, top distraction ${aggregate.topReason}, est. ${aggregate.estimatedMinutesSaved} min saved over 7 days.`,
+            [label, String(aggregate.hiddenTotal), String(aggregate.reelsHidden), aggregate.topReason, String(aggregate.estimatedMinutesSaved)]
+        );
+
+        PF_Helpers.showToast(message, trigger === 'auto' ? 'info' : 'success', 6200);
+    }
+
+    _buildWeeklyReportSnapshot() {
+        const days = this.weeklyStatsCache?.days;
+        if (!days || typeof days !== 'object') return null;
+
+        const now = Date.now();
+        const cutoff = now - (7 * 24 * 60 * 60 * 1000);
+        const aggregateReasons = new Map();
+
+        let hiddenTotal = 0;
+        let reelsHidden = 0;
+        let savedSeconds = 0;
+
+        Object.entries(days).forEach(([dayKey, bucket]) => {
+            if (!bucket || typeof bucket !== 'object') return;
+
+            const dayStart = new Date(`${dayKey}T00:00:00`).getTime();
+            if (!Number.isFinite(dayStart) || dayStart < cutoff) return;
+
+            hiddenTotal += Math.max(0, Number(bucket.hiddenTotal || 0));
+            reelsHidden += Math.max(0, Number(bucket.reelsHidden || 0));
+            savedSeconds += Math.max(0, Number(bucket.savedSeconds || 0));
+
+            Object.entries(bucket.reasons || {}).forEach(([reason, count]) => {
+                const c = Math.max(0, Number(count || 0));
+                if (!reason || c <= 0) return;
+                aggregateReasons.set(reason, (aggregateReasons.get(reason) || 0) + c);
+            });
+        });
+
+        if (hiddenTotal <= 0 && reelsHidden <= 0) return null;
+
+        const topReasonEntry = Array.from(aggregateReasons.entries()).sort((a, b) => b[1] - a[1])[0];
+        const topReason = topReasonEntry
+            ? `${topReasonEntry[0]} (${topReasonEntry[1]})`
+            : this._t('wellbeing_report_no_filters', 'No filters triggered yet');
+
+        const estimatedMinutesSaved = Math.max(0, Math.round((savedSeconds / 60) * 10) / 10);
+
+        return {
+            hiddenTotal,
+            reelsHidden,
+            topReason,
+            estimatedMinutesSaved
+        };
+    }
+
     /**
      * Called by the main node loop to count rendering volume
      * @returns {boolean} Returns TRUE if the Observer should STOP processing new nodes
@@ -389,6 +643,7 @@ class PF_Wellbeing {
         if (!timerEl) return;
 
         let reportBtn = timerEl.querySelector('#pf-session-report-btn');
+        let weeklyBtn = timerEl.querySelector('#pf-session-weekly-report-btn');
         if (this.settings?.wellbeing?.dailyFeedReportEnabled) {
             if (!reportBtn) {
                 reportBtn = document.createElement('button');
@@ -409,10 +664,32 @@ class PF_Wellbeing {
                 });
                 timerEl.appendChild(reportBtn);
             }
+
+            if (!weeklyBtn) {
+                weeklyBtn = document.createElement('button');
+                weeklyBtn.id = 'pf-session-weekly-report-btn';
+                weeklyBtn.type = 'button';
+                weeklyBtn.textContent = this._t('wellbeing_weekly_report_button', 'Week');
+                weeklyBtn.style.cssText = `
+                    border: 1px solid rgba(162, 255, 196, 0.5);
+                    background: rgba(58, 166, 93, 0.14);
+                    color: #b9ffcf;
+                    border-radius: 999px;
+                    padding: 2px 8px;
+                    font: 700 11px/1.2 "Segoe UI", sans-serif;
+                    cursor: pointer;
+                `;
+                weeklyBtn.addEventListener('click', () => {
+                    this._showWeeklyFeedReportToast('manual');
+                });
+                timerEl.appendChild(weeklyBtn);
+            }
+
             return;
         }
 
         if (reportBtn) reportBtn.remove();
+        if (weeklyBtn) weeklyBtn.remove();
     }
 }
 

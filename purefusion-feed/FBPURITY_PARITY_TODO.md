@@ -172,6 +172,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Localized: session report labels/messages/button now run through extension i18n keys (EN/ES).
 - Localized: wellbeing runtime UX strings for break wall and session timer label (EN/ES).
 - Added: optional session-awareness soft break prompt based on sustained high scroll velocity (threshold + cooldown controls).
+- Added: weekly feed report scaffold (7-day aggregate toast + top distraction reason + timer quick button + Alt+Shift+W shortcut).
 
 ## Implementation Order (Next)
 
