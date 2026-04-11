@@ -78,7 +78,7 @@ class PF_CommentPreview {
 
     _queuePost(post) {
         if (!post || this.processedPosts.has(post) || this.observedPosts.has(post)) return;
-        if (post.matches && post.matches('[role="dialog"]')) return;
+        if (!this._isSafeFeedPostCandidate(post)) return;
 
         if (this.intersectionObserver) {
             this.intersectionObserver.observe(post);
@@ -156,8 +156,7 @@ class PF_CommentPreview {
         const candidates = post.querySelectorAll('div[role="button"], span[role="button"], button, a[role="link"], [aria-label]');
 
         for (const el of candidates) {
-            if (!this._isVisible(el)) continue;
-            if (this._isRiskyNavigationTarget(el)) continue;
+            if (!this._isSafeCommentActionCandidate(el, post)) continue;
 
             const text = this._normalizeText(
                 el.innerText
@@ -178,9 +177,7 @@ class PF_CommentPreview {
         const candidates = post.querySelectorAll('div[role="button"], span[role="button"], button, a[role="link"], [aria-label]');
 
         for (const el of candidates) {
-            if (!this._isVisible(el)) continue;
-            if (this._isRiskyNavigationTarget(el)) continue;
-            if (el.closest('[contenteditable="true"], [role="textbox"]')) continue;
+            if (!this._isSafeCommentActionCandidate(el, post)) continue;
 
             const text = this._normalizeText(
                 el.innerText
@@ -210,10 +207,17 @@ class PF_CommentPreview {
 
     _findFooterCommentButton(post) {
         const candidates = post.querySelectorAll('div[role="button"], span[role="button"], button, a[role="link"], [aria-label], [title]');
-        const commentTokens = ['comment', 'comments', 'comentar', 'comentario', 'comentarios'];
+        const commentTokens = [
+            'comment', 'comments',
+            'comentar', 'comentario', 'comentarios',
+            'commenter', 'commentaires',
+            'comente', 'comentarios',
+            'kommentar', 'kommentare',
+            'commenta', 'commenti'
+        ];
 
         for (const el of candidates) {
-            if (!this._isVisible(el)) continue;
+            if (!this._isSafeCommentActionCandidate(el, post)) continue;
 
             const label = this._normalizeText(
                 el.getAttribute('aria-label')
@@ -235,13 +239,47 @@ class PF_CommentPreview {
 
         for (const group of groups) {
             const buttons = Array.from(group.querySelectorAll('div[role="button"], span[role="button"], button, a[role="link"]'))
-                .filter((el) => this._isVisible(el));
+                .filter((el) => this._isSafeCommentActionCandidate(el, post));
 
             if (buttons.length < 3 || buttons.length > 8) continue;
 
             // The primary action row is typically Like / Comment / Share.
             const likelyComment = buttons[1];
             if (!likelyComment) continue;
+
+            const firstLabel = this._normalizeText(
+                buttons[0].innerText
+                || buttons[0].textContent
+                || buttons[0].getAttribute('aria-label')
+                || buttons[0].getAttribute('title')
+                || ''
+            );
+
+            const thirdLabel = this._normalizeText(
+                (buttons[2] && (buttons[2].innerText
+                || buttons[2].textContent
+                || buttons[2].getAttribute('aria-label')
+                || buttons[2].getAttribute('title')))
+                || ''
+            );
+
+            const hasLikeSignal = this._containsAnyToken(firstLabel, [
+                'like', 'likes', 'me gusta', 'reaccionar',
+                'j aime', 'aime',
+                'curtir', 'gosto',
+                'gefallt', 'gefallt mir',
+                'mi piace'
+            ]);
+
+            const hasShareSignal = this._containsAnyToken(thirdLabel, [
+                'share', 'shared', 'compartir', 'compartido',
+                'partager', 'partage',
+                'compartilhar',
+                'teilen',
+                'condividi', 'condividere'
+            ]);
+
+            if (!hasLikeSignal && !hasShareSignal) continue;
 
             const label = this._normalizeText(
                 likelyComment.innerText
@@ -266,8 +304,15 @@ class PF_CommentPreview {
             /(view|ver)\s+comments?/i,
             /(view|see|ver)\s+(more|previous|mas|más|anteriores?)\s+comentarios?/i,
             /(view|ver)\s+comentarios?/i,
+            /(voir|afficher)\s+(plus|les)\s+de\s+commentaires?/i,
+            /(ver|mostrar)\s+mais\s+comentarios?/i,
+            /(mehr|alle|fruhere|frühere)\s+kommentare\s+anzeigen/i,
+            /(mostra|vedi)\s+(altri|piu)\s+commenti/i,
             /\b\d+[\d.,]*\s+comments?\b/i,
-            /\b\d+[\d.,]*\s+comentarios?\b/i
+            /\b\d+[\d.,]*\s+comentarios?\b/i,
+            /\b\d+[\d.,]*\s+commentaires?\b/i,
+            /\b\d+[\d.,]*\s+kommentare\b/i,
+            /\b\d+[\d.,]*\s+commenti\b/i
         ];
 
         return patterns.some((re) => re.test(text));
@@ -280,9 +325,21 @@ class PF_CommentPreview {
             /^comentar$/i,
             /^comentario$/i,
             /^comentarios$/i,
+            /^commenter$/i,
+            /^commentaire$/i,
+            /^commentaires$/i,
+            /^comente$/i,
+            /^kommentar$/i,
+            /^kommentare$/i,
+            /^commenta$/i,
+            /^commenti$/i,
             /leave a comment/i,
             /write a comment/i,
-            /escribe un comentario/i
+            /escribe un comentario/i,
+            /ecrire un commentaire/i,
+            /escrever um comentario/i,
+            /kommentar schreiben/i,
+            /scrivi un commento/i
         ];
 
         return patterns.some((re) => re.test(text));
@@ -297,6 +354,9 @@ class PF_CommentPreview {
         const href = (anchor.getAttribute('href') || '').toLowerCase();
         if (!href) return false;
 
+        const target = (anchor.getAttribute('target') || '').toLowerCase();
+        if (target && target !== '_self') return true;
+
         // Safe-ish anchors used as button wrappers
         if (href === '#' || href.startsWith('javascript:')) return false;
 
@@ -307,11 +367,57 @@ class PF_CommentPreview {
             '/videos/',
             '/watch/',
             '/reel/',
+            '/photo/',
+            '/photos/',
+            '/story.php',
+            '/events/',
             'story_fbid=',
             'comment_id='
         ];
 
-        return risky.some((token) => href.includes(token));
+        if (risky.some((token) => href.includes(token))) return true;
+
+        let parsed;
+        try {
+            parsed = new URL(href, window.location.origin);
+        } catch (err) {
+            return true;
+        }
+
+        const host = String(parsed.hostname || '').toLowerCase();
+        if (!host) return true;
+
+        const isFacebookHost = host === 'facebook.com'
+            || host.endsWith('.facebook.com')
+            || host === 'm.facebook.com';
+
+        return !isFacebookHost;
+    }
+
+    _isSafeFeedPostCandidate(post) {
+        if (!post || !post.matches) return false;
+        if (post.dataset?.pfHidden === 'true') return false;
+        if (post.matches('[role="dialog"], [aria-modal="true"]')) return false;
+
+        if (post.matches('[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"]')) return true;
+
+        const hasArticle = !!post.querySelector('[role="article"]');
+        const actionCount = post.querySelectorAll('a[role="link"], a[href], [role="button"], button').length;
+        return hasArticle && actionCount >= 6;
+    }
+
+    _isSafeCommentActionCandidate(el, post) {
+        if (!el || !post || !post.contains(el)) return false;
+        if (!this._isVisible(el)) return false;
+        if (el.closest('[contenteditable="true"], [role="textbox"], textarea, input')) return false;
+        if (el.closest('[role="menu"], [aria-haspopup="menu"]')) return false;
+        if (this._isRiskyNavigationTarget(el)) return false;
+        return true;
+    }
+
+    _containsAnyToken(text, tokens) {
+        if (!text || !Array.isArray(tokens) || tokens.length === 0) return false;
+        return tokens.some((token) => text.includes(token));
     }
 
     _safeClick(el) {

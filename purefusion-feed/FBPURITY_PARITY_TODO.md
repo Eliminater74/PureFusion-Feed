@@ -100,6 +100,9 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Status: hardening slice started.
 - Added: configurable cooldown, retry cap, and max-posts-per-sweep controls.
 - Added: per-surface allow list (Home/Groups/Watch/Marketplace/Notifications/Other).
+- Hardened: stricter safe-candidate gating (feed-post eligibility, menu/composer exclusion, external/risky navigation guards).
+- Hardened: stronger action-row validation before positional comment clicks.
+- Added: FR/PT/DE/IT phrase coverage for inline comment trigger/primer detection.
 
 8) Smart feed quality scoring (medium-high)
 - Detect likely ragebait/engagement bait/low-value repost patterns and assign a quality score.
@@ -190,6 +193,8 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Restrict to safe inline triggers and avoid modal/page navigation links.
 - Add cooldown between auto-click actions.
 - Add per-surface allow/deny list (Home yes, Notifications no by default).
+- Hardened: added stricter safe-candidate gating + expanded risky-navigation detection.
+- Hardened: added multilingual (FR/PT/DE/IT) comment trigger and primer phrase matching.
 
 6) Feed mode presets + quality scoring
 - Add mode selector in UI and map to internal setting bundles.
