@@ -391,6 +391,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const experienceModeSelect = document.getElementById('opt_experience_mode');
     const experienceModeProfile = document.getElementById('pfExperienceModeProfile');
     const modeRecommendationBadge = document.getElementById('pfModeRecommendationBadge');
+    const modeWhyLine = document.getElementById('pfModeWhyLine');
     const performanceModeHint = document.getElementById('pfPerformanceModeHint');
     const btnApplyUltraFastRecommendation = document.getElementById('btnApplyUltraFastRecommendation');
     const customCssSnippetSelect = document.getElementById('opt_uiMode_customCssSnippet');
@@ -627,11 +628,41 @@ document.addEventListener('DOMContentLoaded', async () => {
         modeRecommendationBadge.style.display = 'inline-flex';
     }
 
+    function renderModeWhyLine(mode) {
+        if (!modeWhyLine) return;
+
+        const activeMode = String(mode || 'custom').toLowerCase();
+        const tier = getDevicePerformanceTier();
+
+        const byMode = {
+            custom: t('options_mode_why_custom', 'Why: uses only your manual toggle choices.'),
+            clean: t('options_mode_why_clean', 'Why: removes common clutter while keeping a familiar feed feel.'),
+            focus: t('options_mode_why_focus', 'Why: tuned for deep focus with stronger distraction cuts.'),
+            ultrafast: t('options_mode_why_ultrafast', 'Why: prioritizes speed by reducing heavy feed processing.'),
+            smart: t('options_mode_why_smart', 'Why: balances cleanup with scoring and credibility signals.'),
+            classic: t('options_mode_why_classic', 'Why: emphasizes chronological, old-school feed behavior.')
+        };
+
+        let text = byMode[activeMode] || byMode.custom;
+
+        if (activeMode !== 'ultrafast') {
+            if (tier === 'low') {
+                text += ` ${t('options_mode_why_device_low', 'Device note: Ultra Fast is recommended on this hardware.')}`;
+            } else if (tier === 'moderate') {
+                text += ` ${t('options_mode_why_device_mid', 'Device note: Ultra Fast can help during heavy sessions.')}`;
+            }
+        }
+
+        modeWhyLine.textContent = text;
+    }
+
     async function applyQuickMode(mode, successToast) {
         if (!experienceModeSelect) return;
         experienceModeSelect.value = mode;
         renderExperienceModeProfile(mode);
         renderPerformanceModeHint(mode);
+        renderModeRecommendationBadge(mode);
+        renderModeWhyLine(mode);
         await saveSettingsFromUI(successToast);
     }
 
@@ -659,6 +690,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderExperienceModeProfile(activeMode);
         renderPerformanceModeHint(activeMode);
         renderModeRecommendationBadge(activeMode);
+        renderModeWhyLine(activeMode);
     }
 
     async function saveSettingsFromUI(successMessageInput = null) {
@@ -864,13 +896,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             renderExperienceModeProfile(experienceModeSelect.value);
             renderPerformanceModeHint(experienceModeSelect.value);
             renderModeRecommendationBadge(experienceModeSelect.value);
+            renderModeWhyLine(experienceModeSelect.value);
         });
     }
 
     if (btnApplyUltraFastRecommendation && experienceModeSelect) {
         btnApplyUltraFastRecommendation.addEventListener('click', async () => {
             await applyQuickMode('ultrafast', t('options_toast_ultrafast_applied', 'Ultra Fast Mode applied for this device.'));
-            renderModeRecommendationBadge('ultrafast');
         });
     }
 

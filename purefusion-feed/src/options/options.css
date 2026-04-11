@@ -313,6 +313,12 @@ textarea:focus-visible,
     background: rgba(31, 80, 48, 0.5);
 }
 
+.pf-mode-why {
+    margin-top: -8px;
+    margin-bottom: 10px;
+    color: #c7d7f0;
+}
+
 .pf-inline-controls .pf-select {
     min-width: 220px;
 }

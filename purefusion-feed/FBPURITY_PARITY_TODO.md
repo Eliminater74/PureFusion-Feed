@@ -155,6 +155,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Added: device-aware Ultra Fast recommendation hint + one-click apply action in options (low/moderate hardware guidance).
 - Added: "PureFusion in 5 seconds" quick-start card with one-click Clean/Fast/Smart mode actions.
 - Added: inline mode recommendation badge near selector (device-aware recommendation state at a glance).
+- Added: live "Why this mode" one-liner under the selector (mode intent + device-tier note).
 
 10) Performance layer (high)
 - Mutation batching and pre-filter passes before expensive processing.
