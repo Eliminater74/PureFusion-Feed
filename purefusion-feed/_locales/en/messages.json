@@ -220,6 +220,9 @@
   "options_wellbeing_scroll_stopper": { "message": "Infinite Scroll Stopper" },
   "options_wellbeing_break_wall": { "message": "Posts until Break Wall" },
   "options_wellbeing_session_timer": { "message": "Visible Session Timer Clock" },
+  "options_wellbeing_session_awareness_enable": { "message": "Session awareness soft break prompt" },
+  "options_wellbeing_session_awareness_threshold": { "message": "Scroll pulses per minute before prompt" },
+  "options_wellbeing_session_awareness_cooldown": { "message": "Prompt cooldown (minutes)" },
   "options_wellbeing_daily_report_enable": { "message": "Enable Daily Feed Report" },
   "options_wellbeing_daily_report_minutes": { "message": "Auto report interval (minutes)" },
   "options_wellbeing_reels_limit_title": { "message": "Reels Session Limiter" },
@@ -239,6 +242,7 @@
   "wellbeing_report_label_auto": { "message": "Daily Feed Report" },
   "wellbeing_report_label_session": { "message": "Session Feed Report" },
   "wellbeing_report_no_filters": { "message": "No filters triggered yet" },
+  "wellbeing_session_awareness_toast_template": { "message": "High scroll pace detected: $1 scrolls in the last minute ($2 min session). Consider a short break." },
   "wellbeing_report_toast_template": {
     "message": "$LABEL$: hidden $HIDDEN$ items, reels blocked $REELS$, top reason $REASON$, est. $MINUTES$ min saved.",
     "placeholders": {

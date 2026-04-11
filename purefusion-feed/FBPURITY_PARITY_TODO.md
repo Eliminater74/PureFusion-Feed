@@ -171,6 +171,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Hardened: shortcut no longer triggers while typing, and auto-report stays quiet when no items were filtered.
 - Localized: session report labels/messages/button now run through extension i18n keys (EN/ES).
 - Localized: wellbeing runtime UX strings for break wall and session timer label (EN/ES).
+- Added: optional session-awareness soft break prompt based on sustained high scroll velocity (threshold + cooldown controls).
 
 ## Implementation Order (Next)
 

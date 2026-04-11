@@ -220,6 +220,9 @@
   "options_wellbeing_scroll_stopper": { "message": "Detener desplazamiento infinito" },
   "options_wellbeing_break_wall": { "message": "Publicaciones hasta muro de descanso" },
   "options_wellbeing_session_timer": { "message": "Reloj de sesión visible" },
+  "options_wellbeing_session_awareness_enable": { "message": "Aviso suave de conciencia de sesion" },
+  "options_wellbeing_session_awareness_threshold": { "message": "Pulsos de scroll por minuto antes del aviso" },
+  "options_wellbeing_session_awareness_cooldown": { "message": "Enfriamiento del aviso (minutos)" },
   "options_wellbeing_daily_report_enable": { "message": "Activar reporte diario del feed" },
   "options_wellbeing_daily_report_minutes": { "message": "Intervalo automatico del reporte (minutos)" },
   "options_wellbeing_reels_limit_title": { "message": "Limitador de Reels por sesión" },
@@ -239,6 +242,7 @@
   "wellbeing_report_label_auto": { "message": "Reporte diario del feed" },
   "wellbeing_report_label_session": { "message": "Reporte de la sesion" },
   "wellbeing_report_no_filters": { "message": "Aun no se activaron filtros" },
+  "wellbeing_session_awareness_toast_template": { "message": "Ritmo alto de scroll detectado: $1 desplazamientos en el ultimo minuto (sesion de $2 min). Considera un descanso corto." },
   "wellbeing_report_toast_template": {
     "message": "$LABEL$: ocultados $HIDDEN$ elementos, reels bloqueados $REELS$, razon principal $REASON$, aprox. $MINUTES$ min ahorrados.",
     "placeholders": {

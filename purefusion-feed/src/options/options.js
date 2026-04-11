@@ -294,6 +294,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_wb_scrollStop': { obj: 'wellbeing', prop: 'infiniteScrollStopper', type: 'checkbox' },
         'opt_wb_scrollLimit': { obj: 'wellbeing', prop: 'scrollLimitPosts', type: 'number' },
         'opt_wb_sessionTimer': { obj: 'wellbeing', prop: 'sessionTimer', type: 'checkbox' },
+        'opt_wb_sessionAwarenessEnabled': { obj: 'wellbeing', prop: 'sessionAwarenessEnabled', type: 'checkbox' },
+        'opt_wb_sessionAwarenessScrollsPerMinuteThreshold': { obj: 'wellbeing', prop: 'sessionAwarenessScrollsPerMinuteThreshold', type: 'number', fallback: 85 },
+        'opt_wb_sessionAwarenessCooldownMinutes': { obj: 'wellbeing', prop: 'sessionAwarenessCooldownMinutes', type: 'number', fallback: 12 },
         'opt_wb_dailyFeedReportEnabled': { obj: 'wellbeing', prop: 'dailyFeedReportEnabled', type: 'checkbox' },
         'opt_wb_dailyFeedReportAutoMinutes': { obj: 'wellbeing', prop: 'dailyFeedReportAutoMinutes', type: 'number', fallback: 30 },
         'opt_wb_reelsLimiterEnabled': { obj: 'wellbeing', prop: 'reelsLimiterEnabled', type: 'checkbox' },
@@ -653,6 +656,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (currentSettings.wellbeing) {
             const parsedScrollLimit = Number(currentSettings.wellbeing.scrollLimitPosts);
             currentSettings.wellbeing.scrollLimitPosts = Math.max(10, Math.min(100, Number.isFinite(parsedScrollLimit) ? Math.round(parsedScrollLimit) : 20));
+
+            const parsedSessionAwarenessThreshold = Number(currentSettings.wellbeing.sessionAwarenessScrollsPerMinuteThreshold);
+            currentSettings.wellbeing.sessionAwarenessScrollsPerMinuteThreshold = Math.max(30, Math.min(220, Number.isFinite(parsedSessionAwarenessThreshold) ? Math.round(parsedSessionAwarenessThreshold) : 85));
+
+            const parsedSessionAwarenessCooldown = Number(currentSettings.wellbeing.sessionAwarenessCooldownMinutes);
+            currentSettings.wellbeing.sessionAwarenessCooldownMinutes = Math.max(2, Math.min(90, Number.isFinite(parsedSessionAwarenessCooldown) ? Math.round(parsedSessionAwarenessCooldown) : 12));
+            currentSettings.wellbeing.sessionAwarenessEnabled = !!currentSettings.wellbeing.sessionAwarenessEnabled;
 
             const parsedReelsLimit = Number(currentSettings.wellbeing.reelsSessionLimit);
             currentSettings.wellbeing.reelsSessionLimit = Math.max(1, Math.min(20, Number.isFinite(parsedReelsLimit) ? parsedReelsLimit : 3));

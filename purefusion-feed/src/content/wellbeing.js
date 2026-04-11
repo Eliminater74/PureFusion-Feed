@@ -14,11 +14,15 @@ class PF_Wellbeing {
         this.timerIntervalId = null;
         this.reportIntervalId = null;
         this.lastReportShownAt = 0;
+        this.lastSessionAwarenessPromptAt = 0;
         this.hiddenReasonCounts = new Map();
         this.reelsHiddenCount = 0;
+        this.scrollPulseTimestamps = [];
+        this.sessionAwarenessListenerAttached = false;
         this.boundHiddenHandler = this._onElementHidden.bind(this);
         this.boundReportShortcutHandler = this._onReportShortcut.bind(this);
         this.boundReportRequestHandler = this._onReportRequest.bind(this);
+        this.boundSessionAwarenessScrollHandler = this._onSessionAwarenessScroll.bind(this);
 
         window.addEventListener('pf:element_hidden', this.boundHiddenHandler);
         window.addEventListener('keydown', this.boundReportShortcutHandler);
@@ -47,6 +51,7 @@ class PF_Wellbeing {
         }
 
         this._syncFeedReportLoop();
+        this._syncSessionAwarenessLoop();
     }
 
     updateSettings(settings) {
@@ -114,6 +119,73 @@ class PF_Wellbeing {
 
             this._showFeedReportToast('auto');
         }, 30000);
+    }
+
+    _syncSessionAwarenessLoop() {
+        const enabled = !!this.settings?.wellbeing?.sessionAwarenessEnabled;
+
+        if (!enabled) {
+            if (this.sessionAwarenessListenerAttached) {
+                window.removeEventListener('scroll', this.boundSessionAwarenessScrollHandler);
+                this.sessionAwarenessListenerAttached = false;
+            }
+            this.scrollPulseTimestamps = [];
+            return;
+        }
+
+        if (!this.sessionAwarenessListenerAttached) {
+            window.addEventListener('scroll', this.boundSessionAwarenessScrollHandler, { passive: true });
+            this.sessionAwarenessListenerAttached = true;
+        }
+    }
+
+    _onSessionAwarenessScroll() {
+        if (!this.settings?.wellbeing?.sessionAwarenessEnabled) return;
+        if (document.hidden) return;
+
+        const now = Date.now();
+        this.scrollPulseTimestamps.push(now);
+        this._trimScrollPulseWindow(now);
+
+        const threshold = this._clampInt(
+            this.settings?.wellbeing?.sessionAwarenessScrollsPerMinuteThreshold,
+            30,
+            220,
+            85
+        );
+
+        if (this.scrollPulseTimestamps.length < threshold) return;
+
+        const cooldownMinutes = this._clampInt(
+            this.settings?.wellbeing?.sessionAwarenessCooldownMinutes,
+            2,
+            90,
+            12
+        );
+        const cooldownMs = cooldownMinutes * 60 * 1000;
+        if ((now - this.lastSessionAwarenessPromptAt) < cooldownMs) return;
+
+        this.lastSessionAwarenessPromptAt = now;
+        const elapsedMinutes = Math.max(1, Math.round((now - this.sessionStart) / 60000));
+
+        PF_Helpers.showToast(
+            this._t(
+                'wellbeing_session_awareness_toast_template',
+                'High scroll pace detected: $1 scrolls in the last minute ($2 min session). Consider a short break.',
+                [String(this.scrollPulseTimestamps.length), String(elapsedMinutes)]
+            ),
+            'warn',
+            5200
+        );
+
+        this.scrollPulseTimestamps = this.scrollPulseTimestamps.slice(-Math.max(8, Math.floor(threshold * 0.35)));
+    }
+
+    _trimScrollPulseWindow(now = Date.now()) {
+        const oneMinuteAgo = now - 60000;
+        while (this.scrollPulseTimestamps.length && this.scrollPulseTimestamps[0] < oneMinuteAgo) {
+            this.scrollPulseTimestamps.shift();
+        }
     }
 
     _getReportIntervalMs() {

@@ -241,6 +241,9 @@ const DEFAULT_SETTINGS = {
         infiniteScrollStopper: false,   // Pause observer rendering after X posts
         scrollLimitPosts: 20,           // Number of posts before showing "Take a break" button
         sessionTimer: false,            // Render floating clock representing time on FB
+        sessionAwarenessEnabled: false, // Soft prompt when sustained high scroll velocity is detected
+        sessionAwarenessScrollsPerMinuteThreshold: 85,
+        sessionAwarenessCooldownMinutes: 12,
         dailyFeedReportEnabled: false,  // Show periodic session impact report
         dailyFeedReportAutoMinutes: 30, // Auto-report cadence in minutes
         reelsLimiterEnabled: false,     // Allow only N reels/shorts per session

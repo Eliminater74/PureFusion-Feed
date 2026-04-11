@@ -450,6 +450,9 @@ class PureFusionApp {
             grayscaleMode: false,
             infiniteScrollStopper: false,
             sessionTimer: false,
+            sessionAwarenessEnabled: false,
+            sessionAwarenessScrollsPerMinuteThreshold: 85,
+            sessionAwarenessCooldownMinutes: 12,
             dailyFeedReportEnabled: false,
             dailyFeedReportAutoMinutes: 30,
             reelsLimiterEnabled: false,
@@ -579,7 +582,10 @@ class PureFusionApp {
                 wellbeing: {
                     infiniteScrollStopper: true,
                     scrollLimitPosts: 18,
-                    sessionTimer: true
+                    sessionTimer: true,
+                    sessionAwarenessEnabled: true,
+                    sessionAwarenessScrollsPerMinuteThreshold: 78,
+                    sessionAwarenessCooldownMinutes: 10
                 },
                 surfaceControls: {
                     enabled: true,
