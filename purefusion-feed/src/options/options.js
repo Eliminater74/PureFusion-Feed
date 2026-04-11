@@ -396,6 +396,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const btnApplyCustomCssSnippet = document.getElementById('btnApplyCustomCssSnippet');
     const customCssTextarea = document.getElementById('opt_uiMode_customCss');
     const customStylingToggle = document.getElementById('opt_uiMode_customStylingEnabled');
+    const btnQuickModeClean = document.getElementById('btnQuickModeClean');
+    const btnQuickModeFast = document.getElementById('btnQuickModeFast');
+    const btnQuickModeSmart = document.getElementById('btnQuickModeSmart');
 
     const themeNames = {
         default: t('options_ui_theme_default', 'Facebook Default'),
@@ -587,6 +590,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         performanceModeHint.textContent = t('options_mode_perf_hint_mid', 'Ultra Fast Mode can reduce lag during heavy sessions on this device.');
         performanceModeHint.style.display = 'block';
         btnApplyUltraFastRecommendation.style.display = 'inline-flex';
+    }
+
+    async function applyQuickMode(mode, successToast) {
+        if (!experienceModeSelect) return;
+        experienceModeSelect.value = mode;
+        renderExperienceModeProfile(mode);
+        renderPerformanceModeHint(mode);
+        await saveSettingsFromUI(successToast);
     }
 
     function loadUIFromSettings() {
@@ -821,10 +832,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (btnApplyUltraFastRecommendation && experienceModeSelect) {
         btnApplyUltraFastRecommendation.addEventListener('click', async () => {
-            experienceModeSelect.value = 'ultrafast';
-            renderExperienceModeProfile('ultrafast');
-            renderPerformanceModeHint('ultrafast');
-            await saveSettingsFromUI(t('options_toast_ultrafast_applied', 'Ultra Fast Mode applied for this device.'));
+            await applyQuickMode('ultrafast', t('options_toast_ultrafast_applied', 'Ultra Fast Mode applied for this device.'));
+        });
+    }
+
+    if (btnQuickModeClean) {
+        btnQuickModeClean.addEventListener('click', async () => {
+            await applyQuickMode('clean', t('options_toast_mode_clean_applied', 'Clean Mode applied.'));
+        });
+    }
+
+    if (btnQuickModeFast) {
+        btnQuickModeFast.addEventListener('click', async () => {
+            await applyQuickMode('ultrafast', t('options_toast_ultrafast_applied', 'Ultra Fast Mode applied for this device.'));
+        });
+    }
+
+    if (btnQuickModeSmart) {
+        btnQuickModeSmart.addEventListener('click', async () => {
+            await applyQuickMode('smart', t('options_toast_mode_smart_applied', 'Smart Mode applied.'));
         });
     }
 

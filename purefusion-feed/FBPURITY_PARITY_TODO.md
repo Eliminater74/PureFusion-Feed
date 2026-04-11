@@ -153,6 +153,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Added: options-side live mode profile helper text so each mode intent is explicit before saving.
 - Added: Ultra Fast mode patch for text-first performance posture (aggressive media suppression + reduced prediction/LLM overhead + Home-first surface scope).
 - Added: device-aware Ultra Fast recommendation hint + one-click apply action in options (low/moderate hardware guidance).
+- Added: "PureFusion in 5 seconds" quick-start card with one-click Clean/Fast/Smart mode actions.
 
 10) Performance layer (high)
 - Mutation batching and pre-filter passes before expensive processing.

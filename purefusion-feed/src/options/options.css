@@ -190,6 +190,31 @@ textarea:focus-visible,
     box-shadow: 0 12px 26px rgba(8, 13, 22, 0.42), inset 0 1px 0 rgba(18, 200, 220, 0.12);
 }
 
+.pf-promise-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.pf-promise-item {
+    border: 1px solid rgba(122, 132, 156, 0.32);
+    border-radius: 10px;
+    padding: 10px;
+    background: rgba(16, 22, 32, 0.48);
+}
+
+.pf-promise-title {
+    color: #dff8ff;
+    font: 800 12px/1.25 var(--pf-font-display);
+    margin-bottom: 4px;
+}
+
+.pf-promise-text {
+    color: var(--pf-text-secondary);
+    font-size: 12px;
+}
+
 .pf-accent-title {
     color: var(--pf-cyan) !important;
 }
@@ -573,6 +598,10 @@ textarea:focus-visible,
 
     .pf-btn-group {
         flex-direction: column;
+    }
+
+    .pf-promise-grid {
+        grid-template-columns: 1fr;
     }
 
     .w-50 {
