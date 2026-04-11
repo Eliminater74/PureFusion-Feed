@@ -536,6 +536,7 @@ class PF_Wellbeing {
 
     _openFeedReportPanel(tab = 'daily') {
         this.reportPanelTab = tab === 'weekly' ? 'weekly' : 'daily';
+        this._dispatchReportActionTelemetry('open_panel', { tab: this.reportPanelTab });
 
         const panel = this._ensureFeedReportPanel();
         if (!panel) {
@@ -820,6 +821,7 @@ class PF_Wellbeing {
             const tab = String(tabBtn.getAttribute('data-pf-tab') || 'daily').toLowerCase();
             this.reportPanelTab = tab === 'weekly' ? 'weekly' : 'daily';
             if (this.reportPanelTab !== 'weekly') this.reportPanelReasonExplain = '';
+            this._dispatchReportActionTelemetry('switch_tab', { tab: this.reportPanelTab });
             this._renderFeedReportPanel();
             return;
         }
@@ -829,10 +831,12 @@ class PF_Wellbeing {
 
         if (action === 'close') {
             if (this.reportPanelEl) this.reportPanelEl.style.display = 'none';
+            this._dispatchReportActionTelemetry('close_panel', { tab: this.reportPanelTab });
             return;
         }
 
         if (action === 'refresh') {
+            this._dispatchReportActionTelemetry('refresh_panel', { tab: this.reportPanelTab });
             this._renderFeedReportPanel();
             return;
         }
@@ -840,6 +844,11 @@ class PF_Wellbeing {
         if (action === 'explain-reason') {
             const rawReason = String(actionBtn.getAttribute('data-pf-reason') || '');
             this.reportPanelReasonExplain = (this.reportPanelReasonExplain === rawReason) ? '' : rawReason;
+            this._dispatchReportActionTelemetry('explain_reason', {
+                tab: this.reportPanelTab,
+                reason: rawReason,
+                expanded: this.reportPanelReasonExplain ? 'true' : 'false'
+            });
             this._renderFeedReportPanel();
             return;
         }
@@ -851,6 +860,11 @@ class PF_Wellbeing {
                 window.dispatchEvent(new CustomEvent('pf:open_advanced_settings', {
                     detail: { tabId, focusSelector }
                 }));
+                this._dispatchReportActionTelemetry('open_related_settings', {
+                    tab: this.reportPanelTab,
+                    settingsTab: tabId,
+                    focusSelector
+                });
             }
             return;
         }
@@ -862,9 +876,23 @@ class PF_Wellbeing {
             this.scrollPulseTimestamps = [];
             this.lastReportShownAt = 0;
             this.reportPanelReasonExplain = '';
+            this._dispatchReportActionTelemetry('reset_session_counters', { tab: this.reportPanelTab });
             this._renderFeedReportPanel();
             PF_Helpers.showToast(this._t('wellbeing_report_panel_reset_done', 'Session counters reset.'), 'info', 2600);
         }
+    }
+
+    _dispatchReportActionTelemetry(action, extra = {}) {
+        const safeAction = String(action || '').trim();
+        if (!safeAction) return;
+
+        window.dispatchEvent(new CustomEvent('pf:wellbeing_report_action', {
+            detail: {
+                action: safeAction,
+                ts: Date.now(),
+                ...extra
+            }
+        }));
     }
 
     _renderFeedReportPanel() {

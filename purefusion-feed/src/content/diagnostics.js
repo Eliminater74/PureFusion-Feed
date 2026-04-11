@@ -34,6 +34,10 @@ class PF_Diagnostics {
         this.observerSpikeHistoryLimit = 10;
         this.observerTrendHistory = [];
         this.observerTrendHistoryLimit = 36;
+        this.reportActionTotal = 0;
+        this.reportActionCounts = new Map();
+        this.lastReportActionAt = 0;
+        this.lastReportActionLabel = '';
         this.overlayPosition = null;
         this.overlayPositionStorageKey = 'pf_diag_overlay_position_v1';
         this.dragState = null;
@@ -42,6 +46,7 @@ class PF_Diagnostics {
         this.boundSettingsUpdateHandler = this._onSettingsUpdate.bind(this);
         this.boundObserverBatchHandler = this._onObserverBatch.bind(this);
         this.boundPipelineBatchHandler = this._onPipelineBatch.bind(this);
+        this.boundReportActionHandler = this._onWellbeingReportAction.bind(this);
         this.boundDragStartHandler = this._onDragStart.bind(this);
         this.boundDragMoveHandler = this._onDragMove.bind(this);
         this.boundDragEndHandler = this._onDragEnd.bind(this);
@@ -52,6 +57,7 @@ class PF_Diagnostics {
         window.addEventListener('pf:settings_update', this.boundSettingsUpdateHandler);
         window.addEventListener('pf:observer_batch', this.boundObserverBatchHandler);
         window.addEventListener('pf:pipeline_batch', this.boundPipelineBatchHandler);
+        window.addEventListener('pf:wellbeing_report_action', this.boundReportActionHandler);
         window.addEventListener('resize', this.boundWindowResizeHandler);
         void this._loadSavedOverlayPosition();
         this._syncOverlayState();
@@ -205,6 +211,29 @@ class PF_Diagnostics {
         this._render();
     }
 
+    _onWellbeingReportAction(event) {
+        if (!this._isEnabled()) return;
+
+        const action = String(event?.detail?.action || 'unknown_action').trim() || 'unknown_action';
+        const tab = String(event?.detail?.tab || '').trim().toLowerCase();
+        const settingsTab = String(event?.detail?.settingsTab || '').trim().toLowerCase();
+
+        let routeLabel = action;
+        if (tab) routeLabel += ` [${tab}]`;
+        if (settingsTab) routeLabel += ` -> ${settingsTab}`;
+
+        this.reportActionTotal += 1;
+        this.reportActionCounts.set(routeLabel, (this.reportActionCounts.get(routeLabel) || 0) + 1);
+        this.lastReportActionAt = Date.now();
+        this.lastReportActionLabel = routeLabel;
+
+        if (this.settings?.diagnostics?.verboseConsole) {
+            PF_Logger.log(`[Diagnostics] Wellbeing action: ${routeLabel}`);
+        }
+
+        this._render();
+    }
+
     _isEnabled() {
         return !!this.settings?.diagnostics?.enabled;
     }
@@ -260,6 +289,12 @@ class PF_Diagnostics {
                 <div>Trim ratio: <strong id="pfDiagPipelineTrimRatio">0.0%</strong></div>
                 <div>Last batch: <span id="pfDiagPipelineLastBatch">-</span></div>
             </div>
+            <div class="pf-diag-subtitle">Wellbeing report actions</div>
+            <div class="pf-diag-meta">
+                <div>Total actions: <strong id="pfDiagReportActionsTotal">0</strong></div>
+                <div>Last action: <span id="pfDiagReportActionsLast">-</span></div>
+            </div>
+            <ol id="pfDiagReportActionsTop" class="pf-diag-list"></ol>
             <div class="pf-diag-subtitle">Observer trend</div>
             <div class="pf-diag-trend">
                 <svg id="pfDiagObserverTrend" viewBox="0 0 228 56" preserveAspectRatio="none" aria-hidden="true"></svg>
@@ -369,9 +404,12 @@ class PF_Diagnostics {
         const pipelineTrimmedEl = this.overlay.querySelector('#pfDiagPipelineTrimmed');
         const pipelineTrimRatioEl = this.overlay.querySelector('#pfDiagPipelineTrimRatio');
         const pipelineLastBatchEl = this.overlay.querySelector('#pfDiagPipelineLastBatch');
+        const reportActionsTotalEl = this.overlay.querySelector('#pfDiagReportActionsTotal');
+        const reportActionsLastEl = this.overlay.querySelector('#pfDiagReportActionsLast');
+        const reportActionsTopEl = this.overlay.querySelector('#pfDiagReportActionsTop');
         const observerTrendEl = this.overlay.querySelector('#pfDiagObserverTrend');
         const observerTrendMetaEl = this.overlay.querySelector('#pfDiagObserverTrendMeta');
-        if (!totalEl || !listEl || !syncEl || !resweepEl || !followupsEl || !lastSyncEl || !lastResweepEl || !observerBatchesEl || !observerRateEl || !observerNodesEl || !observerDispatchedEl || !observerDroppedEl || !observerRecordsEl || !observerAvgMsEl || !observerPeakMsEl || !observerLastBatchEl || !observerSpikesEl || !observerThresholdsEl || !pipelineBatchesEl || !pipelineReceivedEl || !pipelineDispatchedEl || !pipelineTrimmedEl || !pipelineTrimRatioEl || !pipelineLastBatchEl || !observerTrendEl || !observerTrendMetaEl) return;
+        if (!totalEl || !listEl || !syncEl || !resweepEl || !followupsEl || !lastSyncEl || !lastResweepEl || !observerBatchesEl || !observerRateEl || !observerNodesEl || !observerDispatchedEl || !observerDroppedEl || !observerRecordsEl || !observerAvgMsEl || !observerPeakMsEl || !observerLastBatchEl || !observerSpikesEl || !observerThresholdsEl || !pipelineBatchesEl || !pipelineReceivedEl || !pipelineDispatchedEl || !pipelineTrimmedEl || !pipelineTrimRatioEl || !pipelineLastBatchEl || !reportActionsTotalEl || !reportActionsLastEl || !reportActionsTopEl || !observerTrendEl || !observerTrendMetaEl) return;
 
         const thresholds = this._getObserverThresholds();
 
@@ -432,6 +470,19 @@ class PF_Diagnostics {
                 lastTrimRatio >= 45 ? 'severe' : (lastTrimRatio >= 20 ? 'warn' : 'ok')
             );
         }
+
+        reportActionsTotalEl.textContent = String(this.reportActionTotal);
+        reportActionsLastEl.textContent = this.lastReportActionAt
+            ? `${this.lastReportActionLabel} @ ${this._formatTime(this.lastReportActionAt)}`
+            : '-';
+
+        const topActions = Array.from(this.reportActionCounts.entries())
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, this._isCompactOverlayEnabled() ? 3 : 5);
+
+        reportActionsTopEl.innerHTML = topActions.length
+            ? topActions.map(([label, count]) => `<li><span>${this._escapeHtml(label)}</span><strong>${count}</strong></li>`).join('')
+            : '<li><span>No wellbeing report actions yet.</span><strong>0</strong></li>';
 
         this._renderObserverTrend(observerTrendEl, observerTrendMetaEl);
 
@@ -556,6 +607,15 @@ class PF_Diagnostics {
                         ts: new Date(this.lastPipelineBatch.ts).toISOString()
                     }
                     : null
+            },
+            wellbeingReportActions: {
+                total: this.reportActionTotal,
+                lastActionAt: this.lastReportActionAt ? new Date(this.lastReportActionAt).toISOString() : null,
+                lastActionLabel: this.lastReportActionLabel || null,
+                topActions: Array.from(this.reportActionCounts.entries())
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 10)
+                    .map(([label, count]) => ({ label, count }))
             },
             topReasons: reasonCounts
         };
@@ -952,6 +1012,10 @@ class PF_Diagnostics {
         this.pipelineNodesDispatchedTotal = 0;
         this.pipelineNodesTrimmedTotal = 0;
         this.lastPipelineBatch = null;
+        this.reportActionTotal = 0;
+        this.reportActionCounts.clear();
+        this.lastReportActionAt = 0;
+        this.lastReportActionLabel = '';
         this.observerBatchTimestamps = [];
         this.observerSpikeHistory = [];
         this.observerTrendHistory = [];

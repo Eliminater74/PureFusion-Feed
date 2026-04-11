@@ -87,6 +87,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Added: per-minute observer batch rate metric in diagnostics header.
 - Added: observer in/out/trimmed node telemetry (batch + cumulative) to tune observer queue caps.
 - Added: pipeline fan-out telemetry (received/dispatched/trimmed + trim ratio) to tune node prefilter caps.
+- Added: wellbeing report action telemetry (panel interactions + related-settings deep-link usage counts) in diagnostics overlay/snapshot.
 - Next: pivot back to non-diagnostics roadmap items (per-surface controls or smart feed scoring polish).
 
 6) Per-surface controls (medium)
