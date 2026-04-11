@@ -158,6 +158,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Status: first implementation slice complete.
 - Added: dedicated Core Filter toggles (video, photo/image, link/share, text-only).
 - Added: strict `[data-pagelet^="FeedUnit_"]` / `AdUnit` targeting + anchor-based type detection + global safety bailout.
+- Hardened: evidence scoring + header-zone anchor gating + media-node guard for text-only detection.
 - Add new toggle group in Core Filters.
 - Implement strict per-type selectors + phrase anchors.
 - Keep global safety bailout active.

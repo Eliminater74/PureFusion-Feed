@@ -1766,13 +1766,21 @@ class PF_Cleaner {
         const hasLinkAnchor = /(shared (a )?link|read more|link preview|open link|enlace|leer mas|articulo)/.test(anchorText)
             || /\bhttps?:\/\/|www\./.test(anchorText);
 
-        const video = hasVideoSelector || (hasVideoAnchor && !hasPhotoSelector);
-        const photo = !video && (hasPhotoSelector || hasPhotoAnchor);
-        const link = !video && !photo && (hasExternalLinkSelector || hasLinkAnchor);
+        const evidence = {
+            video: (hasVideoSelector ? 2 : 0) + (hasVideoAnchor ? 1 : 0),
+            photo: (hasPhotoSelector ? 2 : 0) + (hasPhotoAnchor ? 1 : 0),
+            link: (hasExternalLinkSelector ? 2 : 0) + (hasLinkAnchor ? 1 : 0)
+        };
+
+        const mediaNodeCount = this._countPostMediaNodes(node);
+
+        const video = evidence.video >= 2 || (evidence.video >= 1 && evidence.photo === 0 && evidence.link === 0);
+        const photo = !video && (evidence.photo >= 2 || (evidence.photo >= 1 && evidence.link === 0));
+        const link = !video && !photo && (evidence.link >= 2);
 
         const textLength = this._extractPostText(node).length;
         const hasMeaningfulText = textLength >= 30;
-        const textOnly = hasMeaningfulText && !video && !photo && !link;
+        const textOnly = hasMeaningfulText && !video && !photo && !link && mediaNodeCount === 0;
 
         return {
             video,
@@ -1787,14 +1795,22 @@ class PF_Cleaner {
 
         const parts = [];
         const seen = new Set();
+        const postRect = node.getBoundingClientRect ? node.getBoundingClientRect() : null;
         const selectors = 'h2, h3, h4, [role="heading"], a[role="link"], span[dir="auto"], div[dir="auto"]';
 
         node.querySelectorAll(selectors).forEach((el) => {
-            if (parts.length >= 24) return;
+            if (parts.length >= 18) return;
 
             const comparable = this._normalizeComparableText(el.textContent || '');
-            if (!comparable || comparable.length < 4 || comparable.length > 180) return;
+            if (!comparable || comparable.length < 6 || comparable.length > 180) return;
             if (seen.has(comparable)) return;
+
+            if (postRect && el.getBoundingClientRect) {
+                const rect = el.getBoundingClientRect();
+                const topOffset = rect.top - postRect.top;
+                if (topOffset < -4 || topOffset > 300) return;
+            }
+
             if (!this._looksLikePostTypeAnchor(comparable)) return;
 
             seen.add(comparable);
@@ -1802,6 +1818,14 @@ class PF_Cleaner {
         });
 
         return parts;
+    }
+
+    _countPostMediaNodes(node) {
+        if (!node || !node.querySelectorAll) return 0;
+
+        return node.querySelectorAll(
+            'video, img, [role="img"], image, canvas, svg image, iframe, a[href*="/photo/"], a[href*="/videos/"], a[href*="/watch/"]'
+        ).length;
     }
 
     _looksLikePostTypeAnchor(text) {
