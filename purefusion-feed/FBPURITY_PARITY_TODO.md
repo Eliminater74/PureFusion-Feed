@@ -135,6 +135,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Polish: insight chip status copy now uses clearer user-facing phrasing (engagement bait / suspicious claim risk / low-value / high relevance).
 - Fixed: absolute timestamp visibility toggle now actively renders readable post date labels next to post timestamps.
 - Fixed: timestamp enhancement no longer injects sibling DOM nodes into Facebook metadata row (prevents timestamp line flicker/vanish).
+- Hardened: timestamp matcher now targets only compact date/time anchors near post headers and avoids mutating non-timestamp author/action links.
 
 9) Feed mode presets (high)
 - Status: initial implementation complete.

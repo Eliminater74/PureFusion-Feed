@@ -114,10 +114,6 @@ class PF_UiTweaks {
             if (!root || !root.querySelectorAll) return;
 
             root.querySelectorAll('.pf-abs-date-label').forEach((legacy) => legacy.remove());
-            root.querySelectorAll('a.pf-abs-date-anchor').forEach((anchor) => {
-                anchor.classList.remove('pf-abs-date-anchor');
-                anchor.removeAttribute('data-pf-abs-date');
-            });
 
             const anchors = root.querySelectorAll('a[role="link"][aria-label], a[href][aria-label]');
             anchors.forEach((anchor) => {
@@ -125,11 +121,24 @@ class PF_UiTweaks {
                 if (anchor.closest('.pf-insight-chip, #pf-feed-report-panel, #pf-session-timer')) return;
 
                 const host = anchor.closest('[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"], [role="dialog"], [role="article"]');
-                if (!host) return;
-                if (!this._isLikelyTimestampAnchor(anchor, host)) return;
+                if (!host) {
+                    this._clearAnchorAbsoluteLabel(anchor);
+                    return;
+                }
+
+                if (!this._isLikelyTimestampAnchor(anchor, host)) {
+                    this._clearAnchorAbsoluteLabel(anchor);
+                    return;
+                }
 
                 const absoluteText = this._extractAbsoluteTimestampText(anchor);
-                if (!absoluteText) return;
+                if (!absoluteText) {
+                    this._clearAnchorAbsoluteLabel(anchor);
+                    return;
+                }
+
+                const currentText = String(anchor.getAttribute('data-pf-abs-date') || '');
+                if (currentText === absoluteText && anchor.classList.contains('pf-abs-date-anchor')) return;
 
                 anchor.classList.add('pf-abs-date-anchor');
                 anchor.setAttribute('data-pf-abs-date', absoluteText);
@@ -162,14 +171,20 @@ class PF_UiTweaks {
 
         if (!aria || aria.length < 6 || aria.length > 140) return false;
 
+        // Avoid mutating broad author/page links or action links.
+        const textWordCount = text ? text.split(/\s+/).length : 0;
+        if (textWordCount > 4 || text.length > 28) return false;
+
         const likelyPostLink = [
             '/posts/', '/permalink/', '/videos/', '/photo', '/photos/', '/reel/', '/story.php', 'story_fbid=', 'fbid='
         ].some((token) => href.includes(token));
 
         const relativeText = /^(\d+[smhdwy]|\d+\s*(sec|min|h|d|w|mo|y|yr)s?|now|just now|ayer|hoy|today|yesterday)$/i.test(text);
+        const dateLikeText = /\d{1,2}[:.]\d{2}|\d{1,2}\s*(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|ene|abr|ago|dic)|\d{4}/i.test(text);
         const hasDateHints = /\d{4}|\d{1,2}:\d{2}|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|ene|feb|mar|abr|may|jun|jul|ago|sept|oct|nov|dic|am|pm/i.test(aria);
 
-        if (!likelyPostLink && !relativeText && !hasDateHints) return false;
+        if (!relativeText && !dateLikeText) return false;
+        if (!likelyPostLink && !hasDateHints) return false;
 
         if (anchor.getBoundingClientRect && host.getBoundingClientRect) {
             const aRect = anchor.getBoundingClientRect();
@@ -177,7 +192,7 @@ class PF_UiTweaks {
             const topDelta = aRect.top - hRect.top;
 
             if (topDelta < -12 || topDelta > 280) return false;
-            if (aRect.width > 260 || aRect.height > 42) return false;
+            if (aRect.width > 220 || aRect.height > 32) return false;
         }
 
         return true;
@@ -204,9 +219,18 @@ class PF_UiTweaks {
     _clearAbsoluteTimestampLabels() {
         document.querySelectorAll('.pf-abs-date-label').forEach((el) => el.remove());
         document.querySelectorAll('a.pf-abs-date-anchor').forEach((anchor) => {
-            anchor.classList.remove('pf-abs-date-anchor');
-            anchor.removeAttribute('data-pf-abs-date');
+            this._clearAnchorAbsoluteLabel(anchor);
         });
+    }
+
+    _clearAnchorAbsoluteLabel(anchor) {
+        if (!anchor || !anchor.classList) return;
+        if (anchor.classList.contains('pf-abs-date-anchor')) {
+            anchor.classList.remove('pf-abs-date-anchor');
+        }
+        if (anchor.hasAttribute && anchor.hasAttribute('data-pf-abs-date')) {
+            anchor.removeAttribute('data-pf-abs-date');
+        }
     }
 
     _buildCustomStylingCss() {
