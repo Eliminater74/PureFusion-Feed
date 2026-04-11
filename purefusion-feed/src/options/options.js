@@ -509,7 +509,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderThemePreview(currentSettings.uiMode.theme, currentSettings.uiMode.fontSizeScale);
     }
 
-    async function saveSettingsFromUI(successMessage = null) {
+    async function saveSettingsFromUI(successMessageInput = null) {
+        const successMessage = typeof successMessageInput === 'string' ? successMessageInput : null;
         // Read mapped standard inputs
         for (const [domId, mapping] of Object.entries(uiMap)) {
             const el = document.getElementById(domId);
@@ -668,7 +669,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const btnSaveTop = document.getElementById('btnSaveTop');
     const btnSaveBottom = document.getElementById('btnSaveBottom');
     
-    [btnSaveTop, btnSaveBottom].forEach(b => b.addEventListener('click', saveSettingsFromUI));
+    [btnSaveTop, btnSaveBottom]
+        .filter(Boolean)
+        .forEach((button) => button.addEventListener('click', () => {
+            saveSettingsFromUI();
+        }));
 
     function showSaveToast(message, isError = false) {
         const toast = document.getElementById('saveStatus');
