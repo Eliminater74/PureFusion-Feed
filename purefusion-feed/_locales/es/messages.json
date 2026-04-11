@@ -260,6 +260,9 @@
   "wellbeing_report_panel_reset_done": { "message": "Contadores de sesion reiniciados." },
   "wellbeing_report_panel_note": { "message": "Consejo: los valores diarios se reinician al reiniciar sesion; el resumen semanal se calcula desde buckets diarios guardados." },
   "wellbeing_report_panel_weekly_window": { "message": "Ventana movil de 7 dias" },
+  "wellbeing_report_panel_weekly_trend_title": { "message": "Tendencia de 7 dias" },
+  "wellbeing_report_panel_weekly_top_reasons_title": { "message": "Principales razones de distraccion" },
+  "wellbeing_report_panel_weekly_no_reasons": { "message": "Aun no hay datos de razones de distraccion." },
   "wellbeing_weekly_report_toast_template": {
     "message": "$LABEL$: ocultados $HIDDEN$ elementos, reels bloqueados $REELS$, mayor distraccion $REASON$, aprox. $MINUTES$ min ahorrados en 7 dias.",
     "placeholders": {

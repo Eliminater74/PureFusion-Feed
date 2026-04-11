@@ -175,6 +175,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Added: optional session-awareness soft break prompt based on sustained high scroll velocity (threshold + cooldown controls).
 - Added: weekly feed report scaffold (7-day aggregate toast + top distraction reason + timer quick button + Alt+Shift+W shortcut).
 - Added: in-page feed report panel UI (session/weekly tabs, refresh/reset actions, and keyboard/timer button entry points).
+- Added: weekly panel trend mini-chart + top 3 distraction reasons list for faster behavior insights.
 
 ## Implementation Order (Next)
 

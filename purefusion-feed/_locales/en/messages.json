@@ -260,6 +260,9 @@
   "wellbeing_report_panel_reset_done": { "message": "Session counters reset." },
   "wellbeing_report_panel_note": { "message": "Tip: Daily values reset with session reset; weekly rollup is calculated from saved daily buckets." },
   "wellbeing_report_panel_weekly_window": { "message": "Rolling 7-day window" },
+  "wellbeing_report_panel_weekly_trend_title": { "message": "7-day trend" },
+  "wellbeing_report_panel_weekly_top_reasons_title": { "message": "Top distraction reasons" },
+  "wellbeing_report_panel_weekly_no_reasons": { "message": "No distraction reason data yet." },
   "wellbeing_weekly_report_toast_template": {
     "message": "$LABEL$: hidden $HIDDEN$ items, reels blocked $REELS$, top distraction $REASON$, est. $MINUTES$ min saved over 7 days.",
     "placeholders": {

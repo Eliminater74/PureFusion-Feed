@@ -465,18 +465,27 @@ class PF_Wellbeing {
         if (!days || typeof days !== 'object') return null;
 
         const now = Date.now();
-        const cutoff = now - (7 * 24 * 60 * 60 * 1000);
+        const dayKeys = this._buildRecentDayKeys(7, now);
+        const dayKeySet = new Set(dayKeys);
         const aggregateReasons = new Map();
 
         let hiddenTotal = 0;
         let reelsHidden = 0;
         let savedSeconds = 0;
 
+        const dailySeries = dayKeys.map((dayKey) => {
+            const bucket = days[dayKey] || {};
+            return {
+                dayKey,
+                hiddenTotal: Math.max(0, Number(bucket.hiddenTotal || 0)),
+                reelsHidden: Math.max(0, Number(bucket.reelsHidden || 0)),
+                savedSeconds: Math.max(0, Number(bucket.savedSeconds || 0))
+            };
+        });
+
         Object.entries(days).forEach(([dayKey, bucket]) => {
             if (!bucket || typeof bucket !== 'object') return;
-
-            const dayStart = new Date(`${dayKey}T00:00:00`).getTime();
-            if (!Number.isFinite(dayStart) || dayStart < cutoff) return;
+            if (!dayKeySet.has(dayKey)) return;
 
             hiddenTotal += Math.max(0, Number(bucket.hiddenTotal || 0));
             reelsHidden += Math.max(0, Number(bucket.reelsHidden || 0));
@@ -497,13 +506,31 @@ class PF_Wellbeing {
             : this._t('wellbeing_report_no_filters', 'No filters triggered yet');
 
         const estimatedMinutesSaved = Math.max(0, Math.round((savedSeconds / 60) * 10) / 10);
+        const topReasons = Array.from(aggregateReasons.entries())
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 3)
+            .map(([reason, count]) => ({ reason, count }));
 
         return {
             hiddenTotal,
             reelsHidden,
             topReason,
-            estimatedMinutesSaved
+            estimatedMinutesSaved,
+            topReasons,
+            dailySeries
         };
+    }
+
+    _buildRecentDayKeys(dayCount, now = Date.now()) {
+        const count = Math.max(1, Math.min(31, Number.isFinite(Number(dayCount)) ? Math.round(Number(dayCount)) : 7));
+        const keys = [];
+
+        for (let i = count - 1; i >= 0; i -= 1) {
+            const ts = now - (i * 24 * 60 * 60 * 1000);
+            keys.push(this._toDayKey(ts));
+        }
+
+        return keys;
     }
 
     _openFeedReportPanel(tab = 'daily') {
@@ -659,6 +686,88 @@ class PF_Wellbeing {
                 font-weight: 600;
             }
 
+            #pf-feed-report-panel .pf-frp-section-title {
+                margin-top: 2px;
+                color: #eef6ff;
+                font-size: 11px;
+                letter-spacing: 0.03em;
+                text-transform: uppercase;
+            }
+
+            #pf-feed-report-panel .pf-frp-trend {
+                display: grid;
+                grid-template-columns: repeat(7, minmax(0, 1fr));
+                gap: 6px;
+                align-items: end;
+                border: 1px solid rgba(90, 121, 161, 0.35);
+                border-radius: 10px;
+                padding: 8px;
+                background: rgba(24, 33, 50, 0.74);
+            }
+
+            #pf-feed-report-panel .pf-frp-trend-col {
+                display: grid;
+                gap: 3px;
+                justify-items: center;
+                min-width: 0;
+            }
+
+            #pf-feed-report-panel .pf-frp-trend-track {
+                width: 100%;
+                height: 46px;
+                display: flex;
+                align-items: flex-end;
+                justify-content: center;
+            }
+
+            #pf-feed-report-panel .pf-frp-trend-bar {
+                width: 12px;
+                border-radius: 6px;
+                background: linear-gradient(180deg, rgba(101, 227, 255, 0.96) 0%, rgba(77, 139, 255, 0.98) 100%);
+                box-shadow: 0 1px 8px rgba(83, 173, 255, 0.42);
+                min-height: 2px;
+            }
+
+            #pf-feed-report-panel .pf-frp-trend-day {
+                color: #a9c0e5;
+                font: 700 10px/1 "Segoe UI", sans-serif;
+            }
+
+            #pf-feed-report-panel .pf-frp-trend-num {
+                color: #e8f3ff;
+                font: 700 10px/1 "Segoe UI", sans-serif;
+            }
+
+            #pf-feed-report-panel .pf-frp-top-list {
+                margin: 0;
+                padding: 0;
+                list-style: none;
+                display: grid;
+                gap: 6px;
+            }
+
+            #pf-feed-report-panel .pf-frp-top-list li {
+                display: flex;
+                justify-content: space-between;
+                gap: 8px;
+                border: 1px solid rgba(90, 121, 161, 0.35);
+                border-radius: 10px;
+                padding: 6px 8px;
+                background: rgba(24, 33, 50, 0.74);
+            }
+
+            #pf-feed-report-panel .pf-frp-top-label {
+                color: #c4d7f5;
+                min-width: 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            #pf-feed-report-panel .pf-frp-top-count {
+                color: #f1f7ff;
+            }
+
             #pf-feed-report-panel .pf-frp-footer {
                 display: flex;
                 justify-content: flex-end;
@@ -746,13 +855,71 @@ class PF_Wellbeing {
             return `<div class="pf-frp-note">${this._escapeHtml(this._t('wellbeing_weekly_report_no_data', 'Weekly report needs more activity data first.'))}</div>`;
         }
 
+        const trendHtml = this._buildWeeklyTrendHtml(snapshot.dailySeries);
+        const topReasonsHtml = this._buildWeeklyTopReasonsHtml(snapshot.topReasons);
+
         return `
             <div class="pf-frp-note">${this._escapeHtml(this._t('wellbeing_report_panel_weekly_window', 'Rolling 7-day window'))}</div>
             ${this._panelRow('wellbeing_report_panel_hidden', 'Hidden items', snapshot.hiddenTotal)}
             ${this._panelRow('wellbeing_report_panel_reels', 'Reels blocked', snapshot.reelsHidden)}
             ${this._panelRow('wellbeing_report_panel_top_reason', 'Top distraction', snapshot.topReason)}
             ${this._panelRow('wellbeing_report_panel_minutes_saved', 'Minutes saved (est.)', snapshot.estimatedMinutesSaved)}
+            <div class="pf-frp-section-title">${this._escapeHtml(this._t('wellbeing_report_panel_weekly_trend_title', '7-day trend'))}</div>
+            ${trendHtml}
+            <div class="pf-frp-section-title">${this._escapeHtml(this._t('wellbeing_report_panel_weekly_top_reasons_title', 'Top distraction reasons'))}</div>
+            ${topReasonsHtml}
         `;
+    }
+
+    _buildWeeklyTrendHtml(series) {
+        const rows = Array.isArray(series) ? series : [];
+        if (!rows.length) {
+            return `<div class="pf-frp-note">${this._escapeHtml(this._t('wellbeing_weekly_report_no_data', 'Weekly report needs more activity data first.'))}</div>`;
+        }
+
+        const maxValue = Math.max(1, ...rows.map((item) => Math.max(0, Number(item?.hiddenTotal || 0))));
+        const columns = rows.map((item) => {
+            const hiddenTotal = Math.max(0, Number(item?.hiddenTotal || 0));
+            const heightPct = Math.max(hiddenTotal > 0 ? 12 : 4, Math.round((hiddenTotal / maxValue) * 100));
+            const dayLabel = this._escapeHtml(this._formatDayShortLabel(item?.dayKey));
+            const countLabel = this._escapeHtml(String(hiddenTotal));
+
+            return `
+                <div class="pf-frp-trend-col">
+                    <div class="pf-frp-trend-track" title="${dayLabel}: ${countLabel}">
+                        <div class="pf-frp-trend-bar" style="height:${heightPct}%;"></div>
+                    </div>
+                    <div class="pf-frp-trend-day">${dayLabel}</div>
+                    <div class="pf-frp-trend-num">${countLabel}</div>
+                </div>
+            `;
+        }).join('');
+
+        return `<div class="pf-frp-trend">${columns}</div>`;
+    }
+
+    _buildWeeklyTopReasonsHtml(topReasons) {
+        const reasons = Array.isArray(topReasons) ? topReasons : [];
+        if (!reasons.length) {
+            return `<div class="pf-frp-note">${this._escapeHtml(this._t('wellbeing_report_panel_weekly_no_reasons', 'No distraction reason data yet.'))}</div>`;
+        }
+
+        const listItems = reasons.map((item) => {
+            const reason = this._escapeHtml(String(item?.reason || this._t('wellbeing_report_no_filters', 'No filters triggered yet')));
+            const count = this._escapeHtml(String(Math.max(0, Number(item?.count || 0))));
+            return `<li><span class="pf-frp-top-label" title="${reason}">${reason}</span><span class="pf-frp-top-count">${count}</span></li>`;
+        }).join('');
+
+        return `<ul class="pf-frp-top-list">${listItems}</ul>`;
+    }
+
+    _formatDayShortLabel(dayKey) {
+        const parsed = new Date(`${String(dayKey || '')}T00:00:00`);
+        if (!Number.isFinite(parsed.getTime())) return '--';
+
+        const day = String(parsed.getDate()).padStart(2, '0');
+        const month = String(parsed.getMonth() + 1).padStart(2, '0');
+        return `${month}/${day}`;
     }
 
     _panelRow(labelKey, fallbackLabel, value) {
