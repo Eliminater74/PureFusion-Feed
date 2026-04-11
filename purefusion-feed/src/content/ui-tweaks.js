@@ -67,8 +67,14 @@ class PF_UiTweaks {
         }
 
         if (this.settings.social.hideMessengerTyping) {
-            // Hide the three dots animation bubble
-            css += `span.x6s0dn4.x78zum5.x135b78x, div.x17zd0t2.x78zum5.x1q0g3np { display: none !important; } \n`;
+            // Hide typing bubbles ONLY inside chat/contact surfaces.
+            // Unscoped class-only selectors can collide with feed metadata rows.
+            css += `
+                [aria-label="Contacts"] span.x6s0dn4.x78zum5.x135b78x,
+                [aria-label="Contacts"] div.x17zd0t2.x78zum5.x1q0g3np,
+                [aria-label="Chats"] span.x6s0dn4.x78zum5.x135b78x,
+                [aria-label="Chats"] div.x17zd0t2.x78zum5.x1q0g3np { display: none !important; }
+            \n`;
         }
 
         // 3. Privacy Blur (Chat List)
@@ -86,6 +92,18 @@ class PF_UiTweaks {
         }
 
         css += this._buildCustomStylingCss();
+
+        // Native timestamp stability guard (non-invasive).
+        css += `
+            [data-pagelet^="FeedUnit_"] a[role="link"][aria-label][href*="story_fbid"],
+            [data-pagelet^="FeedUnit_"] a[role="link"][aria-label][href*="/posts/"],
+            [data-pagelet^="FeedUnit_"] a[role="link"][aria-label][href*="/permalink/"],
+            [data-pagelet^="AdUnit_"] a[role="link"][aria-label][href*="story_fbid"],
+            [role="dialog"] a[role="link"][aria-label][href*="story_fbid"] {
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+        `;
 
         css += `
             .pf-post-date-chip {
