@@ -89,6 +89,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Added: pipeline fan-out telemetry (received/dispatched/trimmed + trim ratio) to tune node prefilter caps.
 - Added: pipeline budget telemetry (deferral count, deferred processors, last deferral summary) to tune frame-budget slicing.
 - Added: wellbeing report action telemetry (panel interactions + related-settings deep-link usage counts) in diagnostics overlay/snapshot.
+- Added: diagnostics performance guidance card with Ultra Fast mode recommendation CTA when pipeline pressure rises.
 - Next: pivot back to non-diagnostics roadmap items (per-surface controls or smart feed scoring polish).
 
 6) Per-surface controls (medium)

@@ -324,6 +324,12 @@ class PF_Diagnostics {
                 <div>Deferred processors: <strong id="pfDiagPipelineBudgetDeferredProcessors">0</strong></div>
                 <div>Last deferral: <span id="pfDiagPipelineBudgetLast">-</span></div>
             </div>
+            <div class="pf-diag-subtitle">Performance guidance</div>
+            <div class="pf-diag-meta">
+                <div>Status: <strong id="pfDiagPerfGuidanceStatus">Stable</strong></div>
+                <div id="pfDiagPerfGuidanceText">Pipeline load is currently stable.</div>
+                <button id="pfDiagPerfGuidanceBtn" type="button" class="pf-diag-inline-btn">Open Ultra Fast Mode settings</button>
+            </div>
             <div class="pf-diag-subtitle">Wellbeing report actions</div>
             <div class="pf-diag-meta">
                 <div>Total actions: <strong id="pfDiagReportActionsTotal">0</strong></div>
@@ -353,6 +359,7 @@ class PF_Diagnostics {
         const clearObserverBtn = this.overlay.querySelector('#pfDiagClearObserverBtn');
         const copyBtn = this.overlay.querySelector('#pfDiagCopyBtn');
         const resetPositionBtn = this.overlay.querySelector('#pfDiagResetPositionBtn');
+        const perfGuidanceBtn = this.overlay.querySelector('#pfDiagPerfGuidanceBtn');
         const titleEl = this.overlay.querySelector('.pf-diag-title');
         if (exportBtn) {
             exportBtn.addEventListener('click', () => {
@@ -381,6 +388,21 @@ class PF_Diagnostics {
         if (resetPositionBtn) {
             resetPositionBtn.addEventListener('click', () => {
                 void this._resetOverlayPosition();
+            });
+        }
+
+        if (perfGuidanceBtn) {
+            perfGuidanceBtn.addEventListener('click', () => {
+                window.dispatchEvent(new CustomEvent('pf:open_advanced_settings', {
+                    detail: {
+                        tabId: 'tab-filters',
+                        focusSelector: '#opt_experience_mode'
+                    }
+                }));
+
+                if (window.PF_Helpers && typeof window.PF_Helpers.showToast === 'function') {
+                    window.PF_Helpers.showToast('Opened mode settings. Try Ultra Fast Mode for heavy sessions.', 'info');
+                }
             });
         }
 
@@ -442,12 +464,15 @@ class PF_Diagnostics {
         const pipelineBudgetDeferralsEl = this.overlay.querySelector('#pfDiagPipelineBudgetDeferrals');
         const pipelineBudgetDeferredProcessorsEl = this.overlay.querySelector('#pfDiagPipelineBudgetDeferredProcessors');
         const pipelineBudgetLastEl = this.overlay.querySelector('#pfDiagPipelineBudgetLast');
+        const perfGuidanceStatusEl = this.overlay.querySelector('#pfDiagPerfGuidanceStatus');
+        const perfGuidanceTextEl = this.overlay.querySelector('#pfDiagPerfGuidanceText');
+        const perfGuidanceBtnEl = this.overlay.querySelector('#pfDiagPerfGuidanceBtn');
         const reportActionsTotalEl = this.overlay.querySelector('#pfDiagReportActionsTotal');
         const reportActionsLastEl = this.overlay.querySelector('#pfDiagReportActionsLast');
         const reportActionsTopEl = this.overlay.querySelector('#pfDiagReportActionsTop');
         const observerTrendEl = this.overlay.querySelector('#pfDiagObserverTrend');
         const observerTrendMetaEl = this.overlay.querySelector('#pfDiagObserverTrendMeta');
-        if (!totalEl || !listEl || !syncEl || !resweepEl || !followupsEl || !lastSyncEl || !lastResweepEl || !observerBatchesEl || !observerRateEl || !observerNodesEl || !observerDispatchedEl || !observerDroppedEl || !observerRecordsEl || !observerAvgMsEl || !observerPeakMsEl || !observerLastBatchEl || !observerSpikesEl || !observerThresholdsEl || !pipelineBatchesEl || !pipelineReceivedEl || !pipelineDispatchedEl || !pipelineTrimmedEl || !pipelineTrimRatioEl || !pipelineLastBatchEl || !pipelineBudgetDeferralsEl || !pipelineBudgetDeferredProcessorsEl || !pipelineBudgetLastEl || !reportActionsTotalEl || !reportActionsLastEl || !reportActionsTopEl || !observerTrendEl || !observerTrendMetaEl) return;
+        if (!totalEl || !listEl || !syncEl || !resweepEl || !followupsEl || !lastSyncEl || !lastResweepEl || !observerBatchesEl || !observerRateEl || !observerNodesEl || !observerDispatchedEl || !observerDroppedEl || !observerRecordsEl || !observerAvgMsEl || !observerPeakMsEl || !observerLastBatchEl || !observerSpikesEl || !observerThresholdsEl || !pipelineBatchesEl || !pipelineReceivedEl || !pipelineDispatchedEl || !pipelineTrimmedEl || !pipelineTrimRatioEl || !pipelineLastBatchEl || !pipelineBudgetDeferralsEl || !pipelineBudgetDeferredProcessorsEl || !pipelineBudgetLastEl || !perfGuidanceStatusEl || !perfGuidanceTextEl || !perfGuidanceBtnEl || !reportActionsTotalEl || !reportActionsLastEl || !reportActionsTopEl || !observerTrendEl || !observerTrendMetaEl) return;
 
         const thresholds = this._getObserverThresholds();
 
@@ -520,6 +545,13 @@ class PF_Diagnostics {
             pipelineBudgetLastEl.textContent = `${entry.nodes} nodes, ${entry.elapsedMs.toFixed(2)}ms/${entry.budgetMs}ms, +${entry.remainingProcessors} after ${entry.deferredFrom} @ ${this._formatTime(entry.ts)}`;
             pipelineBudgetLastEl.className = this._severityClassName(entry.remainingProcessors >= 4 ? 'warn' : 'ok');
         }
+
+        const perfGuidance = this._computePerformanceGuidance();
+        perfGuidanceStatusEl.textContent = perfGuidance.label;
+        perfGuidanceStatusEl.className = this._severityClassName(perfGuidance.severity);
+        perfGuidanceTextEl.textContent = perfGuidance.message;
+        perfGuidanceTextEl.className = this._severityClassName(perfGuidance.severity);
+        perfGuidanceBtnEl.style.display = perfGuidance.showUltraFastButton ? 'inline-flex' : 'none';
 
         reportActionsTotalEl.textContent = String(this.reportActionTotal);
         reportActionsLastEl.textContent = this.lastReportActionAt
@@ -648,6 +680,7 @@ class PF_Diagnostics {
                 nodesTrimmed: this.pipelineNodesTrimmedTotal,
                 budgetDeferrals: this.pipelineBudgetDeferrals,
                 deferredProcessorsTotal: this.pipelineBudgetDeferredProcessorsTotal,
+                guidance: this._computePerformanceGuidance(),
                 trimRatio: this.pipelineNodesReceivedTotal > 0
                     ? Number(((this.pipelineNodesTrimmedTotal / this.pipelineNodesReceivedTotal) * 100).toFixed(3))
                     : 0,
@@ -820,6 +853,37 @@ class PF_Diagnostics {
         if (severity === 'severe') return '#ff7a90';
         if (severity === 'warn') return '#ffd166';
         return '#74f0ff';
+    }
+
+    _computePerformanceGuidance() {
+        const trimRatio = this.pipelineNodesReceivedTotal > 0
+            ? (this.pipelineNodesTrimmedTotal / this.pipelineNodesReceivedTotal) * 100
+            : 0;
+
+        if (this.pipelineBudgetDeferrals >= 12 || this.pipelineBudgetDeferredProcessorsTotal >= 40 || trimRatio >= 45) {
+            return {
+                severity: 'severe',
+                label: 'High pressure',
+                message: 'Heavy pipeline pressure detected. Ultra Fast Mode is recommended for this session.',
+                showUltraFastButton: true
+            };
+        }
+
+        if (this.pipelineBudgetDeferrals >= 4 || this.pipelineBudgetDeferredProcessorsTotal >= 12 || trimRatio >= 25) {
+            return {
+                severity: 'warn',
+                label: 'Moderate pressure',
+                message: 'Pipeline load is elevated. Consider Ultra Fast Mode if scrolling feels laggy.',
+                showUltraFastButton: true
+            };
+        }
+
+        return {
+            severity: 'ok',
+            label: 'Stable',
+            message: 'Pipeline load is currently stable.',
+            showUltraFastButton: false
+        };
     }
 
     _clampInt(value, min, max, fallback) {
@@ -1270,6 +1334,23 @@ class PF_Diagnostics {
             #pf-diagnostics-overlay .pf-diag-meta strong {
                 color: #89f4ff;
                 font-weight: 800;
+            }
+
+            #pf-diagnostics-overlay .pf-diag-inline-btn {
+                justify-self: start;
+                appearance: none;
+                border: 1px solid #4a5a78;
+                border-radius: 999px;
+                background: #1d2635;
+                color: #dbe8ff;
+                font: 700 10px/1.2 "Segoe UI", sans-serif;
+                padding: 4px 8px;
+                cursor: pointer;
+            }
+
+            #pf-diagnostics-overlay .pf-diag-inline-btn:hover {
+                border-color: #7ce8ff;
+                color: #ffffff;
             }
 
             #pf-diagnostics-overlay .pf-diag-subtitle {
