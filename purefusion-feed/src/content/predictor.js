@@ -98,6 +98,7 @@ class PF_Predictor {
                 delete postNode.dataset.pfPredictProcessed;
                 delete postNode.dataset.pfScored;
                 delete postNode.dataset.pfInsightChipInjected;
+                delete postNode.dataset.pfInsightExpanded;
                 delete postNode.dataset.pfCredBadgeInjected;
                 delete postNode.dataset.pfCredDebugInjected;
             });
@@ -293,6 +294,7 @@ class PF_Predictor {
         if (!shouldShowScore && !shouldShowCred) {
             postNode.querySelectorAll('.pf-insight-chip').forEach((node) => node.remove());
             delete postNode.dataset.pfInsightChipInjected;
+            delete postNode.dataset.pfInsightExpanded;
             return;
         }
 
@@ -328,6 +330,7 @@ class PF_Predictor {
         }
 
         delete postNode.dataset.pfInsightChipInjected;
+        delete postNode.dataset.pfInsightExpanded;
     }
 
     _applyNativeAffinitySort(postNode, score) {
@@ -637,24 +640,31 @@ class PF_Predictor {
             collapseGuardBypass: postNode.dataset.pfCollapseGuardBypass === 'true',
             collapseGuardFloor: Number(postNode.dataset.pfCollapseGuardFloor || 0)
         });
+        const isExpanded = postNode.dataset.pfInsightExpanded === 'true';
+        const toggleLabel = isExpanded ? 'Hide' : 'Details';
+        const detailsHiddenAttr = isExpanded ? '' : ' hidden';
 
         chip.innerHTML = `
             <div class="pf-insight-row">
                 <span class="pf-insight-status">${safeStatusText}</span>
                 <span class="pf-insight-summary" title="${safeSummaryText}">${safeSummaryText}</span>
-                <button type="button" class="pf-insight-toggle">Details</button>
+                <button type="button" class="pf-insight-toggle">${toggleLabel}</button>
             </div>
             <div class="pf-insight-meta">Signal: ${toneText}</div>
-            <div class="pf-insight-details" hidden>${detailHtml}</div>
+            <div class="pf-insight-details"${detailsHiddenAttr}>${detailHtml}</div>
         `;
 
         const toggle = chip.querySelector('.pf-insight-toggle');
         const details = chip.querySelector('.pf-insight-details');
         if (toggle && details) {
-            toggle.addEventListener('click', () => {
-                const isHidden = !!details.hidden;
-                details.hidden = !isHidden;
-                toggle.textContent = isHidden ? 'Hide' : 'Details';
+            toggle.addEventListener('click', (event) => {
+                if (event && event.preventDefault) event.preventDefault();
+                if (event && event.stopPropagation) event.stopPropagation();
+
+                const willOpen = !!details.hidden;
+                details.hidden = !willOpen;
+                toggle.textContent = willOpen ? 'Hide' : 'Details';
+                postNode.dataset.pfInsightExpanded = willOpen ? 'true' : 'false';
             });
         }
 
@@ -1471,6 +1481,7 @@ class PF_Predictor {
                 font: 700 11px/1.32 "Segoe UI Variable Text", "Segoe UI", sans-serif;
                 position: relative;
                 z-index: 1;
+                pointer-events: auto;
             }
 
             .pf-insight-chip.pf-insight-ok {
