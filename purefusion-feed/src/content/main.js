@@ -13,6 +13,7 @@ class PureFusionApp {
         this.postUpdateSweepTimer = null;
         this.postUpdateSweepTimerLong = null;
         this.maxPipelineNodesPerBatch = 220;
+        this.maxPipelineProcessingMs = 14;
         this.isSyncingSettings = false;
         this.hasQueuedSettingsSync = false;
     }
@@ -112,25 +113,7 @@ class PureFusionApp {
             if (this.wellbeing) blockProcessing = this.wellbeing.applyScrollStopper(addedNodes);
             if (blockProcessing) return; // Drop processing payload
 
-            // Pass to cleaner and UI components
-            if (this.cleaner) this.cleaner.sweepNodes(addedNodes);
-            if (this.uiTweaks) this.uiTweaks.applyToNodes(addedNodes);
-            
-            // Pass to AI Engine for learning and scoring
-            if (this.predictor) this.predictor.applyToNodes(addedNodes);
-
-            // Progressive inline comment previews
-            if (this.commentPreview) this.commentPreview.applyToNodes(addedNodes);
-            
-            // Pass to LLM features
-            if (this.llmFeatures) this.llmFeatures.applyToNodes(addedNodes);
-
-            // Messenger smart tooling on FB chat popups
-            if (this.messengerAI) this.messengerAI.applyToNodes(addedNodes);
-            
-            // Pass to notification rules engine to filter drop-down menus
-            if (this.notifControls) this.notifControls.applyToNodes(addedNodes);
-            if (this.diagnostics) this.diagnostics.applyToNodes(addedNodes);
+            this._runNodeProcessorsWithBudget(addedNodes);
         });
 
         // 1. Listen for background script updates (Popup/Options)
@@ -304,6 +287,67 @@ class PureFusionApp {
         } catch (err) {
             // no-op when CustomEvent dispatch is unavailable
         }
+    }
+
+    _runNodeProcessorsWithBudget(nodes) {
+        const processors = [
+            { name: 'cleaner', run: () => this.cleaner && this.cleaner.sweepNodes(nodes) },
+            { name: 'uiTweaks', run: () => this.uiTweaks && this.uiTweaks.applyToNodes(nodes) },
+            { name: 'predictor', run: () => this.predictor && this.predictor.applyToNodes(nodes) },
+            { name: 'commentPreview', run: () => this.commentPreview && this.commentPreview.applyToNodes(nodes) },
+            { name: 'llmFeatures', run: () => this.llmFeatures && this.llmFeatures.applyToNodes(nodes) },
+            { name: 'messengerAI', run: () => this.messengerAI && this.messengerAI.applyToNodes(nodes) },
+            { name: 'notifControls', run: () => this.notifControls && this.notifControls.applyToNodes(nodes) },
+            { name: 'diagnostics', run: () => this.diagnostics && this.diagnostics.applyToNodes(nodes) }
+        ];
+
+        this._runNodeProcessorsWithBudgetSlice(nodes, processors, 0);
+    }
+
+    _runNodeProcessorsWithBudgetSlice(nodes, processors, startIndex) {
+        if (!Array.isArray(processors) || startIndex >= processors.length) return;
+
+        const sliceStart = this._pipelineNow();
+
+        for (let i = startIndex; i < processors.length; i += 1) {
+            const processor = processors[i];
+            if (!processor || typeof processor.run !== 'function') continue;
+
+            try {
+                processor.run();
+            } catch (err) {
+                PF_Logger.warn(`PureFusion: processor failed (${processor.name || 'unknown'})`, err);
+            }
+
+            const elapsed = this._pipelineNow() - sliceStart;
+            if (elapsed >= this.maxPipelineProcessingMs && i < processors.length - 1) {
+                const remainingProcessors = processors.length - (i + 1);
+                const deferredFrom = String(processor.name || `index-${i}`);
+
+                this._dispatchDiagnosticsEvent('pf:pipeline_budget', {
+                    nodes: Array.isArray(nodes) ? nodes.length : 0,
+                    budgetMs: this.maxPipelineProcessingMs,
+                    elapsedMs: Number(elapsed.toFixed(3)),
+                    remainingProcessors,
+                    deferredFrom,
+                    ts: Date.now()
+                });
+
+                setTimeout(() => {
+                    if (!this.isEnabled()) return;
+                    this._runNodeProcessorsWithBudgetSlice(nodes, processors, i + 1);
+                }, 0);
+
+                return;
+            }
+        }
+    }
+
+    _pipelineNow() {
+        if (typeof performance !== 'undefined' && performance && typeof performance.now === 'function') {
+            return performance.now();
+        }
+        return Date.now();
     }
 
     _syncModuleSettings() {

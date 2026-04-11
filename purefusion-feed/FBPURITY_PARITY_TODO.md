@@ -87,6 +87,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Added: per-minute observer batch rate metric in diagnostics header.
 - Added: observer in/out/trimmed node telemetry (batch + cumulative) to tune observer queue caps.
 - Added: pipeline fan-out telemetry (received/dispatched/trimmed + trim ratio) to tune node prefilter caps.
+- Added: pipeline budget telemetry (deferral count, deferred processors, last deferral summary) to tune frame-budget slicing.
 - Added: wellbeing report action telemetry (panel interactions + related-settings deep-link usage counts) in diagnostics overlay/snapshot.
 - Next: pivot back to non-diagnostics roadmap items (per-surface controls or smart feed scoring polish).
 
@@ -158,6 +159,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Hardened: observer now filters low-signal injected nodes and prioritizes high-signal nodes with queue/dispatch caps.
 - Hardened: main pipeline now pre-filters/dedupes observer node batches before fan-out to all modules.
 - Hardened: settings-sync resweeps are now serialized to avoid overlapping burst rescans.
+- Hardened: module fan-out now enforces a per-slice processing budget and defers remaining processors to the next tick when over budget.
 
 11) Reels control v2 (medium)
 - Status: initial implementation complete.

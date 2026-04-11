@@ -29,6 +29,9 @@ class PF_Diagnostics {
         this.pipelineNodesDispatchedTotal = 0;
         this.pipelineNodesTrimmedTotal = 0;
         this.lastPipelineBatch = null;
+        this.pipelineBudgetDeferrals = 0;
+        this.pipelineBudgetDeferredProcessorsTotal = 0;
+        this.lastPipelineBudgetDeferral = null;
         this.observerBatchTimestamps = [];
         this.observerSpikeHistory = [];
         this.observerSpikeHistoryLimit = 10;
@@ -46,6 +49,7 @@ class PF_Diagnostics {
         this.boundSettingsUpdateHandler = this._onSettingsUpdate.bind(this);
         this.boundObserverBatchHandler = this._onObserverBatch.bind(this);
         this.boundPipelineBatchHandler = this._onPipelineBatch.bind(this);
+        this.boundPipelineBudgetHandler = this._onPipelineBudget.bind(this);
         this.boundReportActionHandler = this._onWellbeingReportAction.bind(this);
         this.boundDragStartHandler = this._onDragStart.bind(this);
         this.boundDragMoveHandler = this._onDragMove.bind(this);
@@ -57,6 +61,7 @@ class PF_Diagnostics {
         window.addEventListener('pf:settings_update', this.boundSettingsUpdateHandler);
         window.addEventListener('pf:observer_batch', this.boundObserverBatchHandler);
         window.addEventListener('pf:pipeline_batch', this.boundPipelineBatchHandler);
+        window.addEventListener('pf:pipeline_budget', this.boundPipelineBudgetHandler);
         window.addEventListener('pf:wellbeing_report_action', this.boundReportActionHandler);
         window.addEventListener('resize', this.boundWindowResizeHandler);
         void this._loadSavedOverlayPosition();
@@ -211,6 +216,33 @@ class PF_Diagnostics {
         this._render();
     }
 
+    _onPipelineBudget(event) {
+        if (!this._isEnabled()) return;
+
+        const nodes = Math.max(0, Number(event?.detail?.nodes || 0));
+        const budgetMs = Math.max(0, Number(event?.detail?.budgetMs || 0));
+        const elapsedMs = Math.max(0, Number(event?.detail?.elapsedMs || 0));
+        const remainingProcessors = Math.max(0, Number(event?.detail?.remainingProcessors || 0));
+        const deferredFrom = String(event?.detail?.deferredFrom || 'unknown');
+
+        this.pipelineBudgetDeferrals += 1;
+        this.pipelineBudgetDeferredProcessorsTotal += remainingProcessors;
+        this.lastPipelineBudgetDeferral = {
+            nodes,
+            budgetMs,
+            elapsedMs,
+            remainingProcessors,
+            deferredFrom,
+            ts: Date.now()
+        };
+
+        if (this.settings?.diagnostics?.verboseConsole) {
+            PF_Logger.log(`[Diagnostics] Pipeline budget deferral: ${nodes} nodes, ${elapsedMs.toFixed(2)}ms/${budgetMs}ms, +${remainingProcessors} processors after ${deferredFrom}`);
+        }
+
+        this._render();
+    }
+
     _onWellbeingReportAction(event) {
         if (!this._isEnabled()) return;
 
@@ -288,6 +320,9 @@ class PF_Diagnostics {
                 <div>Nodes trimmed: <strong id="pfDiagPipelineTrimmed">0</strong></div>
                 <div>Trim ratio: <strong id="pfDiagPipelineTrimRatio">0.0%</strong></div>
                 <div>Last batch: <span id="pfDiagPipelineLastBatch">-</span></div>
+                <div>Budget deferrals: <strong id="pfDiagPipelineBudgetDeferrals">0</strong></div>
+                <div>Deferred processors: <strong id="pfDiagPipelineBudgetDeferredProcessors">0</strong></div>
+                <div>Last deferral: <span id="pfDiagPipelineBudgetLast">-</span></div>
             </div>
             <div class="pf-diag-subtitle">Wellbeing report actions</div>
             <div class="pf-diag-meta">
@@ -404,12 +439,15 @@ class PF_Diagnostics {
         const pipelineTrimmedEl = this.overlay.querySelector('#pfDiagPipelineTrimmed');
         const pipelineTrimRatioEl = this.overlay.querySelector('#pfDiagPipelineTrimRatio');
         const pipelineLastBatchEl = this.overlay.querySelector('#pfDiagPipelineLastBatch');
+        const pipelineBudgetDeferralsEl = this.overlay.querySelector('#pfDiagPipelineBudgetDeferrals');
+        const pipelineBudgetDeferredProcessorsEl = this.overlay.querySelector('#pfDiagPipelineBudgetDeferredProcessors');
+        const pipelineBudgetLastEl = this.overlay.querySelector('#pfDiagPipelineBudgetLast');
         const reportActionsTotalEl = this.overlay.querySelector('#pfDiagReportActionsTotal');
         const reportActionsLastEl = this.overlay.querySelector('#pfDiagReportActionsLast');
         const reportActionsTopEl = this.overlay.querySelector('#pfDiagReportActionsTop');
         const observerTrendEl = this.overlay.querySelector('#pfDiagObserverTrend');
         const observerTrendMetaEl = this.overlay.querySelector('#pfDiagObserverTrendMeta');
-        if (!totalEl || !listEl || !syncEl || !resweepEl || !followupsEl || !lastSyncEl || !lastResweepEl || !observerBatchesEl || !observerRateEl || !observerNodesEl || !observerDispatchedEl || !observerDroppedEl || !observerRecordsEl || !observerAvgMsEl || !observerPeakMsEl || !observerLastBatchEl || !observerSpikesEl || !observerThresholdsEl || !pipelineBatchesEl || !pipelineReceivedEl || !pipelineDispatchedEl || !pipelineTrimmedEl || !pipelineTrimRatioEl || !pipelineLastBatchEl || !reportActionsTotalEl || !reportActionsLastEl || !reportActionsTopEl || !observerTrendEl || !observerTrendMetaEl) return;
+        if (!totalEl || !listEl || !syncEl || !resweepEl || !followupsEl || !lastSyncEl || !lastResweepEl || !observerBatchesEl || !observerRateEl || !observerNodesEl || !observerDispatchedEl || !observerDroppedEl || !observerRecordsEl || !observerAvgMsEl || !observerPeakMsEl || !observerLastBatchEl || !observerSpikesEl || !observerThresholdsEl || !pipelineBatchesEl || !pipelineReceivedEl || !pipelineDispatchedEl || !pipelineTrimmedEl || !pipelineTrimRatioEl || !pipelineLastBatchEl || !pipelineBudgetDeferralsEl || !pipelineBudgetDeferredProcessorsEl || !pipelineBudgetLastEl || !reportActionsTotalEl || !reportActionsLastEl || !reportActionsTopEl || !observerTrendEl || !observerTrendMetaEl) return;
 
         const thresholds = this._getObserverThresholds();
 
@@ -469,6 +507,18 @@ class PF_Diagnostics {
             pipelineLastBatchEl.className = this._severityClassName(
                 lastTrimRatio >= 45 ? 'severe' : (lastTrimRatio >= 20 ? 'warn' : 'ok')
             );
+        }
+
+        pipelineBudgetDeferralsEl.textContent = String(this.pipelineBudgetDeferrals);
+        pipelineBudgetDeferredProcessorsEl.textContent = String(this.pipelineBudgetDeferredProcessorsTotal);
+
+        if (!this.lastPipelineBudgetDeferral) {
+            pipelineBudgetLastEl.textContent = '-';
+            pipelineBudgetLastEl.className = '';
+        } else {
+            const entry = this.lastPipelineBudgetDeferral;
+            pipelineBudgetLastEl.textContent = `${entry.nodes} nodes, ${entry.elapsedMs.toFixed(2)}ms/${entry.budgetMs}ms, +${entry.remainingProcessors} after ${entry.deferredFrom} @ ${this._formatTime(entry.ts)}`;
+            pipelineBudgetLastEl.className = this._severityClassName(entry.remainingProcessors >= 4 ? 'warn' : 'ok');
         }
 
         reportActionsTotalEl.textContent = String(this.reportActionTotal);
@@ -596,6 +646,8 @@ class PF_Diagnostics {
                 nodesReceived: this.pipelineNodesReceivedTotal,
                 nodesDispatched: this.pipelineNodesDispatchedTotal,
                 nodesTrimmed: this.pipelineNodesTrimmedTotal,
+                budgetDeferrals: this.pipelineBudgetDeferrals,
+                deferredProcessorsTotal: this.pipelineBudgetDeferredProcessorsTotal,
                 trimRatio: this.pipelineNodesReceivedTotal > 0
                     ? Number(((this.pipelineNodesTrimmedTotal / this.pipelineNodesReceivedTotal) * 100).toFixed(3))
                     : 0,
@@ -605,6 +657,16 @@ class PF_Diagnostics {
                         dispatchedNodes: this.lastPipelineBatch.dispatchedNodes,
                         trimmedNodes: this.lastPipelineBatch.trimmedNodes,
                         ts: new Date(this.lastPipelineBatch.ts).toISOString()
+                    }
+                    : null,
+                lastBudgetDeferral: this.lastPipelineBudgetDeferral
+                    ? {
+                        nodes: this.lastPipelineBudgetDeferral.nodes,
+                        budgetMs: Number(this.lastPipelineBudgetDeferral.budgetMs.toFixed(3)),
+                        elapsedMs: Number(this.lastPipelineBudgetDeferral.elapsedMs.toFixed(3)),
+                        remainingProcessors: this.lastPipelineBudgetDeferral.remainingProcessors,
+                        deferredFrom: this.lastPipelineBudgetDeferral.deferredFrom,
+                        ts: new Date(this.lastPipelineBudgetDeferral.ts).toISOString()
                     }
                     : null
             },
@@ -982,6 +1044,9 @@ class PF_Diagnostics {
         this.observerTrendHistory = [];
         this.lastObserverBatch = null;
         this.lastPipelineBatch = null;
+        this.pipelineBudgetDeferrals = 0;
+        this.pipelineBudgetDeferredProcessorsTotal = 0;
+        this.lastPipelineBudgetDeferral = null;
 
         this._render();
 
@@ -1012,6 +1077,9 @@ class PF_Diagnostics {
         this.pipelineNodesDispatchedTotal = 0;
         this.pipelineNodesTrimmedTotal = 0;
         this.lastPipelineBatch = null;
+        this.pipelineBudgetDeferrals = 0;
+        this.pipelineBudgetDeferredProcessorsTotal = 0;
+        this.lastPipelineBudgetDeferral = null;
         this.reportActionTotal = 0;
         this.reportActionCounts.clear();
         this.lastReportActionAt = 0;
