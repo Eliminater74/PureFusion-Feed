@@ -137,6 +137,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Fixed: timestamp enhancement no longer injects sibling DOM nodes into Facebook metadata row (prevents timestamp line flicker/vanish).
 - Hardened: timestamp matcher now targets only compact date/time anchors near post headers and avoids mutating non-timestamp author/action links.
 - Fixed: timestamp display now uses a separate post-date chip (non-invasive to FB timestamp row) to prevent disappearing native time text.
+- Hotfix: disabled timestamp-row DOM mutation path to fully restore native inline post time visibility while scrolling.
 
 9) Feed mode presets (high)
 - Status: initial implementation complete.

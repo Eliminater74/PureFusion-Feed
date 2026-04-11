@@ -33,9 +33,8 @@ class PF_UiTweaks {
     applyToNodes(nodes) {
         // Most UI tweaks are global CSS based, so we just ensure update() is current
         // if settings were to change dynamically.
-        if (this.settings?.uiMode?.fixTimestamps) {
-            this._syncAbsoluteTimestamps(nodes);
-        }
+        // Timestamp enhancement intentionally disabled in live node path
+        // to avoid mutating Facebook's fragile post-meta row.
     }
 
     update() {
@@ -106,11 +105,9 @@ class PF_UiTweaks {
 
         this.styleTag.textContent = css;
 
-        if (this.settings?.uiMode?.fixTimestamps) {
-            this._syncAbsoluteTimestamps();
-        } else {
-            this._clearAbsoluteTimestampLabels();
-        }
+        // Safety rollback: do not mutate timestamp anchors until a fully
+        // non-invasive strategy is validated.
+        this._clearAbsoluteTimestampLabels();
     }
 
     _syncAbsoluteTimestamps(nodes = null) {
