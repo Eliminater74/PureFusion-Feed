@@ -89,12 +89,18 @@ class PF_UiTweaks {
         css += this._buildCustomStylingCss();
 
         css += `
-            a.pf-abs-date-anchor::after {
-                content: " - " attr(data-pf-abs-date);
+            .pf-post-date-chip {
+                display: inline-flex;
+                align-items: center;
+                margin: 4px 0 2px;
+                padding: 2px 8px;
+                border-radius: 999px;
+                border: 1px solid rgba(132, 154, 186, 0.36);
+                background: rgba(27, 39, 57, 0.22);
                 color: var(--secondary-text, #b0b3b8) !important;
                 font: 600 11px/1.2 "Segoe UI Variable Text", "Segoe UI", sans-serif;
                 white-space: nowrap;
-                opacity: 0.92;
+                opacity: 0.94;
             }
         `;
 
@@ -114,13 +120,16 @@ class PF_UiTweaks {
             if (!root || !root.querySelectorAll) return;
 
             root.querySelectorAll('.pf-abs-date-label').forEach((legacy) => legacy.remove());
+            root.querySelectorAll('a.pf-abs-date-anchor').forEach((legacyAnchor) => {
+                this._clearAnchorAbsoluteLabel(legacyAnchor);
+            });
 
             const anchors = root.querySelectorAll('a[role="link"][aria-label], a[href][aria-label]');
             anchors.forEach((anchor) => {
                 if (!anchor || !anchor.isConnected) return;
                 if (anchor.closest('.pf-insight-chip, #pf-feed-report-panel, #pf-session-timer')) return;
 
-                const host = anchor.closest('[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"], [role="dialog"], [role="article"]');
+                const host = this._resolveTimestampHost(anchor);
                 if (!host) {
                     this._clearAnchorAbsoluteLabel(anchor);
                     return;
@@ -138,12 +147,52 @@ class PF_UiTweaks {
                 }
 
                 const currentText = String(anchor.getAttribute('data-pf-abs-date') || '');
-                if (currentText === absoluteText && anchor.classList.contains('pf-abs-date-anchor')) return;
+                if (currentText === absoluteText && anchor.classList.contains('pf-abs-date-anchor')) {
+                    this._upsertPostDateChip(host, absoluteText);
+                    return;
+                }
 
                 anchor.classList.add('pf-abs-date-anchor');
                 anchor.setAttribute('data-pf-abs-date', absoluteText);
+                this._upsertPostDateChip(host, absoluteText);
             });
         });
+    }
+
+    _resolveTimestampHost(anchor) {
+        if (!anchor || !anchor.closest) return null;
+
+        const postHost = anchor.closest('[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"], [role="article"]');
+        if (postHost) return postHost;
+
+        const dialog = anchor.closest('[role="dialog"]');
+        if (!dialog) return null;
+
+        const dialogArticle = dialog.querySelector('[role="article"], [data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"]');
+        return dialogArticle || dialog;
+    }
+
+    _upsertPostDateChip(host, absoluteText) {
+        if (!host || !host.querySelector) return null;
+
+        let chip = host.querySelector('.pf-post-date-chip');
+        if (!chip) {
+            chip = document.createElement('div');
+            chip.className = 'pf-post-date-chip';
+
+            const heading = host.querySelector('h2, h3, h4, [role="heading"]');
+            const headingContainer = heading && heading.closest ? heading.closest('div') : null;
+
+            if (headingContainer && headingContainer.parentElement && headingContainer.parentElement !== host) {
+                headingContainer.insertAdjacentElement('afterend', chip);
+            } else {
+                host.insertAdjacentElement('afterbegin', chip);
+            }
+        }
+
+        const text = `Posted: ${absoluteText}`;
+        if (chip.textContent !== text) chip.textContent = text;
+        return chip;
     }
 
     _resolveTimestampRoots(nodes) {
@@ -218,6 +267,7 @@ class PF_UiTweaks {
 
     _clearAbsoluteTimestampLabels() {
         document.querySelectorAll('.pf-abs-date-label').forEach((el) => el.remove());
+        document.querySelectorAll('.pf-post-date-chip').forEach((el) => el.remove());
         document.querySelectorAll('a.pf-abs-date-anchor').forEach((anchor) => {
             this._clearAnchorAbsoluteLabel(anchor);
         });
