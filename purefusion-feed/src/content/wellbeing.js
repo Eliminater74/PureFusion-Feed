@@ -18,6 +18,8 @@ class PF_Wellbeing {
         this.weeklyStatsCache = { days: {} };
         this.weeklyStatsLoaded = false;
         this.weeklyStatsFlushTimer = null;
+        this.reportPanelEl = null;
+        this.reportPanelTab = 'daily';
         this.lastSessionAwarenessPromptAt = 0;
         this.hiddenReasonCounts = new Map();
         this.reelsHiddenCount = 0;
@@ -29,6 +31,7 @@ class PF_Wellbeing {
         this.boundReportRequestHandler = this._onReportRequest.bind(this);
         this.boundWeeklyReportRequestHandler = this._onWeeklyReportRequest.bind(this);
         this.boundSessionAwarenessScrollHandler = this._onSessionAwarenessScroll.bind(this);
+        this.boundReportPanelClickHandler = this._onReportPanelClick.bind(this);
 
         window.addEventListener('pf:element_hidden', this.boundHiddenHandler);
         window.addEventListener('keydown', this.boundReportShortcutHandler);
@@ -89,6 +92,10 @@ class PF_Wellbeing {
         }
 
         this._recordWeeklyHiddenEvent(reason);
+
+        if (this.reportPanelEl && this.reportPanelEl.style.display !== 'none') {
+            this._renderFeedReportPanel();
+        }
     }
 
     _onReportShortcut(event) {
@@ -99,7 +106,7 @@ class PF_Wellbeing {
         if (this._isEditableContext()) return;
 
         event.preventDefault();
-        this._showFeedReportToast('manual');
+        this._openFeedReportPanel('daily');
     }
 
     _onWeeklyReportShortcut(event) {
@@ -110,15 +117,15 @@ class PF_Wellbeing {
         if (this._isEditableContext()) return;
 
         event.preventDefault();
-        this._showWeeklyFeedReportToast('manual');
+        this._openFeedReportPanel('weekly');
     }
 
     _onReportRequest() {
-        this._showFeedReportToast('manual');
+        this._openFeedReportPanel('daily');
     }
 
     _onWeeklyReportRequest() {
-        this._showWeeklyFeedReportToast('manual');
+        this._openFeedReportPanel('weekly');
     }
 
     _isEditableContext() {
@@ -499,6 +506,273 @@ class PF_Wellbeing {
         };
     }
 
+    _openFeedReportPanel(tab = 'daily') {
+        this.reportPanelTab = tab === 'weekly' ? 'weekly' : 'daily';
+
+        const panel = this._ensureFeedReportPanel();
+        if (!panel) {
+            if (this.reportPanelTab === 'weekly') this._showWeeklyFeedReportToast('manual');
+            else this._showFeedReportToast('manual');
+            return;
+        }
+
+        panel.style.display = 'block';
+        this._renderFeedReportPanel();
+    }
+
+    _ensureFeedReportPanel() {
+        if (this.reportPanelEl && this.reportPanelEl.isConnected) return this.reportPanelEl;
+
+        this._ensureFeedReportPanelStyles();
+
+        const panel = document.createElement('div');
+        panel.id = 'pf-feed-report-panel';
+        panel.setAttribute('role', 'dialog');
+        panel.setAttribute('aria-label', this._t('wellbeing_report_panel_title', 'PureFusion Feed Reports'));
+
+        panel.innerHTML = `
+            <div class="pf-frp-header">
+                <div class="pf-frp-title">${this._t('wellbeing_report_panel_title', 'PureFusion Feed Reports')}</div>
+                <button type="button" data-pf-action="close" aria-label="${this._t('wellbeing_report_panel_close', 'Close')}">×</button>
+            </div>
+            <div class="pf-frp-tabs">
+                <button type="button" data-pf-tab="daily">${this._t('wellbeing_report_panel_session_tab', 'Session')}</button>
+                <button type="button" data-pf-tab="weekly">${this._t('wellbeing_report_panel_weekly_tab', 'Weekly')}</button>
+            </div>
+            <div id="pf-feed-report-panel-content" class="pf-frp-content"></div>
+            <div class="pf-frp-footer">
+                <button type="button" data-pf-action="refresh">${this._t('wellbeing_report_panel_refresh', 'Refresh')}</button>
+                <button type="button" data-pf-action="reset-session">${this._t('wellbeing_report_panel_reset_session', 'Reset Session')}</button>
+            </div>
+        `;
+
+        panel.addEventListener('click', this.boundReportPanelClickHandler);
+        document.body.appendChild(panel);
+        this.reportPanelEl = panel;
+        return panel;
+    }
+
+    _ensureFeedReportPanelStyles() {
+        if (document.getElementById('pf-feed-report-panel-style')) return;
+
+        const style = document.createElement('style');
+        style.id = 'pf-feed-report-panel-style';
+        style.textContent = `
+            #pf-feed-report-panel {
+                position: fixed;
+                right: 20px;
+                bottom: 68px;
+                width: min(390px, calc(100vw - 24px));
+                max-height: min(72vh, 620px);
+                overflow: hidden;
+                z-index: 10000;
+                border-radius: 14px;
+                border: 1px solid rgba(91, 208, 255, 0.42);
+                background: rgba(17, 24, 35, 0.96);
+                color: #d6e6ff;
+                box-shadow: 0 12px 28px rgba(0, 0, 0, 0.42);
+                backdrop-filter: blur(10px);
+                font: 700 12px/1.35 "Segoe UI Variable Text", "Segoe UI", sans-serif;
+            }
+
+            #pf-feed-report-panel .pf-frp-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 10px 12px;
+                border-bottom: 1px solid rgba(112, 140, 180, 0.28);
+            }
+
+            #pf-feed-report-panel .pf-frp-title {
+                font-size: 13px;
+                letter-spacing: 0.02em;
+                color: #f1f7ff;
+            }
+
+            #pf-feed-report-panel .pf-frp-header button {
+                appearance: none;
+                border: 1px solid rgba(173, 195, 222, 0.5);
+                background: rgba(21, 32, 48, 0.92);
+                color: #dcecff;
+                border-radius: 999px;
+                width: 24px;
+                height: 24px;
+                cursor: pointer;
+                font: 700 14px/1 "Segoe UI", sans-serif;
+            }
+
+            #pf-feed-report-panel .pf-frp-tabs {
+                display: flex;
+                gap: 8px;
+                padding: 8px 12px 0;
+            }
+
+            #pf-feed-report-panel .pf-frp-tabs button,
+            #pf-feed-report-panel .pf-frp-footer button {
+                appearance: none;
+                border: 1px solid rgba(114, 146, 184, 0.52);
+                border-radius: 999px;
+                background: rgba(25, 36, 54, 0.9);
+                color: #d8e9ff;
+                cursor: pointer;
+                padding: 3px 10px;
+                font: 700 11px/1.2 "Segoe UI", sans-serif;
+            }
+
+            #pf-feed-report-panel .pf-frp-tabs button.is-active {
+                border-color: rgba(120, 235, 255, 0.82);
+                background: rgba(34, 74, 104, 0.96);
+                color: #e8f8ff;
+            }
+
+            #pf-feed-report-panel .pf-frp-content {
+                padding: 10px 12px;
+                max-height: 52vh;
+                overflow: auto;
+                display: grid;
+                gap: 8px;
+            }
+
+            #pf-feed-report-panel .pf-frp-row {
+                display: flex;
+                justify-content: space-between;
+                gap: 10px;
+                border: 1px solid rgba(90, 121, 161, 0.35);
+                border-radius: 10px;
+                padding: 6px 8px;
+                background: rgba(24, 33, 50, 0.74);
+            }
+
+            #pf-feed-report-panel .pf-frp-key {
+                color: #b4c8e8;
+                font-weight: 700;
+            }
+
+            #pf-feed-report-panel .pf-frp-val {
+                color: #f1f7ff;
+                text-align: right;
+            }
+
+            #pf-feed-report-panel .pf-frp-note {
+                color: #c8d8f0;
+                font-size: 11px;
+                font-weight: 600;
+            }
+
+            #pf-feed-report-panel .pf-frp-footer {
+                display: flex;
+                justify-content: flex-end;
+                gap: 8px;
+                padding: 8px 12px 12px;
+                border-top: 1px solid rgba(112, 140, 180, 0.22);
+            }
+        `;
+
+        document.head.appendChild(style);
+    }
+
+    _onReportPanelClick(event) {
+        const actionBtn = event?.target?.closest?.('[data-pf-action]');
+        const tabBtn = event?.target?.closest?.('[data-pf-tab]');
+
+        if (tabBtn) {
+            const tab = String(tabBtn.getAttribute('data-pf-tab') || 'daily').toLowerCase();
+            this.reportPanelTab = tab === 'weekly' ? 'weekly' : 'daily';
+            this._renderFeedReportPanel();
+            return;
+        }
+
+        if (!actionBtn) return;
+        const action = String(actionBtn.getAttribute('data-pf-action') || '').toLowerCase();
+
+        if (action === 'close') {
+            if (this.reportPanelEl) this.reportPanelEl.style.display = 'none';
+            return;
+        }
+
+        if (action === 'refresh') {
+            this._renderFeedReportPanel();
+            return;
+        }
+
+        if (action === 'reset-session') {
+            this.hiddenReasonCounts = new Map();
+            this.reelsHiddenCount = 0;
+            this.sessionStart = Date.now();
+            this.scrollPulseTimestamps = [];
+            this.lastReportShownAt = 0;
+            this._renderFeedReportPanel();
+            PF_Helpers.showToast(this._t('wellbeing_report_panel_reset_done', 'Session counters reset.'), 'info', 2600);
+        }
+    }
+
+    _renderFeedReportPanel() {
+        const panel = this._ensureFeedReportPanel();
+        if (!panel) return;
+
+        const content = panel.querySelector('#pf-feed-report-panel-content');
+        if (!content) return;
+
+        const tab = this.reportPanelTab === 'weekly' ? 'weekly' : 'daily';
+        panel.querySelectorAll('[data-pf-tab]').forEach((btn) => {
+            const isActive = btn.getAttribute('data-pf-tab') === tab;
+            btn.classList.toggle('is-active', isActive);
+        });
+
+        const html = tab === 'weekly'
+            ? this._buildWeeklyReportPanelHtml()
+            : this._buildDailyReportPanelHtml();
+
+        content.innerHTML = html;
+    }
+
+    _buildDailyReportPanelHtml() {
+        const snapshot = this._buildFeedReportSnapshot();
+        const elapsedMinutes = Math.max(1, Math.round((Date.now() - this.sessionStart) / 60000));
+
+        return `
+            ${this._panelRow('wellbeing_report_panel_hidden', 'Hidden items', snapshot.hiddenTotal)}
+            ${this._panelRow('wellbeing_report_panel_reels', 'Reels blocked', snapshot.reelsHidden)}
+            ${this._panelRow('wellbeing_report_panel_top_reason', 'Top distraction', snapshot.topReason)}
+            ${this._panelRow('wellbeing_report_panel_minutes_saved', 'Minutes saved (est.)', snapshot.estimatedMinutesSaved)}
+            ${this._panelRow('wellbeing_report_panel_elapsed', 'Session elapsed', `${elapsedMinutes}m`)}
+            <div class="pf-frp-note">${this._escapeHtml(this._t('wellbeing_report_panel_note', 'Tip: Daily values reset with session reset; weekly rollup is calculated from saved daily buckets.'))}</div>
+        `;
+    }
+
+    _buildWeeklyReportPanelHtml() {
+        const snapshot = this._buildWeeklyReportSnapshot();
+        if (!snapshot) {
+            return `<div class="pf-frp-note">${this._escapeHtml(this._t('wellbeing_weekly_report_no_data', 'Weekly report needs more activity data first.'))}</div>`;
+        }
+
+        return `
+            <div class="pf-frp-note">${this._escapeHtml(this._t('wellbeing_report_panel_weekly_window', 'Rolling 7-day window'))}</div>
+            ${this._panelRow('wellbeing_report_panel_hidden', 'Hidden items', snapshot.hiddenTotal)}
+            ${this._panelRow('wellbeing_report_panel_reels', 'Reels blocked', snapshot.reelsHidden)}
+            ${this._panelRow('wellbeing_report_panel_top_reason', 'Top distraction', snapshot.topReason)}
+            ${this._panelRow('wellbeing_report_panel_minutes_saved', 'Minutes saved (est.)', snapshot.estimatedMinutesSaved)}
+        `;
+    }
+
+    _panelRow(labelKey, fallbackLabel, value) {
+        return `
+            <div class="pf-frp-row">
+                <div class="pf-frp-key">${this._escapeHtml(this._t(labelKey, fallbackLabel))}</div>
+                <div class="pf-frp-val">${this._escapeHtml(String(value))}</div>
+            </div>
+        `;
+    }
+
+    _escapeHtml(value) {
+        return String(value || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
     /**
      * Called by the main node loop to count rendering volume
      * @returns {boolean} Returns TRUE if the Observer should STOP processing new nodes
@@ -660,7 +934,7 @@ class PF_Wellbeing {
                     cursor: pointer;
                 `;
                 reportBtn.addEventListener('click', () => {
-                    this._showFeedReportToast('manual');
+                    this._openFeedReportPanel('daily');
                 });
                 timerEl.appendChild(reportBtn);
             }
@@ -680,7 +954,7 @@ class PF_Wellbeing {
                     cursor: pointer;
                 `;
                 weeklyBtn.addEventListener('click', () => {
-                    this._showWeeklyFeedReportToast('manual');
+                    this._openFeedReportPanel('weekly');
                 });
                 timerEl.appendChild(weeklyBtn);
             }

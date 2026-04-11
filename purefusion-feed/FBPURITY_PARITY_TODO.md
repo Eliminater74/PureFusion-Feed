@@ -174,6 +174,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Localized: wellbeing runtime UX strings for break wall and session timer label (EN/ES).
 - Added: optional session-awareness soft break prompt based on sustained high scroll velocity (threshold + cooldown controls).
 - Added: weekly feed report scaffold (7-day aggregate toast + top distraction reason + timer quick button + Alt+Shift+W shortcut).
+- Added: in-page feed report panel UI (session/weekly tabs, refresh/reset actions, and keyboard/timer button entry points).
 
 ## Implementation Order (Next)
 
