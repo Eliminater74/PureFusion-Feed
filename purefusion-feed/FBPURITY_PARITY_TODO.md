@@ -139,6 +139,10 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Mutation batching and pre-filter passes before expensive processing.
 - Aggressive caps to avoid repeated scans of the same nodes.
 - Maintain low CPU budget on long sessions.
+- Status: hardening slice started.
+- Hardened: observer now filters low-signal injected nodes and prioritizes high-signal nodes with queue/dispatch caps.
+- Hardened: main pipeline now pre-filters/dedupes observer node batches before fan-out to all modules.
+- Hardened: settings-sync resweeps are now serialized to avoid overlapping burst rescans.
 
 11) Reels control v2 (medium)
 - Status: initial implementation complete.
@@ -203,6 +207,9 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 7) Performance pass
 - Add mutation batching, debounce windows, and skip markers for processed nodes.
 - Track observer workload metrics in diagnostics mode.
+- Hardened: added observer node pre-filter + high-signal prioritization + queue caps.
+- Hardened: added main-pipeline node pre-filter/dedupe + batch cap before module dispatch.
+- Hardened: added settings-sync serialization to prevent overlapping full-document resweeps.
 
 8) Reels session limiter
 - Add optional counter and soft lock after user-defined threshold.

@@ -12,6 +12,9 @@ class PureFusionApp {
         this.observer = null;
         this.postUpdateSweepTimer = null;
         this.postUpdateSweepTimerLong = null;
+        this.maxPipelineNodesPerBatch = 220;
+        this.isSyncingSettings = false;
+        this.hasQueuedSettingsSync = false;
     }
 
     async boot() {
@@ -92,7 +95,8 @@ class PureFusionApp {
         document.addEventListener('pf:nodes_added', (e) => {
             if (!this.isEnabled()) return;
 
-            const addedNodes = e.detail.nodes;
+            const addedNodes = this._preparePipelineNodes(e?.detail?.nodes);
+            if (!addedNodes.length) return;
 
             // Phase 10: Digital Wellbeing Infinite Scroll Break
             let blockProcessing = false;
@@ -148,25 +152,99 @@ class PureFusionApp {
     }
 
     async updateSettingsAndResweep() {
-        this.settings = await PF_Storage.getSettings();
-
-        this._syncModuleSettings();
-
-        if (!this.isEnabled()) {
-            this._clearFollowupResweeps();
-            if (this.observer) this.observer.stop();
+        if (this.isSyncingSettings) {
+            this.hasQueuedSettingsSync = true;
             return;
         }
 
-        if (this.observer) this.observer.start();
-        this._dispatchDiagnosticsEvent('pf:settings_update', {
-            source: 'runtime-settings-sync'
+        this.isSyncingSettings = true;
+
+        try {
+            this.settings = await PF_Storage.getSettings();
+
+            this._syncModuleSettings();
+
+            if (!this.isEnabled()) {
+                this._clearFollowupResweeps();
+                if (this.observer) this.observer.stop();
+                return;
+            }
+
+            if (this.observer) this.observer.start();
+            this._dispatchDiagnosticsEvent('pf:settings_update', {
+                source: 'runtime-settings-sync'
+            });
+
+            this._runLiveResweepPass('settings-immediate');
+            if (this.predictor) this.predictor.sweepDocument();
+            this._scheduleFollowupResweeps();
+            this._checkChronologicalEnforcement();
+        } catch (err) {
+            PF_Logger.error('PureFusion: settings sync/resweep failed.', err);
+        } finally {
+            this.isSyncingSettings = false;
+
+            if (this.hasQueuedSettingsSync) {
+                this.hasQueuedSettingsSync = false;
+                this.updateSettingsAndResweep();
+            }
+        }
+    }
+
+    _preparePipelineNodes(nodes) {
+        if (!Array.isArray(nodes) || nodes.length === 0) return [];
+
+        const unique = [];
+        const seen = new Set();
+
+        for (const node of nodes) {
+            if (!node || node.nodeType !== Node.ELEMENT_NODE) continue;
+            if (seen.has(node)) continue;
+            seen.add(node);
+
+            if (!this._isPipelineCandidateNode(node)) continue;
+            unique.push(node);
+        }
+
+        if (unique.length <= this.maxPipelineNodesPerBatch) return unique;
+
+        const highSignal = [];
+        const normal = [];
+
+        unique.forEach((node) => {
+            if (this._isHighSignalPipelineNode(node)) highSignal.push(node);
+            else normal.push(node);
         });
 
-        this._runLiveResweepPass('settings-immediate');
-        if (this.predictor) this.predictor.sweepDocument();
-        this._scheduleFollowupResweeps();
-        this._checkChronologicalEnforcement();
+        const selected = highSignal.slice(0, this.maxPipelineNodesPerBatch);
+        if (selected.length < this.maxPipelineNodesPerBatch) {
+            selected.push(...normal.slice(0, this.maxPipelineNodesPerBatch - selected.length));
+        }
+
+        return selected;
+    }
+
+    _isPipelineCandidateNode(node) {
+        if (!node || !node.tagName) return false;
+
+        const tag = node.tagName.toUpperCase();
+        if (['SCRIPT', 'STYLE', 'LINK', 'META', 'NOSCRIPT', 'PATH', 'USE', 'DEFS', 'TITLE'].includes(tag)) {
+            return false;
+        }
+
+        if (node.dataset && node.dataset.pfHidden === 'true') return false;
+        return true;
+    }
+
+    _isHighSignalPipelineNode(node) {
+        if (!node || !node.matches) return false;
+
+        if (node.matches('[data-pagelet], [role="dialog"], [role="feed"], [role="article"], [role="banner"], [role="navigation"], [role="menu"], [role="complementary"], [aria-live]')) {
+            return true;
+        }
+
+        if (!node.querySelector) return false;
+        return !!node.querySelector('[data-pagelet], [role="dialog"], [role="article"], [role="menu"], [aria-live]');
     }
 
     _runLiveResweepPass(phase = 'manual-pass') {

@@ -10,6 +10,8 @@ class PF_Observer {
     constructor() {
         this.observer = null;
         this.isObserving = false;
+        this.maxQueuedNodes = 450;
+        this.maxDispatchNodes = 260;
         
         // Use the debounced helper to prevent locking up the main thread
         // grouping multiple node insertions into a single batch 150ms window.
@@ -33,7 +35,8 @@ class PF_Observer {
                 if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
                     mutation.addedNodes.forEach(node => {
                         // Only process element nodes that might contain content
-                        if (node.nodeType === Node.ELEMENT_NODE) {
+                        if (node.nodeType === Node.ELEMENT_NODE && this._isProcessableObserverNode(node)) {
+                            if (this.queuedNodes.size >= this.maxQueuedNodes) return;
                             this.queuedNodes.add(node);
                             shouldProcess = true;
                         }
@@ -66,11 +69,14 @@ class PF_Observer {
     _processBatch() {
         if (this.queuedNodes.size === 0) return;
 
-        const nodesToProcess = Array.from(this.queuedNodes);
-        const nodeCount = nodesToProcess.length;
+        const queued = Array.from(this.queuedNodes);
+        const nodeCount = queued.length;
         const mutationRecords = this.pendingMutationRecords;
         this.queuedNodes.clear();
         this.pendingMutationRecords = 0;
+
+        const nodesToProcess = this._prioritizeNodesForDispatch(queued);
+        if (!nodesToProcess.length) return;
 
         // Pass to the master orchestrator or trigger custom events.
         // For architectural decoupling, we dispatch a custom event.
@@ -98,6 +104,51 @@ class PF_Observer {
         } catch (err) {
             // no-op when diagnostics event dispatch is unavailable
         }
+    }
+
+    _isProcessableObserverNode(node) {
+        if (!node || !node.tagName) return false;
+
+        const tag = node.tagName.toUpperCase();
+        if (['SCRIPT', 'STYLE', 'LINK', 'META', 'NOSCRIPT', 'PATH', 'USE', 'DEFS', 'TITLE'].includes(tag)) {
+            return false;
+        }
+
+        if (node.matches && node.matches('[data-pf-hidden="true"]')) return false;
+        return true;
+    }
+
+    _prioritizeNodesForDispatch(nodes) {
+        if (!Array.isArray(nodes) || nodes.length === 0) return [];
+
+        const max = this.maxDispatchNodes;
+        if (nodes.length <= max) return nodes;
+
+        const highSignal = [];
+        const normal = [];
+
+        nodes.forEach((node) => {
+            if (this._isHighSignalNode(node)) highSignal.push(node);
+            else normal.push(node);
+        });
+
+        const selected = highSignal.slice(0, max);
+        if (selected.length < max) {
+            selected.push(...normal.slice(0, max - selected.length));
+        }
+
+        return selected;
+    }
+
+    _isHighSignalNode(node) {
+        if (!node || !node.matches) return false;
+
+        if (node.matches('[data-pagelet], [role="dialog"], [role="banner"], [role="navigation"], [role="complementary"], [role="feed"], [role="menu"], [role="article"]')) {
+            return true;
+        }
+
+        if (!node.querySelector) return false;
+        return !!node.querySelector('[data-pagelet], [role="dialog"], [role="menu"], [role="article"], [role="feed"]');
     }
 }
 
