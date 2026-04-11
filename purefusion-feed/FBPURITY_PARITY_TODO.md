@@ -53,7 +53,8 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Add dedicated toggles for: profile picture updates, cover photo updates, life events, check-ins, milestones, job/work updates, relationship updates, group activity variants.
 
 2) Top header micro-controls (high priority)
-- Status: initial implementation complete; continue tightening per-locale aria label mapping.
+- Status: hardening slice in progress.
+- Hardened: multi-scope topbar resolver + expanded locale label aliases + href-token fallback matching.
 - Granular controls for top bar modules and jewels (without hiding banner/header containers).
 
 3) Advanced custom UI engine (medium-high)
@@ -166,6 +167,8 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 2) Header/top-nav controls
 - Add safe-mode master toggle + per-item toggles.
 - Only allow compact item-level hides, never hide `role=banner`.
+- Hardened: topbar now scans likely header navigation scopes (including alternate nav pagelets) instead of a single aria-label sweep.
+- Hardened: per-item matching now uses locale-expanded label aliases plus href-token fallback for route-stable icons.
 - Validate icon mapping across account locales and alternate nav layouts.
 
 3) Custom UI engine (experimental)

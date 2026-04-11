@@ -732,71 +732,215 @@ class PF_Cleaner {
         const topbar = this.settings?.topbarFilters;
         if (!topbar || !topbar.enabled) return;
 
-        const banner = rootNode.matches && rootNode.matches('[role="banner"]')
-            ? rootNode
-            : (rootNode.querySelector && rootNode.querySelector('[role="banner"]'));
-
+        const banner = this._resolveTopbarBanner(rootNode);
         if (!banner) return;
 
+        const topbarScopes = this._resolveTopbarScopes(banner);
+
         if (topbar.hideHome) {
-            this._hideTopbarByAriaLabels(banner, ['home', 'inicio'], 'Topbar: Home');
+            this._hideTopbarByAriaLabels(topbarScopes, ['home', 'inicio', 'accueil', 'inicial', 'startseite'], 'Topbar: Home');
+            this._hideTopbarByHrefTokens(topbarScopes, ['/home.php', '/?sk=welcome'], 'Topbar: Home');
         }
         if (topbar.hideFriends) {
-            this._hideTopbarByAriaLabels(banner, ['friends', 'amigos'], 'Topbar: Friends');
+            this._hideTopbarByAriaLabels(topbarScopes, ['friends', 'amigos', 'amis', 'freunde', 'amici'], 'Topbar: Friends');
+            this._hideTopbarByHrefTokens(topbarScopes, ['/friends'], 'Topbar: Friends');
         }
         if (topbar.hideWatch) {
-            this._hideTopbarByAriaLabels(banner, ['watch', 'video'], 'Topbar: Watch');
+            this._hideTopbarByAriaLabels(topbarScopes, ['watch', 'videos', 'video'], 'Topbar: Watch');
+            this._hideTopbarByHrefTokens(topbarScopes, ['/watch'], 'Topbar: Watch');
         }
         if (topbar.hideMarketplace) {
-            this._hideTopbarByAriaLabels(banner, ['marketplace'], 'Topbar: Marketplace');
+            this._hideTopbarByAriaLabels(topbarScopes, ['marketplace'], 'Topbar: Marketplace');
+            this._hideTopbarByHrefTokens(topbarScopes, ['/marketplace'], 'Topbar: Marketplace');
         }
         if (topbar.hideGroups) {
-            this._hideTopbarByAriaLabels(banner, ['groups', 'grupos'], 'Topbar: Groups');
+            this._hideTopbarByAriaLabels(topbarScopes, ['groups', 'grupos', 'groupes', 'gruppen', 'gruppi'], 'Topbar: Groups');
+            this._hideTopbarByHrefTokens(topbarScopes, ['/groups'], 'Topbar: Groups');
         }
         if (topbar.hideMessenger) {
-            this._hideTopbarByAriaLabels(banner, ['messenger'], 'Topbar: Messenger');
+            this._hideTopbarByAriaLabels(topbarScopes, ['messenger', 'messages', 'mensajes', 'mensagens', 'nachrichten', 'messaggi'], 'Topbar: Messenger');
+            this._hideTopbarByHrefTokens(topbarScopes, ['/messages', '/chats', '/t/'], 'Topbar: Messenger');
         }
         if (topbar.hideNotifications) {
-            this._hideTopbarByAriaLabels(banner, ['notifications', 'notificaciones'], 'Topbar: Notifications');
+            this._hideTopbarByAriaLabels(topbarScopes, ['notifications', 'notificaciones', 'notificacoes', 'notifiche', 'benachrichtigungen'], 'Topbar: Notifications');
+            this._hideTopbarByHrefTokens(topbarScopes, ['/notifications'], 'Topbar: Notifications');
         }
         if (topbar.hideMenu) {
-            this._hideTopbarByAriaLabels(banner, ['menu'], 'Topbar: Menu');
+            this._hideTopbarByAriaLabels(topbarScopes, ['menu', 'meniu'], 'Topbar: Menu');
+            this._hideTopbarByHrefTokens(topbarScopes, ['/menu'], 'Topbar: Menu');
         }
         if (topbar.hideCreate) {
-            this._hideTopbarByAriaLabels(banner, ['create', 'crear'], 'Topbar: Create');
+            this._hideTopbarByAriaLabels(topbarScopes, ['create', 'crear', 'creer', 'criar', 'erstellen', 'crea'], 'Topbar: Create');
+            this._hideTopbarByHrefTokens(topbarScopes, ['/create'], 'Topbar: Create');
         }
     }
 
-    _hideTopbarByAriaLabels(scopeNode, labels, reason) {
-        if (!scopeNode || !scopeNode.querySelectorAll || !Array.isArray(labels) || labels.length === 0) return;
+    _resolveTopbarBanner(rootNode) {
+        const banner = this._resolveScopedContainer(rootNode, '[role="banner"]');
+        if (!banner || !banner.getBoundingClientRect) return banner;
+
+        const rect = banner.getBoundingClientRect();
+        if (rect.width < 280 || rect.height < 36 || rect.height > 320) return null;
+        return banner;
+    }
+
+    _resolveTopbarScopes(banner) {
+        if (!banner || !banner.querySelectorAll) return [];
+
+        const scopes = [];
+        const addScope = (node) => {
+            if (!node || scopes.includes(node)) return;
+            if (!this._isLikelyTopbarScope(node, banner)) return;
+            scopes.push(node);
+        };
+
+        addScope(banner);
+
+        const selectors = [
+            '[role="navigation"]',
+            'nav',
+            '[data-pagelet*="TopNav"]',
+            '[data-pagelet*="CometAppNavigation"]',
+            '[data-pagelet*="AppTabBar"]'
+        ];
+
+        selectors.forEach((selector) => {
+            banner.querySelectorAll(selector).forEach(addScope);
+        });
+
+        return scopes.length ? scopes : [banner];
+    }
+
+    _isLikelyTopbarScope(node, banner) {
+        if (!node || !node.querySelectorAll || !banner) return false;
+        if (node !== banner && !banner.contains(node)) return false;
+
+        const actionCount = node.querySelectorAll('a[href], a[role="link"], [role="button"], [role="link"], button').length;
+        if (actionCount < 3) return false;
+
+        if (!node.getBoundingClientRect || !banner.getBoundingClientRect) return true;
+
+        const rect = node.getBoundingClientRect();
+        const bannerRect = banner.getBoundingClientRect();
+
+        if (rect.width < 180) return false;
+        if (rect.height < 24 || rect.height > 220) return false;
+        if (rect.top < bannerRect.top - 16 || rect.bottom > bannerRect.bottom + 28) return false;
+
+        return true;
+    }
+
+    _iterateTopbarScopes(scopeNodes, visitor) {
+        const scopes = Array.isArray(scopeNodes) ? scopeNodes : [scopeNodes];
+        const seen = new Set();
+
+        scopes.forEach((scopeNode) => {
+            if (!scopeNode || !scopeNode.querySelectorAll || seen.has(scopeNode)) return;
+            seen.add(scopeNode);
+            visitor(scopeNode);
+        });
+    }
+
+    _extractTopbarLabelSignals(node) {
+        const signals = [];
+        const seen = new Set();
+        const addSignal = (value) => {
+            const normalized = this._normalizeComparableText(value || '');
+            if (!normalized || normalized.length < 2 || normalized.length > 90) return;
+            if (seen.has(normalized)) return;
+            seen.add(normalized);
+            signals.push(normalized);
+        };
+
+        if (!node) return signals;
+
+        addSignal(node.getAttribute && node.getAttribute('aria-label'));
+        addSignal(node.getAttribute && node.getAttribute('title'));
+        addSignal(node.textContent || '');
+
+        const clickable = PF_Helpers.getClosest(node, 'a[role="link"], a[href], [role="button"], button', 3);
+        if (clickable && clickable !== node) {
+            addSignal(clickable.getAttribute && clickable.getAttribute('aria-label'));
+            addSignal(clickable.getAttribute && clickable.getAttribute('title'));
+            addSignal(clickable.textContent || '');
+        }
+
+        return signals;
+    }
+
+    _matchesTopbarLabels(labelSignals, normalizedLabels) {
+        if (!Array.isArray(labelSignals) || !labelSignals.length) return false;
+        if (!Array.isArray(normalizedLabels) || !normalizedLabels.length) return false;
+
+        return labelSignals.some((signal) => {
+            return normalizedLabels.some((label) => signal === label || signal.startsWith(`${label} `));
+        });
+    }
+
+    _hideTopbarByHrefTokens(scopeNodes, hrefTokens, reason) {
+        if (!Array.isArray(hrefTokens) || hrefTokens.length === 0) return;
+
+        const normalizedTokens = hrefTokens
+            .map((token) => String(token || '').toLowerCase().trim())
+            .filter(Boolean);
+        if (!normalizedTokens.length) return;
+
+        this._iterateTopbarScopes(scopeNodes, (scopeNode) => {
+            scopeNode.querySelectorAll('a[href]').forEach((anchor) => {
+                const href = String(anchor.getAttribute('href') || '').toLowerCase();
+                if (!href) return;
+                if (!normalizedTokens.some((token) => href.includes(token))) return;
+
+                const target = this._findTopbarHideTarget(anchor, scopeNode);
+                if (!target) return;
+
+                this._hideNodeSafely(target, reason);
+            });
+        });
+    }
+
+    _hideTopbarByAriaLabels(scopeNodes, labels, reason) {
+        if (!Array.isArray(labels) || labels.length === 0) return;
 
         const normalizedLabels = labels
             .map((label) => this._normalizeComparableText(label))
             .filter(Boolean);
         if (!normalizedLabels.length) return;
 
-        scopeNode.querySelectorAll('[aria-label]').forEach((node) => {
-            const aria = this._normalizeComparableText(node.getAttribute('aria-label') || '');
-            if (!aria) return;
-            if (!normalizedLabels.some((label) => aria === label || aria.startsWith(`${label} `))) return;
+        this._iterateTopbarScopes(scopeNodes, (scopeNode) => {
+            const candidates = new Set();
 
-            const target = this._findTopbarHideTarget(node, scopeNode);
-            if (!target) return;
+            scopeNode.querySelectorAll('a[role="link"], a[href], [role="button"], [role="link"], button, [aria-label], [title]').forEach((node) => {
+                candidates.add(node);
+            });
 
-            this._hideNodeSafely(target, reason);
+            candidates.forEach((node) => {
+                const labelSignals = this._extractTopbarLabelSignals(node);
+                if (!this._matchesTopbarLabels(labelSignals, normalizedLabels)) return;
+
+                const target = this._findTopbarHideTarget(node, scopeNode);
+                if (!target) return;
+
+                this._hideNodeSafely(target, reason);
+            });
         });
     }
 
     _findTopbarHideTarget(node, scopeNode) {
         if (!node) return null;
 
-        const clickable = PF_Helpers.getClosest(node, 'a[role="link"], [role="button"]', 4) || node;
+        const clickable = PF_Helpers.getClosest(node, 'a[role="link"], a[href], [role="button"], button', 4) || node;
         if (!clickable || clickable === scopeNode) return null;
         if (clickable.querySelector && clickable.querySelector('[role="banner"]')) return null;
 
+        const navItem = PF_Helpers.getClosest(clickable, '[role="listitem"], li', 4);
+        if (navItem && navItem !== scopeNode && this._isReasonableTopbarTarget(navItem)) {
+            return navItem;
+        }
+
         if (clickable.getBoundingClientRect) {
             const rect = clickable.getBoundingClientRect();
-            if (rect.width < 18 || rect.width > 220) return null;
+            if (rect.width < 18 || rect.width > 320) return null;
             if (rect.height < 18 || rect.height > 120) return null;
         }
 
@@ -1060,11 +1204,22 @@ class PF_Cleaner {
         if (node.querySelector && node.querySelector('[role="banner"]')) return false;
 
         const rect = node.getBoundingClientRect();
-        if (rect.width < 18 || rect.width > 220) return false;
-        if (rect.height < 18 || rect.height > 120) return false;
+        if (rect.width < 18 || rect.width > 320) return false;
+        if (rect.height < 18 || rect.height > 140) return false;
+
+        const actionCount = node.querySelectorAll
+            ? node.querySelectorAll('a[href], a[role="link"], [role="button"], [role="link"], button').length
+            : 0;
+        if (actionCount > 4) return false;
 
         const inBanner = !!PF_Helpers.getClosest(node, '[role="banner"]', 8);
         if (!inBanner) return false;
+
+        const banner = PF_Helpers.getClosest(node, '[role="banner"]', 8);
+        if (banner && banner.getBoundingClientRect) {
+            const bannerRect = banner.getBoundingClientRect();
+            if (rect.top < bannerRect.top - 14 || rect.bottom > bannerRect.bottom + 20) return false;
+        }
 
         return true;
     }
