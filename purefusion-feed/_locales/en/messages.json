@@ -54,7 +54,7 @@
   "options_mode_custom": { "message": "Custom (Use my toggles)" },
   "options_mode_clean": { "message": "Clean Mode" },
   "options_mode_focus": { "message": "Focus Mode" },
-  "options_mode_ultrafast": { "message": "Ultra Fast Mode" },
+  "options_mode_ultrafast": { "message": "Ultra Fast Mode (text-first, max speed)" },
   "options_mode_smart": { "message": "Smart Mode" },
   "options_mode_classic": { "message": "Classic 2012 Mode" },
   "options_mode_profile_custom": { "message": "Uses your exact saved toggles with no additional mode overrides." },

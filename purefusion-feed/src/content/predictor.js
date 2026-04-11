@@ -733,26 +733,50 @@ class PF_Predictor {
         const credibilityLevel = String(postNode?.dataset?.pfCredibilityLevel || '').toLowerCase();
 
         if (String(postNode?.dataset?.pfRagebait || '') === 'true') {
-            return { severity: 'high', label: 'Engagement Bait', tone: 'high-risk pattern' };
+            return {
+                severity: 'high',
+                label: 'Likely Engagement Bait',
+                tone: 'high emotional manipulation pattern'
+            };
         }
 
         if (credibilityLevel === 'high') {
-            return { severity: 'high', label: 'Suspicious Claim', tone: 'credibility warning' };
+            return {
+                severity: 'high',
+                label: 'Suspicious Claim Risk',
+                tone: 'multiple credibility risk signals'
+            };
         }
 
         if (credibilityLevel === 'warn') {
-            return { severity: 'warn', label: 'Verify Source', tone: 'credibility caution' };
+            return {
+                severity: 'warn',
+                label: 'Verify Source First',
+                tone: 'credibility caution detected'
+            };
         }
 
         if (predictions.enabled && score <= lowThreshold) {
-            return { severity: 'warn', label: 'Low Value', tone: 'low-interest score' };
+            return {
+                severity: 'warn',
+                label: 'Low-Value Content',
+                tone: 'low relevance for your profile'
+            };
         }
 
         if (predictions.enabled && score >= highThreshold) {
-            return { severity: 'ok', label: 'High Quality', tone: 'high-interest score' };
+            return {
+                severity: 'ok',
+                label: 'High Relevance',
+                tone: 'strong match for your interests'
+            };
         }
 
-        return { severity: 'ok', label: 'Neutral', tone: 'balanced signals' };
+        return {
+            severity: 'ok',
+            label: 'Neutral Relevance',
+            tone: 'balanced signals with no strong flags'
+        };
     }
 
     _buildUnifiedInsightDetailsHtml(data) {
