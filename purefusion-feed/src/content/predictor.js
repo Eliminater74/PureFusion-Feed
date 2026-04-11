@@ -646,7 +646,7 @@ class PF_Predictor {
             collapseGuardBypass: postNode.dataset.pfCollapseGuardBypass === 'true',
             collapseGuardFloor: Number(postNode.dataset.pfCollapseGuardFloor || 0)
         });
-        const isExpanded = postNode.dataset.pfInsightExpanded === 'true';
+        const isExpanded = postNode.dataset.pfInsightExpanded === 'true' || this._hasExpandedInsightInHost(postNode);
         const toggleLabel = isExpanded ? 'Hide' : 'Details';
         const detailsHiddenAttr = isExpanded ? '' : ' hidden';
 
@@ -662,6 +662,17 @@ class PF_Predictor {
 
         this._insertCredibilityElement(postNode, chip);
         postNode.dataset.pfInsightChipInjected = 'true';
+        postNode.dataset.pfInsightExpanded = isExpanded ? 'true' : 'false';
+    }
+
+    _hasExpandedInsightInHost(postNode) {
+        if (!postNode) return false;
+
+        const dialogHost = this._getDialogHost(postNode);
+        const host = dialogHost || this._resolvePostVisualHost(postNode) || postNode;
+        if (!host || !host.querySelector) return false;
+
+        return !!host.querySelector('.pf-insight-chip .pf-insight-details:not([hidden])');
     }
 
     _onInsightToggleClick(event) {
@@ -685,10 +696,16 @@ class PF_Predictor {
         details.hidden = !willOpen;
         toggle.textContent = willOpen ? 'Hide' : 'Details';
 
-        const postNode = chip.closest('[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"], [role="article"], [role="dialog"]');
-        if (postNode && postNode.dataset) {
-            postNode.dataset.pfInsightExpanded = willOpen ? 'true' : 'false';
-        }
+        const targets = [
+            chip.closest('[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"]'),
+            chip.closest('[role="article"]'),
+            chip.closest('[role="dialog"]')
+        ].filter(Boolean);
+
+        targets.forEach((node) => {
+            if (!node || !node.dataset) return;
+            node.dataset.pfInsightExpanded = willOpen ? 'true' : 'false';
+        });
     }
 
     _resolveUnifiedInsightState(postNode, score) {
