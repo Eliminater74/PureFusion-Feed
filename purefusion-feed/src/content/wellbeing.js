@@ -20,6 +20,7 @@ class PF_Wellbeing {
         this.weeklyStatsFlushTimer = null;
         this.reportPanelEl = null;
         this.reportPanelTab = 'daily';
+        this.reportPanelReasonExplain = '';
         this.lastSessionAwarenessPromptAt = 0;
         this.hiddenReasonCounts = new Map();
         this.reelsHiddenCount = 0;
@@ -768,6 +769,33 @@ class PF_Wellbeing {
                 color: #f1f7ff;
             }
 
+            #pf-feed-report-panel .pf-frp-top-reason-btn {
+                appearance: none;
+                border: 1px solid rgba(114, 146, 184, 0.52);
+                border-radius: 999px;
+                background: rgba(25, 36, 54, 0.9);
+                color: #d8e9ff;
+                cursor: pointer;
+                padding: 2px 8px;
+                font: 700 10px/1.15 "Segoe UI", sans-serif;
+                flex-shrink: 0;
+            }
+
+            #pf-feed-report-panel .pf-frp-top-reason-btn.is-active {
+                border-color: rgba(120, 235, 255, 0.82);
+                background: rgba(34, 74, 104, 0.96);
+                color: #e8f8ff;
+            }
+
+            #pf-feed-report-panel .pf-frp-reason-explain {
+                border: 1px solid rgba(83, 121, 171, 0.38);
+                border-radius: 10px;
+                padding: 8px;
+                background: rgba(24, 33, 50, 0.74);
+                color: #d2e1f8;
+                font: 600 11px/1.32 "Segoe UI", sans-serif;
+            }
+
             #pf-feed-report-panel .pf-frp-footer {
                 display: flex;
                 justify-content: flex-end;
@@ -787,6 +815,7 @@ class PF_Wellbeing {
         if (tabBtn) {
             const tab = String(tabBtn.getAttribute('data-pf-tab') || 'daily').toLowerCase();
             this.reportPanelTab = tab === 'weekly' ? 'weekly' : 'daily';
+            if (this.reportPanelTab !== 'weekly') this.reportPanelReasonExplain = '';
             this._renderFeedReportPanel();
             return;
         }
@@ -804,12 +833,20 @@ class PF_Wellbeing {
             return;
         }
 
+        if (action === 'explain-reason') {
+            const rawReason = String(actionBtn.getAttribute('data-pf-reason') || '');
+            this.reportPanelReasonExplain = (this.reportPanelReasonExplain === rawReason) ? '' : rawReason;
+            this._renderFeedReportPanel();
+            return;
+        }
+
         if (action === 'reset-session') {
             this.hiddenReasonCounts = new Map();
             this.reelsHiddenCount = 0;
             this.sessionStart = Date.now();
             this.scrollPulseTimestamps = [];
             this.lastReportShownAt = 0;
+            this.reportPanelReasonExplain = '';
             this._renderFeedReportPanel();
             PF_Helpers.showToast(this._t('wellbeing_report_panel_reset_done', 'Session counters reset.'), 'info', 2600);
         }
@@ -905,12 +942,46 @@ class PF_Wellbeing {
         }
 
         const listItems = reasons.map((item) => {
-            const reason = this._escapeHtml(String(item?.reason || this._t('wellbeing_report_no_filters', 'No filters triggered yet')));
+            const rawReason = String(item?.reason || this._t('wellbeing_report_no_filters', 'No filters triggered yet'));
+            const reason = this._escapeHtml(rawReason);
+            const reasonAttr = this._escapeAttr(rawReason);
             const count = this._escapeHtml(String(Math.max(0, Number(item?.count || 0))));
-            return `<li><span class="pf-frp-top-label" title="${reason}">${reason}</span><span class="pf-frp-top-count">${count}</span></li>`;
+            const isActive = this.reportPanelReasonExplain === rawReason;
+            const explainBtnLabel = this._escapeHtml(this._t('wellbeing_report_panel_weekly_reason_explain', 'Explain'));
+            const explainBtnClass = isActive ? 'pf-frp-top-reason-btn is-active' : 'pf-frp-top-reason-btn';
+            return `<li><span class="pf-frp-top-label" title="${reason}">${reason}</span><span class="pf-frp-top-count">${count}</span><button type="button" class="${explainBtnClass}" data-pf-action="explain-reason" data-pf-reason="${reasonAttr}">${explainBtnLabel}</button></li>`;
         }).join('');
 
-        return `<ul class="pf-frp-top-list">${listItems}</ul>`;
+        const explainBlock = this.reportPanelReasonExplain
+            ? `<div class="pf-frp-reason-explain">${this._escapeHtml(this._describeReasonForPanel(this.reportPanelReasonExplain))}</div>`
+            : '';
+
+        return `<ul class="pf-frp-top-list">${listItems}</ul>${explainBlock}`;
+    }
+
+    _describeReasonForPanel(reason) {
+        const normalized = String(reason || '').toLowerCase();
+
+        if (normalized.includes('ad') || normalized.includes('sponsored') || normalized.includes('spam')) {
+            return this._t('wellbeing_report_reason_explain_ads', 'Sponsored or ad-like content was filtered to reduce promotional clutter.');
+        }
+        if (normalized.includes('story type')) {
+            return this._t('wellbeing_report_reason_explain_story', 'Story activity patterns (likes/comments/friend joins/check-ins) were filtered as low-signal feed noise.');
+        }
+        if (normalized.includes('post type')) {
+            return this._t('wellbeing_report_reason_explain_post_type', 'A post-format filter removed content types you chose to suppress (video/photo/link/text-only).');
+        }
+        if (normalized.includes('ragebait') || normalized.includes('clickbait')) {
+            return this._t('wellbeing_report_reason_explain_bait', 'Behavioral safety filters flagged manipulative or high-outrage patterns designed to keep you scrolling.');
+        }
+        if (normalized.includes('topbar') || normalized.includes('sidebar') || normalized.includes('nav')) {
+            return this._t('wellbeing_report_reason_explain_nav', 'Navigation and module clutter controls removed distracting non-feed UI elements.');
+        }
+        if (normalized.includes('keyword')) {
+            return this._t('wellbeing_report_reason_explain_keyword', 'Keyword rules matched this item and filtered it based on your custom block list.');
+        }
+
+        return this._t('wellbeing_report_reason_explain_generic', 'This category was filtered by your active PureFusion rules to keep your feed cleaner and more focused.');
     }
 
     _formatDayShortLabel(dayKey) {
@@ -938,6 +1009,10 @@ class PF_Wellbeing {
             .replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#39;');
+    }
+
+    _escapeAttr(value) {
+        return this._escapeHtml(value).replace(/`/g, '&#96;');
     }
 
     /**

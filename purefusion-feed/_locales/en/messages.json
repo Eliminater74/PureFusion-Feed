@@ -263,6 +263,14 @@
   "wellbeing_report_panel_weekly_trend_title": { "message": "7-day trend" },
   "wellbeing_report_panel_weekly_top_reasons_title": { "message": "Top distraction reasons" },
   "wellbeing_report_panel_weekly_no_reasons": { "message": "No distraction reason data yet." },
+  "wellbeing_report_panel_weekly_reason_explain": { "message": "Explain" },
+  "wellbeing_report_reason_explain_ads": { "message": "Sponsored or ad-like content was filtered to reduce promotional clutter." },
+  "wellbeing_report_reason_explain_story": { "message": "Story activity patterns (likes/comments/friend joins/check-ins) were filtered as low-signal feed noise." },
+  "wellbeing_report_reason_explain_post_type": { "message": "A post-format filter removed content types you chose to suppress (video/photo/link/text-only)." },
+  "wellbeing_report_reason_explain_bait": { "message": "Behavioral safety filters flagged manipulative or high-outrage patterns designed to keep you scrolling." },
+  "wellbeing_report_reason_explain_nav": { "message": "Navigation and module clutter controls removed distracting non-feed UI elements." },
+  "wellbeing_report_reason_explain_keyword": { "message": "Keyword rules matched this item and filtered it based on your custom block list." },
+  "wellbeing_report_reason_explain_generic": { "message": "This category was filtered by your active PureFusion rules to keep your feed cleaner and more focused." },
   "wellbeing_weekly_report_toast_template": {
     "message": "$LABEL$: hidden $HIDDEN$ items, reels blocked $REELS$, top distraction $REASON$, est. $MINUTES$ min saved over 7 days.",
     "placeholders": {
