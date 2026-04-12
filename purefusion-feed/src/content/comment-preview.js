@@ -36,7 +36,7 @@ class PF_CommentPreview {
         this.maxPostsPerSweep       = 30;
         this.minActionGapMs         = 1200;
         this.pollIntervalMs         = 220;
-        this.maxPollAttempts        = 8;    // 8 × 220 ms ≈ 1.76 s adaptive window
+        this.maxPollAttempts        = 15;   // 15 × 220 ms ≈ 3.3 s adaptive window
         this.lastActionAt           = 0;
 
         this._syncRuntimeConfig();
@@ -273,11 +273,16 @@ class PF_CommentPreview {
      * NOTE: [role="complementary"] is the PAGE-LEVEL right sidebar — it will
      * never appear inside an individual post element. Do NOT use it here.
      *
+     * NOTE: Do NOT check [contenteditable] visibility here. Facebook pre-renders
+     * the comment composer (contenteditable) for every post, even before the
+     * section is opened. Depending on how it's hidden (visibility:hidden,
+     * off-screen positioning, etc.) _isVisible() may return true for it, which
+     * would cause a false positive that finalizes posts without any click.
+     *
      * Reliable signals:
-     *   - Multiple [role="article"] elements: the post body is one article;
-     *     each loaded comment adds another inside the same post wrapper.
-     *   - A visible [contenteditable] / [role="textbox"]: the comment composer
-     *     being visible means the section was opened (even with 0 comments).
+     *   - Multiple [role="article"] elements: post body (1) + comment articles (2+).
+     *   - A visible "View more comments" / "View X comments" button: these only
+     *     appear once the comment section is open and partial comments are loaded.
      */
     _hasOpenCommentSection(post) {
         if (!post || !post.querySelector) return false;
@@ -285,9 +290,14 @@ class PF_CommentPreview {
         // Multiple articles = post body (1) + at least one comment article (2+)
         if (post.querySelectorAll('[role="article"]').length > 1) return true;
 
-        // Visible comment composer = section is open
-        const composer = post.querySelector('[contenteditable="true"], [role="textbox"]');
-        if (composer && this._isVisible(composer)) return true;
+        // A "View more comments" / inline expand button is only rendered once
+        // the comment section is open — reliable secondary signal.
+        const buttons = post.querySelectorAll('div[role="button"], span[role="button"]');
+        for (const btn of buttons) {
+            if (!this._isVisible(btn)) continue;
+            const label = this._extractLabel(btn);
+            if (label && this._isInlineCommentExpandLabel(label)) return true;
+        }
 
         return false;
     }
@@ -305,16 +315,19 @@ class PF_CommentPreview {
     _findCommentCountTrigger(post) {
         if (!post || !post.querySelectorAll) return null;
 
-        // Include [tabindex] — FB's stats-row "X Comments" is often a plain div/span
-        // with tabindex="0" but no role attribute. Also include [aria-label] for
-        // elements that describe themselves without a role.
+        // Cast a wide net — FB's stats-row comment count is often:
+        //  - a plain <a href="/posts/..."> link (React intercepts it client-side)
+        //  - a div/span with tabindex="0" but no role
+        //  - an element with a descriptive aria-label
+        // We intentionally do NOT call _isRiskyNavTarget here: the comment-count
+        // link's href (/posts/...) looks "risky" but React prevents navigation and
+        // handles it inline. _safeClick adds preventDefault for anchors.
         const candidates = post.querySelectorAll(
-            'div[role="button"], span[role="button"], a[role="link"], [aria-label], [tabindex="0"]'
+            'div[role="button"], span[role="button"], button, a[role="link"], a[href], [aria-label], [tabindex="0"]'
         );
 
         for (const el of candidates) {
             if (!this._isSafeActionCandidate(el, post)) continue;
-            if (this._isRiskyNavTarget(el)) continue;
 
             const label = this._extractLabel(el);
             if (!label) continue;
@@ -568,17 +581,42 @@ class PF_CommentPreview {
         if (this._isCoolingDown()) return false;
 
         try {
-            // Walk up to find the nearest clickable ancestor. This avoids
-            // clicking on a child icon/svg when the parent button handles the event.
+            // Walk up to find the nearest clickable ancestor — avoids clicking a
+            // child icon/svg when the parent button is the actual handler.
+            // Include a[href] so stats-row comment-count links are resolved.
             const target = (el.closest && (
-                el.closest('div[role="button"], span[role="button"], button, a[role="link"]') || el
+                el.closest('div[role="button"], span[role="button"], button, a[role="link"], a[href]') || el
             )) || el;
 
-            // Use element.click() rather than dispatchEvent(new MouseEvent(...)).
-            // Synthetic events from dispatchEvent have isTrusted=false, which
-            // Facebook's React event handlers may reject. element.click() goes
-            // through the browser's native click dispatch path and is accepted.
+            // For anchor targets: add a capture-phase preventDefault so the
+            // browser doesn't navigate. React's handler still fires (React uses
+            // bubble-phase delegation and doesn't honour defaultPrevented for
+            // its own routing logic). This is necessary for stats-row comment
+            // count links whose href includes /posts/ or /permalink/.
+            const isAnchor = target.tagName === 'A';
+            let preventNav = null;
+            if (isAnchor) {
+                preventNav = (e) => e.preventDefault();
+                target.addEventListener('click', preventNav, { once: true, capture: true });
+            }
+
+            // Send a pointer-down/up sequence before click. Some React handlers on
+            // Facebook are wired to pointerdown, not click. Providing the full
+            // sequence maximises compatibility without needing isTrusted.
+            const rect = target.getBoundingClientRect();
+            const cx = Math.round(rect.left + rect.width  / 2);
+            const cy = Math.round(rect.top  + rect.height / 2);
+            const ptrOpts = { bubbles: true, cancelable: true, view: window,
+                              clientX: cx, clientY: cy, pointerId: 1, isPrimary: true };
+            target.dispatchEvent(new PointerEvent('pointerdown', ptrOpts));
+            target.dispatchEvent(new PointerEvent('pointerup',   ptrOpts));
             target.click();
+
+            // Belt-and-suspenders: clean up the nav guard if click() somehow
+            // didn't fire the event.
+            if (preventNav) {
+                setTimeout(() => target.removeEventListener('click', preventNav, true), 100);
+            }
 
             this.lastActionAt = Date.now();
             return true;

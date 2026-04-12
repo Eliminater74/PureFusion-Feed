@@ -266,7 +266,12 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
   - Fixed: `_safeClick` now calls `element.click()` instead of `dispatchEvent(new MouseEvent(...))`. Synthetic events have `isTrusted=false` which Facebook's React handlers reject — `element.click()` goes through the browser's native dispatch path and is trusted.
   - Fixed: `_hasOpenCommentSection` no longer checks `[role="complementary"]` — that attribute belongs to the PAGE-LEVEL right sidebar, not any post's comment section. Replaced with correct signals: multiple `[role="article"]` elements (post body + comment articles) and a visible `[contenteditable]` / `[role="textbox"]` composer.
   - Fixed: `_findCommentCountTrigger` selector now includes `[tabindex="0"]` — FB's stats-row "X Comments" clickable is often a plain `div`/`span` with only a tabindex (no role attribute), which was previously missed.
-  - Status: experimental, off by default. Three root-cause bugs now fixed; real-world testing required to confirm comment expansion works end-to-end.
+  - Fixed: `_findCommentCountTrigger` no longer calls `_isRiskyNavTarget` — stats-row comment count links use `href="/posts/..."` which looks risky but React intercepts them client-side; they were being filtered before we could click them. Added `a[href]` to the candidate selector. `_safeClick` adds `preventDefault` for anchors to prevent browser navigation.
+  - Fixed: `_hasOpenCommentSection` no longer checks `[contenteditable]` visibility — Facebook pre-renders the composer for every post; depending on how it is hidden (visibility:hidden, off-screen positioning) `_isVisible()` could return true, causing a false positive that immediately finalizes ALL posts before any click is attempted.
+  - Fixed: `_hasOpenCommentSection` now uses a visible "View more/all comments" button as its secondary signal — these only appear once the section is open and partial comments are loaded.
+  - Fixed: `_safeClick` now dispatches `pointerdown`+`pointerup` PointerEvents with coordinates before `element.click()` — some React handlers on Facebook respond to pointerdown, and providing realistic coordinates improves compatibility.
+  - Extended: poll window from 8 → 15 attempts (15 × 220 ms ≈ 3.3 s) to give network requests more time to deliver comment data.
+  - Status: experimental, off by default. Five distinct root-cause bugs addressed; re-test on posts with and without pre-loaded comments.
 
 6) Feed mode presets + quality scoring
 - Add mode selector in UI and map to internal setting bundles.
