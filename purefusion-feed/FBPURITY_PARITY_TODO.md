@@ -271,7 +271,10 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
   - Fixed: `_hasOpenCommentSection` now uses a visible "View more/all comments" button as its secondary signal — these only appear once the section is open and partial comments are loaded.
   - Fixed: `_safeClick` now dispatches `pointerdown`+`pointerup` PointerEvents with coordinates before `element.click()` — some React handlers on Facebook respond to pointerdown, and providing realistic coordinates improves compatibility.
   - Extended: poll window from 8 → 15 attempts (15 × 220 ms ≈ 3.3 s) to give network requests more time to deliver comment data.
-  - Status: experimental, off by default. Five distinct root-cause bugs addressed; re-test on posts with and without pre-loaded comments.
+  - ROOT CAUSE CONFIRMED (via live DOM inspection): "View more comments" buttons are NOT inside `[role="article"]` and are NOT reliably inside the per-post pagelet container. Per-post querySelectorAll misses them entirely. Only a page-level `document.querySelectorAll` reliably finds them.
+  - Fixed: added `_globalCommentButtonSweep()` — page-level scan using `innerText` (not aria-label, which is `null` on these buttons). Runs from both `sweepDocument()` and `applyToNodes()`. Marks each button with `data-pf-cp-clicked` to prevent re-clicking. Targets buttons where text contains "comments" + a load-signal word ("view", "see", "previous", etc.) or starts with a count digit.
+  - Fixed: IntersectionObserver now waits 250 ms after a post enters the viewport before calling `_tryExpand` — gives React time to attach event handlers before primer clicks.
+  - Status: experimental, off by default. Global sweep confirmed working via DOM debug. Primer approach (for posts with 0 comments) still relies on clicking the Comment action button which may or may not trigger comment loading depending on Facebook's current implementation.
 
 6) Feed mode presets + quality scoring
 - Add mode selector in UI and map to internal setting bundles.

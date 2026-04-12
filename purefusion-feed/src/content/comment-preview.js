@@ -53,6 +53,11 @@ class PF_CommentPreview {
     sweepDocument() {
         if (!this._isEnabled()) return;
 
+        // Page-level sweep (fast path): confirmed via live DOM inspection that
+        // "View more comments" buttons are NOT inside [role="article"] or the
+        // per-post pagelet container. A document-level scan is required.
+        this._globalCommentButtonSweep();
+
         const posts = document.querySelectorAll(PF_SELECTOR_MAP.postContainer);
         let count = 0;
 
@@ -65,6 +70,9 @@ class PF_CommentPreview {
 
     applyToNodes(nodes) {
         if (!this._isEnabled()) return;
+
+        // Also run the global sweep when new nodes are injected (infinite scroll).
+        this._globalCommentButtonSweep();
 
         nodes.forEach((node) => {
             if (!node || node.nodeType !== Node.ELEMENT_NODE) return;
@@ -80,6 +88,44 @@ class PF_CommentPreview {
         });
     }
 
+    /**
+     * Page-level scan for comment expansion buttons using innerText.
+     *
+     * "View more comments", "View all comments", "See previous comments", etc.
+     * have VISIBLE innerText but NO aria-label (confirmed via DOM inspection).
+     * These buttons are NOT contained within [role="article"] or the feed-unit
+     * pagelet — a document-level querySelectorAll is the only reliable way to
+     * find them. Each button is marked with data-pf-cp-clicked so it is only
+     * clicked once per page session.
+     */
+    _globalCommentButtonSweep() {
+        const candidates = document.querySelectorAll(
+            'div[role="button"], span[role="button"], button'
+        );
+
+        for (const btn of candidates) {
+            // Skip already-clicked or invisible buttons.
+            if (btn.dataset.pfCpClicked) continue;
+            if (!this._isVisible(btn)) continue;
+
+            const text = (btn.innerText || '').replace(/\s+/g, ' ').trim().toLowerCase();
+            if (!text || text.length > 100) continue;
+
+            // Must mention "comment/comments" somewhere in the text.
+            if (!/\bcomments?\b/.test(text)) continue;
+
+            // Must also have a load-more signal word or a leading count.
+            // Avoids accidentally clicking the "Comment" action button (no leading number or load word).
+            const hasLoadWord = /\b(view|see|load|show|previous|more|all)\b/.test(text);
+            const hasLeadingCount = /^\d/.test(text); // e.g. "47 comments"
+
+            if (!hasLoadWord && !hasLeadingCount) continue;
+
+            btn.dataset.pfCpClicked = '1';
+            try { btn.click(); } catch (_) { /* ignore */ }
+        }
+    }
+
     // ── Intersection + queuing ──────────────────────────────────────────────
 
     _initIntersectionObserver() {
@@ -90,7 +136,9 @@ class PF_CommentPreview {
                 if (!entry.isIntersecting) return;
                 const post = entry.target;
                 this.intersectionObserver.unobserve(post);
-                this._tryExpand(post);
+                // Brief delay: allow React to finish hydrating the post's event
+                // handlers before we attempt any programmatic click.
+                setTimeout(() => this._tryExpand(post), 250);
             });
         }, {
             root: null,
