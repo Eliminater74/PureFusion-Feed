@@ -157,6 +157,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Added: inline mode recommendation badge near selector (device-aware recommendation state at a glance).
 - Added: live "Why this mode" one-liner under the selector (mode intent + device-tier note).
 - Polish: launch quick-start card now emphasizes Clean as the default-friendly recommendation (best-for-most-users badge + stronger contrast).
+- Polish: quick-start mode buttons now show active-state highlighting for the currently selected mode.
 
 10) Performance layer (high)
 - Mutation batching and pre-filter passes before expensive processing.

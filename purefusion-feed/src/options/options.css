@@ -543,6 +543,13 @@ textarea:focus-visible,
     border-color: var(--pf-text-primary);
 }
 
+.pf-btn-mode-active {
+    border-color: rgba(120, 235, 255, 0.95) !important;
+    background: rgba(29, 80, 118, 0.52) !important;
+    color: #e8fbff !important;
+    box-shadow: 0 0 0 2px rgba(120, 235, 255, 0.24);
+}
+
 .pf-btn-danger {
     background-color: rgba(255, 68, 68, 0.1);
     color: #ff4444;

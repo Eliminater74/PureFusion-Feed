@@ -656,6 +656,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         modeWhyLine.textContent = text;
     }
 
+    function renderQuickModeActiveState(mode) {
+        const activeMode = String(mode || 'custom').toLowerCase();
+        const buttonMap = [
+            { mode: 'clean', btn: btnQuickModeClean },
+            { mode: 'ultrafast', btn: btnQuickModeFast },
+            { mode: 'smart', btn: btnQuickModeSmart }
+        ];
+
+        buttonMap.forEach(({ mode: targetMode, btn }) => {
+            if (!btn) return;
+            const isActive = activeMode === targetMode;
+            btn.classList.toggle('pf-btn-mode-active', isActive);
+            btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+    }
+
     async function applyQuickMode(mode, successToast) {
         if (!experienceModeSelect) return;
         experienceModeSelect.value = mode;
@@ -663,6 +679,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderPerformanceModeHint(mode);
         renderModeRecommendationBadge(mode);
         renderModeWhyLine(mode);
+        renderQuickModeActiveState(mode);
         await saveSettingsFromUI(successToast);
     }
 
@@ -691,6 +708,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderPerformanceModeHint(activeMode);
         renderModeRecommendationBadge(activeMode);
         renderModeWhyLine(activeMode);
+        renderQuickModeActiveState(activeMode);
     }
 
     async function saveSettingsFromUI(successMessageInput = null) {
@@ -897,6 +915,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             renderPerformanceModeHint(experienceModeSelect.value);
             renderModeRecommendationBadge(experienceModeSelect.value);
             renderModeWhyLine(experienceModeSelect.value);
+            renderQuickModeActiveState(experienceModeSelect.value);
         });
     }
 
