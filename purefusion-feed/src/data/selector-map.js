@@ -18,8 +18,10 @@ const SELECTOR_MAP = {
     // The main scrollable feed container (typically role="feed" or main content area)
     mainFeedRegion: '[role="feed"]',
     
-    // An individual post within the feed, or a popup modal containing a post
-    postContainer: '[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"], [role="dialog"]',
+    // An individual post within the feed, or a popup modal containing a post.
+    // Includes pagelet prefixes for Home (FeedUnit_), Groups (GroupsFeedUnit_,
+    // GroupFeedUnit_), Pages (PageFeedUnit_), and ad units.
+    postContainer: '[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"], [data-pagelet^="GroupsFeedUnit_"], [data-pagelet^="GroupFeedUnit_"], [data-pagelet^="PageFeedUnit_"], [role="dialog"]',
 
     // ------------------------------------------------------------------------
     // WITHIN A POST

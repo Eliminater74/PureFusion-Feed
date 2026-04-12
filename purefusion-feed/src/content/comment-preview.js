@@ -51,20 +51,42 @@ class PF_CommentPreview {
     }
 
     sweepDocument() {
-        if (!this._isEnabled()) return;
+        // Always log the current gate state so developers can verify in DevTools
+        // without needing to enable verbose console mode.
+        const autoOn      = !!this.settings?.social?.autoCommentPreview;
+        const surface     = this._currentSurface();
+        const surfaceOk   = this._isSurfaceAllowed();
+        const enabled     = autoOn && surfaceOk;
+        PF_Logger.info(
+            `[CommentPreview] sweepDocument — enabled=${enabled}` +
+            ` [autoCommentPreview=${autoOn}, surface=${surface}, surfaceAllowed=${surfaceOk}]`
+        );
+
+        if (!enabled) return;
 
         // Page-level sweep (fast path): confirmed via live DOM inspection that
         // "View more comments" buttons are NOT inside [role="article"] or the
         // per-post pagelet container. A document-level scan is required.
         this._globalCommentButtonSweep();
 
-        const posts = document.querySelectorAll(PF_SELECTOR_MAP.postContainer);
-        let count = 0;
+        const seen  = new WeakSet();
+        let   count = 0;
 
-        posts.forEach((post) => {
-            if (count >= this.maxPostsPerSweep) return;
+        const queueIfNew = (post) => {
+            if (count >= this.maxPostsPerSweep || seen.has(post)) return;
+            seen.add(post);
             this._queuePost(post);
             count += 1;
+        };
+
+        // Primary: pagelet-based post wrappers (home feed, search results, etc.)
+        document.querySelectorAll(PF_SELECTOR_MAP.postContainer).forEach(queueIfNew);
+
+        // Secondary: Group / Page / Watch feed posts that use different pagelet
+        // prefixes or no pagelet at all. Walk up from feed-direct children that
+        // contain a [role="article"] to find the actual post wrapper.
+        document.querySelectorAll('[role="feed"] > div').forEach((child) => {
+            if (child.querySelector('[role="article"]')) queueIfNew(child);
         });
     }
 
@@ -84,6 +106,13 @@ class PF_CommentPreview {
             if (node.querySelectorAll) {
                 node.querySelectorAll(PF_SELECTOR_MAP.postContainer)
                     .forEach((post) => this._queuePost(post));
+
+                // Also catch group/page posts that don't match the pagelet selector
+                if (node.matches && node.matches('[role="feed"] > div, [role="feed"]')) {
+                    node.querySelectorAll('[role="feed"] > div').forEach((child) => {
+                        if (child.querySelector('[role="article"]')) this._queuePost(child);
+                    });
+                }
             }
         });
     }
@@ -152,6 +181,8 @@ class PF_CommentPreview {
         if (this.processedPosts.has(post) || this.observedPosts.has(post)) return;
         if (!this._isSafeFeedPostCandidate(post)) return;
 
+        post.dataset.pfCpStatus = 'queued';
+
         if (this.intersectionObserver) {
             this.intersectionObserver.observe(post);
             this.observedPosts.add(post);
@@ -200,6 +231,7 @@ class PF_CommentPreview {
         if (countTrigger) {
             if (this._safeClick(countTrigger)) {
                 post.dataset.pfCommentPreview = 'triggered';
+                post.dataset.pfCpStatus = 'triggered-count';
                 this._pollForCommentSection(post);
             } else if (attempts < this.maxAttemptsPerPost) {
                 this._scheduleRetry(post, this._remainingCooldownMs() + 180);
@@ -214,6 +246,7 @@ class PF_CommentPreview {
         if (inlineTrigger) {
             if (this._safeClick(inlineTrigger)) {
                 post.dataset.pfCommentPreview = 'true';
+                post.dataset.pfCpStatus = 'triggered-inline';
                 this._pollForCommentSection(post);
             } else if (attempts < this.maxAttemptsPerPost) {
                 this._scheduleRetry(post, this._remainingCooldownMs() + 180);
@@ -228,6 +261,7 @@ class PF_CommentPreview {
         if (primer) {
             if (this._safeClick(primer)) {
                 // Prime click fired — poll adaptively for comment section to load.
+                post.dataset.pfCpStatus = 'triggered-primer';
                 this._pollForCommentSection(post);
             } else if (attempts < this.maxAttemptsPerPost) {
                 this._scheduleRetry(post, this._remainingCooldownMs() + 180);
@@ -239,8 +273,10 @@ class PF_CommentPreview {
 
         // Nothing found yet — retry if budget allows.
         if (attempts < this.maxAttemptsPerPost) {
+            post.dataset.pfCpStatus = `retrying-${attempts}`;
             this._scheduleRetry(post, 1400);
         } else {
+            post.dataset.pfCpStatus = 'no-trigger';
             this._finalizePost(post);
         }
     }
@@ -309,6 +345,15 @@ class PF_CommentPreview {
 
         const pollTimer = this.pollTimers.get(post);
         if (pollTimer) { clearTimeout(pollTimer); this.pollTimers.delete(post); }
+
+        // Stamp the final status for DOM inspection in DevTools.
+        // Only overwrite 'queued' / 'retrying-N' — preserve meaningful triggered/expanded states.
+        const cur = post.dataset.pfCpStatus || '';
+        if (!cur || cur === 'queued' || cur.startsWith('retrying-')) {
+            post.dataset.pfCpStatus = 'done-no-trigger';
+        } else {
+            post.dataset.pfCpStatus = 'done';
+        }
 
         this.processedPosts.add(post);
     }

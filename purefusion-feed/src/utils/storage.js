@@ -18,10 +18,14 @@ const PF_Storage = {
             await this.updateSettings(PF_DEFAULT_SETTINGS);
             return PF_DEFAULT_SETTINGS;
         }
-        
+
         // Merge defaults in case new settings were added in an update
         const merged = { ...PF_DEFAULT_SETTINGS };
         this._deepMerge(merged, current);
+
+        // Schema migrations — run after merge so we can inspect saved values.
+        this._runSchemaMigrations(merged);
+
         await this.updateSettings(merged);
         return merged;
     },
@@ -112,7 +116,34 @@ const PF_Storage = {
     },
 
     // --- Private utils ---
-    
+
+    /**
+     * Applies one-time schema migrations to settings loaded from storage.
+     * Uses a _pfSchemaVersion stamp to ensure each migration only runs once.
+     * Safe rule: only touch a key if it still holds the OLD default value
+     * (meaning the user never visited that option and changed it themselves).
+     */
+    _runSchemaMigrations(settings) {
+        const v = settings._pfSchemaVersion || 0;
+
+        if (v < 1) {
+            // v1 migration: commentPreviewAllowGroups and commentPreviewAllowOther
+            // were changed from false → true in the v2 defaults. If a user's saved
+            // settings still have false here it means they accepted the old default —
+            // not that they explicitly opted out. Upgrade them to the new default.
+            if (settings.social) {
+                if (settings.social.commentPreviewAllowGroups === false) {
+                    settings.social.commentPreviewAllowGroups = true;
+                }
+                if (settings.social.commentPreviewAllowOther === false) {
+                    settings.social.commentPreviewAllowOther = true;
+                }
+            }
+        }
+
+        settings._pfSchemaVersion = 1;
+    },
+
     _deepMerge(target, source) {
         for (const key of Object.keys(source)) {
             const sourceValue = source[key];

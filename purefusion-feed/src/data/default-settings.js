@@ -220,11 +220,11 @@ const DEFAULT_SETTINGS = {
         commentPreviewRetryCap: 4,      // Max retries per post before giving up
         commentPreviewMaxPostsPerSweep: 30,
         commentPreviewAllowHome: true,
-        commentPreviewAllowGroups: false,
+        commentPreviewAllowGroups: true,          // Groups / Forums enabled by default
         commentPreviewAllowWatch: false,
         commentPreviewAllowMarketplace: false,
         commentPreviewAllowNotifications: false,
-        commentPreviewAllowOther: false,
+        commentPreviewAllowOther: true,            // Profile pages / events / etc.
         hideMetaAI: true,               // Nuke gradient icons and sparkle buttons
         hideMessengerTyping: true,      // Hide typing indicators (DOM level)
         messengerPrivacyBlur: false,    // Blur chat previews until hover
