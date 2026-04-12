@@ -10,6 +10,7 @@ class PureFusionMessengerApp {
         this.settings = {};
         this.uiTweaks = null;
         this.messengerAI = null;
+        this.quickContextCaptureBound = false;
     }
 
     async boot() {
@@ -29,6 +30,15 @@ class PureFusionMessengerApp {
                 if (request.type === 'PF_SETTINGS_UPDATED') {
                     this.updateSettings();
                     if (sendResponse) sendResponse({ status: "success" });
+                    return;
+                }
+
+                if (request.type === 'PF_QUICK_ACTION_FEEDBACK') {
+                    const message = String(request.message || '').trim();
+                    const tone = String(request.tone || 'info').trim();
+                    if (message && window.PF_Helpers && typeof window.PF_Helpers.showToast === 'function') {
+                        window.PF_Helpers.showToast(message, tone, 3600);
+                    }
                 }
             });
         }
@@ -41,6 +51,81 @@ class PureFusionMessengerApp {
                 this.updateSettings();
             }
         });
+
+        this.setupQuickActionContextCapture();
+    }
+
+    setupQuickActionContextCapture() {
+        if (this.quickContextCaptureBound) return;
+        if (typeof chrome === 'undefined' || !chrome.runtime || !chrome.runtime.id) return;
+
+        this.quickContextCaptureBound = true;
+
+        document.addEventListener('contextmenu', (event) => {
+            const payload = this.captureQuickContextPayload(event?.target);
+            if (!payload) return;
+
+            try {
+                chrome.runtime.sendMessage({
+                    type: 'PF_CONTEXT_TARGET',
+                    payload
+                });
+            } catch (err) {
+                // Ignore transient extension-context failures.
+            }
+        }, true);
+    }
+
+    captureQuickContextPayload(target) {
+        const element = target && target.nodeType === Node.TEXT_NODE ? target.parentElement : target;
+        if (!element || !element.closest) return null;
+
+        const linkNode = element.closest('a[href], [role="link"][href], [role="link"]');
+        if (!linkNode) return null;
+
+        const candidates = [
+            linkNode.textContent,
+            linkNode.getAttribute ? linkNode.getAttribute('aria-label') : '',
+            linkNode.getAttribute ? linkNode.getAttribute('title') : ''
+        ];
+
+        const sourceName = candidates
+            .map((value) => this.normalizeQuickContextText(value))
+            .find((value) => this.looksLikeQuickContextSource(value));
+
+        if (!sourceName) return null;
+
+        let linkUrl = '';
+        try {
+            const rawHref = linkNode.href || (linkNode.getAttribute ? linkNode.getAttribute('href') : '') || '';
+            if (rawHref) linkUrl = new URL(rawHref, window.location.href).toString();
+        } catch (err) {
+            linkUrl = '';
+        }
+
+        return {
+            sourceName,
+            linkUrl,
+            ts: Date.now()
+        };
+    }
+
+    normalizeQuickContextText(value) {
+        return String(value || '')
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+
+    looksLikeQuickContextSource(value) {
+        const text = this.normalizeQuickContextText(value);
+        if (!text || text.length < 2 || text.length > 90) return false;
+
+        const normalized = text.toLowerCase();
+        if (/^(like|reply|share|follow|comment|send|more|save|hide|report|menu)$/.test(normalized)) return false;
+        if (normalized.includes('http://') || normalized.includes('https://')) return false;
+        if (/^\d+$/.test(normalized)) return false;
+
+        return true;
     }
 
     async updateSettings() {

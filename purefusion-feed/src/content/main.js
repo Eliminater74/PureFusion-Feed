@@ -16,6 +16,7 @@ class PureFusionApp {
         this.maxPipelineProcessingMs = 14;
         this.isSyncingSettings = false;
         this.hasQueuedSettingsSync = false;
+        this.quickContextCaptureBound = false;
     }
 
     async boot() {
@@ -150,6 +151,84 @@ class PureFusionApp {
                 this.updateSettingsAndResweep();
             }
         });
+
+        this._setupQuickActionContextCapture();
+    }
+
+    _setupQuickActionContextCapture() {
+        if (this.quickContextCaptureBound) return;
+        if (typeof chrome === 'undefined' || !chrome.runtime || !chrome.runtime.id) return;
+
+        this.quickContextCaptureBound = true;
+
+        document.addEventListener('contextmenu', (event) => {
+            const payload = this._captureQuickContextPayload(event?.target);
+            if (!payload) return;
+
+            try {
+                chrome.runtime.sendMessage({
+                    type: 'PF_CONTEXT_TARGET',
+                    payload
+                });
+            } catch (err) {
+                // Ignore transient extension-context failures.
+            }
+        }, true);
+    }
+
+    _captureQuickContextPayload(target) {
+        const element = target && target.nodeType === Node.TEXT_NODE ? target.parentElement : target;
+        if (!element || !element.closest) return null;
+
+        const linkNode = element.closest('a[href], [role="link"][href], [role="link"]');
+        if (!linkNode) return null;
+
+        const candidates = [
+            linkNode.textContent,
+            linkNode.getAttribute ? linkNode.getAttribute('aria-label') : '',
+            linkNode.getAttribute ? linkNode.getAttribute('title') : ''
+        ];
+
+        const imgAlt = linkNode.querySelector ? linkNode.querySelector('img[alt]') : null;
+        if (imgAlt && imgAlt.getAttribute) candidates.push(imgAlt.getAttribute('alt'));
+
+        const sourceName = candidates
+            .map((value) => this._normalizeQuickContextText(value))
+            .find((value) => this._looksLikeQuickContextSource(value));
+
+        if (!sourceName) return null;
+
+        let linkUrl = '';
+        try {
+            const rawHref = linkNode.href || (linkNode.getAttribute ? linkNode.getAttribute('href') : '') || '';
+            if (rawHref) linkUrl = new URL(rawHref, window.location.href).toString();
+        } catch (err) {
+            linkUrl = '';
+        }
+
+        return {
+            sourceName,
+            linkUrl,
+            ts: Date.now()
+        };
+    }
+
+    _normalizeQuickContextText(value) {
+        return String(value || '')
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+
+    _looksLikeQuickContextSource(value) {
+        const text = this._normalizeQuickContextText(value);
+        if (!text || text.length < 2 || text.length > 90) return false;
+
+        const normalized = text.toLowerCase();
+        if (/^(like|reply|share|follow|comment|send|more|save|hide|report|menu)$/.test(normalized)) return false;
+        if (normalized.includes('http://') || normalized.includes('https://')) return false;
+        if (/^\d+$/.test(normalized)) return false;
+
+        return true;
     }
 
     async updateSettingsAndResweep() {

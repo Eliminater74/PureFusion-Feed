@@ -44,6 +44,7 @@
   "quick_action_menu_hide_source": { "message": "Ocultar publicaciones de esta fuente" },
   "quick_action_menu_allow_source": { "message": "Nunca ocultar esta fuente" },
   "quick_action_select_text_first": { "message": "Primero selecciona texto y luego usa una acción rápida de PureFusion." },
+  "quick_action_source_select_name": { "message": "Haz clic derecho sobre el nombre de perfil/página/grupo o resalta primero un nombre de fuente." },
   "quick_action_selection_too_short": { "message": "El texto seleccionado es muy corto. Elige una palabra o frase más clara." },
   "quick_action_source_too_broad": { "message": "Esa fuente es demasiado amplia. Selecciona el nombre completo de persona/página/grupo." },
   "quick_action_exists_blocklist": { "message": "Ya está en la lista de bloqueo." },

@@ -40,6 +40,9 @@ const QUICK_MENU_URL_PATTERNS = [
     '*://*.messenger.com/*'
 ];
 
+const QUICK_CONTEXT_TTL_MS = 10000;
+const recentContextTargetsByTab = new Map();
+
 function t(key, fallback, substitutions = undefined) {
     if (typeof chrome === 'undefined' || !chrome.i18n) return fallback;
     return chrome.i18n.getMessage(key, substitutions) || fallback;
@@ -53,6 +56,85 @@ function normalizeSelection(input) {
 
 function normalizeComparable(input) {
     return normalizeSelection(input).toLowerCase();
+}
+
+function isSupportedPlatformUrl(rawUrl) {
+    try {
+        const parsed = new URL(String(rawUrl || ''));
+        return /(^|\.)facebook\.com$/i.test(parsed.hostname)
+            || /(^|\.)messenger\.com$/i.test(parsed.hostname);
+    } catch (err) {
+        return false;
+    }
+}
+
+function rememberContextTarget(tabId, payload) {
+    if (!Number.isInteger(tabId) || tabId <= 0 || !payload || typeof payload !== 'object') return;
+
+    const sourceName = normalizeSelection(payload.sourceName);
+    if (!sourceName) return;
+
+    const linkUrl = normalizeSelection(payload.linkUrl || '');
+    recentContextTargetsByTab.set(tabId, {
+        sourceName,
+        linkUrl,
+        ts: Date.now()
+    });
+}
+
+function getRecentContextTarget(tabId) {
+    if (!Number.isInteger(tabId) || tabId <= 0) return null;
+
+    const target = recentContextTargetsByTab.get(tabId);
+    if (!target) return null;
+
+    if (Date.now() - Number(target.ts || 0) > QUICK_CONTEXT_TTL_MS) {
+        recentContextTargetsByTab.delete(tabId);
+        return null;
+    }
+
+    return target;
+}
+
+function guessSourceFromLinkUrl(rawUrl) {
+    if (!isSupportedPlatformUrl(rawUrl)) return '';
+
+    try {
+        const parsed = new URL(String(rawUrl || ''));
+        const pathname = decodeURIComponent(parsed.pathname || '').replace(/^\/+|\/+$/g, '');
+        if (!pathname) return '';
+
+        const parts = pathname.split('/').filter(Boolean);
+        if (!parts.length) return '';
+
+        let candidate = '';
+        if (parts[0] === 'groups' && parts[1]) candidate = parts[1];
+        else if (parts[0] === 'pages' && parts[2]) candidate = parts[2];
+        else if (parts[0] !== 'profile.php') candidate = parts[0];
+
+        candidate = String(candidate || '')
+            .replace(/[-_]+/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+
+        if (!candidate || /^\d+$/.test(candidate) || candidate.length < 3) return '';
+        return candidate;
+    } catch (err) {
+        return '';
+    }
+}
+
+function resolveSourceActionSelection(info, tabId) {
+    const fromSelection = normalizeSelection(info?.selectionText || '');
+    if (fromSelection) return fromSelection;
+
+    const fromContext = getRecentContextTarget(tabId);
+    if (fromContext && fromContext.sourceName) return fromContext.sourceName;
+
+    const fromLink = guessSourceFromLinkUrl(info?.linkUrl || '');
+    if (fromLink) return fromLink;
+
+    return '';
 }
 
 function ensureKeywordBuckets(settings) {
@@ -208,7 +290,7 @@ async function applyQuickAction(actionId, selectionText) {
     }
 
     if (actionId === QUICK_MENU_IDS.hideSource) {
-        const looksBroad = !selectedText.includes(' ') && selectedText.length < 6;
+        const looksBroad = !selectedText.includes(' ') && selectedText.length < 4;
         if (looksBroad) {
             return {
                 ok: false,
@@ -236,7 +318,7 @@ async function applyQuickAction(actionId, selectionText) {
     }
 
     if (actionId === QUICK_MENU_IDS.allowSource) {
-        const looksBroad = !selectedText.includes(' ') && selectedText.length < 6;
+        const looksBroad = !selectedText.includes(' ') && selectedText.length < 4;
         if (looksBroad) {
             return {
                 ok: false,
@@ -277,7 +359,7 @@ async function setupQuickActionMenus() {
         chrome.contextMenus.create({
             id: QUICK_MENU_IDS.root,
             title: t('quick_action_menu_root', 'Teach PureFusion'),
-            contexts: ['selection'],
+            contexts: ['selection', 'link'],
             documentUrlPatterns: QUICK_MENU_URL_PATTERNS
         });
 
@@ -309,7 +391,7 @@ async function setupQuickActionMenus() {
             id: QUICK_MENU_IDS.hideSource,
             parentId: QUICK_MENU_IDS.root,
             title: t('quick_action_menu_hide_source', 'Hide posts from this source'),
-            contexts: ['selection'],
+            contexts: ['selection', 'link'],
             documentUrlPatterns: QUICK_MENU_URL_PATTERNS
         });
 
@@ -317,7 +399,7 @@ async function setupQuickActionMenus() {
             id: QUICK_MENU_IDS.allowSource,
             parentId: QUICK_MENU_IDS.root,
             title: t('quick_action_menu_allow_source', 'Never hide this source'),
-            contexts: ['selection'],
+            contexts: ['selection', 'link'],
             documentUrlPatterns: QUICK_MENU_URL_PATTERNS
         });
     } catch (err) {
@@ -330,8 +412,25 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     const validAction = Object.values(QUICK_MENU_IDS).includes(actionId) && actionId !== QUICK_MENU_IDS.root;
     if (!validAction) return;
 
-    const result = await applyQuickAction(actionId, info?.selectionText || '');
     const tabId = tab && typeof tab.id === 'number' ? tab.id : null;
+
+    const isSourceAction = actionId === QUICK_MENU_IDS.hideSource || actionId === QUICK_MENU_IDS.allowSource;
+    const selectionText = isSourceAction
+        ? resolveSourceActionSelection(info, tabId)
+        : normalizeSelection(info?.selectionText || '');
+
+    if (!selectionText) {
+        await notifyTab(tabId, {
+            type: 'PF_QUICK_ACTION_FEEDBACK',
+            message: isSourceAction
+                ? t('quick_action_source_select_name', 'Right-click a profile/page/group name or highlight a source name first.')
+                : t('quick_action_select_text_first', 'Select text first, then use a PureFusion quick action.'),
+            tone: 'warn'
+        });
+        return;
+    }
+
+    const result = await applyQuickAction(actionId, selectionText);
 
     if (result.ok) {
         await notifyTab(tabId, { type: 'PF_SETTINGS_UPDATED' });
@@ -386,6 +485,15 @@ async function setupDNRRules() {
 
 // Keeping the service worker alive if necessary via standard message passing
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (!message || typeof message !== 'object') return;
+
+    if (message && message.type === 'PF_CONTEXT_TARGET') {
+        const tabId = sender && sender.tab && typeof sender.tab.id === 'number' ? sender.tab.id : null;
+        if (tabId) rememberContextTarget(tabId, message.payload || {});
+        if (sendResponse) sendResponse({ status: 'captured' });
+        return;
+    }
+
     if (message.type === 'PF_PING') {
         sendResponse({ status: 'alive' });
     }
@@ -395,4 +503,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         chrome.runtime.openOptionsPage();
         sendResponse({ status: 'opening' });
     }
+});
+
+chrome.tabs.onRemoved.addListener((tabId) => {
+    if (typeof tabId === 'number') recentContextTargetsByTab.delete(tabId);
 });

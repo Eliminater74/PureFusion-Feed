@@ -205,6 +205,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Implemented actions: add to blocklist, add to auto-hide, add to allowlist, hide source, never hide source.
 - Added: guardrails for short/broad selections to reduce accidental over-broad rules.
 - Added: immediate settings sync + feed resweep + in-page confirmation toast after quick actions.
+- Hardened: link-context source actions now resolve from right-clicked name links (with recent context capture fallback when no text is selected).
 
 ## Implementation Order (Next)
 

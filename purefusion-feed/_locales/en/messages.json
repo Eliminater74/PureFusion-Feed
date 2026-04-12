@@ -44,6 +44,7 @@
   "quick_action_menu_hide_source": { "message": "Hide posts from this source" },
   "quick_action_menu_allow_source": { "message": "Never hide this source" },
   "quick_action_select_text_first": { "message": "Select text first, then use a PureFusion quick action." },
+  "quick_action_source_select_name": { "message": "Right-click a profile/page/group name or highlight a source name first." },
   "quick_action_selection_too_short": { "message": "Selected text is too short. Choose a clearer word or phrase." },
   "quick_action_source_too_broad": { "message": "That source looks too broad. Select a full page/person/group name." },
   "quick_action_exists_blocklist": { "message": "Already in blocklist." },
