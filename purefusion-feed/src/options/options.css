@@ -147,6 +147,36 @@ textarea:focus-visible,
     z-index: 100;
 }
 
+.pf-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pf-view-mode-wrap {
+    display: grid;
+    gap: 3px;
+    justify-items: end;
+}
+
+.pf-view-mode-wrap label {
+    color: var(--pf-text-secondary);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.pf-select-sm {
+    padding: 7px 9px;
+    font-size: 12px;
+}
+
+body.pf-view-basic .pf-advanced-nav,
+body.pf-view-basic .pf-advanced-card {
+    display: none !important;
+}
+
 #currentTabTitle {
     font-family: var(--pf-font-display);
     letter-spacing: 0.2px;
@@ -661,6 +691,16 @@ textarea:focus-visible,
 
     .pf-content-header {
         position: static;
+    }
+
+    .pf-header-actions {
+        width: 100%;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .pf-view-mode-wrap {
+        justify-items: start;
     }
 
     .pf-btn-group {

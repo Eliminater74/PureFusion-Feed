@@ -1,6 +1,6 @@
 # F.B. Purity Parity TODO (Living Plan)
 
-Last updated: 2026-04-10
+Last updated: 2026-04-11
 
 ## Goal
 
@@ -158,6 +158,9 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Added: live "Why this mode" one-liner under the selector (mode intent + device-tier note).
 - Polish: launch quick-start card now emphasizes Clean as the default-friendly recommendation (best-for-most-users badge + stronger contrast).
 - Polish: quick-start mode buttons now show active-state highlighting for the currently selected mode.
+- Added: options-level Basic/Advanced view switch (hides advanced nav sections/cards for simpler onboarding).
+- Polish: unified top save CTA wording to "Save Changes" for consistency.
+- Hardened: deep-link/open-settings navigation now auto-switches to Advanced view when targeting an advanced-only field.
 
 10) Performance layer (high)
 - Mutation batching and pre-filter passes before expensive processing.

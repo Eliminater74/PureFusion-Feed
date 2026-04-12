@@ -21,10 +21,10 @@
             <li class="active" data-tab="tab-filters" data-i18n="options_sidebar_filters">🚫 Core Filters</li>
             <li data-tab="tab-wellbeing" data-i18n="options_sidebar_wellbeing">🧘 Digital Wellbeing</li>
             <li data-tab="tab-social" data-i18n="options_sidebar_social">🤝 Social & Privacy</li>
-            <li data-tab="tab-ai" data-i18n="options_sidebar_ai">🤖 AI Engine</li>
-            <li data-tab="tab-ui" data-i18n="options_sidebar_ui">🎨 UI Tweaks</li>
-            <li data-tab="tab-keywords" data-i18n="options_sidebar_keywords">🔤 Keyword Filters</li>
-            <li data-tab="tab-data" data-i18n="options_sidebar_data">💾 Data & Backup</li>
+            <li data-tab="tab-ai" class="pf-advanced-nav" data-i18n="options_sidebar_ai">🤖 AI Engine</li>
+            <li data-tab="tab-ui" class="pf-advanced-nav" data-i18n="options_sidebar_ui">🎨 UI Tweaks</li>
+            <li data-tab="tab-keywords" class="pf-advanced-nav" data-i18n="options_sidebar_keywords">🔤 Keyword Filters</li>
+            <li data-tab="tab-data" class="pf-advanced-nav" data-i18n="options_sidebar_data">💾 Data & Backup</li>
         </ul>
         <div class="pf-sidebar-footer">
             <a href="https://www.paypal.com/donate/?business=X76ZW4RHA6T9C&no_recurring=0&item_name=PureFusion+returns+feed+control+to+you.+Support+our+independent%2C+private%2C+ad-free+social+tools.+Keep+your+feed+pure%21&currency_code=USD" target="_blank" rel="noopener noreferrer" class="pf-btn pf-support-footer-btn" data-i18n="common_support_developer">❤️ Support Developer</a>
@@ -37,7 +37,16 @@
     <main class="pf-content">
         <header class="pf-content-header">
             <h1 id="currentTabTitle" data-i18n="options_sidebar_filters">Core Filters</h1>
-            <button id="btnSaveTop" class="pf-btn pf-btn-primary" data-i18n="common_save_settings">Save Settings</button>
+            <div class="pf-header-actions">
+                <div class="pf-view-mode-wrap">
+                    <label for="opt_view_mode" data-i18n="options_view_mode_label">View</label>
+                    <select id="opt_view_mode" class="pf-select pf-select-sm">
+                        <option value="basic" data-i18n="options_view_mode_basic">Basic</option>
+                        <option value="advanced" data-i18n="options_view_mode_advanced">Advanced</option>
+                    </select>
+                </div>
+                <button id="btnSaveTop" class="pf-btn pf-btn-primary" data-i18n="common_save_changes">Save Changes</button>
+            </div>
         </header>
 
         <!-- TAB: FILTERS -->
@@ -167,7 +176,7 @@
                 </div>
             </div>
 
-            <div class="pf-card mt-4">
+            <div class="pf-card mt-4 pf-advanced-card">
                 <h3 data-i18n="options_filters_post_types_title">Post-Type Filter Pack v2</h3>
                 <p class="pf-desc" data-i18n="options_filters_post_types_desc">Strict post wrapper targeting plus phrase anchors. Keep off unless you want aggressive type cleanup.</p>
                 <div class="pf-setting-row">
@@ -188,7 +197,7 @@
                 </div>
             </div>
 
-            <div class="pf-card mt-4">
+            <div class="pf-card mt-4 pf-advanced-card">
                 <h3 data-i18n="options_filters_clutter_title">Clutter & Injections</h3>
                 <div class="pf-setting-row">
                     <label data-i18n="options_filters_hide_reels_tray">Hide Reels Tray in Feed</label>
@@ -211,7 +220,7 @@
                 </div>
             </div>
 
-            <div class="pf-card mt-4">
+            <div class="pf-card mt-4 pf-advanced-card">
                 <h3 data-i18n="options_story_filters_title">Story Activity Filters</h3>
                 <p class="pf-desc" data-i18n="options_story_filters_desc">Hide common low-signal activity stories from your feed.</p>
                 <div class="pf-setting-row">
@@ -275,7 +284,7 @@
                 </div>
             </div>
 
-            <div class="pf-card mt-4">
+            <div class="pf-card mt-4 pf-advanced-card">
                 <h3 data-i18n="options_image_filters_title">Image Subject Filters</h3>
                 <p class="pf-desc" data-i18n="options_image_filters_desc">Use Facebook image-description signals to hide selected visual categories.</p>
                 <div class="pf-setting-row header-row">
@@ -353,7 +362,7 @@
                 </div>
             </div>
             
-            <div class="pf-card mt-4">
+            <div class="pf-card mt-4 pf-advanced-card">
                 <h3 data-i18n="options_wellbeing_reels_limit_title">Reels Session Limiter</h3>
                 <p class="pf-desc" data-i18n="options_wellbeing_reels_limit_desc">Allow only a limited number of Reels per session, then block additional Reels.</p>
                 <div class="pf-setting-row">
@@ -370,7 +379,7 @@
                 </div>
             </div>
 
-            <div class="pf-card mt-4">
+            <div class="pf-card mt-4 pf-advanced-card">
                 <h3 data-i18n="options_wellbeing_ai_blockers_title">Advanced AI Blockers (Wellbeing Edition)</h3>
                 <div class="pf-setting-row">
                     <label data-i18n="options_wellbeing_ragebait">Rage-Bait Detector (Blur inflammatory outrage posts)</label>
@@ -402,7 +411,7 @@
                 </div>
             </div>
 
-            <div class="pf-card mt-4">
+            <div class="pf-card mt-4 pf-advanced-card">
                 <h3 data-i18n="options_social_meta_title">Meta AI & Algorithmic Clutter</h3>
                 <div class="pf-setting-row">
                     <label data-i18n="options_social_auto_comment_preview">Auto Comment Preview (Beta)</label>
@@ -459,7 +468,7 @@
                 </div>
             </div>
 
-            <div class="pf-card mt-4">
+            <div class="pf-card mt-4 pf-advanced-card">
                 <h3 data-i18n="options_social_notif_title">Notification Soul-Soother</h3>
                 <div class="pf-setting-row auto-height">
                     <label data-i18n="options_social_notif_style">Alert Jewel Style (The red dot)</label>
@@ -496,7 +505,7 @@
                 </div>
             </div>
 
-            <div class="pf-card mt-4">
+            <div class="pf-card mt-4 pf-advanced-card">
                 <h3 data-i18n="options_social_search_title">Search Popup Controls</h3>
                 <p class="pf-desc" data-i18n="options_social_search_desc">Suppress distracting search dropdown suggestions.</p>
                 <div class="pf-setting-row">

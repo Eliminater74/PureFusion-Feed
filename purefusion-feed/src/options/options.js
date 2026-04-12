@@ -88,12 +88,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     const tabContents = document.querySelectorAll('.pf-tab-content');
     const titleStatus = document.getElementById('currentTabTitle');
     const navList = document.querySelector('.pf-nav-links');
+    const viewModeSelect = document.getElementById('opt_view_mode');
+    const VIEW_MODE_STORAGE_KEY = 'pf_options_view_mode_v1';
+    const ADVANCED_TAB_IDS = new Set(['tab-ai', 'tab-ui', 'tab-keywords', 'tab-data']);
+
+    let currentOptionsViewMode = 'advanced';
 
     function cleanedTabTitle(label = '') {
         return label.replace(/[🚫🤖🎨🔤📊💾🧘🤝]/g, '').trim();
     }
 
     function activateTab(link) {
+        if (!link) return;
+
+        const linkStyle = window.getComputedStyle(link);
+        if (linkStyle.display === 'none') return;
+
         const targetId = link.getAttribute('data-tab');
 
         navLinks.forEach((n) => {
@@ -116,14 +126,72 @@ document.addEventListener('DOMContentLoaded', async () => {
         const id = String(tabId || '').trim();
         if (!id) return;
 
-        const link = Array.from(navLinks).find((candidate) => candidate.getAttribute('data-tab') === id);
+        const link = Array.from(navLinks).find((candidate) => {
+            if (candidate.getAttribute('data-tab') !== id) return false;
+            const style = window.getComputedStyle(candidate);
+            return style.display !== 'none';
+        });
         if (link) activateTab(link);
+    }
+
+    function getVisibleNavLinks() {
+        return Array.from(navLinks).filter((link) => {
+            const style = window.getComputedStyle(link);
+            return style.display !== 'none';
+        });
+    }
+
+    function applyOptionsViewMode(modeInput) {
+        const mode = String(modeInput || 'advanced').toLowerCase() === 'basic' ? 'basic' : 'advanced';
+        currentOptionsViewMode = mode;
+
+        document.body.classList.toggle('pf-view-basic', mode === 'basic');
+        if (viewModeSelect) viewModeSelect.value = mode;
+
+        const activeLink = Array.from(navLinks).find((link) => link.classList.contains('active'));
+        if (activeLink) {
+            const activeStyle = window.getComputedStyle(activeLink);
+            if (activeStyle.display === 'none') {
+                const firstVisible = getVisibleNavLinks()[0];
+                if (firstVisible) activateTab(firstVisible);
+            }
+        }
+    }
+
+    function persistOptionsViewMode(mode) {
+        try {
+            window.localStorage.setItem(VIEW_MODE_STORAGE_KEY, mode);
+        } catch (err) {
+            // ignore storage failures
+        }
+    }
+
+    function loadOptionsViewMode() {
+        try {
+            const saved = window.localStorage.getItem(VIEW_MODE_STORAGE_KEY);
+            return saved === 'basic' ? 'basic' : 'advanced';
+        } catch (err) {
+            return 'advanced';
+        }
+    }
+
+    function isAdvancedFocusTarget(selector) {
+        const focusSelector = String(selector || '').trim();
+        if (!focusSelector) return false;
+
+        try {
+            const target = document.querySelector(focusSelector);
+            if (!target) return false;
+            return Boolean(target.closest('.pf-advanced-card'));
+        } catch (err) {
+            return false;
+        }
     }
 
     if (navList) navList.setAttribute('role', 'tablist');
     tabContents.forEach((tab) => tab.setAttribute('role', 'tabpanel'));
 
-    navLinks.forEach((link, index) => {
+    navLinks.forEach((link) => {
         const targetId = link.getAttribute('data-tab');
         const isInitiallyActive = link.classList.contains('active');
 
@@ -145,22 +213,44 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
                 e.preventDefault();
-                const next = navLinks[(index + 1) % navLinks.length];
+                const visibleLinks = getVisibleNavLinks();
+                if (!visibleLinks.length) return;
+                const visibleIndex = visibleLinks.indexOf(link);
+                const next = visibleLinks[(visibleIndex + 1) % visibleLinks.length];
+                if (!next) return;
                 next.focus();
                 activateTab(next);
             }
 
             if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
                 e.preventDefault();
-                const prev = navLinks[(index - 1 + navLinks.length) % navLinks.length];
+                const visibleLinks = getVisibleNavLinks();
+                if (!visibleLinks.length) return;
+                const visibleIndex = visibleLinks.indexOf(link);
+                const prev = visibleLinks[(visibleIndex - 1 + visibleLinks.length) % visibleLinks.length];
+                if (!prev) return;
                 prev.focus();
                 activateTab(prev);
             }
         });
     });
 
-    const initialActiveTab = Array.from(navLinks).find((link) => link.classList.contains('active')) || navLinks[0];
+    applyOptionsViewMode(loadOptionsViewMode());
+
+    const initialActiveTab = Array.from(navLinks).find((link) => {
+        if (!link.classList.contains('active')) return false;
+        const style = window.getComputedStyle(link);
+        return style.display !== 'none';
+    }) || getVisibleNavLinks()[0];
     if (initialActiveTab) activateTab(initialActiveTab);
+
+    if (viewModeSelect) {
+        viewModeSelect.addEventListener('change', () => {
+            const nextMode = String(viewModeSelect.value || 'advanced');
+            applyOptionsViewMode(nextMode);
+            persistOptionsViewMode(nextMode);
+        });
+    }
 
     if (!document.getElementById('pf-options-nav-highlight-style')) {
         const highlightStyle = document.createElement('style');
@@ -179,9 +269,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!data || data.type !== 'PF_OPTIONS_NAVIGATE') return;
 
         const tabId = String(data.tabId || '').trim();
-        if (tabId) activateTabById(tabId);
-
         const focusSelector = String(data.focusSelector || '').trim();
+
+        if (tabId && currentOptionsViewMode === 'basic' && ADVANCED_TAB_IDS.has(tabId)) {
+            applyOptionsViewMode('advanced');
+            persistOptionsViewMode('advanced');
+        }
+
+        if (focusSelector && currentOptionsViewMode === 'basic' && isAdvancedFocusTarget(focusSelector)) {
+            applyOptionsViewMode('advanced');
+            persistOptionsViewMode('advanced');
+        }
+
+        if (tabId) activateTabById(tabId);
         if (!focusSelector) return;
 
         const target = document.querySelector(focusSelector);
