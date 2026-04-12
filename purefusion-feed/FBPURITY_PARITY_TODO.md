@@ -263,7 +263,10 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
   - Added: beta warning card in options UI (amber border, BETA badge, risk explanation, recommended settings guidance).
   - Added: confirmation dialog in options.js that fires when the toggle is turned ON; cancelling reverts the checkbox without saving.
   - Added: `options_beta_badge`, `options_comment_preview_warning_text`, `options_comment_preview_risk_text` i18n keys (EN + ES).
-  - Status: experimental, off by default. Real-world effectiveness depends on post having comments + FB not blocking dispatchEvent.
+  - Fixed: `_safeClick` now calls `element.click()` instead of `dispatchEvent(new MouseEvent(...))`. Synthetic events have `isTrusted=false` which Facebook's React handlers reject — `element.click()` goes through the browser's native dispatch path and is trusted.
+  - Fixed: `_hasOpenCommentSection` no longer checks `[role="complementary"]` — that attribute belongs to the PAGE-LEVEL right sidebar, not any post's comment section. Replaced with correct signals: multiple `[role="article"]` elements (post body + comment articles) and a visible `[contenteditable]` / `[role="textbox"]` composer.
+  - Fixed: `_findCommentCountTrigger` selector now includes `[tabindex="0"]` — FB's stats-row "X Comments" clickable is often a plain `div`/`span` with only a tabindex (no role attribute), which was previously missed.
+  - Status: experimental, off by default. Three root-cause bugs now fixed; real-world testing required to confirm comment expansion works end-to-end.
 
 6) Feed mode presets + quality scoring
 - Add mode selector in UI and map to internal setting bundles.

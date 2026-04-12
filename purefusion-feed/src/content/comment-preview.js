@@ -7,8 +7,11 @@
  * KEY FINDINGS (from live DOM inspection):
  *  - Facebook hides button labels via CSS — `innerText` is empty on action-row
  *    buttons. Detection MUST use `aria-label` / `title` as the primary signal.
- *  - When a post's comment section is open, the comment container is given
- *    `role="complementary"`. This is the reliable "comments loaded" indicator.
+ *  - When a post's comment section is open, multiple [role="article"] elements
+ *    appear inside the post wrapper (1 for the post body, 1+ for each comment).
+ *    A visible [contenteditable] / [role="textbox"] also indicates an open section.
+ *    NOTE: [role="complementary"] is the PAGE-LEVEL right sidebar — it is NOT
+ *    a reliable in-post comment section indicator. Do not use it for this purpose.
  *  - The stats-row "X Comments" element (above Like/Comment/Share) is the most
  *    reliable click trigger — it opens the inline comment thread directly.
  *  - The action-row "Comment" button click opens only the text composer, NOT
@@ -265,19 +268,26 @@ class PF_CommentPreview {
     // ── Detection: is the comment section already open? ─────────────────────
 
     /**
-     * Facebook marks the open comment section container with role="complementary".
-     * Confirmed via live DOM inspection — this is the reliable signal.
+     * Returns true if the post's inline comment section is already open/loaded.
+     *
+     * NOTE: [role="complementary"] is the PAGE-LEVEL right sidebar — it will
+     * never appear inside an individual post element. Do NOT use it here.
+     *
+     * Reliable signals:
+     *   - Multiple [role="article"] elements: the post body is one article;
+     *     each loaded comment adds another inside the same post wrapper.
+     *   - A visible [contenteditable] / [role="textbox"]: the comment composer
+     *     being visible means the section was opened (even with 0 comments).
      */
     _hasOpenCommentSection(post) {
         if (!post || !post.querySelector) return false;
 
-        // Primary: complementary role (confirmed in live FB DOM)
-        if (post.querySelector('[role="complementary"]')) return true;
+        // Multiple articles = post body (1) + at least one comment article (2+)
+        if (post.querySelectorAll('[role="article"]').length > 1) return true;
 
-        // Secondary: multiple [role="article"] means at least one comment loaded
-        // (the post body is one article; comments add more inside the same wrapper)
-        const articles = post.querySelectorAll('[role="article"]');
-        if (articles.length > 1) return true;
+        // Visible comment composer = section is open
+        const composer = post.querySelector('[contenteditable="true"], [role="textbox"]');
+        if (composer && this._isVisible(composer)) return true;
 
         return false;
     }
@@ -295,8 +305,11 @@ class PF_CommentPreview {
     _findCommentCountTrigger(post) {
         if (!post || !post.querySelectorAll) return null;
 
+        // Include [tabindex] — FB's stats-row "X Comments" is often a plain div/span
+        // with tabindex="0" but no role attribute. Also include [aria-label] for
+        // elements that describe themselves without a role.
         const candidates = post.querySelectorAll(
-            'div[role="button"], span[role="button"], a[role="link"], [aria-label]'
+            'div[role="button"], span[role="button"], a[role="link"], [aria-label], [tabindex="0"]'
         );
 
         for (const el of candidates) {
@@ -511,7 +524,8 @@ class PF_CommentPreview {
         if (!this._isVisible(el)) return false;
         if (el.closest('[contenteditable="true"], [role="textbox"], textarea, input')) return false;
         if (el.closest('[role="menu"], [aria-haspopup="menu"]')) return false;
-        // Exclude comment composer rows
+        // Exclude elements inside the page-level right sidebar / complementary region
+        // (e.g. "Sponsored" sidebar ads that share the same post-like markup)
         if (el.closest('[role="complementary"]')) return false;
         return true;
     }
@@ -554,15 +568,17 @@ class PF_CommentPreview {
         if (this._isCoolingDown()) return false;
 
         try {
+            // Walk up to find the nearest clickable ancestor. This avoids
+            // clicking on a child icon/svg when the parent button handles the event.
             const target = (el.closest && (
                 el.closest('div[role="button"], span[role="button"], button, a[role="link"]') || el
             )) || el;
 
-            ['mousedown', 'mouseup', 'click'].forEach((type) => {
-                target.dispatchEvent(new MouseEvent(type, {
-                    bubbles: true, cancelable: true, view: window
-                }));
-            });
+            // Use element.click() rather than dispatchEvent(new MouseEvent(...)).
+            // Synthetic events from dispatchEvent have isTrusted=false, which
+            // Facebook's React event handlers may reject. element.click() goes
+            // through the browser's native click dispatch path and is accepted.
+            target.click();
 
             this.lastActionAt = Date.now();
             return true;
