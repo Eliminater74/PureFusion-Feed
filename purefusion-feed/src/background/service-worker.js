@@ -42,6 +42,8 @@ const QUICK_MENU_URL_PATTERNS = [
 
 const QUICK_CONTEXT_TTL_MS = 10000;
 const recentContextTargetsByTab = new Map();
+const QUICK_UNDO_TTL_MS = 45000;
+const quickUndoByToken = new Map();
 
 function t(key, fallback, substitutions = undefined) {
     if (typeof chrome === 'undefined' || !chrome.i18n) return fallback;
@@ -137,6 +139,58 @@ function resolveSourceActionSelection(info, tabId) {
     return '';
 }
 
+function buildUndoToken() {
+    try {
+        if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+            return crypto.randomUUID();
+        }
+    } catch (err) {
+        // ignore
+    }
+
+    return `pfu_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function purgeExpiredUndoActions() {
+    const now = Date.now();
+    quickUndoByToken.forEach((entry, token) => {
+        const createdAt = Number(entry?.createdAt || 0);
+        if (!createdAt || now - createdAt > QUICK_UNDO_TTL_MS) {
+            quickUndoByToken.delete(token);
+        }
+    });
+}
+
+function registerUndoAction(tabId, undoSteps) {
+    if (!Array.isArray(undoSteps) || undoSteps.length === 0) return '';
+
+    purgeExpiredUndoActions();
+    const token = buildUndoToken();
+    quickUndoByToken.set(token, {
+        tabId: Number.isInteger(tabId) && tabId > 0 ? tabId : null,
+        undoSteps,
+        createdAt: Date.now()
+    });
+    return token;
+}
+
+function consumeUndoAction(token, tabId) {
+    const id = String(token || '').trim();
+    if (!id) return null;
+
+    purgeExpiredUndoActions();
+
+    const found = quickUndoByToken.get(id);
+    if (!found) return null;
+
+    if (Number.isInteger(found.tabId) && found.tabId > 0 && Number.isInteger(tabId) && tabId > 0 && found.tabId !== tabId) {
+        return null;
+    }
+
+    quickUndoByToken.delete(id);
+    return found;
+}
+
 function ensureKeywordBuckets(settings) {
     const base = settings && typeof settings === 'object' ? settings : {};
     if (!base.keywords || typeof base.keywords !== 'object') base.keywords = {};
@@ -160,15 +214,52 @@ function upsertCaseInsensitive(list, value) {
     return { added: true, value: nextValue };
 }
 
+function containsCaseInsensitive(list, value) {
+    const lookup = normalizeComparable(value);
+    if (!lookup) return false;
+    return Array.isArray(list) && list.some((item) => normalizeComparable(item) === lookup);
+}
+
 function removeCaseInsensitive(list, value) {
     const lookup = normalizeComparable(value);
-    if (!lookup) return;
+    if (!lookup) return [];
+
+    const removed = [];
 
     for (let i = list.length - 1; i >= 0; i -= 1) {
         if (normalizeComparable(list[i]) === lookup) {
+            removed.push(String(list[i]));
             list.splice(i, 1);
         }
     }
+
+    return removed;
+}
+
+async function applyUndoSteps(steps) {
+    if (!Array.isArray(steps) || steps.length === 0) return false;
+
+    const settings = await getSettingsForMutation();
+    const keywords = settings.keywords;
+
+    steps.forEach((step) => {
+        const type = String(step?.type || '');
+        const bucket = String(step?.bucket || '');
+        const value = normalizeSelection(step?.value || '');
+        if (!bucket || !value || !Array.isArray(keywords[bucket])) return;
+
+        if (type === 'add') {
+            upsertCaseInsensitive(keywords[bucket], value);
+            return;
+        }
+
+        if (type === 'remove') {
+            removeCaseInsensitive(keywords[bucket], value);
+        }
+    });
+
+    await saveSettings(settings);
+    return true;
 }
 
 async function getSettingsForMutation() {
@@ -206,6 +297,7 @@ async function applyQuickAction(actionId, selectionText) {
 
     const settings = await getSettingsForMutation();
     const keywords = settings.keywords;
+    const undoSteps = [];
 
     if (actionId === QUICK_MENU_IDS.blockKeyword) {
         if (selectedText.length < 2) {
@@ -216,7 +308,19 @@ async function applyQuickAction(actionId, selectionText) {
             };
         }
 
-        removeCaseInsensitive(keywords.allowlist, selectedText);
+        if (containsCaseInsensitive(keywords.blocklist, selectedText)) {
+            return {
+                ok: false,
+                tone: 'info',
+                message: t('quick_action_exists_blocklist', 'Already in blocklist.')
+            };
+        }
+
+        const removedAllow = removeCaseInsensitive(keywords.allowlist, selectedText);
+        removedAllow.forEach((value) => {
+            undoSteps.push({ type: 'add', bucket: 'allowlist', value });
+        });
+
         const result = upsertCaseInsensitive(keywords.blocklist, selectedText);
         if (!result.added) {
             return {
@@ -226,11 +330,14 @@ async function applyQuickAction(actionId, selectionText) {
             };
         }
 
+        undoSteps.push({ type: 'remove', bucket: 'blocklist', value: result.value });
+
         await saveSettings(settings);
         return {
             ok: true,
             tone: 'success',
-            message: t('quick_action_added_blocklist', `Added "${result.value}" to blocklist and rescanned feed.`, [result.value])
+            message: t('quick_action_added_blocklist', `Added "${result.value}" to blocklist and rescanned feed.`, [result.value]),
+            undoSteps
         };
     }
 
@@ -243,7 +350,19 @@ async function applyQuickAction(actionId, selectionText) {
             };
         }
 
-        removeCaseInsensitive(keywords.allowlist, selectedText);
+        if (containsCaseInsensitive(keywords.autohide, selectedText)) {
+            return {
+                ok: false,
+                tone: 'info',
+                message: t('quick_action_exists_autohide', 'Already in auto-hide list.')
+            };
+        }
+
+        const removedAllow = removeCaseInsensitive(keywords.allowlist, selectedText);
+        removedAllow.forEach((value) => {
+            undoSteps.push({ type: 'add', bucket: 'allowlist', value });
+        });
+
         const result = upsertCaseInsensitive(keywords.autohide, selectedText);
         if (!result.added) {
             return {
@@ -253,11 +372,14 @@ async function applyQuickAction(actionId, selectionText) {
             };
         }
 
+        undoSteps.push({ type: 'remove', bucket: 'autohide', value: result.value });
+
         await saveSettings(settings);
         return {
             ok: true,
             tone: 'success',
-            message: t('quick_action_added_autohide', `Added "${result.value}" to auto-hide and rescanned feed.`, [result.value])
+            message: t('quick_action_added_autohide', `Added "${result.value}" to auto-hide and rescanned feed.`, [result.value]),
+            undoSteps
         };
     }
 
@@ -270,8 +392,23 @@ async function applyQuickAction(actionId, selectionText) {
             };
         }
 
-        removeCaseInsensitive(keywords.blocklist, selectedText);
-        removeCaseInsensitive(keywords.autohide, selectedText);
+        if (containsCaseInsensitive(keywords.allowlist, selectedText)) {
+            return {
+                ok: false,
+                tone: 'info',
+                message: t('quick_action_exists_allowlist', 'Already in allowlist.')
+            };
+        }
+
+        const removedBlock = removeCaseInsensitive(keywords.blocklist, selectedText);
+        const removedAuto = removeCaseInsensitive(keywords.autohide, selectedText);
+        removedBlock.forEach((value) => {
+            undoSteps.push({ type: 'add', bucket: 'blocklist', value });
+        });
+        removedAuto.forEach((value) => {
+            undoSteps.push({ type: 'add', bucket: 'autohide', value });
+        });
+
         const result = upsertCaseInsensitive(keywords.allowlist, selectedText);
         if (!result.added) {
             return {
@@ -281,11 +418,14 @@ async function applyQuickAction(actionId, selectionText) {
             };
         }
 
+        undoSteps.push({ type: 'remove', bucket: 'allowlist', value: result.value });
+
         await saveSettings(settings);
         return {
             ok: true,
             tone: 'success',
-            message: t('quick_action_added_allowlist', `Added "${result.value}" to allowlist and rescanned feed.`, [result.value])
+            message: t('quick_action_added_allowlist', `Added "${result.value}" to allowlist and rescanned feed.`, [result.value]),
+            undoSteps
         };
     }
 
@@ -299,7 +439,19 @@ async function applyQuickAction(actionId, selectionText) {
             };
         }
 
-        removeCaseInsensitive(keywords.allowlistFriends, selectedText);
+        if (containsCaseInsensitive(keywords.sourceBlocklist, selectedText)) {
+            return {
+                ok: false,
+                tone: 'info',
+                message: t('quick_action_exists_source_hide', 'Source is already hidden.')
+            };
+        }
+
+        const removedAllowSources = removeCaseInsensitive(keywords.allowlistFriends, selectedText);
+        removedAllowSources.forEach((value) => {
+            undoSteps.push({ type: 'add', bucket: 'allowlistFriends', value });
+        });
+
         const result = upsertCaseInsensitive(keywords.sourceBlocklist, selectedText);
         if (!result.added) {
             return {
@@ -309,11 +461,14 @@ async function applyQuickAction(actionId, selectionText) {
             };
         }
 
+        undoSteps.push({ type: 'remove', bucket: 'sourceBlocklist', value: result.value });
+
         await saveSettings(settings);
         return {
             ok: true,
             tone: 'success',
-            message: t('quick_action_added_source_hide', `Now hiding source "${result.value}" and rescanned feed.`, [result.value])
+            message: t('quick_action_added_source_hide', `Now hiding source "${result.value}" and rescanned feed.`, [result.value]),
+            undoSteps
         };
     }
 
@@ -327,7 +482,19 @@ async function applyQuickAction(actionId, selectionText) {
             };
         }
 
-        removeCaseInsensitive(keywords.sourceBlocklist, selectedText);
+        if (containsCaseInsensitive(keywords.allowlistFriends, selectedText)) {
+            return {
+                ok: false,
+                tone: 'info',
+                message: t('quick_action_exists_source_allow', 'Source is already in Never Hide Sources.')
+            };
+        }
+
+        const removedBlockedSources = removeCaseInsensitive(keywords.sourceBlocklist, selectedText);
+        removedBlockedSources.forEach((value) => {
+            undoSteps.push({ type: 'add', bucket: 'sourceBlocklist', value });
+        });
+
         const result = upsertCaseInsensitive(keywords.allowlistFriends, selectedText);
         if (!result.added) {
             return {
@@ -337,11 +504,14 @@ async function applyQuickAction(actionId, selectionText) {
             };
         }
 
+        undoSteps.push({ type: 'remove', bucket: 'allowlistFriends', value: result.value });
+
         await saveSettings(settings);
         return {
             ok: true,
             tone: 'success',
-            message: t('quick_action_added_source_allow', `Added "${result.value}" to Never Hide Sources and rescanned feed.`, [result.value])
+            message: t('quick_action_added_source_allow', `Added "${result.value}" to Never Hide Sources and rescanned feed.`, [result.value]),
+            undoSteps
         };
     }
 
@@ -431,6 +601,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     }
 
     const result = await applyQuickAction(actionId, selectionText);
+    const undoToken = result.ok ? registerUndoAction(tabId, result.undoSteps || []) : '';
 
     if (result.ok) {
         await notifyTab(tabId, { type: 'PF_SETTINGS_UPDATED' });
@@ -439,7 +610,9 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     await notifyTab(tabId, {
         type: 'PF_QUICK_ACTION_FEEDBACK',
         message: result.message,
-        tone: result.tone || (result.ok ? 'success' : 'info')
+        tone: result.tone || (result.ok ? 'success' : 'info'),
+        undoToken,
+        undoLabel: undoToken ? t('quick_action_undo_label', 'Undo') : ''
     });
 });
 
@@ -494,6 +667,51 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         return;
     }
 
+    if (message.type === 'PF_QUICK_ACTION_UNDO') {
+        const tabId = sender && sender.tab && typeof sender.tab.id === 'number' ? sender.tab.id : null;
+        const token = String(message.token || '').trim();
+
+        (async () => {
+            if (!token) {
+                sendResponse({
+                    ok: false,
+                    tone: 'warn',
+                    message: t('quick_action_undo_expired', 'Undo is no longer available for that action.')
+                });
+                return;
+            }
+
+            const undoEntry = consumeUndoAction(token, tabId);
+            if (!undoEntry) {
+                sendResponse({
+                    ok: false,
+                    tone: 'warn',
+                    message: t('quick_action_undo_expired', 'Undo is no longer available for that action.')
+                });
+                return;
+            }
+
+            const restored = await applyUndoSteps(undoEntry.undoSteps || []);
+            if (!restored) {
+                sendResponse({
+                    ok: false,
+                    tone: 'error',
+                    message: t('quick_action_undo_failed', 'Undo failed. Please try again.')
+                });
+                return;
+            }
+
+            await notifyTab(tabId, { type: 'PF_SETTINGS_UPDATED' });
+            sendResponse({
+                ok: true,
+                tone: 'success',
+                message: t('quick_action_undo_success', 'Quick action undone.')
+            });
+        })();
+
+        return true;
+    }
+
     if (message.type === 'PF_PING') {
         sendResponse({ status: 'alive' });
     }
@@ -507,4 +725,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 chrome.tabs.onRemoved.addListener((tabId) => {
     if (typeof tabId === 'number') recentContextTargetsByTab.delete(tabId);
+
+    if (typeof tabId === 'number') {
+        quickUndoByToken.forEach((entry, token) => {
+            if (Number(entry?.tabId) === tabId) quickUndoByToken.delete(token);
+        });
+    }
 });

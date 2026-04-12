@@ -131,6 +131,36 @@ class PureFusionApp {
                     if (request.type === 'PF_QUICK_ACTION_FEEDBACK') {
                         const message = String(request.message || '').trim();
                         const tone = String(request.tone || 'info').trim();
+                        const undoToken = String(request.undoToken || '').trim();
+                        const undoLabel = String(request.undoLabel || 'Undo').trim() || 'Undo';
+
+                        if (message && window.PF_Helpers && undoToken && typeof window.PF_Helpers.showActionToast === 'function') {
+                            window.PF_Helpers.showActionToast(message, undoLabel, () => {
+                                try {
+                                    chrome.runtime.sendMessage({ type: 'PF_QUICK_ACTION_UNDO', token: undoToken }, (response) => {
+                                        const runtimeErr = chrome.runtime && chrome.runtime.lastError;
+                                        if (runtimeErr) {
+                                            if (window.PF_Helpers && typeof window.PF_Helpers.showToast === 'function') {
+                                                window.PF_Helpers.showToast('Undo failed. Please try again.', 'error', 3200);
+                                            }
+                                            return;
+                                        }
+
+                                        const replyMessage = String(response?.message || '').trim();
+                                        const replyTone = String(response?.tone || (response?.ok ? 'success' : 'warn')).trim();
+                                        if (replyMessage && window.PF_Helpers && typeof window.PF_Helpers.showToast === 'function') {
+                                            window.PF_Helpers.showToast(replyMessage, replyTone, 3200);
+                                        }
+                                    });
+                                } catch (err) {
+                                    if (window.PF_Helpers && typeof window.PF_Helpers.showToast === 'function') {
+                                        window.PF_Helpers.showToast('Undo failed. Please try again.', 'error', 3200);
+                                    }
+                                }
+                            }, tone, 5600);
+                            return;
+                        }
+
                         if (message && window.PF_Helpers && typeof window.PF_Helpers.showToast === 'function') {
                             window.PF_Helpers.showToast(message, tone, 3600);
                         }

@@ -206,6 +206,7 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Added: guardrails for short/broad selections to reduce accidental over-broad rules.
 - Added: immediate settings sync + feed resweep + in-page confirmation toast after quick actions.
 - Hardened: link-context source actions now resolve from right-clicked name links (with recent context capture fallback when no text is selected).
+- Added: one-click Undo in quick-action toast (time-limited rollback of the most recent quick rule mutation).
 
 ## Implementation Order (Next)
 

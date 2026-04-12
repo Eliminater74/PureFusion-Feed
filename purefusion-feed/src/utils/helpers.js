@@ -111,6 +111,24 @@ const PF_Helpers = {
     },
 
     showToast(message, type = 'info', timeout = 3200) {
+        this._renderToast({
+            message,
+            type,
+            timeout
+        });
+    },
+
+    showActionToast(message, actionLabel, onAction, type = 'info', timeout = 5200) {
+        this._renderToast({
+            message,
+            type,
+            timeout,
+            actionLabel,
+            onAction
+        });
+    },
+
+    _renderToast({ message, type = 'info', timeout = 3200, actionLabel = '', onAction = null } = {}) {
         if (!message || typeof document === 'undefined') return;
 
         if (!this._toastContainer || !document.contains(this._toastContainer)) {
@@ -122,6 +140,8 @@ const PF_Helpers = {
 
         const toast = document.createElement('div');
         toast.className = `pf-toast pf-toast-${type}`;
+        const hasAction = !!(actionLabel && typeof onAction === 'function');
+        if (hasAction) toast.classList.add('pf-toast-actionable');
 
         const icons = {
             success: '✓',
@@ -130,10 +150,33 @@ const PF_Helpers = {
             info: 'i'
         };
 
-        toast.innerHTML = `
-            <span class="pf-toast-icon">${icons[type] || icons.info}</span>
-            <span class="pf-toast-message">${message}</span>
-        `;
+        const iconEl = document.createElement('span');
+        iconEl.className = 'pf-toast-icon';
+        iconEl.textContent = icons[type] || icons.info;
+
+        const bodyEl = document.createElement('span');
+        bodyEl.className = 'pf-toast-message';
+        bodyEl.textContent = String(message);
+
+        toast.appendChild(iconEl);
+        toast.appendChild(bodyEl);
+
+        if (hasAction) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'pf-toast-action';
+            btn.textContent = String(actionLabel);
+            btn.addEventListener('click', () => {
+                try {
+                    onAction();
+                } catch (err) {
+                    // no-op
+                }
+                toast.classList.remove('pf-toast-visible');
+                setTimeout(() => toast.remove(), 220);
+            });
+            toast.appendChild(btn);
+        }
 
         this._toastContainer.appendChild(toast);
 
@@ -179,6 +222,25 @@ const PF_Helpers = {
                 transform: translateY(8px);
                 opacity: 0;
                 transition: opacity 0.2s ease, transform 0.2s ease;
+            }
+
+            .pf-toast-actionable {
+                pointer-events: auto;
+            }
+
+            .pf-toast-action {
+                margin-left: auto;
+                border: 1px solid rgba(121, 235, 255, 0.62);
+                background: rgba(0, 212, 255, 0.14);
+                color: #79ebff;
+                border-radius: 8px;
+                padding: 4px 8px;
+                font: 700 11px/1.2 "Segoe UI Variable Text", "Segoe UI", Tahoma, sans-serif;
+                cursor: pointer;
+            }
+
+            .pf-toast-action:hover {
+                background: rgba(0, 212, 255, 0.2);
             }
 
             .pf-toast-visible {
