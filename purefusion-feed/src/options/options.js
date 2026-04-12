@@ -1010,6 +1010,32 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    // ── Beta feature confirmation: Auto Comment Preview ──────────────────────
+    // Show a confirmation dialog the first time the user turns this on.
+    // If they cancel, immediately revert the checkbox.
+    const autoCommentPreviewToggle = document.getElementById('opt_social_autoCommentPreview');
+    if (autoCommentPreviewToggle) {
+        autoCommentPreviewToggle.addEventListener('change', () => {
+            if (!autoCommentPreviewToggle.checked) return; // turning off is always fine
+
+            const confirmed = window.confirm(
+                '⚠ Auto Comment Preview — Beta Feature\n\n' +
+                'This feature simulates clicks on Facebook posts to expand comment sections as you scroll.\n\n' +
+                'Important:\n' +
+                '• It is experimental and may not work on all posts.\n' +
+                '• It may stop working after Facebook layout updates.\n' +
+                '• High sweep-cap settings may look like bot activity to Facebook.\n' +
+                '• Keep cooldown ≥ 1200 ms and max posts per sweep ≤ 15 when testing.\n\n' +
+                'Enable anyway?'
+            );
+
+            if (!confirmed) {
+                // Revert the checkbox without triggering another change event
+                autoCommentPreviewToggle.checked = false;
+            }
+        });
+    }
+
     if (themeSelect) {
         themeSelect.addEventListener('change', () => {
             renderThemePreview(themeSelect.value, fontScaleInput ? fontScaleInput.value : 100);

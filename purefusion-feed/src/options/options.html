@@ -428,12 +428,26 @@
 
             <div class="pf-card mt-4 pf-advanced-card">
                 <h3 data-i18n="options_social_meta_title">Meta AI & Algorithmic Clutter</h3>
-                <div class="pf-setting-row">
-                    <label data-i18n="options_social_auto_comment_preview">Auto Comment Preview (Beta)</label>
-                    <input type="checkbox" id="opt_social_autoCommentPreview" class="pf-toggle">
+
+                <!-- ── Auto Comment Preview beta warning ── -->
+                <div class="pf-beta-warning" id="pf-comment-preview-warning">
+                    <div class="pf-beta-warning-header">
+                        <span class="pf-beta-badge" data-i18n="options_beta_badge">BETA</span>
+                        <strong data-i18n="options_social_auto_comment_preview">Auto Comment Preview</strong>
+                    </div>
+                    <p data-i18n="options_comment_preview_warning_text">
+                        This feature simulates button clicks to expand comment sections as you scroll. It is experimental and may not work on all posts, may stop working after Facebook updates its layout, or may trigger rate-limiting if sweep counts are set too high. Keep cooldown above 1200 ms and max posts per sweep below 20 when first testing.
+                    </p>
+                    <p class="pf-warn-text" data-i18n="options_comment_preview_risk_text">
+                        Enable at your own risk. A confirmation prompt will appear the first time you turn this on.
+                    </p>
+                    <div class="pf-setting-row" style="margin-top:10px;">
+                        <label data-i18n="options_social_auto_comment_preview_toggle">Enable Auto Comment Preview</label>
+                        <input type="checkbox" id="opt_social_autoCommentPreview" class="pf-toggle">
+                    </div>
                 </div>
 
-                <p class="pf-desc" data-i18n="options_social_comment_preview_desc">Expand inline comments safely with cooldown and per-surface scope controls.</p>
+                <p class="pf-desc" data-i18n="options_social_comment_preview_desc">Tune cooldown and scope below. Higher cooldowns and lower sweep caps reduce the chance of triggering FB rate limits.</p>
                 <div class="pf-setting-row auto-height">
                     <label data-i18n="options_social_comment_preview_cooldown">Comment preview cooldown (ms)</label>
                     <input type="number" id="opt_social_commentPreviewCooldownMs" min="300" max="5000" class="pf-input-number">

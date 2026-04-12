@@ -595,6 +595,50 @@ body.pf-view-basic .pf-advanced-card {
     color: #ffaa00;
 }
 
+/* ── Beta feature warning card ──────────────────────────────────────────── */
+.pf-beta-warning {
+    background: rgba(255, 160, 0, 0.08);
+    border: 1px solid rgba(255, 160, 0, 0.35);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+}
+
+.pf-beta-warning-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.pf-beta-warning-header strong {
+    font-size: 13px;
+    color: #e8edf8;
+}
+
+.pf-beta-badge {
+    display: inline-block;
+    background: #cc8800;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    border-radius: 4px;
+    padding: 2px 6px;
+    flex-shrink: 0;
+}
+
+.pf-beta-warning p {
+    margin: 0 0 8px;
+    font-size: 12px;
+    color: #aab4c8;
+    line-height: 1.55;
+}
+
+.pf-beta-warning p:last-of-type {
+    margin-bottom: 0;
+}
+
 .save-toast {
     margin-top: 10px;
     font-size: 12px;

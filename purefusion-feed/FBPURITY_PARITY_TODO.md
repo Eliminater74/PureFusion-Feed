@@ -253,6 +253,17 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Add per-surface allow/deny list (Home yes, Notifications no by default).
 - Hardened: added stricter safe-candidate gating + expanded risky-navigation detection.
 - Hardened: added multilingual (FR/PT/DE/IT) comment trigger and primer phrase matching.
+- v2 rewrite: fully redesigned based on live DOM inspection findings:
+  - Fixed: `_extractLabel` now reads `aria-label` FIRST (FB hides button text visually via CSS; `innerText` is empty on action-row buttons).
+  - Fixed: `_hasOpenCommentSection` now detects `[role="complementary"]` — the confirmed FB signal that a comment thread is loaded.
+  - Added: `_findCommentCountTrigger` — detects the "X Comments" clickable in the post stats row (above Like/Comment/Share); most reliable trigger; works without prior state.
+  - Added: `_pollForCommentSection` — adaptive polling at 220 ms intervals (up to 8 attempts ≈ 1.76 s) after primer/count-trigger click; replaces fragile fixed 900 ms wait.
+  - Added: `_findDirectCommentButton` — `aria-label`-first direct match for "Comment" action button, covering EN/ES/FR/PT/DE/IT.
+  - Improved: `_findPositionalCommentButton` — now validates Like/Comment/Share toolbar using `aria-label` signals (not empty `innerText`).
+  - Added: beta warning card in options UI (amber border, BETA badge, risk explanation, recommended settings guidance).
+  - Added: confirmation dialog in options.js that fires when the toggle is turned ON; cancelling reverts the checkbox without saving.
+  - Added: `options_beta_badge`, `options_comment_preview_warning_text`, `options_comment_preview_risk_text` i18n keys (EN + ES).
+  - Status: experimental, off by default. Real-world effectiveness depends on post having comments + FB not blocking dispatchEvent.
 
 6) Feed mode presets + quality scoring
 - Add mode selector in UI and map to internal setting bundles.
