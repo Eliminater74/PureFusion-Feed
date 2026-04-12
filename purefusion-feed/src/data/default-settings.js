@@ -184,6 +184,7 @@ const DEFAULT_SETTINGS = {
         hideWatch: false,
         hideMarketplace: false,
         hideGroups: false,
+        hideGaming: false,          // Gaming/Play tab (account-dependent)
         hideMessenger: false,
         hideNotifications: false,
         hideMenu: false,

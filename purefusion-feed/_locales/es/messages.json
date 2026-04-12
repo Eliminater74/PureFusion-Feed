@@ -236,6 +236,7 @@
   "options_topbar_hide_watch": { "message": "Ocultar icono superior: Watch" },
   "options_topbar_hide_marketplace": { "message": "Ocultar icono superior: Marketplace" },
   "options_topbar_hide_groups": { "message": "Ocultar icono superior: Grupos" },
+  "options_topbar_hide_gaming": { "message": "Ocultar icono superior: Gaming" },
   "options_topbar_hide_messenger": { "message": "Ocultar icono superior: Messenger" },
   "options_topbar_hide_notifications": { "message": "Ocultar icono superior: Notificaciones" },
   "options_topbar_hide_menu": { "message": "Ocultar icono superior: Menu" },

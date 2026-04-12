@@ -415,6 +415,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_topbar_hideWatch': { obj: 'topbarFilters', prop: 'hideWatch', type: 'checkbox' },
         'opt_topbar_hideMarketplace': { obj: 'topbarFilters', prop: 'hideMarketplace', type: 'checkbox' },
         'opt_topbar_hideGroups': { obj: 'topbarFilters', prop: 'hideGroups', type: 'checkbox' },
+        'opt_topbar_hideGaming': { obj: 'topbarFilters', prop: 'hideGaming', type: 'checkbox' },
         'opt_topbar_hideMessenger': { obj: 'topbarFilters', prop: 'hideMessenger', type: 'checkbox' },
         'opt_topbar_hideNotifications': { obj: 'topbarFilters', prop: 'hideNotifications', type: 'checkbox' },
         'opt_topbar_hideMenu': { obj: 'topbarFilters', prop: 'hideMenu', type: 'checkbox' },

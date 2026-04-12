@@ -324,6 +324,7 @@ class PF_Cleaner {
             || topbar.hideNotifications
             || topbar.hideMenu
             || topbar.hideCreate
+            || topbar.hideGaming
         );
     }
 
@@ -770,40 +771,98 @@ class PF_Cleaner {
         const topbarScopes = this._resolveTopbarScopes(banner);
 
         if (topbar.hideHome) {
-            this._hideTopbarByAriaLabels(topbarScopes, ['home', 'inicio', 'accueil', 'inicial', 'startseite'], 'Topbar: Home');
-            this._hideTopbarByHrefTokens(topbarScopes, ['/home.php', '/?sk=welcome'], 'Topbar: Home');
+            this._hideTopbarByAriaLabels(topbarScopes, ['home', 'inicio', 'accueil', 'inicial', 'startseite', 'hem', 'thuis'], 'Topbar: Home');
+            this._hideTopbarByHrefTokens(topbarScopes, ['/home.php', '/?sk=welcome', '/?sk=h_nor', '/?sk=h_chr'], 'Topbar: Home');
+            // FB home button often uses href="/" exactly — too short for a substring
+            // match so we use the exact-href helper instead.
+            this._hideTopbarByExactHref(topbarScopes, ['/'], 'Topbar: Home');
         }
         if (topbar.hideFriends) {
-            this._hideTopbarByAriaLabels(topbarScopes, ['friends', 'amigos', 'amis', 'freunde', 'amici'], 'Topbar: Friends');
+            this._hideTopbarByAriaLabels(topbarScopes, [
+                // EN / ES / FR / PT / DE / IT / NL / SV / NO / DA
+                'friends', 'amigos', 'amis', 'freunde', 'amici', 'vrienden', 'vanner', 'venner'
+            ], 'Topbar: Friends');
             this._hideTopbarByHrefTokens(topbarScopes, ['/friends'], 'Topbar: Friends');
         }
         if (topbar.hideWatch) {
-            this._hideTopbarByAriaLabels(topbarScopes, ['watch', 'videos', 'video'], 'Topbar: Watch');
+            this._hideTopbarByAriaLabels(topbarScopes, [
+                // FB keeps "Watch" in most locales; add native-language variants where known
+                'watch', 'videos', 'video',
+                'regarder',             // FR
+                'assistir',             // PT
+                'ver videos', 'ver video', // ES
+                'videos ansehen',       // DE
+                'guarda', 'guarda i video', // IT
+                'bekijk videos',        // NL
+                'titta pa',             // SV
+            ], 'Topbar: Watch');
             this._hideTopbarByHrefTokens(topbarScopes, ['/watch'], 'Topbar: Watch');
         }
         if (topbar.hideMarketplace) {
-            this._hideTopbarByAriaLabels(topbarScopes, ['marketplace'], 'Topbar: Marketplace');
+            this._hideTopbarByAriaLabels(topbarScopes, [
+                // "Marketplace" is kept in English in most locales
+                'marketplace', 'mercado', 'marktplatz', 'mercato', 'marche'
+            ], 'Topbar: Marketplace');
             this._hideTopbarByHrefTokens(topbarScopes, ['/marketplace'], 'Topbar: Marketplace');
         }
         if (topbar.hideGroups) {
-            this._hideTopbarByAriaLabels(topbarScopes, ['groups', 'grupos', 'groupes', 'gruppen', 'gruppi'], 'Topbar: Groups');
+            this._hideTopbarByAriaLabels(topbarScopes, [
+                'groups', 'grupos', 'groupes', 'gruppen', 'gruppi',
+                'groepen',              // NL
+                'grupper',              // SV / NO / DA
+            ], 'Topbar: Groups');
             this._hideTopbarByHrefTokens(topbarScopes, ['/groups'], 'Topbar: Groups');
         }
         if (topbar.hideMessenger) {
-            this._hideTopbarByAriaLabels(topbarScopes, ['messenger', 'messages', 'mensajes', 'mensagens', 'nachrichten', 'messaggi'], 'Topbar: Messenger');
+            this._hideTopbarByAriaLabels(topbarScopes, [
+                'messenger', 'messages', 'mensajes', 'mensagens', 'nachrichten', 'messaggi',
+                'berichten',            // NL
+                'meddelanden',          // SV
+                'meldinger',            // NO
+                'beskeder',             // DA
+            ], 'Topbar: Messenger');
             this._hideTopbarByHrefTokens(topbarScopes, ['/messages', '/chats', '/t/'], 'Topbar: Messenger');
         }
         if (topbar.hideNotifications) {
-            this._hideTopbarByAriaLabels(topbarScopes, ['notifications', 'notificaciones', 'notificacoes', 'notifiche', 'benachrichtigungen'], 'Topbar: Notifications');
+            // Count-badge stripping in _matchesTopbarLabels handles "(N unread)" suffix.
+            this._hideTopbarByAriaLabels(topbarScopes, [
+                'notifications', 'notificaciones', 'notificacoes', 'notifiche', 'benachrichtigungen',
+                'notifications',        // FR (same as EN)
+                'notificaties',         // NL
+                'aviseringar',          // SV
+                'varsler', 'notifikationer', // NO / DA
+            ], 'Topbar: Notifications');
             this._hideTopbarByHrefTokens(topbarScopes, ['/notifications'], 'Topbar: Notifications');
         }
         if (topbar.hideMenu) {
-            this._hideTopbarByAriaLabels(topbarScopes, ['menu', 'meniu'], 'Topbar: Menu');
+            // Diacritics are stripped by _normalizeComparableText, so "menú" / "menü" → "menu"
+            this._hideTopbarByAriaLabels(topbarScopes, [
+                'menu', 'meniu', 'more', 'mas', 'voir plus', 'mehr',
+            ], 'Topbar: Menu');
             this._hideTopbarByHrefTokens(topbarScopes, ['/menu'], 'Topbar: Menu');
         }
         if (topbar.hideCreate) {
-            this._hideTopbarByAriaLabels(topbarScopes, ['create', 'crear', 'creer', 'criar', 'erstellen', 'crea'], 'Topbar: Create');
+            this._hideTopbarByAriaLabels(topbarScopes, [
+                'create', 'crear', 'creer', 'criar', 'erstellen', 'crea',
+                'creeren',              // NL (diacritics stripped)
+                'skapa',                // SV
+                'opprette',             // NO
+                'opret',                // DA
+            ], 'Topbar: Create');
             this._hideTopbarByHrefTokens(topbarScopes, ['/create'], 'Topbar: Create');
+        }
+        if (topbar.hideGaming) {
+            this._hideTopbarByAriaLabels(topbarScopes, [
+                'gaming', 'games', 'play',
+                'juegos',               // ES
+                'jeux',                 // FR
+                'jogos',                // PT
+                'spiele',               // DE
+                'giochi',               // IT
+                'spellen',              // NL
+                'spel',                 // SV
+            ], 'Topbar: Gaming');
+            this._hideTopbarByHrefTokens(topbarScopes, ['/gaming', '/games', '/play'], 'Topbar: Gaming');
         }
     }
 
@@ -905,7 +964,17 @@ class PF_Cleaner {
         if (!Array.isArray(normalizedLabels) || !normalizedLabels.length) return false;
 
         return labelSignals.some((signal) => {
-            return normalizedLabels.some((label) => signal === label || signal.startsWith(`${label} `));
+            // FB appends unread counts to icon labels, e.g. "Notifications (3 unread)"
+            // or "Messages (2)".  Strip the trailing parenthetical before matching
+            // so the exact label comparison still works.
+            const stripped = signal.replace(/\s*\(\d+[^)]*\)\s*$/, '').trimEnd();
+
+            return normalizedLabels.some((label) =>
+                signal === label
+                || signal.startsWith(`${label} `)
+                || stripped === label
+                || stripped.startsWith(`${label} `)
+            );
         });
     }
 
@@ -922,6 +991,35 @@ class PF_Cleaner {
                 const href = String(anchor.getAttribute('href') || '').toLowerCase();
                 if (!href) return;
                 if (!normalizedTokens.some((token) => href.includes(token))) return;
+
+                const target = this._findTopbarHideTarget(anchor, scopeNode);
+                if (!target) return;
+
+                this._hideNodeSafely(target, reason);
+            });
+        });
+    }
+
+    /**
+     * Like _hideTopbarByHrefTokens but performs an exact href match rather than
+     * a substring includes check.  Needed for the Home button whose href is
+     * simply "/" — too short and common to use as a substring token.
+     */
+    _hideTopbarByExactHref(scopeNodes, exactHrefs, reason) {
+        if (!Array.isArray(exactHrefs) || exactHrefs.length === 0) return;
+
+        const normalizedHrefs = exactHrefs
+            .map((h) => String(h || '').toLowerCase().trim())
+            .filter(Boolean);
+        if (!normalizedHrefs.length) return;
+
+        this._iterateTopbarScopes(scopeNodes, (scopeNode) => {
+            scopeNode.querySelectorAll('a[href]').forEach((anchor) => {
+                const href = String(anchor.getAttribute('href') || '').toLowerCase().split('?')[0].replace(/\/$/, '');
+                if (!normalizedHrefs.some((h) => {
+                    const normalized = h.split('?')[0].replace(/\/$/, '');
+                    return href === normalized || href === h;
+                })) return;
 
                 const target = this._findTopbarHideTarget(anchor, scopeNode);
                 if (!target) return;

@@ -28,8 +28,9 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 
 3) Top header micro-controls
 - FBP parity need: granular top bar icon controls without hiding the header shell.
-- PureFusion status: WIP (safe mode).
-- Implemented: master toggle + per-icon toggles (Home, Friends, Watch, Marketplace, Groups, Messenger, Notifications, Menu, Create).
+- PureFusion status: WIP (safe mode — hardening slice complete).
+- Implemented: master toggle + per-icon toggles (Home, Friends, Watch, Marketplace, Groups, Gaming, Messenger, Notifications, Menu, Create).
+- Hardened: count-badge stripping in label matcher, exact-href Home detection, expanded locale aliases (FR/PT/DE/IT/NL/SV/NO/DA) for all icons.
 
 4) Notification popup filtering
 - FBP parity need: hide low-value notification categories.
@@ -230,7 +231,11 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Only allow compact item-level hides, never hide `role=banner`.
 - Hardened: topbar now scans likely header navigation scopes (including alternate nav pagelets) instead of a single aria-label sweep.
 - Hardened: per-item matching now uses locale-expanded label aliases plus href-token fallback for route-stable icons.
-- Validate icon mapping across account locales and alternate nav layouts.
+- Fixed: `_matchesTopbarLabels` now strips trailing count badges (e.g. "Notifications (3 unread)") from label signals before comparison — prevents Notifications hide from failing when an unread count is appended.
+- Fixed: Home button href `"/"` exact match via new `_hideTopbarByExactHref` helper — substring token matching was unsafe for single-character hrefs; also added `/?sk=h_nor` and `/?sk=h_chr` tokens.
+- Expanded: locale alias tables for all icons — Watch now covers FR (`regarder`), PT (`assistir`), ES (`ver videos`), DE (`videos ansehen`), IT (`guarda`), NL (`bekijk videos`), SV (`titta pa`); Friends/Groups/Messenger/Notifications/Create extended with NL/SV/NO/DA variants.
+- Added: Gaming/Play icon toggle (`hideGaming`) — detects Gaming tab via label aliases (EN/ES/FR/PT/DE/IT/NL/SV) and href tokens (`/gaming`, `/games`, `/play`); OFF by default; account-dependent (not all accounts show this tab).
+- Status: hardening slice complete. Remaining: monitor selector stability across 2025+ FB nav layout revisions.
 
 3) Custom UI engine (experimental)
 - Add "Advanced Custom CSS" textarea with clear warning.
