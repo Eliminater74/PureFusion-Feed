@@ -250,6 +250,9 @@ class PF_Cleaner {
             || filters.hidePhotoPosts
             || filters.hideLinkPosts
             || filters.hideTextOnlyPosts
+            || filters.hideLiveVideoPosts
+            || filters.hideShareReposts
+            || filters.hidePollPosts
         );
     }
 
@@ -491,6 +494,21 @@ class PF_Cleaner {
                 enabled: !!filters.hideTextOnlyPosts,
                 reason: 'Post Type: Text Only',
                 key: 'textOnly'
+            },
+            {
+                enabled: !!filters.hideLiveVideoPosts,
+                reason: 'Post Type: Live Video',
+                key: 'liveVideo'
+            },
+            {
+                enabled: !!filters.hideShareReposts,
+                reason: 'Post Type: Share/Repost',
+                key: 'shareRepost'
+            },
+            {
+                enabled: !!filters.hidePollPosts,
+                reason: 'Post Type: Poll',
+                key: 'poll'
             }
         ].filter((rule) => rule.enabled);
 
@@ -1933,6 +1951,7 @@ class PF_Cleaner {
         const anchors = this._extractPostTypeAnchors(node);
         const anchorText = anchors.join(' ');
 
+        // ── Existing selectors ────────────────────────────────────────────────
         const hasVideoSelector = !!node.querySelector(
             'video, a[href*="/watch/"], a[href*="/videos/"], a[href*="/reel/"], [data-pagelet*="Video"], [data-pagelet*="Reels"], [data-pagelet*="Shorts"]'
         );
@@ -1943,19 +1962,57 @@ class PF_Cleaner {
 
         const hasExternalLinkSelector = this._hasExternalLinkTarget(node);
 
+        // ── Live Video selectors ──────────────────────────────────────────────
+        // FB live posts carry /live/ hrefs, data-pagelet Live markers, or a
+        // streaming video element with autoplay that FB sets for live feeds.
+        const hasLiveSelector = !!node.querySelector(
+            'a[href*="/live/"], a[href*="live_status=LIVE"], a[href*="live_status=LIVE_STOPPED"], [data-pagelet*="LiveVideoUnit"]'
+        );
+
+        // ── Share/Repost selectors ────────────────────────────────────────────
+        // Reposts typically carry a /share/ href and a nested blockquote-style
+        // preview card.  We also detect them via the "shared [name]'s post"
+        // header phrasing.
+        const hasRepostSelector = !!node.querySelector(
+            'a[href*="/share/"], a[href*="/permalink/"][href*="story_fbid"]'
+        );
+
+        // ── Poll selectors ────────────────────────────────────────────────────
+        // Polls carry interactive option lists and "Vote" / "See Results"
+        // buttons.  We look for listbox roles, poll-specific aria-labels, and
+        // common test-id fragments.
+        const hasPollSelector = !!node.querySelector(
+            '[role="listbox"], [role="option"], [aria-label*="poll" i], [data-testid*="poll"], [data-testid*="Poll"]'
+        );
+
+        // ── Anchor-phrase matchers ────────────────────────────────────────────
         const hasVideoAnchor = /(shared (a )?video|watch(ing)?( now)?|reels?|short videos?|video en vivo|compartio (un )?video|ver video|videos? cortos?|a partage (une )?video|video en direct|regarder|partilhou (um )?video|video ao vivo|video curto|kurzvideos?|hat (ein )?video geteilt|ha condiviso (un )?video|guarda (il )?video)/.test(anchorText);
         const hasPhotoAnchor = /(shared (a )?(photo|album)|photo(s)?( update)?|image(s)?|album|compartio (una )?(foto|imagen)|compartio (un )?album|fotos?|imagenes?|a partage (une )?(photo|image|album)|photo de profil|partilhou (uma )?(foto|imagem|album)|fotos? de perfil|hat (ein )?(foto|bild|album) geteilt|profilbild|titelbild|ha condiviso (una )?(foto|immagine|album)|foto del profilo)/.test(anchorText);
         const hasLinkAnchor = /(shared (a )?link|read more|link preview|open link|enlace|leer mas|articulo|a partage (un )?lien|lire la suite|apercu du lien|partilhou (um )?link|ler mais|previa do link|hat (einen )?link geteilt|mehr lesen|linkvorschau|ha condiviso (un )?link|leggi di piu|anteprima link)/.test(anchorText)
             || /\bhttps?:\/\/|www\./.test(anchorText);
 
+        // Live video anchors: "is live now", "went live", "watching live", etc.
+        const hasLiveAnchor = /(is live( now)?|went live|live( now)?|watching live|live stream|live video|live broadcast|esta(ba)? en vivo( ahora)?|esta ao vivo|est en direct( maintenant)?|live-video|ist live( jetzt)?|e in diretta( ora)?)/.test(anchorText);
+
+        // Share/Repost anchors: "[name] shared [name]'s post", "shared a post", etc.
+        const hasRepostAnchor = /(shared [a-z\u00c0-\u024f\u0400-\u04ff\u4e00-\u9fff\s''\-]{2,40}'s post|shared a post|shared [a-z\u00c0-\u024f\u0400-\u04ff\u4e00-\u9fff\s''\-]{2,40}'s (status|update)|compartio la publicacion de|compartio un post|a partage la publication de|a partage un post|partilhou a publicacao de|partilhou um post|hat den beitrag von|hat einen post geteilt|ha condiviso il post di|ha condiviso un post)/.test(anchorText);
+
+        // Poll anchors: "voted in a poll", "created a poll", vote/result CTAs.
+        const hasPollAnchor = /(voted? (in|on) a poll|created? a poll|see (poll )?results?|view (poll )?results?|voto en una encuesta|creo una encuesta|ver resultados de la encuesta|a vote dans un sondage|a cree un sondage|voir les resultats|votou numa sondagem|criou um inquerito|hat (an einer )?umfrage abgestimmt|ha votato (in|su) un sondaggio)/.test(anchorText);
+
+        // ── Evidence scoring ──────────────────────────────────────────────────
         const evidence = {
             video: (hasVideoSelector ? 2 : 0) + (hasVideoAnchor ? 1 : 0),
             photo: (hasPhotoSelector ? 2 : 0) + (hasPhotoAnchor ? 1 : 0),
-            link: (hasExternalLinkSelector ? 2 : 0) + (hasLinkAnchor ? 1 : 0)
+            link: (hasExternalLinkSelector ? 2 : 0) + (hasLinkAnchor ? 1 : 0),
+            liveVideo: (hasLiveSelector ? 2 : 0) + (hasLiveAnchor ? 1 : 0),
+            shareRepost: (hasRepostSelector ? 2 : 0) + (hasRepostAnchor ? 1 : 0),
+            poll: (hasPollSelector ? 2 : 0) + (hasPollAnchor ? 1 : 0)
         };
 
         const mediaNodeCount = this._countPostMediaNodes(node);
 
+        // ── Base type decisions ───────────────────────────────────────────────
         const video = evidence.video >= 2 || (evidence.video >= 1 && evidence.photo === 0 && evidence.link === 0);
         const photo = !video && (evidence.photo >= 2 || (evidence.photo >= 1 && evidence.link === 0));
         const link = !video && !photo && (evidence.link >= 2);
@@ -1964,11 +2021,27 @@ class PF_Cleaner {
         const hasMeaningfulText = textLength >= 30;
         const textOnly = hasMeaningfulText && !video && !photo && !link && mediaNodeCount === 0;
 
+        // ── Extended type decisions ───────────────────────────────────────────
+        // Live video requires a strong signal (selector OR strong anchor match).
+        // It is intentionally independent of the base `video` flag so that a
+        // user can hide live-only without hiding all video posts.
+        const liveVideo = evidence.liveVideo >= 2 || (evidence.liveVideo >= 1 && hasLiveAnchor);
+
+        // Share/Repost: selector OR anchor phrase is sufficient given the
+        // specificity of both signals.  Require at least 1 evidence point.
+        const shareRepost = evidence.shareRepost >= 1;
+
+        // Poll: selector alone is reliable; anchor alone is accepted too.
+        const poll = evidence.poll >= 1;
+
         return {
             video,
             photo,
             link,
-            textOnly
+            textOnly,
+            liveVideo,
+            shareRepost,
+            poll
         };
     }
 

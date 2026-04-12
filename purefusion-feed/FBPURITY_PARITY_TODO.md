@@ -1,6 +1,6 @@
 # F.B. Purity Parity TODO (Living Plan)
 
-Last updated: 2026-04-11
+Last updated: 2026-04-12
 
 ## Goal
 
@@ -211,13 +211,19 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 ## Implementation Order (Next)
 
 1) Post-type filter pack v2
-- Status: first implementation slice complete.
+
+- Status: second implementation slice complete.
 - Added: dedicated Core Filter toggles (video, photo/image, link/share, text-only).
 - Added: strict `[data-pagelet^="FeedUnit_"]` / `AdUnit` targeting + anchor-based type detection + global safety bailout.
 - Hardened: evidence scoring + header-zone anchor gating + media-node guard for text-only detection.
-- Add new toggle group in Core Filters.
-- Implement strict per-type selectors + phrase anchors.
-- Keep global safety bailout active.
+- Added: Live Video toggle (`hideLiveVideoPosts`) — detects FB Live / live-replay posts via `/live/` href selectors + live-broadcast anchor phrases (EN/ES/FR/PT/DE/IT). Independent of the base Video toggle so users can filter live-only without hiding all video.
+- Added: Share/Repost toggle (`hideShareReposts`) — detects reshares of another person's post via `/share/` href selectors + "shared [name]'s post" anchor phrases (EN/ES/FR/PT/DE/IT).
+- Added: Poll toggle (`hidePollPosts`) — detects poll posts via `[role="listbox"]` / `[aria-label*="poll"]` selectors + "voted in a poll" / "created a poll" anchor phrases (EN/ES/FR/PT/DE/IT).
+- Added: new separator + three toggle rows in options UI Post-Type Filter Pack v2 card.
+- Added: uiMap wiring for all three new settings in options.js.
+- Added: EN and ES i18n keys for all three new toggles.
+- All three new types: OFF by default, pass through the existing safety bailout (max-hide cap).
+- Next: validate selector coverage on live/poll layouts across account locales; continue topbar controls hardening.
 
 2) Header/top-nav controls
 - Add safe-mode master toggle + per-item toggles.

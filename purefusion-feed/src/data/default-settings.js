@@ -27,6 +27,9 @@ const DEFAULT_SETTINGS = {
         hidePhotoPosts: false,          // Hide feed posts primarily classified as photo/image
         hideLinkPosts: false,           // Hide feed posts primarily classified as external link/share
         hideTextOnlyPosts: false,       // Hide feed posts classified as text-only status updates
+        hideLiveVideoPosts: false,      // Hide Facebook Live / live-replay posts specifically
+        hideShareReposts: false,        // Hide posts that are reshares of another person's content
+        hidePollPosts: false,           // Hide Facebook poll posts
         removeColoredBackgrounds: true, // Giant font/colored posts -> standard text
         removeLargeReactions: true,     // Downsize large emoji reactions
     },

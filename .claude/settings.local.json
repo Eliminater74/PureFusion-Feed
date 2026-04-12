@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc -l \"i:/GITHUB/Projects/Chrome/Extension/purefusion-feed/src/content/\"*.js)"
+    ]
+  }
+}

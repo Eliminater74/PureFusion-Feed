@@ -314,6 +314,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_filters_hidePhotoPosts': { obj: 'filters', prop: 'hidePhotoPosts', type: 'checkbox' },
         'opt_filters_hideLinkPosts': { obj: 'filters', prop: 'hideLinkPosts', type: 'checkbox' },
         'opt_filters_hideTextOnlyPosts': { obj: 'filters', prop: 'hideTextOnlyPosts', type: 'checkbox' },
+        'opt_filters_hideLiveVideoPosts': { obj: 'filters', prop: 'hideLiveVideoPosts', type: 'checkbox' },
+        'opt_filters_hideShareReposts': { obj: 'filters', prop: 'hideShareReposts', type: 'checkbox' },
+        'opt_filters_hidePollPosts': { obj: 'filters', prop: 'hidePollPosts', type: 'checkbox' },
         'opt_filters_removeColoredBackgrounds': { obj: 'filters', prop: 'removeColoredBackgrounds', type: 'checkbox' },
 
         // Feed Experience Mode
