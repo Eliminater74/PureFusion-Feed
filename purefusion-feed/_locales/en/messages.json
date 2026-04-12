@@ -74,6 +74,7 @@
   "options_quickstart_btn_clean": { "message": "Use Clean" },
   "options_quickstart_btn_fast": { "message": "Use Ultra Fast" },
   "options_quickstart_btn_smart": { "message": "Use Smart" },
+  "options_quickstart_recommended": { "message": "Best for most users" },
   "options_mode_perf_hint_low": { "message": "This device may perform better with Ultra Fast Mode (text-first, lower CPU/GPU load)." },
   "options_mode_perf_hint_mid": { "message": "Ultra Fast Mode can reduce lag during heavy sessions on this device." },
   "options_mode_perf_apply": { "message": "Apply Ultra Fast Recommendation" },

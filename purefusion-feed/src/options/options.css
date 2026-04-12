@@ -204,6 +204,27 @@ textarea:focus-visible,
     background: rgba(16, 22, 32, 0.48);
 }
 
+.pf-card-launch {
+    border-color: rgba(18, 200, 220, 0.58);
+    background: linear-gradient(180deg, rgba(28, 41, 60, 0.98) 0%, rgba(24, 33, 48, 0.98) 100%);
+}
+
+.pf-card-launch .pf-promise-item {
+    border-color: rgba(124, 158, 206, 0.44);
+    background: rgba(13, 20, 31, 0.62);
+}
+
+.pf-quick-recommend {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    border: 1px solid rgba(128, 214, 164, 0.75);
+    background: rgba(31, 80, 48, 0.45);
+    color: #d4ffdf;
+    padding: 4px 10px;
+    font: 700 11px/1.2 var(--pf-font-body);
+}
+
 .pf-promise-title {
     color: #dff8ff;
     font: 800 12px/1.25 var(--pf-font-display);
@@ -641,6 +662,11 @@ textarea:focus-visible,
 
     .pf-promise-grid {
         grid-template-columns: 1fr;
+    }
+
+    .pf-quick-recommend {
+        width: 100%;
+        justify-content: center;
     }
 
     .pf-mode-controls {
