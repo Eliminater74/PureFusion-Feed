@@ -199,6 +199,13 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Added: weekly top-reason explain actions with category-level descriptions (why this distraction type is being filtered).
 - Added: top-reason "open related settings" deep-link actions (panel -> advanced settings tab/field focus).
 
+15) Right-click quick filter actions (medium-high)
+- Status: initial implementation complete.
+- Implemented: "Teach PureFusion" context menu for selected text on Facebook/Messenger.
+- Implemented actions: add to blocklist, add to auto-hide, add to allowlist, hide source, never hide source.
+- Added: guardrails for short/broad selections to reduce accidental over-broad rules.
+- Added: immediate settings sync + feed resweep + in-page confirmation toast after quick actions.
+
 ## Implementation Order (Next)
 
 1) Post-type filter pack v2

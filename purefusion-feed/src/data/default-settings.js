@@ -141,6 +141,7 @@ const DEFAULT_SETTINGS = {
         blocklist: [],                  // Array of strings/regex. Collapses post.
         autohide: [],                   // Array of strings/regex. Completely removes post.
         allowlist: [],                  // Keywords that bypass blocking
+        sourceBlocklist: [],            // Source names (people/pages/groups) to always hide
         allowlistFriends: [],           // FB user IDs or Names to never block
     },
 

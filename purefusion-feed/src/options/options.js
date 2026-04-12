@@ -799,6 +799,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Handle Keywords Mapping
         document.getElementById('opt_keywords_blocklist').value = currentSettings.keywords.blocklist.join(', ');
         document.getElementById('opt_keywords_autohide').value = currentSettings.keywords.autohide.join(', ');
+        document.getElementById('opt_keywords_sourceBlocklist').value = (currentSettings.keywords.sourceBlocklist || []).join(', ');
         document.getElementById('opt_keywords_allowlist').value = (currentSettings.keywords.allowlist || []).join(', ');
         document.getElementById('opt_keywords_allowlistFriends').value = (currentSettings.keywords.allowlistFriends || []).join(', ');
 
@@ -851,11 +852,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Parse Keyword comma-separated Arrays
         const blockString = document.getElementById('opt_keywords_blocklist').value;
         const autoString = document.getElementById('opt_keywords_autohide').value;
+        const sourceBlockString = document.getElementById('opt_keywords_sourceBlocklist').value;
         const allowString = document.getElementById('opt_keywords_allowlist').value;
         const allowFriendsString = document.getElementById('opt_keywords_allowlistFriends').value;
 
         currentSettings.keywords.blocklist = blockString.split(',').map(s => s.trim()).filter(s => s.length > 0);
         currentSettings.keywords.autohide = autoString.split(',').map(s => s.trim()).filter(s => s.length > 0);
+        currentSettings.keywords.sourceBlocklist = sourceBlockString.split(',').map(s => s.trim()).filter(s => s.length > 0);
         currentSettings.keywords.allowlist = allowString.split(',').map(s => s.trim()).filter(s => s.length > 0);
         currentSettings.keywords.allowlistFriends = allowFriendsString.split(',').map(s => s.trim()).filter(s => s.length > 0);
 

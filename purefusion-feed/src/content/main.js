@@ -124,6 +124,15 @@ class PureFusionApp {
                         PF_Logger.log("Settings update detected. Re-syncing.");
                         this.updateSettingsAndResweep();
                         if (sendResponse) sendResponse({ status: "success" });
+                        return;
+                    }
+
+                    if (request.type === 'PF_QUICK_ACTION_FEEDBACK') {
+                        const message = String(request.message || '').trim();
+                        const tone = String(request.tone || 'info').trim();
+                        if (message && window.PF_Helpers && typeof window.PF_Helpers.showToast === 'function') {
+                            window.PF_Helpers.showToast(message, tone, 3600);
+                        }
                     }
                 });
             } catch (e) {

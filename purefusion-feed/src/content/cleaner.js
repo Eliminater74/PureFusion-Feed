@@ -1615,8 +1615,13 @@ class PF_Cleaner {
         const autohide = this.settings.keywords.autohide || [];
         const blocklist = this.settings.keywords.blocklist || [];
         const allowlist = this.settings.keywords.allowlist || [];
+        const sourceBlocklist = this.settings.keywords.sourceBlocklist || [];
         
-        if (autohide.length === 0 && blocklist.length === 0 && allowlist.length === 0) return;
+        if (autohide.length === 0 && blocklist.length === 0 && allowlist.length === 0 && sourceBlocklist.length === 0) return;
+
+        const normalizedSourceBlocklist = sourceBlocklist
+            .map((value) => this._normalizeText(value))
+            .filter(Boolean);
 
         const postCandidates = this._getPostCandidates(rootNode);
 
@@ -1624,9 +1629,17 @@ class PF_Cleaner {
             if (!postWrapper || postWrapper.dataset.pfHidden) return;
 
             const textContent = this._extractPostText(postWrapper).toLowerCase();
-            if (!textContent) return;
-
             if (this._isAllowlistedPost(postWrapper, textContent, true)) return;
+
+            if (normalizedSourceBlocklist.length > 0) {
+                const source = this._normalizeText(this._extractPostSource(postWrapper));
+                if (source && normalizedSourceBlocklist.some((term) => source.includes(term))) {
+                    this._hidePostNode(postWrapper, 'Source Blocklist');
+                    return;
+                }
+            }
+
+            if (!textContent) return;
 
             // Check auto-hide (Full silent deletion)
             let hidden = false;
