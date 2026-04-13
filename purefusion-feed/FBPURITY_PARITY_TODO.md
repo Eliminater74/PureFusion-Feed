@@ -1,35 +1,41 @@
-# F.B. Purity Parity TODO (Living Plan)
-
 Last updated: 2026-04-13
+
+## Definition of Done (DoD)
+
+- [ ] Feature works on fresh page load.
+- [ ] Survives infinite scroll and React-driven node injections.
+- [ ] Master toggle is fully reversible (content restores on OFF).
+- [ ] Messenger surface remains unaffected unless specifically targeted.
+- [ ] Roadmap documentation (`FBPURITY_PARITY_TODO.md`) updated with latest status.
 
 ## Current Focus (DO NOT SKIP)
 
 **Active Priority:**
 
-- ✅ Post-type filter pack v2 — COMPLETE
-- ✅ Smart feed scoring polish — COMPLETE
-- ✅ Auto comment preview v3 — COMPLETE (DOM Injection Strategy)
-- ✅ Header/top-nav controls — COMPLETE (Hardened: badge stripping + Jewel Soul-Soother styling)
+- ✅ Phase 13: Power-User Rule Engine — COMPLETE (Selector + Text logic)
+- ✅ Phase 15: Context Menu "Zap" — COMPLETE (Instant rules + Undo support)
+- 1) Multilingual Phrase Expansion — Tuning story/activity keywords (Medium)
+- 2) Story/Activity Filter Hardening — Closing edge cases on "Friend Activity" posts (High)
 
 **Secondary:**
 
-- ✅ Smart feed scoring polish (UX copy, threshold tuning, chip stability) — COMPLETE
-- Auto comment preview v2 stabilization (experimental — currently disabled by user)
+- Auto comment preview v3 (DOM injection) — Placeholder logic validated; awaiting data integration strategy.
+- Advanced Custom UI presets — Expanding the snippet library.
 
 **Do NOT jump ahead to:**
 
 - Plugin SDK
-- Rule engine
-- Non-critical UI features
+- Non-critical UI cleanup
 
 Always continue from the highest-priority unfinished item above.
 
 ## Last Action Log
 
-- Last completed: Sponsored ad detection — full hardening for CWS release
-- Last major fix: (1) `removeSponsored` step 4 added — direct article-level href scan (`a[href*="/ads/about"]` etc.) that bypasses all text matching and works even when FB obfuscates "Sponsored" with zero-width chars; (2) `sponsoredIndicators` updated to partial/case-insensitive aria-label matching (`*=` instead of exact) and includes ad-href selectors + locale variants; (3) `_isSponsoredLabel` strips ZWC/invisible Unicode before normalization; (4) `findContains` in helpers also strips ZWC so `:contains()` checks work on obfuscated text; (5) NL/SV/DA/NO token additions
-- Known unstable area: Auto comment preview v2 (experimental, off by default — user paused work)
-- Stable checkpoint: `63e715064fa88ae83dd78a74a6385860ba5ddc9f`
+- **Last completed (2026-04-13):** Power-User Rule Engine & Context Menu "Zap" integration.
+- **Major Accomplishment:** Implemented `PF_RuleEngine` supporting both CSS selectors and text-matching. Added "Zap Element" to the context menu via `background.js` and `main.js` to allow instant, persistent hiding of any DOM element with automatic selector generation and one-click Undo.
+- **Major Fix:** Hardened `PF_Cleaner` to coordinate with the Rule Engine during every sweep cycle.
+- **Stable Checkpoint:** Rule engine verified on Feed and Options dashboard.
+- **Known unstable area:** Auto comment preview v2 (PAUSED - see item 7b for v3 path).
 
 ## Goal
 
@@ -81,41 +87,28 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Status: initial implementation complete; continue tuning selectors/phrases per locale.
 - Add dedicated toggles for: profile picture updates, cover photo updates, life events, check-ins, milestones, job/work updates, relationship updates, group activity variants.
 
-2) Top header micro-controls
 - Status: DONE.
 - Implemented: Notification Soul-Soother (Blue/Purple/Grey/Hidden jewel styles), multi-scope topbar resolver, expanded locale label aliases, and hardened badge-stripping logic.
 
 3) Advanced custom UI engine (medium-high)
-- Status: hardening slice in progress (safe mode, disabled by default).
-- Implemented: custom CSS field, custom font family, custom accent color, custom background.
-- Hardened: stricter CSS sanitization (risky directives removed + critical hide-rule stripping).
-- Added: optional CSS snippet presets + finer custom style controls (text color and post-card background).
+- Status: DONE (Initial).
+- Implemented: custom CSS field, custom font family, custom accent color, custom background, preset snippet loader, and post-card styling.
 - Keep disabled by default and sandboxed to avoid layout breakage.
 
-4) Broader multilingual phrase packs (medium)
-- Status: hardening slice in progress.
-- Added: FR/PT/DE/IT phrase coverage for story-activity detection using token-assisted matching.
-- Added: FR/PT/DE/IT phrase coverage for post-type anchor detection (video/photo/link hints).
-- Improve rule coverage across additional locales and synonym variants.
+4) Power-User Rule Engine & Zap (high)
+- Status: DONE.
+- Implemented: CSS selector rules, text-based matching rules with wrapper scoping, and "Zap Element" context menu action.
+- Added: Dashboard UI for rule management (add/edit/delete) and instant "Undo" for Zapped elements.
 
-5) Rule diagnostics panel (medium)
-- Status: initial implementation complete.
-- Implemented: optional in-page diagnostics overlay with per-reason hide counters and optional verbose console mode.
-- Added: live settings-sync telemetry (sync count, resweep count, follow-up pass count, and last-sync timestamps).
-- Added: observer workload timing (batch count, records/nodes, avg/peak batch ms, last batch summary).
-- Added: one-click diagnostics snapshot export (JSON) from the overlay.
-- Added: rolling observer spike history ring buffer (last 10 warning/severe batches).
-- Added: threshold-based severity highlighting in diagnostics (OK/Warn/Severe).
-- Added: user-configurable observer spike thresholds in Diagnostics settings (warn/severe for ms, nodes, records).
-- Added: mini observer workload trend sparkline (rolling window with warn/severe guide lines).
-- Added: quick-reset actions in diagnostics overlay (clear observer history, reset all counters).
-- Added: optional copy-to-clipboard action for diagnostics snapshot JSON (with fallback copy path).
-- Added: optional compact diagnostics overlay mode for smaller screens.
-- Added: draggable diagnostics overlay position with persisted placement.
-- Added: per-minute observer batch rate metric in diagnostics header.
-- Added: observer in/out/trimmed node telemetry (batch + cumulative) to tune observer queue caps.
-- Added: pipeline fan-out telemetry (received/dispatched/trimmed + trim ratio) to tune node prefilter caps.
-- Added: pipeline budget telemetry (deferral count, deferred processors, last deferral summary) to tune frame-budget slicing.
+5) Broader multilingual phrase packs (medium)
+- Status: WIP.
+- Added: FR/PT/DE/IT phrase coverage for story-activity detection and post-type anchor detection.
+- TODO: Expansion of Dutch (NL), Swedish (SV), Danish (DA), and Norwegian (NO).
+
+6) Rule diagnostics panel (medium)
+- Status: DONE.
+- Implemented: optional in-page diagnostics overlay with telemetry, observer workload timing, and JSON export.
+- Added: pipeline budget telemetry to tune frame-budget slicing and Ultra Fast mode recommendations.
 - Added: wellbeing report action telemetry (panel interactions + related-settings deep-link usage counts) in diagnostics overlay/snapshot.
 - Added: diagnostics performance guidance card with Ultra Fast mode recommendation CTA when pipeline pressure rises.
 - Next: pivot back to non-diagnostics roadmap items (per-surface controls or smart feed scoring polish).
@@ -333,86 +326,44 @@ Step 7 — Settings wiring
 - Hardened: link-context source actions now resolve from right-clicked name links (with recent context capture fallback when no text is selected).
 - Added: one-click Undo in quick-action toast (time-limited rollback of the most recent quick rule mutation).
 
-## Implementation Order (Next)
+## Implementation Order (Next Priority)
 
-1) Post-type filter pack v2
+### Phase 16: Multilingual & Story Hardening (Next)
+- [ ] Expand Story Activity Filter (becomes friends, joined groups) to NL/SV/DA/NO.
+- [ ] Refine "Friend Activity" detection to avoid false positives on legitimate page posts.
+- [ ] Add specific toggles for Profile/Cover photo updates in non-English locales.
 
-- Status: second implementation slice complete.
-- Added: dedicated Core Filter toggles (video, photo/image, link/share, text-only).
-- Added: strict `[data-pagelet^="FeedUnit_"]` / `AdUnit` targeting + anchor-based type detection + global safety bailout.
-- Hardened: evidence scoring + header-zone anchor gating + media-node guard for text-only detection.
-- Added: Live Video toggle (`hideLiveVideoPosts`) — detects FB Live / live-replay posts via `/live/` href selectors + live-broadcast anchor phrases (EN/ES/FR/PT/DE/IT). Independent of the base Video toggle so users can filter live-only without hiding all video.
-- Added: Share/Repost toggle (`hideShareReposts`) — detects reshares of another person's post via `/share/` href selectors + "shared [name]'s post" anchor phrases (EN/ES/FR/PT/DE/IT).
-- Added: Poll toggle (`hidePollPosts`) — detects poll posts via `[role="listbox"]` / `[aria-label*="poll"]` selectors + "voted in a poll" / "created a poll" anchor phrases (EN/ES/FR/PT/DE/IT).
-- Added: new separator + three toggle rows in options UI Post-Type Filter Pack v2 card.
-- Added: uiMap wiring for all three new settings in options.js.
-- Added: EN and ES i18n keys for all three new toggles.
-- All three new types: OFF by default, pass through the existing safety bailout (max-hide cap).
-- Next: validate selector coverage on live/poll layouts across account locales; continue topbar controls hardening.
+### Phase 17: Auto Comment Preview v3 (Data Layer)
+- [ ] Research non-intrusive data fetching for comment text (GraphQL interception vs background fetch).
+- [ ] Populate injected `<ul>` with actual comment content.
 
-2) Header/top-nav controls
-- Status: DONE.
-- Added: Notification Soul-Soother jewel styling (Blue/Purple/Grey/Hidden).
-- Hardened: `_matchesTopbarLabels` now strips unread count badges in prefix/suffix/separator positions (`Notifications (3)`, `5 Messages`, `Menu - 2`).
-- Fixed: Home button exact-href detection and locale aliases for EN/ES/FR/PT/DE/IT/NL/SV/NO/DA.
+### Phase 18: Performance & Optimization (Ongoing)
+- [ ] Monitor pipeline budget telemetry in live sessions.
+- [ ] Further optimize `_isHighSignalPipelineNode` for large feeds.
 
-3) Custom UI engine (experimental)
-- Add "Advanced Custom CSS" textarea with clear warning.
-- Hardened: added preset snippet loader in options for safe starter custom CSS blocks.
-- Hardened: added custom text color + post-card background controls.
-- Hardened: strengthened custom CSS/background/font sanitization before style injection.
-- Validate and apply CSS in isolated style tag.
+## Safety Rules (Do Not Remove)
 
-4) Diagnostics mode
-- Add optional debug toggle and small overlay/log panel.
+- Never hide structural containers: `html`, `body`, `role=main`, `role=feed`, `role=banner`, `role=navigation`, `role=complementary`.
+- Keep panic recovery and recovery watchdog active.
+- Keep feature master toggles default OFF for new risky modules until validated.
+- Prefer strict selectors and short heading/aria/href anchors over broad full-text sweeps.
+- Keep all advanced AI/behavior features local-first and transparent for policy safety.
 
-5) Auto comment preview v2 hardening
-- Restrict to safe inline triggers and avoid modal/page navigation links.
-- Add cooldown between auto-click actions.
-- Add per-surface allow/deny list (Home yes, Notifications no by default).
-- Hardened: added stricter safe-candidate gating + expanded risky-navigation detection.
-- Hardened: added multilingual (FR/PT/DE/IT) comment trigger and primer phrase matching.
-- v2 rewrite: fully redesigned based on live DOM inspection findings:
-  - Fixed: `_extractLabel` now reads `aria-label` FIRST (FB hides button text visually via CSS; `innerText` is empty on action-row buttons).
-  - Fixed: `_hasOpenCommentSection` now detects `[role="complementary"]` — the confirmed FB signal that a comment thread is loaded.
-  - Added: `_findCommentCountTrigger` — detects the "X Comments" clickable in the post stats row (above Like/Comment/Share); most reliable trigger; works without prior state.
-  - Added: `_pollForCommentSection` — adaptive polling at 220 ms intervals (up to 8 attempts ≈ 1.76 s) after primer/count-trigger click; replaces fragile fixed 900 ms wait.
-  - Added: `_findDirectCommentButton` — `aria-label`-first direct match for "Comment" action button, covering EN/ES/FR/PT/DE/IT.
-  - Improved: `_findPositionalCommentButton` — now validates Like/Comment/Share toolbar using `aria-label` signals (not empty `innerText`).
-  - Added: beta warning card in options UI (amber border, BETA badge, risk explanation, recommended settings guidance).
-  - Added: confirmation dialog in options.js that fires when the toggle is turned ON; cancelling reverts the checkbox without saving.
-  - Added: `options_beta_badge`, `options_comment_preview_warning_text`, `options_comment_preview_risk_text` i18n keys (EN + ES).
-  - Fixed: `_safeClick` now calls `element.click()` instead of `dispatchEvent(new MouseEvent(...))`. Synthetic events have `isTrusted=false` which Facebook's React handlers reject — `element.click()` goes through the browser's native dispatch path and is trusted.
-  - Fixed: `_hasOpenCommentSection` no longer checks `[role="complementary"]` — that attribute belongs to the PAGE-LEVEL right sidebar, not any post's comment section. Replaced with correct signals: multiple `[role="article"]` elements (post body + comment articles) and a visible `[contenteditable]` / `[role="textbox"]` composer.
-  - Fixed: `_findCommentCountTrigger` selector now includes `[tabindex="0"]` — FB's stats-row "X Comments" clickable is often a plain `div`/`span` with only a tabindex (no role attribute), which was previously missed.
-  - Fixed: `_findCommentCountTrigger` no longer calls `_isRiskyNavTarget` — stats-row comment count links use `href="/posts/..."` which looks risky but React intercepts them client-side; they were being filtered before we could click them. Added `a[href]` to the candidate selector. `_safeClick` adds `preventDefault` for anchors to prevent browser navigation.
-  - Fixed: `_hasOpenCommentSection` no longer checks `[contenteditable]` visibility — Facebook pre-renders the composer for every post; depending on how it is hidden (visibility:hidden, off-screen positioning) `_isVisible()` could return true, causing a false positive that immediately finalizes ALL posts before any click is attempted.
-  - Fixed: `_hasOpenCommentSection` now uses a visible "View more/all comments" button as its secondary signal — these only appear once the section is open and partial comments are loaded.
-  - Fixed: `_safeClick` now dispatches `pointerdown`+`pointerup` PointerEvents with coordinates before `element.click()` — some React handlers on Facebook respond to pointerdown, and providing realistic coordinates improves compatibility.
-  - Extended: poll window from 8 → 15 attempts (15 × 220 ms ≈ 3.3 s) to give network requests more time to deliver comment data.
-  - ROOT CAUSE CONFIRMED (via live DOM inspection): "View more comments" buttons are NOT inside `[role="article"]` and are NOT reliably inside the per-post pagelet container. Per-post querySelectorAll misses them entirely. Only a page-level `document.querySelectorAll` reliably finds them.
-  - Fixed: added `_globalCommentButtonSweep()` — page-level scan using `innerText` (not aria-label, which is `null` on these buttons). Runs from both `sweepDocument()` and `applyToNodes()`. Marks each button with `data-pf-cp-clicked` to prevent re-clicking. Targets buttons where text contains "comments" + a load-signal word ("view", "see", "previous", etc.) or starts with a count digit.
-  - Fixed: IntersectionObserver now waits 250 ms after a post enters the viewport before calling `_tryExpand` — gives React time to attach event handlers before primer clicks.
-  - Status: experimental, off by default. Global sweep confirmed working via DOM debug. Primer approach (for posts with 0 comments) still relies on clicking the Comment action button which may or may not trigger comment loading depending on Facebook's current implementation.
+## Red-Team Notes (Helpful vs Risky)
 
-6) Feed mode presets + quality scoring
-- Status: DONE.
-- Implement first-pass quality score heuristics with explicit reason labels.
+- **Helpful now:** Rule engine (Zap), feed mode presets, quality scoring, performance batching, reels limiter, diagnostics.
+- **Helpful later:** Plugin SDK.
+- **Risky/policy-sensitive (defer):** Deep "shadow profile" estimation and anything that implies hidden account inference.
 
-7) Performance pass
-- Add mutation batching, debounce windows, and skip markers for processed nodes.
-- Track observer workload metrics in diagnostics mode.
-- Hardened: added observer node pre-filter + high-signal prioritization + queue caps.
-- Hardened: added main-pipeline node pre-filter/dedupe + batch cap before module dispatch.
-- Hardened: added settings-sync serialization to prevent overlapping full-document resweeps.
-- Hardened: optimized high-signal node detection and mutation batching efficiency in observer.
+## Regression Checklist Per Feature Slice
 
-8) Reels session limiter
-- Add optional counter and soft lock after user-defined threshold.
-- Add optional on-screen "Reels locked" panel with resume action.
+1) Feed does not blank on first load.
+2) Scroll and new node injection still work.
+3) Toggle OFF restores content behavior.
+4) Toggle ON affects only intended module/type.
+5) Messenger surface remains unaffected unless feature is Messenger-specific.
+6) Rule Engine "Zap" does not target the main feed container itself (Self-Zap Guard).
 
-9) Power-user rule engine spike
-- Implement MVP parser for IF/THEN post rules and evaluate performance impact.
 
 ## Safety Rules (Do Not Remove)
 
