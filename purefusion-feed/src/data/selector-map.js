@@ -21,7 +21,7 @@ const SELECTOR_MAP = {
     // An individual post within the feed, or a popup modal containing a post.
     // Includes pagelet prefixes for Home (FeedUnit_), Groups (GroupsFeedUnit_,
     // GroupFeedUnit_), Pages (PageFeedUnit_), and ad units.
-    postContainer: '[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"], [data-pagelet^="GroupsFeedUnit_"], [data-pagelet^="GroupFeedUnit_"], [data-pagelet^="PageFeedUnit_"], [role="dialog"]',
+    postContainer: '[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"], [data-pagelet^="GroupsFeedUnit_"], [data-pagelet^="GroupFeedUnit_"], [data-pagelet^="PageFeedUnit_"]',
 
     // ------------------------------------------------------------------------
     // WITHIN A POST
@@ -59,11 +59,11 @@ const SELECTOR_MAP = {
         'a[href*="/ads/about"]',
         'a[href*="ad_preferences"]',
         'a[href*="about_ads"]',
-        // Privacy Sandbox attribution — ONLY on paid ad elements (confirmed via live DOM)
-        '[attributionsrc*="privacy_sandbox"]',
-        '[attributionsrc*="comet/register"]',
-        // Facebook's own internal ad rendering role (confirmed via live DOM)
-        '[data-ad-rendering-role]',
+        // NOTE: [attributionsrc*="privacy_sandbox"] and [attributionsrc*="comet/register"] removed.
+        // Both appear on organic comment profile links (every commenter's avatar/name),
+        // not exclusive to ads. Caused every comment to be falsely hidden.
+        // NOTE: [data-ad-rendering-role] removed — confirmed present on ALL organic post
+        // profile name elements, not exclusive to ads. Caused false-positive comment hiding.
         // Content Flow Token in ad page-name links (confirmed via live DOM)
         'a[href*="_cft_[0]"]',
         'a[href*="_cft_%5B0%5D"]',

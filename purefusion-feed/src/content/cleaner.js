@@ -1611,19 +1611,10 @@ class PF_Cleaner {
             if (marker) targets.push(marker);
         });
 
-        // 4. data-ad-preview attribute scan.
-        // Facebook's own internal attribute on ad post bodies — never appears on organic posts.
-        // Works regardless of text obfuscation or href format changes.
-        rootNode.querySelectorAll('[data-ad-preview]').forEach((el) => {
-            if (el.dataset.pfHidden) return;
-            let article = PF_Helpers.getClosest(el, '[role="article"]', 10);
-            if (article && article.parentElement?.closest('[role="article"]')) article = null;
-            if (article && article.closest('[role="complementary"]')) article = null;
-            const target = article
-                || PF_Helpers.getClosest(el, PF_SELECTOR_MAP.postContainer, 10)
-                || el;
-            this._hidePostNode(target, 'Sponsored Post (data-ad-preview)');
-        });
+        // 4. data-ad-preview attribute scan — DISABLED.
+        // Facebook uses data-ad-preview on both ad post bodies AND comment text containers.
+        // There is no reliable way to distinguish the two without false-positive comment hiding.
+        // Sponsored detection is handled by Steps 1, 2, 3, and 5.
 
         // 5. Multi-signal article scan — uses signals confirmed from live DOM inspection.
         // All of these are FB ad-infrastructure markers, never present on organic posts.
@@ -1640,35 +1631,29 @@ class PF_Cleaner {
                 'a[href*="adchoices"]',
                 'a[href*="facebook.com/ads"]',
                 'a[href*="fb.com/ads"]',
-                // Privacy Sandbox attribution source — ONLY on paid ad content.
-                // FB uses this for conversion tracking on sponsored posts.
-                '[attributionsrc*="privacy_sandbox"]',
-                '[attributionsrc*="comet/register"]',
-                // Facebook's own internal ad rendering role markers
-                '[data-ad-rendering-role]',
                 // Content Flow Token (_cft_) in href = Facebook ad tracking parameter.
                 // FB appends this exclusively to links inside sponsored posts.
                 'a[href*="_cft_[0]"]',
                 'a[href*="_cft_%5B0%5D"]',
+                // testid fallback
+                '[data-testid="fbfeed_ads_native_container"]',
+                // NOTE: [attributionsrc], [data-ad-rendering-role] removed —
+                // both appear on organic comment profile links, not exclusive to ads.
             ].join(', '));
 
             if (adSignal) this._hidePostNode(article, 'Sponsored Post (Ad Signal)');
         });
 
         for (const indicator of targets) {
-            // Primary: pagelet-wrapped ad unit (e.g. [data-pagelet^="AdUnit_"])
-            let postWrapper = PF_Helpers.getClosest(indicator, PF_SELECTOR_MAP.postContainer);
+            // Skip any indicator that is inside a comment dialog or comment section.
+            // Facebook uses identical markup for comments and ads, so any ad-signal
+            // inside a comment area is a false positive.
+            if (indicator.closest('[role="dialog"]')) continue;
 
-            // Fallback: current FB Comet DOM uses [role="article"] with no pagelet wrapper.
-            // Walk up and take the first article that is NOT a comment-level article or sidebar.
-            if (!postWrapper) {
-                const article = PF_Helpers.getClosest(indicator, '[role="article"]', 10);
-                if (article
-                    && !article.parentElement?.closest('[role="article"]')
-                    && !article.closest('[role="complementary"]')) {
-                    postWrapper = article;
-                }
-            }
+            // Only hide if the indicator is inside a proper pagelet feed unit.
+            // Do NOT fall back to hiding [role="article"] — comment articles pass
+            // that check and are not distinguishable from post articles here.
+            const postWrapper = PF_Helpers.getClosest(indicator, PF_SELECTOR_MAP.postContainer);
 
             if (postWrapper) {
                 this._hidePostNode(postWrapper, "Sponsored Post (Heuristic)");
