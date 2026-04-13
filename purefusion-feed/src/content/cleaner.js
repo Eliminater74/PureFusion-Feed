@@ -665,8 +665,8 @@ class PF_Cleaner {
             }
             if (sidebar.hideLeftManusAI) {
                 this._hideLeftAIModules(leftNav, 'Left Nav: Manus AI', {
-                    labels: ['manus ai'],
-                    hrefTokens: ['/manus']
+                    labels: ['manus ai', 'manus'],
+                    hrefTokens: ['/manus', 'manus.ai']
                 });
             }
         }
@@ -687,7 +687,7 @@ class PF_Cleaner {
             }
 
             if (sidebar.hideRightManusAIContact) {
-                this._hideRightContactsByNames(rightNav, ['manus ai'], 'Right Sidebar: Manus AI Contact');
+                this._hideRightContactsByNames(rightNav, ['manus ai', 'manus'], 'Right Sidebar: Manus AI Contact');
             }
 
             if (sidebar.hideRightEvents) {
@@ -1192,7 +1192,11 @@ class PF_Cleaner {
 
         const normalizedLabels = labels.map((label) => this._normalizeComparableText(label)).filter(Boolean);
         if (normalizedLabels.length > 0) {
-            if (normalizedLabels.some((label) => text === label || text.startsWith(`${label} `))) {
+            if (normalizedLabels.some((label) => {
+                const isExact = text === label || text.startsWith(`${label} `);
+                const isPartial = label.length >= 4 && text.includes(label);
+                return isExact || isPartial;
+            })) {
                 return true;
             }
         }
@@ -1680,12 +1684,19 @@ class PF_Cleaner {
                 labels: ['meta ai', 'meta ia'],
                 hrefTokens: ['meta.ai', '/ai']
             });
+
+            // If Nuke Meta AI is on, we also sweep for Manus AI as it's a prominent AI module
+            this._hideLeftAIModules(leftNav, 'Social: Hide Meta AI (Manus)', {
+                labels: ['manus ai', 'manus'],
+                hrefTokens: ['manus.ai', '/manus']
+            });
         }
 
         const rightSelector = PF_SELECTOR_MAP.rightSidebar || '[role="complementary"]';
         const rightNav = this._resolveScopedContainer(rootNode, rightSelector);
         if (rightNav) {
             this._hideRightContactsByNames(rightNav, ['meta ai', 'meta ia'], 'Social: Hide Meta AI');
+            this._hideRightContactsByNames(rightNav, ['manus ai', 'manus'], 'Social: Hide Meta AI (Manus)');
         }
     }
 
