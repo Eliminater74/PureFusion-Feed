@@ -30,6 +30,10 @@ class PF_Cleaner {
             'sponsoreret',  // DA
             'sponset',      // NO
         ];
+        this._processedNodes = new WeakSet();
+        this._nodeQueue = [];
+        this._processingChunks = false;
+        
         this._injectUndoChipStyles();
         this._startRecoveryWatchdog();
     }
@@ -109,14 +113,61 @@ class PF_Cleaner {
      * @param {Array<HTMLElement>} nodes 
      */
     sweepNodes(nodes) {
-        for (const node of nodes) {
+        if (!nodes || !nodes.length) return;
+        
+        // Push nodes into the processing queue
+        this._nodeQueue.push(...nodes);
+        
+        if (!this._processingChunks) {
+            this._startChunkedProcessing();
+        }
+    }
+
+    _startChunkedProcessing() {
+        this._processingChunks = true;
+        this._processNextChunk();
+    }
+
+    _processNextChunk() {
+        if (this._nodeQueue.length === 0) {
+            this._processingChunks = false;
+            this._checkFeedRecovery();
+            return;
+        }
+
+        const startTime = performance.now();
+        const chunkSize = 15;
+        const chunk = this._nodeQueue.splice(0, chunkSize);
+
+        for (const node of chunk) {
             this._applyAllFilters(node);
         }
-        this._checkFeedRecovery();
+
+        const duration = performance.now() - startTime;
+        
+        // Report chunk metrics to diagnostics if needed
+        this._dispatchPipelineTelemetry(chunk.length, duration);
+
+        // Schedule next chunk using the browser's idle time or a microtask fallback
+        if (typeof requestIdleCallback !== 'undefined') {
+            requestIdleCallback(() => this._processNextChunk(), { timeout: 250 });
+        } else {
+            setTimeout(() => this._processNextChunk(), 4);
+        }
+    }
+
+    _dispatchPipelineTelemetry(nodeCount, duration) {
+        window.dispatchEvent(new CustomEvent('pf:pipeline_latency', {
+            detail: { nodes: nodeCount, durationMs: duration, ts: Date.now() }
+        }));
     }
 
     _applyAllFilters(rootNode) {
         if (!rootNode || !rootNode.querySelectorAll) return;
+        
+        // Skip already processed atomic nodes (Posts, Ads, Feed Units)
+        // This prevents expensive recursive re-scans.
+        if (this._isProcessedNode(rootNode)) return;
 
         this._restoreCriticalContainers();
         if (this._panicMode) return;
@@ -196,6 +247,29 @@ class PF_Cleaner {
 
         // Messenger Privacy (Ghost Mode Title Suppression)
         this._applyMessengerPrivacyFilters();
+
+        // Mark as processed
+        this._markNodeAsProcessed(rootNode);
+    }
+
+    _isProcessedNode(node) {
+        if (this._processedNodes.has(node)) return true;
+        if (node.dataset && node.dataset.pfProcessed === 'true') return true;
+        
+        // We only mark specific "Atomic" units as processed to allow containers
+        // like the feed root to be swept multiple times for children.
+        return false;
+    }
+
+    _markNodeAsProcessed(node) {
+        // Only mark atomic units or elements reasonably deep in the tree.
+        // We don't want to mark document.body or the main feed wrapper.
+        const atomicSelectors = '[role="article"], [data-pagelet*="FeedUnit"], [data-pagelet*="AdUnit"], [role="complementary"]';
+        
+        if (node.matches && node.matches(atomicSelectors)) {
+            this._processedNodes.add(node);
+            node.setAttribute('data-pf-processed', 'true');
+        }
     }
 
     _hasStoryActivityFiltersEnabled() {

@@ -15,8 +15,9 @@ Last updated: 2026-04-13
 - ✅ Phase 13: Power-User Rule Engine — COMPLETE (Selector + Text logic)
 - ✅ Phase 15: Context Menu "Zap" — COMPLETE (Instant rules + Undo support)
 - ✅ Phase 16: Multilingual & Story Hardening — COMPLETE (NL/SV/DA/NO + Body Text Guard)
+- ✅ Phase 18: Performance Pass — COMPLETE (Chunked Cleaning + Skip Markers)
 - 1) Phase 17: Auto Comment Preview v3 — Data Layer Fetching (High)
-- 2) Phase 18: Performance Pass — Observer & Pipeline Budgeting (Medium)
+- 2) Phase 19: Filter Logic Consolidation — Rule merging & legacy removal (Low)
 
 **Secondary:**
 

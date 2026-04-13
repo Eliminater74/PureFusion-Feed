@@ -32,6 +32,9 @@ class PF_Diagnostics {
         this.pipelineBudgetDeferrals = 0;
         this.pipelineBudgetDeferredProcessorsTotal = 0;
         this.lastPipelineBudgetDeferral = null;
+        this.pipelineLatencyTotal = 0;
+        this.pipelineLatencyCount = 0;
+        this.pipelineLatencyPeak = 0;
         this.observerBatchTimestamps = [];
         this.observerSpikeHistory = [];
         this.observerSpikeHistoryLimit = 10;
@@ -51,6 +54,7 @@ class PF_Diagnostics {
         this.boundPipelineBatchHandler = this._onPipelineBatch.bind(this);
         this.boundPipelineBudgetHandler = this._onPipelineBudget.bind(this);
         this.boundReportActionHandler = this._onWellbeingReportAction.bind(this);
+        this.boundPipelineLatencyHandler = this._onPipelineLatency.bind(this);
         this.boundDragStartHandler = this._onDragStart.bind(this);
         this.boundDragMoveHandler = this._onDragMove.bind(this);
         this.boundDragEndHandler = this._onDragEnd.bind(this);
@@ -63,6 +67,7 @@ class PF_Diagnostics {
         window.addEventListener('pf:pipeline_batch', this.boundPipelineBatchHandler);
         window.addEventListener('pf:pipeline_budget', this.boundPipelineBudgetHandler);
         window.addEventListener('pf:wellbeing_report_action', this.boundReportActionHandler);
+        window.addEventListener('pf:pipeline_latency', this.boundPipelineLatencyHandler);
         window.addEventListener('resize', this.boundWindowResizeHandler);
         void this._loadSavedOverlayPosition();
         this._syncOverlayState();
@@ -243,6 +248,17 @@ class PF_Diagnostics {
         this._render();
     }
 
+    _onPipelineLatency(event) {
+        if (!this._isEnabled()) return;
+
+        const durationMs = Math.max(0, Number(event?.detail?.durationMs || 0));
+        this.pipelineLatencyTotal += durationMs;
+        this.pipelineLatencyCount += 1;
+        this.pipelineLatencyPeak = Math.max(this.pipelineLatencyPeak, durationMs);
+
+        this._render();
+    }
+
     _onWellbeingReportAction(event) {
         if (!this._isEnabled()) return;
 
@@ -320,6 +336,7 @@ class PF_Diagnostics {
                 <div>Nodes trimmed: <strong id="pfDiagPipelineTrimmed">0</strong></div>
                 <div>Trim ratio: <strong id="pfDiagPipelineTrimRatio">0.0%</strong></div>
                 <div>Last batch: <span id="pfDiagPipelineLastBatch">-</span></div>
+                <div>Avg/Peak latency: <strong id="pfDiagPipelineAvgMs">0.00ms</strong> / <strong id="pfDiagPipelinePeakMs">0.00ms</strong></div>
                 <div>Budget deferrals: <strong id="pfDiagPipelineBudgetDeferrals">0</strong></div>
                 <div>Deferred processors: <strong id="pfDiagPipelineBudgetDeferredProcessors">0</strong></div>
                 <div>Last deferral: <span id="pfDiagPipelineBudgetLast">-</span></div>
@@ -461,6 +478,8 @@ class PF_Diagnostics {
         const pipelineTrimmedEl = this.overlay.querySelector('#pfDiagPipelineTrimmed');
         const pipelineTrimRatioEl = this.overlay.querySelector('#pfDiagPipelineTrimRatio');
         const pipelineLastBatchEl = this.overlay.querySelector('#pfDiagPipelineLastBatch');
+        const pipelineAvgMsEl = this.overlay.querySelector('#pfDiagPipelineAvgMs');
+        const pipelinePeakMsEl = this.overlay.querySelector('#pfDiagPipelinePeakMs');
         const pipelineBudgetDeferralsEl = this.overlay.querySelector('#pfDiagPipelineBudgetDeferrals');
         const pipelineBudgetDeferredProcessorsEl = this.overlay.querySelector('#pfDiagPipelineBudgetDeferredProcessors');
         const pipelineBudgetLastEl = this.overlay.querySelector('#pfDiagPipelineBudgetLast');
@@ -472,7 +491,7 @@ class PF_Diagnostics {
         const reportActionsTopEl = this.overlay.querySelector('#pfDiagReportActionsTop');
         const observerTrendEl = this.overlay.querySelector('#pfDiagObserverTrend');
         const observerTrendMetaEl = this.overlay.querySelector('#pfDiagObserverTrendMeta');
-        if (!totalEl || !listEl || !syncEl || !resweepEl || !followupsEl || !lastSyncEl || !lastResweepEl || !observerBatchesEl || !observerRateEl || !observerNodesEl || !observerDispatchedEl || !observerDroppedEl || !observerRecordsEl || !observerAvgMsEl || !observerPeakMsEl || !observerLastBatchEl || !observerSpikesEl || !observerThresholdsEl || !pipelineBatchesEl || !pipelineReceivedEl || !pipelineDispatchedEl || !pipelineTrimmedEl || !pipelineTrimRatioEl || !pipelineLastBatchEl || !pipelineBudgetDeferralsEl || !pipelineBudgetDeferredProcessorsEl || !pipelineBudgetLastEl || !perfGuidanceStatusEl || !perfGuidanceTextEl || !perfGuidanceBtnEl || !reportActionsTotalEl || !reportActionsLastEl || !reportActionsTopEl || !observerTrendEl || !observerTrendMetaEl) return;
+        if (!totalEl || !listEl || !syncEl || !resweepEl || !followupsEl || !lastSyncEl || !lastResweepEl || !observerBatchesEl || !observerRateEl || !observerNodesEl || !observerDispatchedEl || !observerDroppedEl || !observerRecordsEl || !observerAvgMsEl || !observerPeakMsEl || !observerLastBatchEl || !observerSpikesEl || !observerThresholdsEl || !pipelineBatchesEl || !pipelineReceivedEl || !pipelineDispatchedEl || !pipelineTrimmedEl || !pipelineTrimRatioEl || !pipelineLastBatchEl || !pipelineAvgMsEl || !pipelinePeakMsEl || !pipelineBudgetDeferralsEl || !pipelineBudgetDeferredProcessorsEl || !pipelineBudgetLastEl || !perfGuidanceStatusEl || !perfGuidanceTextEl || !perfGuidanceBtnEl || !reportActionsTotalEl || !reportActionsLastEl || !reportActionsTopEl || !observerTrendEl || !observerTrendMetaEl) return;
 
         const thresholds = this._getObserverThresholds();
 
@@ -533,6 +552,14 @@ class PF_Diagnostics {
                 lastTrimRatio >= 45 ? 'severe' : (lastTrimRatio >= 20 ? 'warn' : 'ok')
             );
         }
+
+        const avgLatency = this.pipelineLatencyCount > 0
+            ? this.pipelineLatencyTotal / this.pipelineLatencyCount
+            : 0;
+        pipelineAvgMsEl.textContent = `${avgLatency.toFixed(2)}ms`;
+        pipelinePeakMsEl.textContent = `${this.pipelineLatencyPeak.toFixed(2)}ms`;
+        pipelineAvgMsEl.className = this._severityClassName(avgLatency >= 25 ? 'severe' : (avgLatency >= 12 ? 'warn' : 'ok'));
+        pipelinePeakMsEl.className = this._severityClassName(this.pipelineLatencyPeak >= 45 ? 'severe' : (this.pipelineLatencyPeak >= 20 ? 'warn' : 'ok'));
 
         pipelineBudgetDeferralsEl.textContent = String(this.pipelineBudgetDeferrals);
         pipelineBudgetDeferredProcessorsEl.textContent = String(this.pipelineBudgetDeferredProcessorsTotal);
