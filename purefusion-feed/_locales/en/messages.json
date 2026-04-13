@@ -4,7 +4,7 @@
     "description": "The name of the extension"
   },
   "extDesc": {
-    "message": "Premium God-Mode Feed Manager with Ad-Blocking, AI Insights, and Privacy Guard.",
+    "message": "Premium Feed Manager with Smart Filters, AI Insights, and Privacy Guard for Facebook.",
     "description": "The extension description"
   },
   "common_ads_blocked": { "message": "Ads Blocked" },

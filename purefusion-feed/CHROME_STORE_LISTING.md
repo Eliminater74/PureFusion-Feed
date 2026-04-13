@@ -14,29 +14,34 @@ PureFusion Feed helps reduce clutter in Facebook and Messenger with user-control
 What it does:
 
 1) Feed cleanup controls
-- Hides many sponsored and suggested feed injections.
-- Hides reels/stories and selected recommendation modules.
-- Supports keyword blocklist/autohide plus allowlist and never-hide sources.
+
+- Hides suggested posts, recommended groups, and People You May Know injections.
+- Hides Reels, Stories, and selected recommendation modules from your feed.
+- Supports a keyword blocklist and allowlist — automatically collapses posts matching words you choose.
 - Includes preset packs (Work Focus, Friends Only, Minimal, News Heavy, Messenger Privacy).
 
 2) Settings and usability
-- Popup quick toggles for common filters.
-- Full options dashboard with import/export.
-- Undo chips for hidden posts (show once / always allow source).
 
-3) Optional AI features (BYOK)
-- TL;DR summaries and comment-assist tools.
+- Popup quick toggles for common filters.
+- Full options dashboard with import/export of your configuration.
+- Undo chips for hidden posts (show once or always allow a source).
+
+3) Optional AI features (BYOK — Bring Your Own Key)
+
+- TL;DR post summaries and comment-assist tools.
 - Messenger composer tools: rewrite draft and generate smart replies.
-- AI permissions are requested only when a provider is enabled.
+- AI permissions are only requested when a provider is enabled by you.
 
 4) Messenger privacy tools
+
 - Hide seen receipts.
 - Hide typing indicators.
 - Privacy blur mode.
 
 Important compatibility note:
-- Facebook and Messenger interfaces change frequently. Some filter results can vary by account, language, or rollout variant.
-- PureFusion does not guarantee removal of every sponsored or suggested element in every interface variant.
+
+- Facebook and Messenger interfaces change frequently. Filter results may vary by account, language, or rollout variant.
+- PureFusion does not guarantee removal of every suggested or injected element in every interface variant.
 
 ## Category and Language
 
@@ -46,27 +51,25 @@ Important compatibility note:
 ## Test Instructions for Reviewers
 
 1. Install extension and open `https://www.facebook.com`.
-2. Open extension popup and toggle ad/suggested filters.
-3. Open full settings and apply a preset pack from Core Filters.
-4. Verify feed updates without page reload.
-5. Keyword filter reproducibility test:
+2. Open extension popup and toggle the Suggested Posts and Reels filters.
+3. Confirm that recommendation modules (People You May Know, Suggested Groups) are removed from the feed.
+4. Open full settings and apply a preset pack from Core Filters.
+5. Verify feed updates without page reload.
+6. Keyword filter reproducibility test:
    - In Options -> Keyword Filters, add a visible word from a feed post into Blocklist.
    - Save settings and confirm that matching posts collapse behind the filter overlay.
-6. Sponsored filter reproducibility test:
-   - Keep default Ad filter enabled.
-   - Scroll feed and confirm posts labeled "Sponsored" are hidden when detected.
-7. Open Messenger and verify Ghost Mode options (seen/typing/privacy blur).
+7. Open Messenger and verify Ghost Mode options (seen receipts hidden, typing indicator hidden, privacy blur).
 8. Optional AI test:
    - In Options -> AI Engine, choose Gemini or OpenAI and save.
    - Allow optional host permission prompt.
-   - Trigger TL;DR on feed or Rewrite/Smart Replies in Messenger composer.
+   - Trigger TL;DR on a feed post or Rewrite/Smart Replies in Messenger composer.
 
 ## Permission Justifications
 
 - `storage`
   - Saves user preferences, filter rules, and synced extension settings.
 - `declarativeNetRequest`
-  - Applies lightweight network-level filtering for known ad/tracker patterns.
+  - Applies lightweight network-level filtering for known tracker patterns.
 - Host permission `*://*.facebook.com/*`
   - Required to read and modify Facebook feed DOM for user-selected filters.
 - Host permission `*://*.messenger.com/*`
