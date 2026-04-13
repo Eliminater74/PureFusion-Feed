@@ -623,14 +623,25 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
  * However, we can block telemetry and third-party trackers injected into the page.
  */
 async function setupDNRRules() {
-    // Dynamic rule implementation
+    let settings;
+    try {
+        const result = await chrome.storage.sync.get('pf_settings');
+        settings = result?.pf_settings;
+    } catch (err) {
+        console.error("Failed to load settings for DNR setup:", err);
+    }
+
+    const isGhostModeDisabled = !settings || settings.enabled === false;
+    const hideSeen = settings?.uiMode?.hideMessengerSeen && !isGhostModeDisabled;
+    const hideTyping = settings?.social?.hideMessengerTyping && !isGhostModeDisabled;
+
     const _rules = [
         {
             "id": 1,
             "priority": 1,
             "action": { "type": "block" },
             "condition": {
-                "urlFilter": "*://*.facebook.com/tr/*", // Common telemetry/pixel pixel paths
+                "urlFilter": "*://*.facebook.com/tr/*",
                 "resourceTypes": ["xmlhttprequest", "image"]
             }
         },
@@ -639,18 +650,46 @@ async function setupDNRRules() {
             "priority": 1,
             "action": { "type": "block" },
             "condition": {
-                "urlFilter": "*://*.facebook.com/ajax/bz*", // Perf/telemetry tracking
+                "urlFilter": "*://*.facebook.com/ajax/bz*",
                 "resourceTypes": ["xmlhttprequest", "script"]
             }
         }
     ];
 
+    if (hideSeen) {
+        _rules.push({
+            "id": 3,
+            "priority": 1,
+            "action": { "type": "block" },
+            "condition": {
+                "urlFilter": "*/ajax/mercury/mark_read.php*",
+                "resourceTypes": ["xmlhttprequest"]
+            }
+        });
+    }
+
+    if (hideTyping) {
+        _rules.push({
+            "id": 4,
+            "priority": 1,
+            "action": { "type": "block" },
+            "condition": {
+                "urlFilter": "*/ajax/messaging/typ.php*",
+                "resourceTypes": ["xmlhttprequest"]
+            }
+        });
+    }
+
     try {
+        // Clear all possible PureFusion dynamic rules (ids 1-10) before re-applying
+        const existingRules = await chrome.declarativeNetRequest.getDynamicRules();
+        const existingIds = existingRules.map(r => r.id);
+        
         await chrome.declarativeNetRequest.updateDynamicRules({
-            removeRuleIds: _rules.map(r => r.id), // remove existing before adding
+            removeRuleIds: existingIds,
             addRules: _rules
         });
-        console.log("DNR Ad-Network rules updated.");
+        console.log(`DNR Privacy rules updated. Active rules: ${_rules.length}`);
     } catch (e) {
         console.error("Failed to update DNR rules:", e);
     }
@@ -660,7 +699,12 @@ async function setupDNRRules() {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (!message || typeof message !== 'object') return;
 
-    if (message && message.type === 'PF_CONTEXT_TARGET') {
+    if (message.type === 'PF_SETTINGS_UPDATED') {
+        setupDNRRules();
+        // Fall through to allow other listeners to handle if needed
+    }
+
+    if (message.type === 'PF_CONTEXT_TARGET') {
         const tabId = sender && sender.tab && typeof sender.tab.id === 'number' ? sender.tab.id : null;
         if (tabId) rememberContextTarget(tabId, message.payload || {});
         if (sendResponse) sendResponse({ status: 'captured' });

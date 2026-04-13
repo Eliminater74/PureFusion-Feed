@@ -182,6 +182,9 @@ class PF_Cleaner {
 
         // Apply keyword sweeping
         this.applyKeywordFilters(rootNode);
+
+        // Messenger Privacy (Ghost Mode Title Suppression)
+        this._applyMessengerPrivacyFilters();
     }
 
     _hasStoryActivityFiltersEnabled() {
@@ -1673,6 +1676,24 @@ class PF_Cleaner {
 
             if (postWrapper) {
                 this._hidePostNode(postWrapper, "Sponsored Post (Heuristic)");
+            }
+        }
+    }
+
+    /**
+     * Messenger Privacy: Suppresses 'Is typing...' in window title and 
+     * other non-CSS signals.
+     */
+    _applyMessengerPrivacyFilters() {
+        if (!this.settings?.social?.hideMessengerTyping) return;
+
+        // Suppress "Is typing..." in the window title
+        if (document.title.toLowerCase().includes('typing...')) {
+            const originalTitle = document.title;
+            // Facebook/Messenger title format: " (1) [Name] is typing..." or "[Name] is typing..."
+            const newTitle = originalTitle.replace(/\s*is typing\.\.\.\s*/gi, ' ');
+            if (newTitle !== originalTitle) {
+                document.title = newTitle;
             }
         }
     }

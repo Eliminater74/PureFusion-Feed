@@ -77,16 +77,26 @@ class PF_UiTweaks {
             \n`;
         }
 
-        // 3. Privacy Blur (Chat List)
+        // 3. Privacy Blur (Chat List & Headers)
         if (this.settings.social.messengerPrivacyBlur) {
             css += `
+                /* messenger.com chat list */
                 [aria-label="Chats"] [role="gridcell"] span, 
-                [aria-label="Chats"] [role="gridcell"] h3 { 
-                    filter: blur(5px) !important; 
-                    transition: filter 0.2s ease;
+                [aria-label="Chats"] [role="gridcell"] h3,
+                /* fb.com messenger sidebar items */
+                [role="grid"] [role="row"] [role="gridcell"] span[dir="auto"],
+                /* active chat headers (names) */
+                [role="main"] header span,
+                [role="main"] header h1 { 
+                    filter: blur(6px) !important; 
+                    transition: filter 0.3s ease-in-out;
                 }
+                
                 [aria-label="Chats"] [role="gridcell"]:hover span, 
-                [aria-label="Chats"] [role="gridcell"]:hover h3 { 
+                [aria-label="Chats"] [role="gridcell"]:hover h3,
+                [role="grid"] [role="row"] [role="gridcell"]:hover span[dir="auto"],
+                [role="main"] header:hover span,
+                [role="main"] header:hover h1 { 
                     filter: blur(0) !important; 
                 } \n`;
         }
