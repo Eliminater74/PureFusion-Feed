@@ -1862,9 +1862,10 @@ class PF_Cleaner {
     }
 
     _findSponsoredMarkerInPost(postNode) {
-        const candidates = postNode.querySelectorAll('[aria-label], a[role="link"], span, div');
         const postRect = postNode.getBoundingClientRect ? postNode.getBoundingClientRect() : null;
 
+        // Pass 1: aria-label and single-node textContent scan (fast path)
+        const candidates = postNode.querySelectorAll('[aria-label], a[role="link"], span, div');
         for (const node of candidates) {
             const text = this._normalizeComparableText(
                 node.getAttribute('aria-label')
@@ -1883,6 +1884,25 @@ class PF_Cleaner {
 
             return node;
         }
+
+        // Pass 2: TreeWalker deep text reconstruction.
+        // FB sometimes splits "Sponsored" across many tiny adjacent text nodes so
+        // that no single node's textContent equals the full word.  TreeWalker
+        // reconstructs the concatenated string and strips ZWC before matching.
+        const strip = (s) => s.replace(/[\u00ad\u200b-\u200f\u2028\u2029\u202a-\u202f\u2060\u2061\ufeff]/g, '');
+        const walker = document.createTreeWalker(postNode, NodeFilter.SHOW_TEXT, null, false);
+        let rebuilt = '';
+        let lastNode = null;
+        while (walker.nextNode()) {
+            const raw = walker.currentNode.nodeValue || '';
+            rebuilt += strip(raw);
+            // Once we accumulate enough chars to potentially contain a token, check.
+            // Reset after 80 chars to avoid matching across unrelated text blocks.
+            if (rebuilt.length > 80) rebuilt = rebuilt.slice(-40);
+            if (this._isSponsoredLabel(rebuilt.trim())) return walker.currentNode.parentElement || postNode;
+            lastNode = walker.currentNode;
+        }
+        void lastNode; // suppress unused-var lint
 
         return null;
     }
