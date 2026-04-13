@@ -100,6 +100,11 @@ class PF_UiTweaks {
                     filter: blur(0) !important; 
                 } \n`;
         }
+        
+        // 4. Layout Hardening (Composer & Sidebar)
+        if (this.settings.uiMode.hidePostComposer) {
+            css += `${PF_SELECTOR_MAP.postComposer} { display: none !important; } \n`;
+        }
 
         css += this._buildCustomStylingCss();
 
@@ -310,9 +315,27 @@ class PF_UiTweaks {
 
     _buildCustomStylingCss() {
         const ui = this.settings?.uiMode;
-        if (!ui || !ui.customStylingEnabled) return '';
+        if (!ui) return '';
 
+        const preset = PF_SELECTOR_MAP.stylePresets[ui.theme];
         let css = '';
+
+        // If we have a preset, we use its defaults unless custom styling is enabled.
+        // Actually, F.B. Purity model is: Preset is a starting point, Custom Styling Enable overrides/extends.
+        if (preset) {
+            css += `\n/* PureFusion Preset: ${ui.theme} */\n`;
+            if (preset.font) css += `body, [role="main"], [role="feed"] { font-family: ${preset.font} !important; }\n`;
+            if (preset.accent) {
+                css += `:root { --pf-custom-accent: ${preset.accent}; }\n`;
+                css += `a, [role="link"] { color: var(--pf-custom-accent) !important; }\n`;
+            }
+            if (preset.text) css += `body, [role="main"], [role="feed"], [role="article"] { color: ${preset.text} !important; }\n`;
+            if (preset.cardBg) css += `[role="feed"] [role="article"], [data-pagelet^="FeedUnit_"] [role="article"] { background-color: ${preset.cardBg} !important; }\n`;
+            if (preset.bodyBg) css += `body { background: ${preset.bodyBg} !important; }\n`;
+            if (preset.customCss) css += preset.customCss + '\n';
+        }
+
+        if (!ui.customStylingEnabled) return css;
 
         const fontFamily = this._sanitizeFontFamilyValue(ui.customFontFamily);
         if (fontFamily) {
@@ -345,7 +368,7 @@ class PF_UiTweaks {
 
         const customCss = this._sanitizeCustomCss(ui.customCss);
         if (customCss) {
-            css += `\n/* PureFusion custom CSS */\n${customCss}\n`;
+            css += `\n/* PureFusion user custom CSS */\n${customCss}\n`;
         }
 
         return css;

@@ -125,6 +125,57 @@ const SELECTOR_MAP = {
         vehicles: ['car', 'truck', 'vehicle', 'motorcycle', 'bike', 'aviation', 'airplane', 'aircraft', 'boat', 'ship', 'drive', 'road', 'highway', 'traffic', 'engine', 'wheel', 'tire'],
         memes: ['text', 'screenshot', 'meme', 'digital image', 'white background', 'black background', 'interface', 'poster', 'graphic design', 'clip art', 'illustration'],
         travel: ['mountain', 'beach', 'ocean', 'nature', 'sky', 'outdoor', 'sunset', 'travel', 'landscape', 'scenery', 'building', 'architecture', 'monument', 'landmark', 'vacation', 'resort']
+    },
+
+    // ------------------------------------------------------------------------
+    // LAYOUT REFINEMENT SELECTORS
+    // ------------------------------------------------------------------------
+    postComposer: '[role="main"] [data-pagelet="GroupInlineComposer"], [role="main"] [data-visualcompletion="ignore-dynamic"] > div:has([role="button"][aria-label*="What\'s on your mind"])',
+    sidebarHomeLink: 'div[role="navigation"] a[href="/"], div[role="navigation"] a[href^="/?sk=h_nor"]',
+    topNavHomeLink: 'div[role="banner"] a[aria-label="Home"], div[role="banner"] a[aria-label="Inicio"]',
+
+    // ------------------------------------------------------------------------
+    // UI STYLE PRESETS
+    // ------------------------------------------------------------------------
+    stylePresets: {
+        zen: {
+            accent: '#8e9aaf',
+            text: '#e2e2e2',
+            cardBg: '#1e1e1e',
+            bodyBg: '#121212',
+            font: '"Inter", "Segoe UI", sans-serif',
+            customCss: `
+                [role="main"] { max-width: 680px !important; margin: 0 auto !important; }
+                [role="article"] { border: none !important; box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important; border-radius: 16px !important; }
+                div[role="navigation"], div[role="complementary"] { opacity: 0.4; transition: opacity 0.3s; }
+                div[role="navigation"]:hover, div[role="complementary"]:hover { opacity: 1; }
+            `
+        },
+        classic: {
+            accent: '#3b5998',
+            text: '#1c1e21',
+            cardBg: '#ffffff',
+            bodyBg: '#e9ebee',
+            font: 'tahoma, verdana, arial, sans-serif',
+            customCss: `
+                header, div[role="banner"] { background-color: #3b5998 !important; }
+                [role="article"] { border-radius: 0 !important; border: 1px solid #dddfe2 !important; }
+                img { border-radius: 2px !important; }
+                .pf-post-date-chip { background: #f0f2f5 !important; border-color: #ddd !important; color: #606770 !important; }
+            `
+        },
+        amoled: {
+            accent: '#BB86FC',
+            text: '#e1e1e1',
+            cardBg: '#000000',
+            bodyBg: '#000000',
+            font: 'inherit',
+            customCss: `
+                :root { --surface-background: #000 !important; --card-background: #000 !important; }
+                div[role="banner"] { border-bottom: 1px solid #333 !important; background: #000 !important; }
+                [role="article"] { border: 1px solid #222 !important; }
+            `
+        }
     }
 };
 

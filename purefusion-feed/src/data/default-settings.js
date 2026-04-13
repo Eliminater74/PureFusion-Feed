@@ -112,6 +112,7 @@ const DEFAULT_SETTINGS = {
         distractionFreeMode: false,     // Default state of 'Alt+Shift+F' reading mode
         friendsOnlyMode: false,         // Hide Groups and Pages
         anonymizerMode: false,          // Blur names and profile pictures
+        hidePostComposer: false,        // Hide 'What's on your mind?' box
     },
 
     // ------------------------------------------------------------------------

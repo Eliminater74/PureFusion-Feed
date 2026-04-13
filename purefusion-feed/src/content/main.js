@@ -56,6 +56,7 @@ class PureFusionApp {
                 // Apply root-level structural changes
                 this.feedManager.applyDocumentLevelTweaks();
                 this.uiTweaks.applyDocumentLevelTweaks();
+                this._applyNavigationHardening();
                 this.diagnostics.applyDocumentLevelTweaks();
                 this.commentPreview.sweepDocument();
                 if (this.llmFeatures) this.llmFeatures.sweepDocument();
@@ -83,6 +84,7 @@ class PureFusionApp {
         if (!this.settings.uiMode || !this.settings.uiMode.enforceChronologicalFeed) return;
 
         // Force redirect to Recent feed if we land on the bare algorithmic feed
+        // FB uses ?sk=h_chr or ?filter=all&sk=h_chr
         const isBareNewsfeed = (window.location.pathname === '/' || window.location.pathname === '/home.php') 
                             && !window.location.search.includes('sk=h_chr');
                             
@@ -90,6 +92,23 @@ class PureFusionApp {
             PF_Logger.info("PureFusion: Chronological enforcement active. Redirecting feed...");
             window.location.replace('/?filter=all&sk=h_chr');
         }
+
+        this._applyNavigationHardening();
+    }
+
+    _applyNavigationHardening() {
+        if (!this.isEnabled() || !this.settings.uiMode?.enforceChronologicalFeed) return;
+
+        // Rewrite "Home" links to point directly to the chronological feed
+        // This prevents accidental clicks from resetting the filter
+        const homeLinks = document.querySelectorAll(`${PF_SELECTOR_MAP.sidebarHomeLink}, ${PF_SELECTOR_MAP.topNavHomeLink}`);
+        homeLinks.forEach(link => {
+            const currentHref = link.getAttribute('href');
+            if (currentHref === '/' || currentHref?.includes('sk=h_nor')) {
+                link.setAttribute('href', '/?filter=all&sk=h_chr');
+                link.setAttribute('data-pf-hardened', 'true');
+            }
+        });
     }
 
     setupEventListeners() {
@@ -361,6 +380,7 @@ class PureFusionApp {
         if (this.cleaner) this.cleaner.sweepDocument();
         if (this.feedManager) this.feedManager.applyDocumentLevelTweaks();
         if (this.uiTweaks) this.uiTweaks.applyDocumentLevelTweaks();
+        this._applyNavigationHardening();
         if (this.diagnostics) this.diagnostics.applyDocumentLevelTweaks();
         if (this.commentPreview) this.commentPreview.sweepDocument();
         if (this.llmFeatures) this.llmFeatures.sweepDocument();
