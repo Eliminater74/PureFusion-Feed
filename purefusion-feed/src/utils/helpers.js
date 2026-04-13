@@ -35,8 +35,12 @@ const PF_Helpers = {
      */
     findContains(root, selector, text) {
         const elements = root.querySelectorAll(selector);
+        // Strip zero-width / invisible chars that FB injects to defeat text matching
+        const strip = (s) => String(s || '').replace(/[\u00ad\u200b-\u200f\u2028\u2029\u202a-\u202f\u2060\u2061\ufeff]/g, '');
+        const needle = strip(text).toLowerCase();
         return Array.from(elements).filter(element => {
-            return element.textContent && element.textContent.includes(text);
+            if (!element.textContent) return false;
+            return strip(element.textContent).toLowerCase().includes(needle);
         });
     },
 

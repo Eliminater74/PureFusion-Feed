@@ -41,16 +41,29 @@ const SELECTOR_MAP = {
     // ------------------------------------------------------------------------
     
     // Identifying texts or SVG usages that Facebook translates as "Sponsored"
-    // TODO: Verify against current FB markup build as SVGs rotate often.
+    // Sponsored / ad indicators.
+    // aria-label selectors use *= (partial) and i (case-insensitive) because FB appends
+    // "· Public", "· Globe" etc to the label.  Exact-match selectors miss these variants.
     sponsoredIndicators: [
-        'a[aria-label="Sponsored"]',
-        'span[aria-label="Sponsored"]',
-        'a[aria-label="Publicidad"]',
-        'span[aria-label="Publicidad"]',
+        // Aria-label based (most stable — FB populates aria-label with clean text)
+        'a[aria-label*="Sponsored" i]',
+        'span[aria-label*="Sponsored" i]',
+        'a[aria-label*="Publicidad" i]',
+        'span[aria-label*="Publicidad" i]',
+        'a[aria-label*="Patrocinado" i]',
+        'a[aria-label*="Sponsorisé" i]',
+        'a[aria-label*="Gesponsert" i]',
+        'a[aria-label*="Sponsorizzato" i]',
+        // Href-based: FB sponsored posts always link to the ad explanation page.
+        // This href is never obfuscated — most reliable single signal.
+        'a[href*="/ads/about"]',
+        'a[href*="ad_preferences"]',
+        'a[href*="about_ads"]',
+        // testid fallback
+        '[data-testid="fbfeed_ads_native_container"]',
+        // Legacy text-contains (handled via findContains in removeSponsored)
         'span:contains("Sponsored")',
         'span:contains("Publicidad")',
-        '[data-testid="fbfeed_ads_native_container"]',
-        'a[role="link"] > span[aria-labelledby]' // Matches complex hidden-char spans
     ],
 
     // Specific feed unit wrappers Facebook uses for injection

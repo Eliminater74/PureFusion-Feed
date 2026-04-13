@@ -1576,7 +1576,7 @@ class PF_Cleaner {
      */
     removeSponsored(rootNode) {
         let targets = [];
-        
+
         // 1. Standard Selector / SVG heuristic
         for (const selector of PF_SELECTOR_MAP.sponsoredIndicators) {
             if (selector.includes(':contains')) {
@@ -1609,6 +1609,20 @@ class PF_Cleaner {
             if (!post || post.dataset.pfHidden) return;
             const marker = this._findSponsoredMarkerInPost(post);
             if (marker) targets.push(marker);
+        });
+
+        // 4. Direct article-level href scan — most robust approach.
+        // FB's sponsored posts ALWAYS contain a link to the ads explanation page.
+        // This href is plain text (never obfuscated), so it survives ZWC tricks.
+        // Run this independently of targets[] so it always fires even if steps 1-3 produce nothing.
+        rootNode.querySelectorAll('[role="article"]').forEach((article) => {
+            if (article.parentElement?.closest('[role="article"]')) return; // comment article
+            if (article.closest('[role="complementary"]')) return;          // sidebar
+            if (article.dataset.pfHidden) return;
+            const adLink = article.querySelector(
+                'a[href*="/ads/about"], a[href*="ad_preferences"], a[href*="about_ads"]'
+            );
+            if (adLink) this._hidePostNode(article, 'Sponsored Post (Ad Link)');
         });
 
         for (const indicator of targets) {
@@ -1874,9 +1888,11 @@ class PF_Cleaner {
     }
 
     _isSponsoredLabel(text) {
-        // Use _normalizeComparableText (strips diacritics) so that accented forms
-        // like "Sponsorisé" or "Patrocinó" match the diacritic-free token list.
-        const normalized = this._normalizeComparableText(text);
+        // Strip zero-width and invisible Unicode chars FB injects between letters
+        // (e.g. U+200B ZERO WIDTH SPACE, U+200C/D, U+2060, U+FEFF) to defeat text
+        // matching. Then strip diacritics so accented forms match the token list.
+        const cleaned = String(text || '').replace(/[\u00ad\u200b-\u200f\u2028\u2029\u202a-\u202f\u2060\u2061\ufeff]/g, '');
+        const normalized = this._normalizeComparableText(cleaned);
         if (!normalized) return false;
 
         return this.sponsoredTokens.some((token) => {

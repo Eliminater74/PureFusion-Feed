@@ -24,8 +24,8 @@ Always continue from the highest-priority unfinished item above.
 
 ## Last Action Log
 
-- Last completed: Sponsored ad detection — CWS rejection fix (blocked release)
-- Last major fix: `removeSponsored` final hiding loop now falls back to `[role="article"]` when no pagelet wrapper found (current FB Comet DOM uses articles not pageletes for ads); `_isSponsoredLabel` switched from `_normalizeText` → `_normalizeComparableText` (fixes diacritics mismatch e.g. "Sponsorisé" not matching "sponsorise" token); `_findSponsoredMarkerInPost` same normalizer fix; added NL/SV/DA/NO sponsored tokens (`gesponsord`, `sponsrad`, `sponsoreret`, `sponset`)
+- Last completed: Sponsored ad detection — full hardening for CWS release
+- Last major fix: (1) `removeSponsored` step 4 added — direct article-level href scan (`a[href*="/ads/about"]` etc.) that bypasses all text matching and works even when FB obfuscates "Sponsored" with zero-width chars; (2) `sponsoredIndicators` updated to partial/case-insensitive aria-label matching (`*=` instead of exact) and includes ad-href selectors + locale variants; (3) `_isSponsoredLabel` strips ZWC/invisible Unicode before normalization; (4) `findContains` in helpers also strips ZWC so `:contains()` checks work on obfuscated text; (5) NL/SV/DA/NO token additions
 - Known unstable area: Auto comment preview v2 (experimental, off by default — user paused work)
 - Stable checkpoint: `63e715064fa88ae83dd78a74a6385860ba5ddc9f`
 
