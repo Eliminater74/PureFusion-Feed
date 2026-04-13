@@ -118,7 +118,7 @@ class PF_Observer {
             return false;
         }
 
-        if (node.matches && node.matches('[data-pf-hidden="true"]')) return false;
+        if (node.matches && node.matches('[data-pf-hidden="true"], [data-pf-insight="true"], .pf-insight-chip, .pf-hidden-chip, [data-pf-processed="true"]')) return false;
         return true;
     }
 
@@ -151,6 +151,10 @@ class PF_Observer {
         const highSignalSelector = '[data-pagelet*="FeedUnit"], [data-pagelet*="AdUnit"], [role="article"], [role="dialog"], [role="navigation"], [role="complementary"]';
         
         if (node.matches(highSignalSelector)) {
+            // Further verify it's not a sidebar 'suggested' which we handle via different rules
+            if (node.closest('[role="complementary"]') && !node.matches('[data-pagelet*="AdUnit"]')) {
+                return false;
+            }
             return true;
         }
 
