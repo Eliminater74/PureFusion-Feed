@@ -21,6 +21,113 @@
  * OFF BY DEFAULT. Experimental/beta — must be explicitly enabled.
  */
 
+class PF_PostIDResolver {
+    static resolve(post) {
+        if (!post || !post.querySelector) return null;
+
+        // 1. Data-pagelet (usually contains 'FeedUnit_' followed by numeric ID)
+        const pagelet = post.dataset.pagelet || '';
+        const pageletMatch = pagelet.match(/\d{10,}/);
+        if (pageletMatch) return pageletMatch[0];
+
+        // 2. Share button data / href
+        const shareBtn = post.querySelector('div[aria-label="Send this to friends or post it on your profile."] button, a[href*="sharer.php"]');
+        if (shareBtn) {
+            const href = shareBtn.getAttribute('href') || '';
+            const idMatch = href.match(/[&\?]id=(\d+)/) || href.match(/%2Fposts%2F(\d+)/);
+            if (idMatch) return idMatch[1];
+        }
+
+        // 3. Post timestamp link
+        const tsLink = post.querySelector('a[href*="/posts/"], a[href*="/groups/"]');
+        if (tsLink) {
+            const href = tsLink.getAttribute('href') || '';
+            const idMatch = href.match(/\/posts\/(\d+)/) || href.match(/\/permalink\/(\d+)/) || href.match(/multi_permalinks=(\d+)/);
+            if (idMatch) return idMatch[1];
+        }
+
+        return null;
+    }
+}
+
+class PF_CommentFetcher {
+    static async fetch(postId) {
+        try {
+            const dtsg = this._getDtsg();
+            if (!dtsg) throw new Error('Auth token (fb_dtsg) not found');
+
+            // doc_id for "Comment Thread Query" (Standard as of 2024-2025 Comet)
+            // Note: This ID might shift, but it's the current stable one for full expansion.
+            const docId = '7556094577800045'; 
+
+            const variables = {
+                feedback_id: btoa('feedback:' + postId),
+                count: 3,
+                cursor: null,
+                orderby: 'RANKED_RELEVANT'
+            };
+
+            const body = new URLSearchParams();
+            body.append('av', this._getAvatarId());
+            body.append('fb_dtsg', dtsg);
+            body.append('fb_api_caller_class', 'RelayModern');
+            body.append('fb_api_req_friendly_name', 'CometUFICommentsPaginationQuery');
+            body.append('variables', JSON.stringify(variables));
+            body.append('doc_id', docId);
+
+            const response = await fetch('/api/graphql/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: body
+            });
+
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            
+            const data = await response.json();
+            return this._parseResponse(data);
+        } catch (err) {
+            console.warn('[PureFusion] Comment fetch failed:', err);
+            return null;
+        }
+    }
+
+    static _getDtsg() {
+        // Method 1: Hidden input
+        let token = document.querySelector('input[name="fb_dtsg"]')?.value;
+        if (token) return token;
+
+        // Method 2: Script dump (Regex)
+        for (const s of document.scripts) {
+            const m = s.textContent.match(/"DTSGInitialData",\[\],\{"token":"(.*?)"\}/);
+            if (m) return m[1];
+        }
+        return null;
+    }
+
+    static _getAvatarId() {
+        // Extracts the currently logged in user ID
+        const cookieId = document.cookie.match(/c_user=(\d+)/);
+        return cookieId ? cookieId[1] : '0';
+    }
+
+    static _parseResponse(data) {
+        const comments = [];
+        try {
+            const edges = data?.data?.node?.comments?.edges || [];
+            for (const edge of edges) {
+                const node = edge.node;
+                comments.push({
+                    id: node.id,
+                    author: node.author?.name || 'Anonymous',
+                    text: node.body?.text || '',
+                    avatar: node.author?.profile_picture?.uri || ''
+                });
+            }
+        } catch (e) {}
+        return comments;
+    }
+}
+
 class PF_CommentPreview {
     constructor(settings) {
         this.settings = settings;
@@ -38,8 +145,9 @@ class PF_CommentPreview {
         this.pollIntervalMs         = 220;
         this.maxPollAttempts        = 15;   // 15 × 220 ms ≈ 3.3 s adaptive window
         this.lastActionAt           = 0;
-        this.strategy               = 'inject'; // 'inject' or 'click'
+        this.strategy               = 'fetch'; // 'fetch' (v3) or 'click' (v2 legacy)
         this.injectedShells         = new WeakMap();
+        this.fetchCache             = new Map();
 
         this._syncRuntimeConfig();
         this._initIntersectionObserver();
@@ -366,8 +474,8 @@ class PF_CommentPreview {
         }
 
         // ── Strategy Routing ──────────────────────────────────────────────
-        if (this.strategy === 'inject') {
-            this._injectCommentShell(post);
+        if (this.strategy === 'fetch') {
+            this._runFetchExpansion(post);
             return;
         }
 
@@ -419,13 +527,131 @@ class PF_CommentPreview {
             return;
         }
 
-        // Nothing found yet — retry if budget allows.
-        if (attempts < this.maxAttemptsPerPost) {
-            post.dataset.pfCpStatus = `retrying-${attempts}`;
-            this._scheduleRetry(post, 1400);
-        } else {
-            post.dataset.pfCpStatus = 'no-trigger';
+        // Nothing found yet.
+        post.dataset.pfCpStatus = 'no-trigger';
+        this._finalizePost(post);
+    }
+
+    // ── Fetch Strategy (v3) ─────────────────────────────────────────────────
+
+    async _runFetchExpansion(post) {
+        if (this.processedPosts.has(post)) return;
+
+        const postId = PF_PostIDResolver.resolve(post);
+        if (!postId) {
+            post.dataset.pfCpStatus = 'err-no-id';
             this._finalizePost(post);
+            return;
+        }
+
+        // Cache check
+        if (this.fetchCache.has(postId)) {
+            this._injectCommentShell(post, this.fetchCache.get(postId));
+            return;
+        }
+
+        post.dataset.pfCpStatus = 'fetching';
+        
+        // Inject shell EARLY with loading state
+        const shell = this._injectCommentShell(post, null); 
+        
+        const comments = await PF_CommentFetcher.fetch(postId);
+        
+        if (comments && comments.length > 0) {
+            this.fetchCache.set(postId, comments);
+            this._updateCommentShell(post, shell, comments);
+            post.dataset.pfCpStatus = 'fetched';
+        } else {
+            post.dataset.pfCpStatus = 'err-fetch-empty';
+            if (shell) shell.remove();
+        }
+
+        this._finalizePost(post);
+    }
+
+    _injectCommentShell(post, comments) {
+        if (!post) return null;
+
+        // Find a good injection point (usually after the action bar)
+        const actionBar = post.querySelector('div[role="toolbar"], div.x6s0dn4.x78zum5.x1q0g3np.x1iyjqo2');
+        if (!actionBar) return null;
+
+        // Prevent double injection
+        const existing = post.querySelector('.pf-comment-preview-shell');
+        if (existing) return existing;
+
+        const shell = document.createElement('div');
+        shell.className = 'pf-comment-preview-shell';
+        shell.innerHTML = `
+            <div class="pf-comment-preview-header">
+                <span class="pf-comment-preview-title">Quick Insight</span>
+                <span class="pf-comment-preview-meta">Top Comments</span>
+            </div>
+            <div class="pf-comment-preview-body">
+                <div class="pf-comment-preview-loader"></div>
+            </div>
+        `;
+
+        this._applyShellStyles(shell);
+        actionBar.parentElement.insertBefore(shell, actionBar.nextSibling);
+        
+        if (comments) {
+            this._updateCommentShell(post, shell, comments);
+        }
+
+        return shell;
+    }
+
+    _updateCommentShell(post, shell, comments) {
+        if (!shell || !comments) return;
+
+        const body = shell.querySelector('.pf-comment-preview-body');
+        if (!body) return;
+
+        body.innerHTML = comments.map(c => `
+            <div class="pf-comment-item">
+                <img src="${c.avatar}" class="pf-comment-avatar" onerror="this.src='https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png'">
+                <div class="pf-comment-content">
+                    <div class="pf-comment-author">${c.author}</div>
+                    <div class="pf-comment-text">${c.text}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    _applyShellStyles(el) {
+        // High-end translucent design consistent with PureFusion aesthetics
+        Object.assign(el.style, {
+            margin: '10px 16px',
+            padding: '12px',
+            backgroundColor: 'rgba(28, 32, 44, 0.65)',
+            backdropFilter: 'blur(8px)',
+            borderRadius: '12px',
+            border: '1px solid rgba(120, 132, 154, 0.2)',
+            fontFamily: '"Segoe UI Variable Text", "Segoe UI", sans-serif',
+            color: '#e4e6eb',
+            fontSize: '13px',
+            lineHeight: '1.4',
+            animation: 'pfFadeIn 0.3s ease-out'
+        });
+
+        const styleId = 'pf-comment-preview-extra-styles';
+        if (!document.getElementById(styleId)) {
+            const style = document.createElement('style');
+            style.id = styleId;
+            style.textContent = `
+                @keyframes pfFadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+                .pf-comment-preview-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px; }
+                .pf-comment-preview-title { font-weight: 700; font-size: 11px; text-transform: uppercase; color: #1877f2; letter-spacing: 0.5px; }
+                .pf-comment-preview-meta { font-size: 10px; color: #b0b3b8; }
+                .pf-comment-item { display: flex; gap: 10px; margin-bottom: 8px; }
+                .pf-comment-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); }
+                .pf-comment-author { font-weight: 700; font-size: 12px; color: #e4e6eb; }
+                .pf-comment-text { font-size: 12px; color: #b0b3b8; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+                .pf-comment-preview-loader { height: 40px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); background-size: 200% 100%; animation: pfShimmer 1.5s infinite; border-radius: 6px; }
+                @keyframes pfShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+            `;
+            document.head.appendChild(style);
         }
     }
 
@@ -966,90 +1192,12 @@ class PF_CommentPreview {
 
     _syncRuntimeConfig() {
         const s = this.settings?.social || {};
-        this.maxAttemptsPerPost = this._clamp(s.commentPreviewRetryCap,        1,  10, 4);
+        this.maxAttemptsPerPost = this._clamp(s.commentPreviewRetryCap, 1, 10, 4);
         this.maxPostsPerSweep   = this._clamp(s.commentPreviewMaxPostsPerSweep, 10, 60, 30);
-        this.minActionGapMs     = this._clamp(s.commentPreviewCooldownMs,       300, 5000, 1200);
-        this.strategy           = s.commentPreviewStrategy === 'click' ? 'click' : 'inject';
-    }
-
-    // ── V3 Injection Logic ──────────────────────────────────────────────────
-
-    /**
-     * Directly injects a styled comment shell into the post instead of clicking.
-     * Prevents focus stealing and navigation jumps.
-     */
-    _injectCommentShell(post) {
-        if (!post || !post.querySelector || this.processedPosts.has(post)) return;
-        if (post.querySelector('.pf-comment-shell')) return;
-
-        // Find the interaction bar (Like/Comment/Share)
-        const toolbar = post.querySelector('div[role="toolbar"]') ||
-                        post.querySelector('.xn3w4p2.x1gslohp'); // Fallback obfuscated class
-
-        if (!toolbar) return;
-
-        const shell = document.createElement('div');
-        shell.className = 'pf-comment-shell';
-        shell.dataset.pfCommentInjected = 'true';
-        shell.innerHTML = `
-            <div class="pf-comment-shell-header">
-                <span>PureFusion Comment Preview</span>
-                <span class="pf-comment-shell-status">Loading safely...</span>
-            </div>
-            <div class="pf-comment-list-skeleton">
-                ${this._generateSkeletonLoader(3)}
-            </div>
-        `;
-
-        // Inject after the toolbar
-        toolbar.insertAdjacentElement('afterend', shell);
-        this.injectedShells.set(post, shell);
-        this.processedPosts.add(post);
-        post.dataset.pfCpStatus = 'injected-v3';
-
-        // Brief delay before potential data fetch (Phase 2 hardening)
-        this.lastActionAt = Date.now();
-
-        // Setup re-render protection
-        this._setupRerenderGuard(post, toolbar, shell);
-    }
-
-    _generateSkeletonLoader(count) {
-        let html = '';
-        for (let i = 0; i < count; i++) {
-            html += `
-                <div class="pf-skeleton-item">
-                    <div class="pf-skeleton-avatar"></div>
-                    <div class="pf-skeleton-content">
-                        <div class="pf-skeleton-line pf-skeleton-name"></div>
-                        <div class="pf-skeleton-line pf-skeleton-text"></div>
-                    </div>
-                </div>
-            `;
-        }
-        return html;
-    }
-
-    /**
-     * Facebook's React reconciliation often wipes injected nodes on state change.
-     * We attach a heavy-duty observer to the post to instantly re-inject if lost.
-     */
-    _setupRerenderGuard(post, toolbar, shell) {
-        if (!post || !toolbar || !shell) return;
-
-        const observer = new MutationObserver((mutations) => {
-            if (!document.contains(post)) {
-                observer.disconnect();
-                return;
-            }
-
-            if (!post.contains(shell)) {
-                // Shell was wiped by React, put it back
-                toolbar.insertAdjacentElement('afterend', shell);
-            }
-        });
-
-        observer.observe(post, { childList: true, subtree: true });
+        this.minActionGapMs     = this._clamp(s.commentPreviewCooldownMs, 300, 5000, 1200);
+        
+        // Default to fetch (v3) unless explicitly set to click (v2)
+        this.strategy = s.commentPreviewStrategy === 'click' ? 'click' : 'fetch';
     }
 
     _clamp(value, min, max, fallback) {

@@ -16,8 +16,9 @@ Last updated: 2026-04-13
 - ✅ Phase 15: Context Menu "Zap" — COMPLETE (Instant rules + Undo support)
 - ✅ Phase 16: Multilingual & Story Hardening — COMPLETE (NL/SV/DA/NO + Body Text Guard)
 - ✅ Phase 18: Performance Pass — COMPLETE (Chunked Cleaning + Skip Markers)
-- 1) Phase 17: Auto Comment Preview v3 — Data Layer Fetching (High)
-- 2) Phase 19: Filter Logic Consolidation — Rule merging & legacy removal (Low)
+- ✅ Phase 17: Auto Comment Preview v3 — COMPLETE (Non-intrusive GraphQL fetching)
+- 1) Phase 19: Filter Logic Consolidation — Rule merging & legacy removal (High)
+- 2) Phase 20: Visual Polish & Theme Expansion — AMOLED / Pastel variants (Medium)
 
 **Secondary:**
 
