@@ -113,7 +113,19 @@ const SELECTOR_MAP = {
     commentFilterTrigger: 'div[role="button"][aria-haspopup="menu"]',
     
     // The input textarea where users type comments. We broadened this to match modals.
-    commentInputBox: 'div[role="textbox"][contenteditable="true"]'
+    commentInputBox: 'div[role="textbox"][contenteditable="true"]',
+
+    // ------------------------------------------------------------------------
+    // IMAGE SUBJECT TOKENS (For AI Descriptor Filtering)
+    // ------------------------------------------------------------------------
+    imageSubjectTokens: {
+        sports: ['stadium', 'field', 'athlet', 'match', 'score', 'game', 'team', 'sport', 'ball', 'fitness', 'workout', 'player', 'coach', 'championship', 'tournament'],
+        food: ['food', 'dish', 'plate', 'meal', 'restaurant', 'cook', 'baked', 'delicious', 'breakfast', 'lunch', 'dinner', 'dessert', 'snack', 'drink', 'beverage', 'cup', 'bottle', 'tableware'],
+        pets: ['dog', 'cat', 'kitten', 'puppy', 'pet ', 'animal', 'furry', 'bird', 'hamster', 'rabbit', 'paw', 'bark', 'meow'],
+        vehicles: ['car', 'truck', 'vehicle', 'motorcycle', 'bike', 'aviation', 'airplane', 'aircraft', 'boat', 'ship', 'drive', 'road', 'highway', 'traffic', 'engine', 'wheel', 'tire'],
+        memes: ['text', 'screenshot', 'meme', 'digital image', 'white background', 'black background', 'interface', 'poster', 'graphic design', 'clip art', 'illustration'],
+        travel: ['mountain', 'beach', 'ocean', 'nature', 'sky', 'outdoor', 'sunset', 'travel', 'landscape', 'scenery', 'building', 'architecture', 'monument', 'landmark', 'vacation', 'resort']
+    }
 };
 
 // Make available globally

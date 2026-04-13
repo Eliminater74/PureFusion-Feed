@@ -180,6 +180,11 @@ class PF_Cleaner {
             this.removeClickbait(rootNode);
         }
 
+        // Apply Image Subject Filtering (FBP Parity)
+        if (this._hasImageSubjectFiltersEnabled()) {
+            this.applyImageSubjectFilters(rootNode);
+        }
+
         // Apply keyword sweeping
         this.applyKeywordFilters(rootNode);
 
@@ -1701,6 +1706,55 @@ class PF_Cleaner {
                 document.title = newTitle;
             }
         }
+    }
+
+    /**
+     * Scans posts for images with AI-generated alt text and hides them
+     * if they match blocked categories (Sports, Food, Pets, etc).
+     */
+    applyImageSubjectFilters(rootNode) {
+        const posts = rootNode.querySelectorAll?.(PF_SELECTOR_MAP.postContainer) || [];
+        
+        posts.forEach(post => {
+            if (post.dataset?.pfHidden === 'true') return;
+
+            const images = post.querySelectorAll('img');
+            for (const img of images) {
+                const alt = (img.getAttribute('alt') || '').toLowerCase();
+                if (!alt || alt.length < 5) continue;
+
+                // Typical FB AI formats: "Image may contain: [tags]", "May be an image of [tags]"
+                // We prune the prefix to get just the subject tokens
+                const cleanAlt = alt.replace(/.*(?:contain|of|de|von|nir|nga|contenga|contenha):\s*/i, '');
+                
+                const blockedCategory = this._checkImageAgainstBlockedCategories(cleanAlt);
+                if (blockedCategory) {
+                    this._hidePostNode(post, `Image Subject Filter: ${blockedCategory}`);
+                    break; // No need to check other images in this post
+                }
+            }
+        });
+    }
+
+    _checkImageAgainstBlockedCategories(altText) {
+        const tokens = PF_SELECTOR_MAP.imageSubjectTokens;
+        if (!tokens) return null;
+
+        const filters = this.settings.imageFilters;
+
+        if (filters.hideSports && this._matchesAnyToken(altText, tokens.sports)) return 'Sports';
+        if (filters.hideFood && this._matchesAnyToken(altText, tokens.food)) return 'Food';
+        if (filters.hidePets && this._matchesAnyToken(altText, tokens.pets)) return 'Pets';
+        if (filters.hideVehicles && this._matchesAnyToken(altText, tokens.vehicles)) return 'Vehicles';
+        if (filters.hideScreenshotsMemes && this._matchesAnyToken(altText, tokens.memes)) return 'Memes/Screenshots';
+        if (filters.hideTravelScenery && this._matchesAnyToken(altText, tokens.travel)) return 'Travel/Scenery';
+
+        return null;
+    }
+
+    _matchesAnyToken(text, tokenList) {
+        if (!text || !tokenList) return false;
+        return tokenList.some(token => text.includes(token));
     }
 
     /**
