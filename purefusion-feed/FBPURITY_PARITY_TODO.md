@@ -130,12 +130,105 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Use IntersectionObserver + guarded click strategy to avoid opening full post pages.
 - Add rate limiting and per-post retry cap to avoid bot-like behavior.
 - Keep OFF by default and expose as an explicit advanced toggle.
-- Status: hardening slice started.
+- Status: hardening slice started — PAUSED. Click strategy abandoned (opens modal/composer side effect). See item 7b for validated replacement approach.
 - Added: configurable cooldown, retry cap, and max-posts-per-sweep controls.
 - Added: per-surface allow list (Home/Groups/Watch/Marketplace/Notifications/Other).
 - Hardened: stricter safe-candidate gating (feed-post eligibility, menu/composer exclusion, external/risky navigation guards).
 - Hardened: stronger action-row validation before positional comment clicks.
 - Added: FR/PT/DE/IT phrase coverage for inline comment trigger/primer detection.
+
+7b) Auto comment preview v3 — DOM injection strategy (medium) [RESEARCH VALIDATED, NOT STARTED]
+
+- Replace the broken click strategy entirely with direct DOM injection after the post interaction bar.
+- Status: NOT STARTED. Do not begin until header/top-nav controls slice is complete.
+
+### Why this approach works
+
+Sponsored posts on Facebook pre-render a comment `<ul>` inside the feed without any click.
+The extension can replicate this by injecting the same structure into normal posts.
+No click event is fired — no modal opens, no composer activates, no scroll jump occurs.
+
+### Validated DOM structure (live-captured 2026-04-12)
+
+Interaction bar anchor (stable-ish aria role):
+
+- Primary:  `[role="article"] .xn3w4p2.x1gslohp` — obfuscated, WILL change
+- Fallback: `[role="article"] div[role="toolbar"]` — more stable, prefer this
+- Note: the obfuscated class anchor is confirmed working NOW but must be backed by
+  aria/role fallbacks before ship. Add a selector-version stamp so we can
+  detect when it breaks without crashing the whole module.
+- Confirmed (second live capture 2026-04-12): interaction bar's **parent has no CSS classes** (bare unstyled div).
+  This means `bar.insertAdjacentElement('afterend', wrapper)` is the cleanest insertion —
+  no class-based selector conflict risk on the parent container.
+
+Comment list wrapper parent sits at:
+
+- `div.x6s0dn4.x3nfvp2` (directly after interaction bar in sponsored post DOM)
+
+Comment list element:
+
+- `<ul class="html-ul x3ct3a4 xdj266r xyri2b x18d9i69 x1c1uobl x1w5wx5t x78zum5 x1wfe3co xat24cr xdwrcjd x1o1nzlu xyqdw3p">`
+- Note: these class strings are obfuscated and WILL rotate. Do NOT hard-code them
+  on the injected element — use the bare semantic tag `<ul>` and let the
+  wrapper div carry a single `purefusion-comments` marker class instead.
+
+### Implementation plan (when we pick this up)
+
+Step 1 — Anchor detection
+
+- Find `[role="article"]` post root (already done in `_isValidPostScope`).
+- Within post: try `div[role="toolbar"]` first; fall back to class-based heuristic `.xn3w4p2.x1gslohp`. Store whichever matched so we can detect rotations.
+
+Step 2 — Guard: skip if real comment `<ul>` already present
+
+- If `post.querySelector('ul[class*="x3ct3a4"]')` exists FB already loaded comments — do nothing (avoids duplicate rendering).
+- Tag processed posts with `data-pf-comment-injected="1"` to prevent re-runs.
+
+Step 3 — Inject wrapper + list shell
+
+```js
+const wrapper = document.createElement('div');
+wrapper.className = 'purefusion-comment-shell';
+// minimal non-FB styles — no obfuscated class copy-paste
+wrapper.style.cssText = 'padding:4px 16px 8px;';
+
+const ul = document.createElement('ul');
+ul.setAttribute('role', 'list');
+ul.className = 'purefusion-comment-list';
+
+wrapper.appendChild(ul);
+interactionBar.insertAdjacentElement('afterend', wrapper);
+post.dataset.pfCommentInjected = '1';
+```
+
+Step 4 — Populate comment items
+
+- Option A (v3.0 — no real data): inject a single styled placeholder item so the feature can be shipped and tested without a data source.
+- Option B (v3.1 — real comments): intercept FB GraphQL responses via a background service worker fetch listener, cache the first N comment objects for a post ID, and populate items from that cache. This is the correct long-term path but is a significant scope increase — do NOT tackle in the same slice as step 3.
+
+Step 5 — Scroll/focus hardening
+
+- After injection call `window.scrollTo({ top: savedY, behavior: 'instant' })` immediately (no timeout needed — injection does not trigger React setState).
+- No blur logic needed since no click is fired.
+
+Step 6 — IntersectionObserver gate
+
+- Only inject when the post is ≥40% in the viewport (same threshold as v2).
+- Disconnect observer entry after first successful injection.
+
+Step 7 — Settings wiring
+
+- Re-use the existing `social.commentPreview` toggle from v2.
+- Add a sub-option `commentPreviewStrategy: "inject" | "click"` so we can A/B the strategies without deleting the v2 code yet.
+- Default to "inject" once this slice is validated.
+
+### Known risks / caveats
+
+- Obfuscated class names on the anchor div WILL rotate with FB deploys. Must have aria/role fallback and a canary check that logs when the primary anchor stops matching (but does not throw).
+- Injected shell has NO real comment text in v3.0 — it will show as empty/placeholder. Do NOT ship to users until at minimum placeholder copy is in place.
+- React reconciliation may wipe injected nodes when FB re-renders the post. Use a MutationObserver on the post root to detect ejection and re-inject. Cap re-injection to 3 attempts per post to avoid thrashing.
+- If Option B (real comment data) is pursued: fetching from FB's private GraphQL is fragile and may violate ToS. Document this risk in the options page.
+- Do NOT copy FB's obfuscated class strings onto injected elements — they carry no semantic meaning outside FB's CSS bundle and will look broken when that bundle rotates.
 
 8) Smart feed quality scoring (medium-high)
 - Detect likely ragebait/engagement bait/low-value repost patterns and assign a quality score.
