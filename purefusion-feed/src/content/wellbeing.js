@@ -24,6 +24,13 @@ class PF_Wellbeing {
         this.lastSessionAwarenessPromptAt = 0;
         this.hiddenReasonCounts = new Map();
         this.reelsHiddenCount = 0;
+        this.reelsWatchedCount = 0; // Incremented when actually watching immersive reels
+        this.currentActiveReelId = null;
+        this.reelActiveSince = 0;
+        this.reelsObservedNodes = new WeakSet();
+        this.reelsObserver = null;
+        this.reelsPlayerInstance = null;
+        
         this.scrollPulseTimestamps = [];
         this.sessionAwarenessListenerAttached = false;
         this.boundHiddenHandler = this._onElementHidden.bind(this);
@@ -65,6 +72,7 @@ class PF_Wellbeing {
 
         this._syncFeedReportLoop();
         this._syncSessionAwarenessLoop();
+        this._syncReelsLimiterLoop();
     }
 
     updateSettings(settings) {
@@ -228,6 +236,185 @@ class PF_Wellbeing {
     _getReportIntervalMs() {
         const minutes = this._clampInt(this.settings?.wellbeing?.dailyFeedReportAutoMinutes, 5, 180, 30);
         return minutes * 60 * 1000;
+    }
+
+    _syncReelsLimiterLoop() {
+        if (!this.settings?.wellbeing?.reelsLimiterEnabled) {
+            this._cleanupReelsObserver();
+            return;
+        }
+
+        // Periodically check for the Reels player container if not already tracking
+        if (!this.reelsPlayerInstance || !document.contains(this.reelsPlayerInstance)) {
+            const player = document.querySelector('[role="dialog"] [aria-label*="Reels" i], [role="main"] [aria-label*="Reels" i]');
+            if (player) {
+                this._initReelsObserver(player);
+            }
+        }
+    }
+
+    _initReelsObserver(player) {
+        if (this.reelsObserver) return;
+        this.reelsPlayerInstance = player;
+
+        const options = {
+            root: player,
+            threshold: 0.75 // Reel must be 75% visible to count as "active"
+        };
+
+        this.reelsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    this._onReelCandidateActive(entry.target);
+                }
+            });
+        }, options);
+
+        // We use a MutationObserver to find new reels being injected into the player
+        this.reelsMutationObserver = new MutationObserver(() => {
+            const reels = player.querySelectorAll('[role="article"], [data-video-id]');
+            reels.forEach(reel => {
+                if (!this.reelsObservedNodes.has(reel)) {
+                    this.reelsObservedNodes.add(reel);
+                    this.reelsObserver.observe(reel);
+                }
+            });
+        });
+
+        this.reelsMutationObserver.observe(player, { childList: true, subtree: true });
+        
+        // Initial scan
+        player.querySelectorAll('[role="article"], [data-video-id]').forEach(reel => {
+            this.reelsObservedNodes.add(reel);
+            this.reelsObserver.observe(reel);
+        });
+    }
+
+    _onReelCandidateActive(reelNode) {
+        const reelId = reelNode.dataset?.videoId || reelNode.textContent?.substring(0, 20);
+        if (this.currentActiveReelId === reelId) return;
+
+        this.currentActiveReelId = reelId;
+        this.reelActiveSince = Date.now();
+
+        // Check if we already hit the limit during this "focused watch"
+        // (Wait 3 seconds before counting to avoid rapid skips)
+        setTimeout(() => {
+            if (this.currentActiveReelId === reelId && (Date.now() - this.reelActiveSince) >= 2800) {
+                this._incrementReelsWatched();
+            }
+        }, 3000);
+    }
+
+    _incrementReelsWatched() {
+        this.reelsWatchedCount++;
+        this._updateReelsHUD();
+
+        const limit = this.settings?.wellbeing?.reelsSessionLimit || 3;
+        if (this.reelsWatchedCount >= limit) {
+            this._showReelsLockOverlay();
+        }
+    }
+
+    _updateReelsHUD() {
+        if (!this.reelsPlayerInstance) return;
+
+        let hud = document.getElementById('pf-reels-hud');
+        if (!hud) {
+            hud = document.createElement('div');
+            hud.id = 'pf-reels-hud';
+            hud.style.cssText = `
+                position: absolute; top: 20px; left: 20px; z-index: 9999;
+                background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px);
+                border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px;
+                padding: 6px 14px; color: #fff; font-family: sans-serif;
+                font-size: 13px; font-weight: bold; pointer-events: none;
+                transition: opacity 0.3s ease;
+            `;
+            this.reelsPlayerInstance.appendChild(hud);
+        }
+
+        const limit = this.settings?.wellbeing?.reelsSessionLimit || 3;
+        hud.textContent = `Reel ${this.reelsWatchedCount} / ${limit}`;
+
+        // Fade out after 2 seconds to avoid clutter
+        hud.style.opacity = '1';
+        clearTimeout(this.reelsHudTimer);
+        this.reelsHudTimer = setTimeout(() => {
+            if (hud) hud.style.opacity = '0.3';
+        }, 3000);
+    }
+
+    _showReelsLockOverlay() {
+        if (!this.reelsPlayerInstance || document.getElementById('pf-reels-lock')) return;
+
+        const limit = this.settings?.wellbeing?.reelsSessionLimit || 3;
+        const hardLock = this.settings?.wellbeing?.reelsHardLock;
+        
+        const lock = document.createElement('div');
+        lock.id = 'pf-reels-lock';
+        lock.style.cssText = `
+            position: absolute; inset: 0; z-index: 10000;
+            background: rgba(10, 10, 12, 0.95); backdrop-filter: blur(20px);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: #fff; font-family: sans-serif; text-align: center; padding: 30px;
+        `;
+
+        const title = this._t('wellbeing_reels_lock_title', 'Time for a Breather');
+        const body = this._t('wellbeing_reels_lock_body', `You've watched ${limit} Reels this session. Taking short breaks helps prevent mindless scrolling.`);
+        const resumeLabel = this._t('wellbeing_reels_lock_resume', 'Resume Scrolling');
+        const hardLockMsg = this._t('wellbeing_reels_lock_hard', 'Reels are locked for the rest of this session.');
+
+        lock.innerHTML = `
+            <div style="font-size: 48px; margin-bottom: 20px;">🧘</div>
+            <h2 style="font-size: 24px; margin-bottom: 12px;">${title}</h2>
+            <p style="color: #ccc; max-width: 400px; line-height: 1.5; margin-bottom: 30px;">${body}</p>
+            ${hardLock ? `<p style="color: #ff4444; font-weight: bold;">${hardLockMsg}</p>` : `
+                <button id="pf-reels-resume-btn" disabled style="
+                    background: #6C3FC5; color: #fff; border: none; padding: 12px 32px;
+                    border-radius: 99px; font-weight: bold; cursor: not-allowed; opacity: 0.5;
+                    transition: all 0.3s ease;
+                ">${resumeLabel} (5s)</button>
+            `}
+        `;
+
+        this.reelsPlayerInstance.appendChild(lock);
+
+        if (!hardLock) {
+            const btn = lock.querySelector('#pf-reels-resume-btn');
+            let countdown = 5;
+            const timer = setInterval(() => {
+                countdown--;
+                if (countdown > 0) {
+                    btn.textContent = `${resumeLabel} (${countdown}s)`;
+                } else {
+                    clearInterval(timer);
+                    btn.disabled = false;
+                    btn.style.cursor = 'pointer';
+                    btn.style.opacity = '1';
+                    btn.textContent = resumeLabel;
+                }
+            }, 1000);
+
+            btn.addEventListener('click', () => {
+                this.reelsWatchedCount = 0;
+                lock.remove();
+                this._updateReelsHUD();
+            });
+        }
+    }
+
+    _cleanupReelsObserver() {
+        if (this.reelsObserver) {
+            this.reelsObserver.disconnect();
+            this.reelsObserver = null;
+        }
+        if (this.reelsMutationObserver) {
+            this.reelsMutationObserver.disconnect();
+            this.reelsMutationObserver = null;
+        }
+        this.reelsPlayerInstance = null;
+        this.reelsObservedNodes = new WeakSet();
     }
 
     _clampInt(value, min, max, fallback) {

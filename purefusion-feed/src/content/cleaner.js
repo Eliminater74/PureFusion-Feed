@@ -1510,6 +1510,11 @@ class PF_Cleaner {
 
             const reason = hardLock ? 'Reels Session Hard Lock' : 'Reels Session Limit';
             this._hidePostNode(candidate, reason);
+            
+            // Notify wellbeing module for reporting
+            window.dispatchEvent(new CustomEvent('pf:element_hidden', {
+                detail: { reason: reason, node: candidate }
+            }));
 
             if (!this._reelsLimitNoticeShown) {
                 this._reelsLimitNoticeShown = true;
