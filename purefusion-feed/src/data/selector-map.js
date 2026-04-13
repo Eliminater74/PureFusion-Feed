@@ -59,6 +59,14 @@ const SELECTOR_MAP = {
         'a[href*="/ads/about"]',
         'a[href*="ad_preferences"]',
         'a[href*="about_ads"]',
+        // Privacy Sandbox attribution — ONLY on paid ad elements (confirmed via live DOM)
+        '[attributionsrc*="privacy_sandbox"]',
+        '[attributionsrc*="comet/register"]',
+        // Facebook's own internal ad rendering role (confirmed via live DOM)
+        '[data-ad-rendering-role]',
+        // Content Flow Token in ad page-name links (confirmed via live DOM)
+        'a[href*="_cft_[0]"]',
+        'a[href*="_cft_%5B0%5D"]',
         // testid fallback
         '[data-testid="fbfeed_ads_native_container"]',
         // Legacy text-contains (handled via findContains in removeSponsored)

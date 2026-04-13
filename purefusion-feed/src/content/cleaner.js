@@ -1625,21 +1625,34 @@ class PF_Cleaner {
             this._hidePostNode(target, 'Sponsored Post (data-ad-preview)');
         });
 
-        // 5. Ad-link href scan — covers multiple known FB ad explanation URLs.
-        // This href is plain text (never obfuscated with ZWC).
+        // 5. Multi-signal article scan — uses signals confirmed from live DOM inspection.
+        // All of these are FB ad-infrastructure markers, never present on organic posts.
         rootNode.querySelectorAll('[role="article"]').forEach((article) => {
             if (article.parentElement?.closest('[role="article"]')) return;
             if (article.closest('[role="complementary"]')) return;
             if (article.dataset.pfHidden) return;
-            const adLink = article.querySelector([
+
+            const adSignal = article.querySelector([
+                // Ad explanation page links (various FB domains)
                 'a[href*="/ads/about"]',
                 'a[href*="ad_preferences"]',
                 'a[href*="about_ads"]',
                 'a[href*="adchoices"]',
                 'a[href*="facebook.com/ads"]',
                 'a[href*="fb.com/ads"]',
+                // Privacy Sandbox attribution source — ONLY on paid ad content.
+                // FB uses this for conversion tracking on sponsored posts.
+                '[attributionsrc*="privacy_sandbox"]',
+                '[attributionsrc*="comet/register"]',
+                // Facebook's own internal ad rendering role markers
+                '[data-ad-rendering-role]',
+                // Content Flow Token (_cft_) in href = Facebook ad tracking parameter.
+                // FB appends this exclusively to links inside sponsored posts.
+                'a[href*="_cft_[0]"]',
+                'a[href*="_cft_%5B0%5D"]',
             ].join(', '));
-            if (adLink) this._hidePostNode(article, 'Sponsored Post (Ad Link)');
+
+            if (adSignal) this._hidePostNode(article, 'Sponsored Post (Ad Signal)');
         });
 
         for (const indicator of targets) {
