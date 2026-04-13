@@ -474,6 +474,16 @@ body.pf-view-basic .pf-advanced-card {
     --pf-preview-chip-text: #214289;
 }
 
+.pf-theme-preview[data-theme="zen"] .pf-theme-preview-card {
+    --pf-preview-bg: #ffffff;
+    --pf-preview-border: #d0d7de;
+    --pf-preview-text: #1a1a1a;
+    --pf-preview-subtle: #6e7781;
+    --pf-preview-chip-bg: #f6f8fa;
+    --pf-preview-chip-text: #24292f;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
 .pf-form-group label {
     display: block;
     font-weight: 500;

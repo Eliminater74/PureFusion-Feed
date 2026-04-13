@@ -384,6 +384,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_uiMode_hideMessengerSeen': { obj: 'uiMode', prop: 'hideMessengerSeen', type: 'checkbox' },
         'opt_uiMode_notificationJewelStyle': { obj: 'uiMode', prop: 'notificationJewelStyle', type: 'select' },
         'opt_uiMode_theme': { obj: 'uiMode', prop: 'theme', type: 'select' },
+        'opt_uiMode_hidePostComposer': { obj: 'uiMode', prop: 'hidePostComposer', type: 'checkbox' },
         'opt_uiMode_fontSizeScale': { obj: 'uiMode', prop: 'fontSizeScale', type: 'number' },
         'opt_uiMode_customStylingEnabled': { obj: 'uiMode', prop: 'customStylingEnabled', type: 'checkbox' },
         'opt_uiMode_customFontFamily': { obj: 'uiMode', prop: 'customFontFamily', type: 'text' },
@@ -510,7 +511,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         default: t('options_ui_theme_default', 'Facebook Default'),
         darkPro: t('options_ui_theme_darkpro', 'Dark Pro'),
         amoled: t('options_ui_theme_amoled', 'AMOLED Pitch Black'),
-        classicBlue: t('options_ui_theme_classic', 'Classic Blue')
+        classicBlue: t('options_ui_theme_classic', 'Classic Blue'),
+        zen: t('options_ui_theme_zen', 'Zen Mode (Minimalist)')
     };
 
     const presetPacks = {
