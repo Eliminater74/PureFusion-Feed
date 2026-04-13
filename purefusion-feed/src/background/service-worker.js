@@ -32,7 +32,8 @@ const QUICK_MENU_IDS = {
     autohideKeyword: 'pf_quick_autohide_keyword',
     allowKeyword: 'pf_quick_allow_keyword',
     hideSource: 'pf_quick_hide_source',
-    allowSource: 'pf_quick_allow_source'
+    allowSource: 'pf_quick_allow_source',
+    zapElement: 'pf_quick_zap_element'
 };
 
 const QUICK_MENU_URL_PATTERNS = [
@@ -566,10 +567,10 @@ async function setupQuickActionMenus() {
         });
 
         chrome.contextMenus.create({
-            id: QUICK_MENU_IDS.allowSource,
+            id: QUICK_MENU_IDS.zapElement,
             parentId: QUICK_MENU_IDS.root,
-            title: t('quick_action_menu_allow_source', 'Never hide this source'),
-            contexts: ['selection', 'link'],
+            title: t('quick_action_menu_zap_element', 'Zap (Hide) Element'),
+            contexts: ['all'],
             documentUrlPatterns: QUICK_MENU_URL_PATTERNS
         });
     } catch (err) {
@@ -583,6 +584,11 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     if (!validAction) return;
 
     const tabId = tab && typeof tab.id === 'number' ? tab.id : null;
+
+    if (actionId === QUICK_MENU_IDS.zapElement) {
+        await notifyTab(tabId, { type: 'PF_ZAP_ELEMENT' });
+        return;
+    }
 
     const isSourceAction = actionId === QUICK_MENU_IDS.hideSource || actionId === QUICK_MENU_IDS.allowSource;
     const selectionText = isSourceAction

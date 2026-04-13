@@ -274,6 +274,12 @@ const DEFAULT_SETTINGS = {
         messengerSmartRepliesEnabled: true
     },
     // ------------------------------------------------------------------------
+    // POWER-USER RULES (Phase 12)
+    // ------------------------------------------------------------------------
+    rules: {
+        customRules: [] // Array of { id, type, selector, label, enabled }
+    },
+    // ------------------------------------------------------------------------
     // SUPPORT & LINKS
     // ------------------------------------------------------------------------
     supportUrl: 'https://www.paypal.com/donate/?business=X76ZW4RHA6T9C&no_recurring=0&item_name=PureFusion+returns+feed+control+to+you.+Support+our+independent%2C+private%2C+ad-free+social+tools.+Keep+your+feed+pure%21&currency_code=USD'

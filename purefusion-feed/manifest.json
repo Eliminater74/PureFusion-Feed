@@ -36,6 +36,7 @@
         "src/data/default-settings.js",
         "src/data/selector-map.js",
         "src/content/observer.js",
+        "src/content/rule-engine.js",
         "src/content/cleaner.js",
         "src/content/comment-preview.js",
         "src/content/predictor.js",

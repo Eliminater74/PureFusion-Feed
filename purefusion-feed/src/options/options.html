@@ -24,6 +24,7 @@
             <li data-tab="tab-ai" class="pf-advanced-nav" data-i18n="options_sidebar_ai">🤖 AI Engine</li>
             <li data-tab="tab-ui" class="pf-advanced-nav" data-i18n="options_sidebar_ui">🎨 UI Tweaks</li>
             <li data-tab="tab-keywords" class="pf-advanced-nav" data-i18n="options_sidebar_keywords">🔤 Keyword Filters</li>
+            <li data-tab="tab-poweruser" class="pf-advanced-nav" data-i18n="options_sidebar_poweruser">⚡ Power-User Rules</li>
             <li data-tab="tab-data" class="pf-advanced-nav" data-i18n="options_sidebar_data">💾 Data & Backup</li>
         </ul>
         <div class="pf-sidebar-footer">
@@ -1038,6 +1039,51 @@
             </div>
         </section>
 
+        <!-- TAB: POWER-USER RULES -->
+        <section id="tab-poweruser" class="pf-tab-content">
+            <div class="pf-card">
+                <h3 data-i18n="options_poweruser_title">Power-User Rule Engine</h3>
+                <p class="pf-desc" data-i18n="options_poweruser_desc">Target and hide any element on the page using custom selectors or text matching. Be precise to avoid hiding content you want to see.</p>
+                
+                <div class="pf-rule-actions mb-4">
+                    <button id="btnAddNewRule" class="pf-btn pf-btn-primary">
+                        <span class="pf-icon">+</span> <span data-i18n="options_poweruser_add_rule">Add New Hide Rule</span>
+                    </button>
+                </div>
+
+                <div id="pfRuleEditor" class="pf-rule-editor active-hidden">
+                    <div class="pf-setting-row auto-height">
+                        <label data-i18n="options_poweruser_type_label">Rule Type</label>
+                        <select id="rule-type" class="pf-select">
+                            <option value="selector" data-i18n="options_poweruser_type_selector">CSS Selector</option>
+                            <option value="text" data-i18n="options_poweruser_type_text">Text Match</option>
+                        </select>
+                    </div>
+                    <div class="pf-setting-row auto-height">
+                        <label data-i18n="options_poweruser_rule_label">Rule Label</label>
+                        <input type="text" id="rule-label" class="pf-input-number" placeholder="Hide specific ad unit">
+                    </div>
+                    <div class="pf-setting-row auto-height">
+                        <label data-i18n="options_poweruser_rule_value">Selector or Phrase</label>
+                        <input type="text" id="rule-value" class="pf-input-number" placeholder="[aria-label='Sponsored']">
+                    </div>
+                    <div id="rule-wrapper-row" class="pf-setting-row auto-height" style="display:none;">
+                        <label data-i18n="options_poweruser_rule_wrapper_label">Scope (Wrapper Selector)</label>
+                        <input type="text" id="rule-wrapper" class="pf-input-number" data-i18n-placeholder="options_poweruser_rule_wrapper_placeholder" placeholder="e.g. [role='article']">
+                    </div>
+                    <div class="pf-rule-editor-btns mt-4">
+                        <button id="btnSaveRule" class="pf-btn pf-btn-primary" data-i18n="options_poweruser_save_rule">Save Rule</button>
+                        <button id="btnCancelRule" class="pf-btn pf-btn-secondary" data-i18n="options_poweruser_cancel">Cancel</button>
+                    </div>
+                </div>
+
+                <h4 class="mt-8 mb-2" data-i18n="options_poweruser_rule_list">Active Rules</h4>
+                <div id="pfRulesList" class="pf-rules-list">
+                    <!-- Rule items injected via JS -->
+                    <p class="pf-desc text-center py-4" data-i18n="options_poweruser_no_rules">No custom rules defined yet.</p>
+                </div>
+            </div>
+        </section>
     </main>
 </div>
 

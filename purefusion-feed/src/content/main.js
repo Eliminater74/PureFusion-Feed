@@ -184,6 +184,12 @@ class PureFusionApp {
                             window.PF_Helpers.showToast(message, tone, 3600);
                         }
                     }
+
+                    if (request.type === 'PF_ZAP_ELEMENT') {
+                        this._handleZapCommand();
+                        if (sendResponse) sendResponse({ status: "success" });
+                        return;
+                    }
                 });
             } catch (e) {
                 PF_Logger.warn("PureFusion: Extension context invalidated. Hot-reloading disabled.");
@@ -211,6 +217,7 @@ class PureFusionApp {
         this.quickContextCaptureBound = true;
 
         document.addEventListener('contextmenu', (event) => {
+            this.lastRightClickedElement = event?.target;
             const payload = this._captureQuickContextPayload(event?.target);
             if (!payload) return;
 
@@ -223,6 +230,55 @@ class PureFusionApp {
                 // Ignore transient extension-context failures.
             }
         }, true);
+    }
+
+    async _handleZapCommand() {
+        if (!this.lastRightClickedElement) {
+            if (window.PF_Helpers) window.PF_Helpers.showToast('Could not identify element to Zap.', 'warn');
+            return;
+        }
+
+        const target = this.lastRightClickedElement;
+        const selector = window.PF_Helpers.generateSelector(target);
+
+        if (!selector) {
+            if (window.PF_Helpers) window.PF_Helpers.showToast('Could not generate selector for this element.', 'error');
+            return;
+        }
+
+        // Create the rule
+        const newRule = {
+            id: 'zap_' + Date.now(),
+            label: 'Zap: ' + (target.tagName || 'Element'),
+            type: 'selector',
+            selector: selector,
+            enabled: true
+        };
+
+        if (!this.settings.rules) this.settings.rules = { customRules: [] };
+        if (!Array.isArray(this.settings.rules.customRules)) this.settings.rules.customRules = [];
+        
+        this.settings.rules.customRules.push(newRule);
+
+        // Save and apply
+        await window.PF_Storage.updateSettings(this.settings);
+        this.updateSettingsAndResweep();
+
+        if (window.PF_Helpers) {
+            window.PF_Helpers.showActionToast(
+                'Element Zapped and hidden.', 
+                'Undo', 
+                async () => {
+                    this.settings.rules.customRules = this.settings.rules.customRules.filter(r => r.id !== newRule.id);
+                    await window.PF_Storage.updateSettings(this.settings);
+                    // Force reveal the element (standard resweep won't show it if it was display:none !important)
+                    target.style.display = '';
+                    target.removeAttribute('data-pf-rule-hidden');
+                    this.updateSettingsAndResweep();
+                }, 
+                'success'
+            );
+        }
     }
 
     _captureQuickContextPayload(target) {

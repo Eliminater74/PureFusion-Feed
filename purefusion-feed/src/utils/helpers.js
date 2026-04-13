@@ -294,6 +294,33 @@ const PF_Helpers = {
         `;
 
         document.head.appendChild(style);
+    },
+
+    /**
+     * Generate a robust CSS selector for an element
+     * @param {HTMLElement} el 
+     * @returns {string} selector
+     */
+    generateSelector(el) {
+        if (!(el instanceof HTMLElement)) return "";
+        let path = [];
+        while (el.nodeType === Node.ELEMENT_NODE) {
+            let selector = el.nodeName.toLowerCase();
+            if (el.id) {
+                selector += '#' + el.id.replace(/[^\w-]/g, '\\$&');
+                path.unshift(selector);
+                break;
+            } else {
+                let sib = el, nth = 1;
+                while (sib = sib.previousElementSibling) {
+                    if (sib.nodeName.toLowerCase() == selector) nth++;
+                }
+                if (nth != 1) selector += ":nth-of-type(" + nth + ")";
+            }
+            path.unshift(selector);
+            el = el.parentNode;
+        }
+        return path.join(" > ");
     }
 };
 

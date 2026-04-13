@@ -8,6 +8,7 @@
 class PF_Cleaner {
     constructor(settings) {
         this.settings = settings;
+        this.ruleEngine = new PF_RuleEngine(settings);
         this._undoStyleInjected = false;
         this._panicMode = false;
         this._recoveryIntervalId = null;
@@ -38,6 +39,7 @@ class PF_Cleaner {
         const prevLimit = Number(this.settings?.wellbeing?.reelsSessionLimit || 3);
 
         this.settings = settings;
+        this.ruleEngine.updateSettings(settings);
 
         const nextLimiterEnabled = !!this.settings?.wellbeing?.reelsLimiterEnabled;
         const nextLimit = Number(this.settings?.wellbeing?.reelsSessionLimit || 3);
@@ -127,6 +129,10 @@ class PF_Cleaner {
             this.removeSponsored(rootNode);
             this.removeRightRailAds(rootNode);
         }
+
+        // Apply Power-User Rules (Phase 12)
+        this.ruleEngine.applyRules(rootNode);
+        
         if (this.settings.filters.removeSuggested) this.removeSuggestedPosts(rootNode); // Shared logic for suggested, pymk, groups
 
         if (this._hasPostTypeFiltersEnabled()) {

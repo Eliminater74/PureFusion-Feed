@@ -698,6 +698,133 @@ body.pf-view-basic .pf-advanced-card {
     }
 }
 
+
+/* =========================================================================
+   Power-User Rule Engine
+   ========================================================================= */
+
+.pf-rule-editor {
+    background: rgba(30, 36, 50, 0.4);
+    border: 1px solid var(--pf-border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: 800px;
+    opacity: 1;
+}
+
+.pf-rule-editor.active-hidden {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    opacity: 0;
+    border-color: transparent;
+    pointer-events: none;
+}
+
+.pf-rule-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: rgba(255,255,255, 0.03);
+    border: 1px solid var(--pf-border);
+    border-radius: 10px;
+    margin-bottom: 12px;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.pf-rule-item:hover {
+    border-color: var(--pf-purple-light);
+    transform: translateY(-2px);
+}
+
+.pf-rule-item.pf-rule-disabled {
+    opacity: 0.6;
+    background: rgba(0,0,0, 0.1);
+}
+
+.pf-rule-info {
+    flex: 1;
+    min-width: 0; /* allows text truncation */
+    margin-right: 16px;
+}
+
+.pf-rule-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.pf-rule-badge {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: var(--pf-purple);
+    color: white;
+}
+
+.pf-rule-name {
+    font-size: 14px;
+    color: var(--pf-text-primary);
+}
+
+.pf-rule-selector {
+    display: block;
+    font-family: 'Cascadia Code', 'Consolas', monospace;
+    font-size: 12px;
+    color: var(--pf-accent);
+    background: rgba(0,0,0, 0.2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    word-break: break-all;
+    margin-top: 4px;
+}
+
+.pf-rule-scope {
+    font-size: 11px;
+    color: var(--pf-text-muted);
+    margin-top: 4px;
+}
+
+.pf-rule-item-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pf-toggle-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.pf-toggle-label {
+    font-size: 10px;
+    color: var(--pf-text-muted);
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.pf-btn-danger {
+    background: rgba(255, 68, 102, 0.1);
+    color: #ff4466;
+    border: 1px solid rgba(255, 68, 102, 0.3);
+}
+
+.pf-btn-danger:hover {
+    background: #ff4466;
+    color: white;
+    box-shadow: 0 4px 12px rgba(255, 68, 102, 0.3);
+}
+
 @media (max-width: 900px) {
     body, html {
         overflow: auto;

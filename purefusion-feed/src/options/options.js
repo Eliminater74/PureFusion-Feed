@@ -503,9 +503,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     const btnApplyCustomCssSnippet = document.getElementById('btnApplyCustomCssSnippet');
     const customCssTextarea = document.getElementById('opt_uiMode_customCss');
     const customStylingToggle = document.getElementById('opt_uiMode_customStylingEnabled');
-    const btnQuickModeClean = document.getElementById('btnQuickModeClean');
-    const btnQuickModeFast = document.getElementById('btnQuickModeFast');
     const btnQuickModeSmart = document.getElementById('btnQuickModeSmart');
+
+    // Rule Engine UI
+    const btnAddNewRule = document.getElementById('btnAddNewRule');
+    const pfRuleEditor = document.getElementById('pfRuleEditor');
+    const pfRulesList = document.getElementById('pfRulesList');
+    const btnSaveRule = document.getElementById('btnSaveRule');
+    const btnCancelRule = document.getElementById('btnCancelRule');
+    const ruleTypeSelect = document.getElementById('rule-type');
+    const ruleLabelInput = document.getElementById('rule-label');
+    const ruleValueInput = document.getElementById('rule-value');
+    const ruleWrapperInput = document.getElementById('rule-wrapper');
+    const ruleWrapperRow = document.getElementById('rule-wrapper-row');
+
+    let ruleEditId = null;
 
     const themeNames = {
         default: t('options_ui_theme_default', 'Facebook Default'),
@@ -816,6 +828,146 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderModeRecommendationBadge(activeMode);
         renderModeWhyLine(activeMode);
         renderQuickModeActiveState(activeMode);
+        renderRulesList();
+    }
+
+    function renderRulesList() {
+        if (!pfRulesList) return;
+        const rules = currentSettings.rules?.customRules || [];
+        
+        if (rules.length === 0) {
+            pfRulesList.innerHTML = `<p class="pf-desc text-center py-4" data-i18n="options_poweruser_no_rules">${t('options_poweruser_no_rules', 'No custom rules defined yet.')}</p>`;
+            return;
+        }
+
+        pfRulesList.innerHTML = '';
+        rules.forEach(rule => {
+            const item = document.createElement('div');
+            item.className = `pf-rule-item ${rule.enabled ? '' : 'pf-rule-disabled'}`;
+            item.innerHTML = `
+                <div class="pf-rule-info">
+                    <div class="pf-rule-header">
+                        <span class="pf-rule-badge">${rule.type === 'selector' ? t('options_poweruser_type_selector', 'CSS') : t('options_poweruser_type_text', 'Text')}</span>
+                        <strong class="pf-rule-name">${rule.label || 'Untitled Rule'}</strong>
+                    </div>
+                    <code class="pf-rule-selector">${rule.selector}</code>
+                    ${rule.wrapper ? `<div class="pf-rule-scope">Scope: <code>${rule.wrapper}</code></div>` : ''}
+                </div>
+                <div class="pf-rule-item-actions">
+                    <div class="pf-toggle-wrap">
+                        <label class="pf-toggle-label">${t('options_poweruser_rule_enabled', 'Enabled')}</label>
+                        <input type="checkbox" class="pf-toggle pf-rule-toggle" data-id="${rule.id}" ${rule.enabled ? 'checked' : ''}>
+                    </div>
+                    <button class="pf-btn pf-btn-sm pf-btn-secondary btn-edit-rule" data-id="${rule.id}">${t('options_poweruser_edit_rule', 'Edit')}</button>
+                    <button class="pf-btn pf-btn-sm pf-btn-danger btn-delete-rule" data-id="${rule.id}">${t('options_poweruser_delete_rule', 'Delete')}</button>
+                </div>
+            `;
+            pfRulesList.appendChild(item);
+        });
+
+        // Attach listeners
+        pfRulesList.querySelectorAll('.pf-rule-toggle').forEach(el => {
+            el.addEventListener('change', async (e) => {
+                const id = e.target.getAttribute('data-id');
+                const rule = currentSettings.rules.customRules.find(r => r.id === id);
+                if (rule) {
+                    rule.enabled = e.target.checked;
+                    await saveSettingsFromUI(t('options_toast_rule_updated', 'Rule updated.'));
+                    renderRulesList();
+                }
+            });
+        });
+
+        pfRulesList.querySelectorAll('.btn-edit-rule').forEach(el => {
+            el.addEventListener('click', (e) => {
+                const id = e.target.getAttribute('data-id');
+                const rule = currentSettings.rules.customRules.find(r => r.id === id);
+                if (rule) {
+                    ruleEditId = id;
+                    ruleTypeSelect.value = rule.type;
+                    ruleLabelInput.value = rule.label;
+                    ruleValueInput.value = rule.selector;
+                    ruleWrapperInput.value = rule.wrapper || '';
+                    ruleWrapperRow.style.display = rule.type === 'text' ? 'flex' : 'none';
+                    pfRuleEditor.classList.remove('active-hidden');
+                    pfRuleEditor.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+        });
+
+        pfRulesList.querySelectorAll('.btn-delete-rule').forEach(el => {
+            el.addEventListener('click', async (e) => {
+                if (confirm(t('options_poweruser_delete_confirm', 'Delete this rule?'))) {
+                    const id = e.target.getAttribute('data-id');
+                    currentSettings.rules.customRules = currentSettings.rules.customRules.filter(r => r.id !== id);
+                    await saveSettingsFromUI(t('options_toast_rule_deleted', 'Rule deleted.'));
+                    renderRulesList();
+                }
+            });
+        });
+    }
+
+    if (btnAddNewRule) {
+        btnAddNewRule.addEventListener('click', () => {
+            ruleEditId = null;
+            ruleLabelInput.value = '';
+            ruleValueInput.value = '';
+            ruleWrapperInput.value = '';
+            pfRuleEditor.classList.remove('active-hidden');
+        });
+    }
+
+    if (btnCancelRule) {
+        btnCancelRule.addEventListener('click', () => {
+            pfRuleEditor.classList.add('active-hidden');
+            ruleEditId = null;
+        });
+    }
+
+    if (ruleTypeSelect) {
+        ruleTypeSelect.addEventListener('change', () => {
+            ruleWrapperRow.style.display = ruleTypeSelect.value === 'text' ? 'flex' : 'none';
+        });
+    }
+
+    if (btnSaveRule) {
+        btnSaveRule.addEventListener('click', async () => {
+            const label = ruleLabelInput.value.trim();
+            const value = ruleValueInput.value.trim();
+            const type = ruleTypeSelect.value;
+            const wrapper = ruleWrapperInput.value.trim();
+
+            if (!value) {
+                showSaveToast(t('options_toast_rule_value_required', 'Rule value is required.'), true);
+                return;
+            }
+
+            if (!currentSettings.rules) currentSettings.rules = { customRules: [] };
+
+            if (ruleEditId) {
+                const rule = currentSettings.rules.customRules.find(r => r.id === ruleEditId);
+                if (rule) {
+                    rule.label = label;
+                    rule.selector = value;
+                    rule.type = type;
+                    rule.wrapper = wrapper;
+                }
+            } else {
+                currentSettings.rules.customRules.push({
+                    id: 'rule_' + Date.now(),
+                    label: label || (type === 'selector' ? 'Custom Selector' : 'Custom Text Match'),
+                    type: type,
+                    selector: value,
+                    wrapper: wrapper,
+                    enabled: true
+                });
+            }
+
+            await saveSettingsFromUI(t('options_toast_rules_saved', 'Custom rules saved successfully.'));
+            pfRuleEditor.classList.add('active-hidden');
+            ruleEditId = null;
+            renderRulesList();
+        });
     }
 
     async function saveSettingsFromUI(successMessageInput = null) {
