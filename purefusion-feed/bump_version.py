@@ -52,7 +52,7 @@ def bump_version():
         json.dump(manifest, f, indent=2)
         f.write('\n')
 
-    print(f"✅ Manifest bumped: {old_version} -> {new_version}")
+    print(f"Manifest bumped: {old_version} -> {new_version}")
 
     # 2. Update READMEs
     version_pattern = re.compile(r"(PureFusion Feed v)\d+\.\d+\.\d+")
@@ -66,9 +66,9 @@ def bump_version():
             
             with open(path, 'w', encoding='utf-8') as f:
                 f.write(new_content)
-            print(f"✅ Updated version in {path}")
+            print(f"Updated version in {path}")
         else:
-            print(f"⚠️ Skipping {path} (not found)")
+            print(f"Skipping {path} (not found)")
 
 if __name__ == "__main__":
     bump_version()

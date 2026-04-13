@@ -2,6 +2,19 @@
 
 All notable changes to PureFusion Feed are documented in this file.
 
+## v1.7.0 - 2026-04-13
+
+### Added
+- ⚡ **Power-User Rule Engine**: Create persistent custom filtering rules based on CSS selectors or text-matching patterns. Accessible via the new "Power-User" settings tab.
+- ⚡ **Context Menu "Zap"**: Right-click any element on Facebook to instantly hide it. Generates persistent hiding rules automatically with one-click "Undo" support.
+- **International Story Expansion**: Added refined filtering support for Dutch (NL), Swedish (SV), Danish (DA), and Norwegian (NO) locales.
+- **Story Body Text Guard**: Intelligent heuristic that skips story filters for posts containing substantial user-written text, significantly reducing false positives on friend interactions.
+
+### Fixed
+- Resolved Unicode encoding issues in developer versioning scripts.
+- Hardened "Friend Activity" detection to better distinguish between low-signal stories and legitimate feed discussions.
+- Improved header signal extraction reliability across different Facebook UI rollout variants.
+
 ## v1.4.0 - 2026-04-08
 
 ### Added

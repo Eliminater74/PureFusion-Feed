@@ -1,4 +1,4 @@
-# Chrome Web Store Listing Package - PureFusion Feed v1.6.0
+# Chrome Web Store Listing Package - PureFusion Feed v1.7.0
 
 Use this file as copy-ready content for your Chrome Web Store submission.
 
@@ -25,6 +25,13 @@ What it does:
 - Popup quick toggles for common filters.
 - Full options dashboard with import/export of your configuration.
 - Undo chips for hidden posts (show once or always allow a source).
+- ⚡ **Power-User Rule Engine**: Create your own persistent CSS or text-matching rules for deep customization.
+- ⚡ **Context Menu "Zap"**: Right-click any element on the page to instantly hide it and create a permanent rule with one-click undo support.
+
+3) Multilingual & International Support
+
+- Refined filtering for English, Spanish, French, Portuguese, German, Italian, Dutch, Swedish, Danish, and Norwegian.
+- Intelligent "Body Text Guard" ensures legitimate posts with friend interactions aren't accidentally hidden in any language.
 
 3) Optional AI features (BYOK — Bring Your Own Key)
 
@@ -55,10 +62,15 @@ Important compatibility note:
 3. Confirm that recommendation modules (People You May Know, Suggested Groups) are removed from the feed.
 4. Open full settings and apply a preset pack from Core Filters.
 5. Verify feed updates without page reload.
-6. Keyword filter reproducibility test:
+6. Context Menu "Zap" test:
+   - Right-click any non-critical element (e.g., a sidebar link or group badge).
+   - Select "Zap (Hide) Element" from the menu.
+   - Confirm the element vanishes and a toast appears with an "Undo" button.
+   - Refresh the page and confirm the element stays hidden.
+7. Keyword filter reproducibility test:
    - In Options -> Keyword Filters, add a visible word from a feed post into Blocklist.
    - Save settings and confirm that matching posts collapse behind the filter overlay.
-7. Open Messenger and verify Ghost Mode options (seen receipts hidden, typing indicator hidden, privacy blur).
+8. Open Messenger and verify Ghost Mode options (seen receipts hidden, typing indicator hidden, privacy blur).
 8. Optional AI test:
    - In Options -> AI Engine, choose Gemini or OpenAI and save.
    - Allow optional host permission prompt.
