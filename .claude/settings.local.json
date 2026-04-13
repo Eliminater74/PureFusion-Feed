@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(wc -l \"i:/GITHUB/Projects/Chrome/Extension/purefusion-feed/src/content/\"*.js)"
+      "Bash(wc -l \"i:/GITHUB/Projects/Chrome/Extension/purefusion-feed/src/content/\"*.js)",
+      "Bash(python bump_version.py --minor)",
+      "Bash(PYTHONUTF8=1 python bump_version.py --minor)"
     ]
   }
 }
