@@ -147,12 +147,18 @@ class PF_Observer {
     _isHighSignalNode(node) {
         if (!node || !node.matches) return false;
 
-        if (node.matches('[data-pagelet], [role="dialog"], [role="banner"], [role="navigation"], [role="complementary"], [role="feed"], [role="menu"], [role="article"]')) {
+        // Combined selector for common structural roots
+        const highSignalSelector = '[data-pagelet*="FeedUnit"], [data-pagelet*="AdUnit"], [role="article"], [role="dialog"], [role="navigation"], [role="complementary"]';
+        
+        if (node.matches(highSignalSelector)) {
             return true;
         }
 
-        if (!node.querySelector) return false;
-        return !!node.querySelector('[data-pagelet], [role="dialog"], [role="menu"], [role="article"], [role="feed"]');
+        // Only do nested query if the node is reasonably large or specifically marked
+        // This avoids deep scans on tiny UI elements
+        if (node.childElementCount < 2) return false;
+        
+        return !!node.querySelector(highSignalSelector);
     }
 }
 

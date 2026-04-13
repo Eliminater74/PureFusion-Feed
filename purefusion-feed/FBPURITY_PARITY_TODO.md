@@ -1,6 +1,6 @@
 # F.B. Purity Parity TODO (Living Plan)
 
-Last updated: 2026-04-12
+Last updated: 2026-04-13
 
 ## Current Focus (DO NOT SKIP)
 
@@ -11,7 +11,7 @@ Last updated: 2026-04-12
 
 **Secondary:**
 
-- Smart feed scoring polish (UX copy, threshold tuning, chip stability)
+- ✅ Smart feed scoring polish (UX copy, threshold tuning, chip stability) — COMPLETE
 - Auto comment preview v2 stabilization (experimental — currently disabled by user)
 
 **Do NOT jump ahead to:**
@@ -234,7 +234,8 @@ Step 7 — Settings wiring
 - Detect likely ragebait/engagement bait/low-value repost patterns and assign a quality score.
 - Use score thresholds to collapse/dim/hide posts.
 - Keep transparent with "why hidden" reasons.
-- Status: polish slice started.
+- Status: DONE.
+- Added: expanded rage-bait keywords (EN/ES/FR/PT/DE/IT); added multi-lingual engagement-bait pattern detection (manipulative prompts like "tag a friend").
 - Added: user controls for low/high score thresholds and optional score-reason hints on PF score badges.
 - Added: optional low-score post collapsing with one-click reveal chip.
 - Added: local credibility-signal heuristics (suspicious-claim warnings + optional strict penalty mode).
@@ -257,7 +258,9 @@ Step 7 — Settings wiring
 - Fixed: TL;DR "Summarize with AI" now uses stable post anchors and full-document LLM sweep to reduce modal rerender vanish.
 - Hardened: unified post-level PureFusion Insight chip now consolidates score + credibility + verify/debug details under one expandable surface.
 - Polish: insight chip status copy now uses clearer user-facing phrasing (engagement bait / suspicious claim risk / low-value / high relevance).
-- Polish: insight chip labels further humanized ("looks like engagement bait", "possible misleading claim", "likely low-value content").
+- Polish: insight chip labels further humanized ("Pattern: High Engagement Bait risk", "Possible misleading claim", "Lower relevance based on interests").
+- Polish: added Emotional Tone detail in insight chip (Outrage-leaning, Informational, Viral-loop, etc.).
+- Performance: added insight chip refresh throttling (2s cooldown per node) and optimized leak cleanup frequency.
 - Fixed: absolute timestamp visibility toggle now actively renders readable post date labels next to post timestamps.
 - Fixed: timestamp enhancement no longer injects sibling DOM nodes into Facebook metadata row (prevents timestamp line flicker/vanish).
 - Hardened: timestamp matcher now targets only compact date/time anchors near post headers and avoids mutating non-timestamp author/action links.
@@ -397,7 +400,7 @@ Step 7 — Settings wiring
   - Status: experimental, off by default. Global sweep confirmed working via DOM debug. Primer approach (for posts with 0 comments) still relies on clicking the Comment action button which may or may not trigger comment loading depending on Facebook's current implementation.
 
 6) Feed mode presets + quality scoring
-- Add mode selector in UI and map to internal setting bundles.
+- Status: DONE.
 - Implement first-pass quality score heuristics with explicit reason labels.
 
 7) Performance pass
@@ -406,6 +409,7 @@ Step 7 — Settings wiring
 - Hardened: added observer node pre-filter + high-signal prioritization + queue caps.
 - Hardened: added main-pipeline node pre-filter/dedupe + batch cap before module dispatch.
 - Hardened: added settings-sync serialization to prevent overlapping full-document resweeps.
+- Hardened: optimized high-signal node detection and mutation batching efficiency in observer.
 
 8) Reels session limiter
 - Add optional counter and soft lock after user-defined threshold.

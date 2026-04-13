@@ -81,14 +81,22 @@ class PF_Predictor {
         if (!root || !root.querySelectorAll) return;
 
         const feedRoot = document.querySelector(PF_SELECTOR_MAP.mainFeedRegion) || root;
-        this._cleanupLeakedDebugChips();
+        
+        // Performance: only run full leaked chip cleanup if the document seems busy or specifically on forceRescore
+        if (forceRescore || (Math.random() > 0.82)) {
+            this._cleanupLeakedDebugChips();
+        }
+
         const rawPosts = [
             ...Array.from(feedRoot.querySelectorAll(PF_SELECTOR_MAP.postContainer)),
             ...Array.from(feedRoot.querySelectorAll('[role="article"]')),
             ...Array.from(document.querySelectorAll('[role="dialog"]'))
         ];
         const posts = this._dedupeNestedPosts(rawPosts.filter((postNode) => this._isLikelyFeedPost(postNode)));
-        this._cleanupLeakedDebugChips(posts);
+        
+        if (forceRescore) {
+            this._cleanupLeakedDebugChips(posts);
+        }
         const visibleCount = posts.filter((postNode) => this._isElementVisible(postNode)).length;
 
         if (!posts.length) {
@@ -255,7 +263,12 @@ class PF_Predictor {
         const predictVersion = 'v11-unified-insight-chip';
 
         if (node.dataset.pfPredictProcessed === predictVersion) {
+            const lastRefresh = Number(node.dataset.pfLastInsightRefresh || 0);
+            const now = Date.now();
+            if (now - lastRefresh < 2000) return; // Throttle: only refresh once every 2 seconds per node
+            
             this._refreshPredictionDecorations(node);
+            node.dataset.pfLastInsightRefresh = String(now);
             return;
         }
 
@@ -284,6 +297,7 @@ class PF_Predictor {
 
         // 4. Attach Engagement Listeners (so we can learn)
         this._bindInteractionListeners(node);
+        node.dataset.pfLastInsightRefresh = String(Date.now());
     }
 
     _refreshPredictionDecorations(postNode) {
@@ -487,7 +501,13 @@ class PF_Predictor {
 
         // --- Model D: Rage-Bait Detection (Phase 10) ---
         if (this.settings.wellbeing && this.settings.wellbeing.ragebaitDetector) {
-            const rageWords = ['outrage', 'disgusting', 'furious', 'ban', 'cancel', 'boycott', 'destroy', 'stupid', 'idiot', 'libs', 'maga', 'woke', 'fake', 'hypocrite', 'exposed', 'aggress'];
+            const rageWords = [
+                'outrage', 'disgusting', 'furious', 'ban', 'cancel', 'boycott', 'destroy', 'stupid', 'idiot', 'libs', 'maga', 'woke', 'fake', 'hypocrite', 'exposed', 'aggress',
+                'honteux', 'scandaleux', 'pauvre', 'effrayant', // FR
+                'schande', 'widerlich', 'skandal', 'unfassbar', // DE
+                'vergogna', 'vergognoso', 'schifo', 'disgustoso', // IT
+                'vergonha', 'absurdo', 'escandalo', 'ridiculo'  // PT
+            ];
             let rageHits = 0;
             const tLower = textContent.toLowerCase();
             
@@ -501,6 +521,26 @@ class PF_Predictor {
                 score -= 40; 
                 postNode.dataset.pfRagebait = "true";
                 reasonSignals.push({ short: '-40 ragebait', detail: `-40 ragebait signal (${rageHits} trigger terms)` });
+            }
+
+            // --- Engagement Bait Detection (Prompt patterns) ---
+            const engagementBaitPatterns = [
+                /\b(tag a friend|comment your favorite|like if you|share if you agree|swipe to see|what's your birth month|only 1% can|bet you can't|amen if you agree)\b/i,
+                /\b(identifie un ami|commente ton|aime si tu|partage si tu es d'accord)\b/i, // FR
+                /\b(markiere einen freund|kommentiere dein|liken wenn du|teilen wenn du zustimmst)\b/i, // DE
+                /\b(tagga un amico|commenta il tuo|metti mi piace se|condividi se sei d'accordo)\b/i, // IT
+                /\b(marque um amigo|comente seu|curta se voce|compartilhe se concordar)\b/i // PT
+            ];
+
+            let baitHits = 0;
+            for (const pattern of engagementBaitPatterns) {
+                if (pattern.test(textContent)) baitHits++;
+            }
+
+            if (baitHits > 0) {
+                score -= 30;
+                postNode.dataset.pfEngagementBait = "true";
+                reasonSignals.push({ short: '-30 engagement-bait', detail: `-30 engagement manipulation pattern detected (${baitHits} matches)` });
             }
         }
 
@@ -735,8 +775,16 @@ class PF_Predictor {
         if (String(postNode?.dataset?.pfRagebait || '') === 'true') {
             return {
                 severity: 'high',
-                label: 'Looks like engagement bait',
+                label: 'Pattern: High Rage-Bait risk',
                 tone: 'high emotional manipulation pattern'
+            };
+        }
+
+        if (String(postNode?.dataset?.pfEngagementBait || '') === 'true') {
+            return {
+                severity: 'warn',
+                label: 'Pattern: Engagement Bait detected',
+                tone: 'viral loop manipulation prompt'
             };
         }
 
@@ -1299,11 +1347,11 @@ class PF_Predictor {
 
         const letters = text.replace(/[^A-Za-z]/g, '');
         const upperLetters = letters.replace(/[^A-Z]/g, '');
-        if (letters.length >= 60) {
+        if (letters.length >= 80) {
             const upperRatio = upperLetters.length / letters.length;
-            if (upperRatio >= 0.46) {
+            if (upperRatio >= 0.6) {
                 points += 2;
-                triggers.push('all-caps intensity');
+                triggers.push('excessive all-caps pattern');
             }
         }
 
@@ -1379,26 +1427,16 @@ class PF_Predictor {
         if (!anchors.length) return result;
 
         const knownHighTrustDomains = [
-            'apnews.com',
-            'reuters.com',
-            'bbc.com',
-            'nytimes.com',
-            'npr.org',
-            'who.int',
-            'cdc.gov',
-            'snopes.com',
-            'factcheck.org',
-            'politifact.com'
+            'apnews.com', 'reuters.com', 'bbc.com', 'bbc.co.uk', 'nytimes.com', 'npr.org',
+            'who.int', 'cdc.gov', 'snopes.com', 'factcheck.org', 'politifact.com',
+            'lemonde.fr', 'lefigaro.fr', 'spiegel.de', 'welt.de', 'corriere.it', 'repubblica.it', // FR, DE, IT
+            'publico.pt', 'elpais.com', 'elmundo.es', // PT, ES
+            'theguardian.com', 'wsj.com', 'bloomberg.com'
         ];
 
         const shortenerDomains = [
-            'bit.ly',
-            'tinyurl.com',
-            't.co',
-            'ow.ly',
-            'rb.gy',
-            'is.gd',
-            'cutt.ly'
+            'bit.ly', 'tinyurl.com', 't.co', 'ow.ly', 'rb.gy', 'is.gd', 'cutt.ly',
+            'buff.ly', 'po.st', 'v.ht', 't.me', 'wa.me', 'goo.gl', 'dlvr.it'
         ];
 
         for (const anchor of anchors) {
