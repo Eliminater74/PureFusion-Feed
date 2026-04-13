@@ -151,6 +151,9 @@ class PF_Cleaner {
             this.removeTopbarModules(rootNode);
         }
 
+        // Apply "Soul-Soother" notification jewel styling
+        this._applyNotificationJewelStyle(rootNode);
+
         if (this._hasReelsSessionLimiterEnabled()) {
             this.applyReelsSessionLimiter(rootNode);
         }
@@ -642,6 +645,9 @@ class PF_Cleaner {
         const leftNav = this._resolveLeftNavigationContainer(rootNode);
         const rightNav = this._resolveScopedContainer(rootNode, rightSelector);
 
+        // Optional check for topbar again (rootNode might be the whole body or just a fragment)
+        // If removeTopbarModules is called separately, we ensure it's robust.
+
         if (leftNav) {
             if (sidebar.hideLeftMarketplace) {
                 this._hideLeftNavByHref(leftNav, ['/marketplace'], 'Left Nav: Marketplace');
@@ -965,10 +971,16 @@ class PF_Cleaner {
         if (!Array.isArray(normalizedLabels) || !normalizedLabels.length) return false;
 
         return labelSignals.some((signal) => {
-            // FB appends unread counts to icon labels, e.g. "Notifications (3 unread)"
-            // or "Messages (2)".  Strip the trailing parenthetical before matching
-            // so the exact label comparison still works.
-            const stripped = signal.replace(/\s*\(\d+[^)]*\)\s*$/, '').trimEnd();
+            // FB appends/prepends unread counts to icon labels:
+            // Suffix: "Notifications (3 unread)", "Messages (2)"
+            // Prefix: "3 unread Notifications", "5 Messages"
+            // Colon/Dash: "Notifications: 3", "2 - Messages"
+            
+            let stripped = signal
+                .replace(/\s*\(\d+[^)]*\)\s*$/, '') // Suffix (N)
+                .replace(/^\s*\d+[^a-z]*\s*/i, '')  // Prefix N
+                .replace(/\s*[:\-]\s*\d+\s*$/, '')  // Suffix : N or - N
+                .trim();
 
             return normalizedLabels.some((label) =>
                 signal === label
@@ -1697,6 +1709,59 @@ class PF_Cleaner {
         if (rightNav) {
             this._hideRightContactsByNames(rightNav, ['meta ai', 'meta ia'], 'Social: Hide Meta AI');
             this._hideRightContactsByNames(rightNav, ['manus ai', 'manus'], 'Social: Hide Meta AI (Manus)');
+        }
+    }
+
+    /**
+     * Notification Soul-Soother: Styles or hides red alert jewels in the header.
+     */
+    _applyNotificationJewelStyle(rootNode) {
+        const style = this.settings?.uiMode?.notificationJewelStyle;
+        if (!style || style === 'classic') return;
+
+        const banner = this._resolveTopbarBanner(rootNode);
+        if (!banner) return;
+
+        // Target: Notification dot containers inside the header buttons.
+        // FB Comet uses spans with red background color for count badges.
+        const jewelCandidates = banner.querySelectorAll('span, div');
+        jewelCandidates.forEach((el) => {
+            if (this._isNotificationJewel(el)) {
+                this._applyJewelStyleToNode(el, style);
+            }
+        });
+    }
+
+    _isNotificationJewel(el) {
+        if (!el || !el.classList || el.children.length > 0) return false;
+
+        // Visual identification: jewels are small, round, and RED.
+        const computed = window.getComputedStyle(el);
+        const bg = computed.backgroundColor;
+        
+        // Facebook red: rgb(240, 40, 73) / #f02849
+        const isRed = bg.includes('240, 40, 73') || bg.includes('rgb(245, 61, 89)');
+        if (!isRed) return false;
+
+        // Size check: jewels are small (usually 14-22px depending on count)
+        const rect = el.getBoundingClientRect();
+        if (rect.width > 26 || rect.height > 26 || rect.width < 5) return false;
+
+        // Context check: Must be inside a button-like or nav-like container in topbar
+        return !!el.closest('[role="button"], [role="link"], a');
+    }
+
+    _applyJewelStyleToNode(node, style) {
+        node.classList.remove('pf-jewel-blue', 'pf-jewel-purple', 'pf-jewel-grey', 'pf-jewel-hidden');
+        
+        if (style === 'hidden') {
+            node.classList.add('pf-jewel-hidden');
+        } else if (style === 'blue') {
+            node.classList.add('pf-jewel-blue');
+        } else if (style === 'purple') {
+            node.classList.add('pf-jewel-purple');
+        } else if (style === 'grey') {
+            node.classList.add('pf-jewel-grey');
         }
     }
 

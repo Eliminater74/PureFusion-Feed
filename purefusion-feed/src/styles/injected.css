@@ -196,3 +196,30 @@ html.pf-widescreen-mode [data-pagelet^="FeedUnit"] {
     from { opacity: 0; transform: translateY(4px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* ==========================================================================
+   Notification Soul-Soother (Jewel Styling)
+   ========================================================================== */
+
+/* Target the red background of FB jewels. 
+   FB uses inline styles for background color often, so we must be aggressive. */
+.pf-jewel-blue {
+    background-color: #1877f2 !important;
+    background: #1877f2 !important;
+}
+
+.pf-jewel-purple {
+    background-color: #8b5cf6 !important;
+    background: #8b5cf6 !important;
+}
+
+.pf-jewel-grey {
+    background-color: #6b7280 !important;
+    background: #6b7280 !important;
+}
+
+.pf-jewel-hidden {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+}

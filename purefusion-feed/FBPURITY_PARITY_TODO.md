@@ -9,7 +9,7 @@ Last updated: 2026-04-13
 - ✅ Post-type filter pack v2 — COMPLETE
 - ✅ Smart feed scoring polish — COMPLETE
 - ✅ Auto comment preview v3 — COMPLETE (DOM Injection Strategy)
-- Header/top-nav controls — monitor selector stability across 2025+ FB nav revisions (next up)
+- ✅ Header/top-nav controls — COMPLETE (Hardened: badge stripping + Jewel Soul-Soother styling)
 
 **Secondary:**
 
@@ -57,9 +57,8 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 
 3) Top header micro-controls
 - FBP parity need: granular top bar icon controls without hiding the header shell.
-- PureFusion status: WIP (safe mode — hardening slice complete).
-- Implemented: master toggle + per-icon toggles (Home, Friends, Watch, Marketplace, Groups, Gaming, Messenger, Notifications, Menu, Create).
-- Hardened: count-badge stripping in label matcher, exact-href Home detection, expanded locale aliases (FR/PT/DE/IT/NL/SV/NO/DA) for all icons.
+- PureFusion status: DONE.
+- Notes: module-level toggles are implemented with master enable; selectors and locale support are hardened; added "Notification Soul-Soother" jewel styling.
 
 4) Notification popup filtering
 - FBP parity need: hide low-value notification categories.
@@ -82,10 +81,9 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Status: initial implementation complete; continue tuning selectors/phrases per locale.
 - Add dedicated toggles for: profile picture updates, cover photo updates, life events, check-ins, milestones, job/work updates, relationship updates, group activity variants.
 
-2) Top header micro-controls (high priority)
-- Status: hardening slice in progress.
-- Hardened: multi-scope topbar resolver + expanded locale label aliases + href-token fallback matching.
-- Granular controls for top bar modules and jewels (without hiding banner/header containers).
+2) Top header micro-controls
+- Status: DONE.
+- Implemented: Notification Soul-Soother (Blue/Purple/Grey/Hidden jewel styles), multi-scope topbar resolver, expanded locale label aliases, and hardened badge-stripping logic.
 
 3) Advanced custom UI engine (medium-high)
 - Status: hardening slice in progress (safe mode, disabled by default).
@@ -353,15 +351,10 @@ Step 7 — Settings wiring
 - Next: validate selector coverage on live/poll layouts across account locales; continue topbar controls hardening.
 
 2) Header/top-nav controls
-- Add safe-mode master toggle + per-item toggles.
-- Only allow compact item-level hides, never hide `role=banner`.
-- Hardened: topbar now scans likely header navigation scopes (including alternate nav pagelets) instead of a single aria-label sweep.
-- Hardened: per-item matching now uses locale-expanded label aliases plus href-token fallback for route-stable icons.
-- Fixed: `_matchesTopbarLabels` now strips trailing count badges (e.g. "Notifications (3 unread)") from label signals before comparison — prevents Notifications hide from failing when an unread count is appended.
-- Fixed: Home button href `"/"` exact match via new `_hideTopbarByExactHref` helper — substring token matching was unsafe for single-character hrefs; also added `/?sk=h_nor` and `/?sk=h_chr` tokens.
-- Expanded: locale alias tables for all icons — Watch now covers FR (`regarder`), PT (`assistir`), ES (`ver videos`), DE (`videos ansehen`), IT (`guarda`), NL (`bekijk videos`), SV (`titta pa`); Friends/Groups/Messenger/Notifications/Create extended with NL/SV/NO/DA variants.
-- Added: Gaming/Play icon toggle (`hideGaming`) — detects Gaming tab via label aliases (EN/ES/FR/PT/DE/IT/NL/SV) and href tokens (`/gaming`, `/games`, `/play`); OFF by default; account-dependent (not all accounts show this tab).
-- Status: hardening slice complete. Remaining: monitor selector stability across 2025+ FB nav layout revisions.
+- Status: DONE.
+- Added: Notification Soul-Soother jewel styling (Blue/Purple/Grey/Hidden).
+- Hardened: `_matchesTopbarLabels` now strips unread count badges in prefix/suffix/separator positions (`Notifications (3)`, `5 Messages`, `Menu - 2`).
+- Fixed: Home button exact-href detection and locale aliases for EN/ES/FR/PT/DE/IT/NL/SV/NO/DA.
 
 3) Custom UI engine (experimental)
 - Add "Advanced Custom CSS" textarea with clear warning.
