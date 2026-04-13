@@ -19,6 +19,8 @@
   "popup_quick_filters": { "message": "Quick Filters" },
   "popup_block_sponsored": { "message": "Block Sponsored Content" },
   "popup_block_sponsored_desc": { "message": "Removes feed and sidebar ads" },
+  "popup_ad_blocker_on": { "message": "✓ Blocking sponsored posts in your feed" },
+  "popup_ad_blocker_off": { "message": "⚠ Sponsored posts visible — click to block" },
   "popup_hide_suggested": { "message": "Hide Suggested/PYMK" },
   "popup_hide_suggested_desc": { "message": "Removes algorithmic suggestions" },
   "popup_hide_reels": { "message": "Hide Reels & Stories" },

@@ -1611,17 +1611,34 @@ class PF_Cleaner {
             if (marker) targets.push(marker);
         });
 
-        // 4. Direct article-level href scan — most robust approach.
-        // FB's sponsored posts ALWAYS contain a link to the ads explanation page.
-        // This href is plain text (never obfuscated), so it survives ZWC tricks.
-        // Run this independently of targets[] so it always fires even if steps 1-3 produce nothing.
+        // 4. data-ad-preview attribute scan.
+        // Facebook's own internal attribute on ad post bodies — never appears on organic posts.
+        // Works regardless of text obfuscation or href format changes.
+        rootNode.querySelectorAll('[data-ad-preview]').forEach((el) => {
+            if (el.dataset.pfHidden) return;
+            let article = PF_Helpers.getClosest(el, '[role="article"]', 10);
+            if (article && article.parentElement?.closest('[role="article"]')) article = null;
+            if (article && article.closest('[role="complementary"]')) article = null;
+            const target = article
+                || PF_Helpers.getClosest(el, PF_SELECTOR_MAP.postContainer, 10)
+                || el;
+            this._hidePostNode(target, 'Sponsored Post (data-ad-preview)');
+        });
+
+        // 5. Ad-link href scan — covers multiple known FB ad explanation URLs.
+        // This href is plain text (never obfuscated with ZWC).
         rootNode.querySelectorAll('[role="article"]').forEach((article) => {
-            if (article.parentElement?.closest('[role="article"]')) return; // comment article
-            if (article.closest('[role="complementary"]')) return;          // sidebar
+            if (article.parentElement?.closest('[role="article"]')) return;
+            if (article.closest('[role="complementary"]')) return;
             if (article.dataset.pfHidden) return;
-            const adLink = article.querySelector(
-                'a[href*="/ads/about"], a[href*="ad_preferences"], a[href*="about_ads"]'
-            );
+            const adLink = article.querySelector([
+                'a[href*="/ads/about"]',
+                'a[href*="ad_preferences"]',
+                'a[href*="about_ads"]',
+                'a[href*="adchoices"]',
+                'a[href*="facebook.com/ads"]',
+                'a[href*="fb.com/ads"]',
+            ].join(', '));
             if (adLink) this._hidePostNode(article, 'Sponsored Post (Ad Link)');
         });
 

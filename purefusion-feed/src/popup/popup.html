@@ -37,20 +37,26 @@
             </div>
         </section>
 
-        <!-- QUICK TOGGLES -->
-        <section class="pf-quick-settings">
-            <h2 data-i18n="popup_quick_filters">Quick Filters</h2>
-            
-            <div class="pf-toggle-row">
-                <div class="pf-toggle-info">
-                    <span class="pf-toggle-title" data-i18n="popup_block_sponsored">Block Sponsored Content</span>
-                    <span class="pf-toggle-desc" data-i18n="popup_block_sponsored_desc">Removes feed and sidebar ads</span>
+        <!-- AD BLOCKER CONTROL — prominent, always visible regardless of master toggle -->
+        <section class="pf-ad-blocker-section">
+            <div class="pf-ad-blocker-row">
+                <div class="pf-ad-blocker-info">
+                    <span class="pf-ad-blocker-icon">🚫</span>
+                    <div>
+                        <span class="pf-ad-blocker-title">Sponsored Ad Blocker</span>
+                        <span class="pf-ad-blocker-desc" id="adBlockerStatus">Hides sponsored posts from your feed</span>
+                    </div>
                 </div>
-                <label class="pf-switch">
+                <label class="pf-switch pf-switch-large">
                     <input type="checkbox" id="tgl_removeAds">
                     <span class="pf-slider round"></span>
                 </label>
             </div>
+        </section>
+
+        <!-- QUICK TOGGLES -->
+        <section class="pf-quick-settings">
+            <h2 data-i18n="popup_quick_filters">Quick Filters</h2>
 
             <div class="pf-toggle-row">
                 <div class="pf-toggle-info">

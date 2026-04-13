@@ -63,6 +63,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     elements.metaAI.checked = settings.social.hideMetaAI;
     elements.master.checked = settings.enabled !== false;
 
+    // Ad blocker section visual state — active/inactive banner color + status text
+    const updateAdBlockerUI = () => {
+        const section = document.querySelector('.pf-ad-blocker-section');
+        const statusEl = document.getElementById('adBlockerStatus');
+        const active = elements.ads.checked;
+        if (section) section.classList.toggle('ads-active', active);
+        if (statusEl) statusEl.textContent = active
+            ? t('popup_ad_blocker_on', '✓ Blocking sponsored posts in your feed')
+            : t('popup_ad_blocker_off', '⚠ Sponsored posts are visible — click to block');
+    };
+
+    updateAdBlockerUI();
+    elements.ads.addEventListener('change', updateAdBlockerUI);
+
     const setQuickTogglesEnabled = () => {
         const enabled = elements.master.checked;
         quickToggles.filter(Boolean).forEach((toggle) => {
