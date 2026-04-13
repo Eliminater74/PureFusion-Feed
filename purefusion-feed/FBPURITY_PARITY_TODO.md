@@ -24,8 +24,8 @@ Always continue from the highest-priority unfinished item above.
 
 ## Last Action Log
 
-- Last completed: Post-type filter v2 validation — full selector + locale hardening slice
-- Last major fix: `_getPostCandidates` article fallback fixed (removed dead `[role="feed"]` gate); `_isValidPostScope()` helper added; three `strictPostSelector` blocks updated to accept `[role="article"]` posts; poll `[role="listbox"]` false positive hardened (requires ≥2 `[role="option"]` children); `_looksLikePostTypeAnchor` expanded with live/poll/repost/share tokens; live video anchor regex expanded with NL/DE phrases; poll anchor regex expanded with NL/SV/DA/NO phrases
+- Last completed: Sponsored ad detection — CWS rejection fix (blocked release)
+- Last major fix: `removeSponsored` final hiding loop now falls back to `[role="article"]` when no pagelet wrapper found (current FB Comet DOM uses articles not pageletes for ads); `_isSponsoredLabel` switched from `_normalizeText` → `_normalizeComparableText` (fixes diacritics mismatch e.g. "Sponsorisé" not matching "sponsorise" token); `_findSponsoredMarkerInPost` same normalizer fix; added NL/SV/DA/NO sponsored tokens (`gesponsord`, `sponsrad`, `sponsoreret`, `sponset`)
 - Known unstable area: Auto comment preview v2 (experimental, off by default — user paused work)
 - Stable checkpoint: `63e715064fa88ae83dd78a74a6385860ba5ddc9f`
 

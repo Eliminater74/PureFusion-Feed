@@ -23,7 +23,11 @@ class PF_Cleaner {
             'sponsorise',
             'sponsorisee',
             'sponsorizzato',
-            'gesponsert'
+            'gesponsert',
+            'gesponsord',   // NL
+            'sponsrad',     // SV
+            'sponsoreret',  // DA
+            'sponset',      // NO
         ];
         this._injectUndoChipStyles();
         this._startRecoveryWatchdog();
@@ -1608,7 +1612,20 @@ class PF_Cleaner {
         });
 
         for (const indicator of targets) {
-            const postWrapper = PF_Helpers.getClosest(indicator, PF_SELECTOR_MAP.postContainer);
+            // Primary: pagelet-wrapped ad unit (e.g. [data-pagelet^="AdUnit_"])
+            let postWrapper = PF_Helpers.getClosest(indicator, PF_SELECTOR_MAP.postContainer);
+
+            // Fallback: current FB Comet DOM uses [role="article"] with no pagelet wrapper.
+            // Walk up and take the first article that is NOT a comment-level article or sidebar.
+            if (!postWrapper) {
+                const article = PF_Helpers.getClosest(indicator, '[role="article"]', 10);
+                if (article
+                    && !article.parentElement?.closest('[role="article"]')
+                    && !article.closest('[role="complementary"]')) {
+                    postWrapper = article;
+                }
+            }
+
             if (postWrapper) {
                 this._hidePostNode(postWrapper, "Sponsored Post (Heuristic)");
             }
@@ -1835,7 +1852,7 @@ class PF_Cleaner {
         const postRect = postNode.getBoundingClientRect ? postNode.getBoundingClientRect() : null;
 
         for (const node of candidates) {
-            const text = this._normalizeText(
+            const text = this._normalizeComparableText(
                 node.getAttribute('aria-label')
                 || node.textContent
                 || ''
@@ -1857,7 +1874,9 @@ class PF_Cleaner {
     }
 
     _isSponsoredLabel(text) {
-        const normalized = this._normalizeText(text);
+        // Use _normalizeComparableText (strips diacritics) so that accented forms
+        // like "Sponsorisé" or "Patrocinó" match the diacritic-free token list.
+        const normalized = this._normalizeComparableText(text);
         if (!normalized) return false;
 
         return this.sponsoredTokens.some((token) => {
