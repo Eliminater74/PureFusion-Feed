@@ -2,6 +2,33 @@
 
 Last updated: 2026-04-12
 
+## Current Focus (DO NOT SKIP)
+
+**Active Priority:**
+
+- ✅ Post-type filter pack v2 validation — COMPLETE (article fallback, scope guard, poll false-positive fix, locale expansions for live/poll anchors across EN/ES/FR/PT/DE/IT/NL/SV/DA/NO)
+- Header/top-nav controls — monitor selector stability across 2025+ FB nav revisions (next up)
+
+**Secondary:**
+
+- Smart feed scoring polish (UX copy, threshold tuning, chip stability)
+- Auto comment preview v2 stabilization (experimental — currently disabled by user)
+
+**Do NOT jump ahead to:**
+
+- Plugin SDK
+- Rule engine
+- Non-critical UI features
+
+Always continue from the highest-priority unfinished item above.
+
+## Last Action Log
+
+- Last completed: Post-type filter v2 validation — full selector + locale hardening slice
+- Last major fix: `_getPostCandidates` article fallback fixed (removed dead `[role="feed"]` gate); `_isValidPostScope()` helper added; three `strictPostSelector` blocks updated to accept `[role="article"]` posts; poll `[role="listbox"]` false positive hardened (requires ≥2 `[role="option"]` children); `_looksLikePostTypeAnchor` expanded with live/poll/repost/share tokens; live video anchor regex expanded with NL/DE phrases; poll anchor regex expanded with NL/SV/DA/NO phrases
+- Known unstable area: Auto comment preview v2 (experimental, off by default — user paused work)
+- Stable checkpoint: `63e715064fa88ae83dd78a74a6385860ba5ddc9f`
+
 ## Goal
 
 Track the feature gap between F.B. Purity and PureFusion Feed, keep a clear implementation plan, and avoid losing context between commits.

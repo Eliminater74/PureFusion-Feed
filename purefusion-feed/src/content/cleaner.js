@@ -431,11 +431,10 @@ class PF_Cleaner {
 
         if (!rules.length) return;
 
-        const strictPostSelector = '[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"]';
         const postCandidates = this._getPostCandidates(rootNode)
             .filter((postWrapper) => {
                 if (!postWrapper || postWrapper.dataset.pfHidden) return false;
-                if (!postWrapper.matches || !postWrapper.matches(strictPostSelector)) return false;
+                if (!this._isValidPostScope(postWrapper)) return false;
                 if (!this._isLikelySingleFeedPost(postWrapper)) return false;
                 return true;
             });
@@ -515,11 +514,10 @@ class PF_Cleaner {
 
         if (!rules.length) return;
 
-        const strictPostSelector = '[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"]';
         const postCandidates = this._getPostCandidates(rootNode)
             .filter((postWrapper) => {
                 if (!postWrapper || postWrapper.dataset.pfHidden) return false;
-                if (!postWrapper.matches || !postWrapper.matches(strictPostSelector)) return false;
+                if (!this._isValidPostScope(postWrapper)) return false;
                 if (!this._isLikelySingleFeedPost(postWrapper)) return false;
                 return true;
             });
@@ -593,11 +591,10 @@ class PF_Cleaner {
 
         if (!rules.length) return;
 
-        const strictPostSelector = '[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"]';
         const postCandidates = this._getPostCandidates(rootNode)
             .filter((postWrapper) => {
                 if (!postWrapper || postWrapper.dataset.pfHidden) return false;
-                if (!postWrapper.matches || !postWrapper.matches(strictPostSelector)) return false;
+                if (!this._isValidPostScope(postWrapper)) return false;
                 if (!this._isLikelySingleFeedPost(postWrapper)) return false;
                 return true;
             });
@@ -1817,11 +1814,13 @@ class PF_Cleaner {
         if (rootNode.querySelectorAll) {
             rootNode.querySelectorAll(PF_SELECTOR_MAP.postContainer).forEach(addCandidate);
 
-            // Some post shells are plain role=article, so include them as fallback.
+            // Article-based post shells — Facebook's current Comet layout no longer
+            // uses [role="feed"] as a wrapper, so we accept top-level articles
+            // directly. Skip comment articles (nested inside a parent article) and
+            // sidebar articles so we don't accidentally process non-post content.
             rootNode.querySelectorAll('[role="article"]').forEach((article) => {
-                const inFeed = !!PF_Helpers.getClosest(article, '[role="feed"]', 12);
-                const inDialog = !!PF_Helpers.getClosest(article, '[role="dialog"]', 6);
-                if (!inFeed && !inDialog) return;
+                if (article.parentElement?.closest('[role="article"]')) return; // comment article
+                if (article.closest('[role="complementary"]')) return;          // sidebar
 
                 const wrapped = PF_Helpers.getClosest(article, PF_SELECTOR_MAP.postContainer, 3) || article;
                 addCandidate(wrapped);
@@ -2077,11 +2076,18 @@ class PF_Cleaner {
 
         // ── Poll selectors ────────────────────────────────────────────────────
         // Polls carry interactive option lists and "Vote" / "See Results"
-        // buttons.  We look for listbox roles, poll-specific aria-labels, and
-        // common test-id fragments.
-        const hasPollSelector = !!node.querySelector(
-            '[role="listbox"], [role="option"], [aria-label*="poll" i], [data-testid*="poll"], [data-testid*="Poll"]'
-        );
+        // buttons. We look for poll-specific aria-labels and test-id fragments.
+        //
+        // NOTE: [role="listbox"] alone is too broad — Facebook also uses it for
+        // comment-sort dropdowns and other menus. We only count it if the listbox
+        // contains at least 2 [role="option"] children (real poll answer rows),
+        // which menus do not have at initial render.
+        const pollListbox = node.querySelector('[role="listbox"]');
+        const pollListboxIsReal = pollListbox
+            ? pollListbox.querySelectorAll('[role="option"]').length >= 2
+            : false;
+        const hasPollSelector = pollListboxIsReal
+            || !!node.querySelector('[aria-label*="poll" i], [data-testid*="poll"], [data-testid*="Poll"]');
 
         // ── Anchor-phrase matchers ────────────────────────────────────────────
         const hasVideoAnchor = /(shared (a )?video|watch(ing)?( now)?|reels?|short videos?|video en vivo|compartio (un )?video|ver video|videos? cortos?|a partage (une )?video|video en direct|regarder|partilhou (um )?video|video ao vivo|video curto|kurzvideos?|hat (ein )?video geteilt|ha condiviso (un )?video|guarda (il )?video)/.test(anchorText);
@@ -2090,13 +2096,14 @@ class PF_Cleaner {
             || /\bhttps?:\/\/|www\./.test(anchorText);
 
         // Live video anchors: "is live now", "went live", "watching live", etc.
-        const hasLiveAnchor = /(is live( now)?|went live|live( now)?|watching live|live stream|live video|live broadcast|esta(ba)? en vivo( ahora)?|esta ao vivo|est en direct( maintenant)?|live-video|ist live( jetzt)?|e in diretta( ora)?)/.test(anchorText);
+        // EN / ES / FR / PT / DE / IT / NL / SV / DA / NO
+        const hasLiveAnchor = /(is live( now)?|went live|live( now)?|watching live|live stream|live video|live broadcast|esta(ba)? en vivo( ahora)?|esta ao vivo|est en direct( maintenant)?|diffuse en direct|live-video|ist live( jetzt)?|geht live|ging live|e in diretta( ora)?|va in diretta|is live nu|gaat live|ging live|ar live nu|gar live|er live nu|gar live)/.test(anchorText);
 
         // Share/Repost anchors: "[name] shared [name]'s post", "shared a post", etc.
         const hasRepostAnchor = /(shared [a-z\u00c0-\u024f\u0400-\u04ff\u4e00-\u9fff\s''\-]{2,40}'s post|shared a post|shared [a-z\u00c0-\u024f\u0400-\u04ff\u4e00-\u9fff\s''\-]{2,40}'s (status|update)|compartio la publicacion de|compartio un post|a partage la publication de|a partage un post|partilhou a publicacao de|partilhou um post|hat den beitrag von|hat einen post geteilt|ha condiviso il post di|ha condiviso un post)/.test(anchorText);
 
         // Poll anchors: "voted in a poll", "created a poll", vote/result CTAs.
-        const hasPollAnchor = /(voted? (in|on) a poll|created? a poll|see (poll )?results?|view (poll )?results?|voto en una encuesta|creo una encuesta|ver resultados de la encuesta|a vote dans un sondage|a cree un sondage|voir les resultats|votou numa sondagem|criou um inquerito|hat (an einer )?umfrage abgestimmt|ha votato (in|su) un sondaggio)/.test(anchorText);
+        const hasPollAnchor = /(voted? (in|on) a poll|created? a poll|see (poll )?results?|view (poll )?results?|voto en una encuesta|creo una encuesta|ver resultados de la encuesta|a vote dans un sondage|a cree un sondage|voir les resultats|votou numa sondagem|criou um inquerito|hat (an einer )?umfrage abgestimmt|ha votato (in|su) un sondaggio|heeft gestemd op een peiling|heeft een peiling aangemaakt|zie resultaten( van de peiling)?|rosta(de)? i en omrostning|skapade en omrostning|visa resultat(en)?|stemte pa en afstemning|se afstemningsresultaterne|stemte pa en avstemning|se resultatene)/.test(anchorText);
 
         // ── Evidence scoring ──────────────────────────────────────────────────
         const evidence = {
@@ -2184,7 +2191,8 @@ class PF_Cleaner {
     _looksLikePostTypeAnchor(text) {
         if (!text) return false;
 
-        return /(video|watch|reel|short video|photo|photos|image|album|shared a link|link preview|read more|enlace|leer mas|articulo|compartio|fotos?|imagenes?|lien|lire la suite|apercu|partage|linkvorschau|mehr lesen|geteilt|immagine|leggi di piu|anteprima|partilhou|ler mais|previa do link)/.test(text);
+        // Base post-type tokens (video / photo / link / live / poll / repost)
+        return /(video|watch|reel|short video|photo|photos|image|album|shared a link|link preview|read more|live(?: now)?|went live|is live|live stream|live video|live broadcast|poll|voted?|see results|view results|shared .{0,40}'s post|shared a post|enlace|leer mas|articulo|compartio|fotos?|imagenes?|lien|lire la suite|apercu|partage|sondage|est en direct|linkvorschau|mehr lesen|geteilt|umfrage|abgestimmt|immagine|leggi di piu|anteprima|sondaggio|condiviso|partilhou|ler mais|previa do link|inquerito|ging live|is live nu|peiling|gestemd)/.test(text);
     }
 
     _hasExternalLinkTarget(node) {
@@ -2239,6 +2247,32 @@ class PF_Cleaner {
             const normalizedToken = this._normalizeComparableText(token);
             return normalizedToken && text.includes(normalizedToken);
         });
+    }
+
+    /**
+     * Returns true if `postWrapper` is a valid feed post scope for post-type
+     * filtering. Accepts both pagelet-wrapped posts (classic FB feed) and
+     * top-level article posts (current Facebook Comet layout, which no longer
+     * wraps posts in [data-pagelet] containers).
+     */
+    _isValidPostScope(postWrapper) {
+        if (!postWrapper || !postWrapper.matches) return false;
+
+        // Classic pagelet-wrapped feed/ad posts.
+        if (postWrapper.matches(
+            '[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"], ' +
+            '[data-pagelet^="GroupsFeedUnit_"], [data-pagelet^="GroupFeedUnit_"], ' +
+            '[data-pagelet^="PageFeedUnit_"]'
+        )) return true;
+
+        // Article-based posts (Comet / current layout).
+        if (postWrapper.matches('[role="article"]')) {
+            if (postWrapper.parentElement?.closest('[role="article"]')) return false; // comment
+            if (postWrapper.closest('[role="complementary"]')) return false;          // sidebar
+            return true;
+        }
+
+        return false;
     }
 
     _isLikelySingleFeedPost(node) {
