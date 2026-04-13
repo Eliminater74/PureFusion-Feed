@@ -368,85 +368,85 @@ class PF_Cleaner {
                 enabled: sf.hideBecameFriends,
                 reason: 'Story Type: Became Friends',
                 rx: /\b(became friends|are now friends|now friends with|celebrating friendship|se hicieron amigos|ahora son amigos)\b/,
-                tokens: ['sont maintenant amis', 'agora sao amigos', 'sind jetzt befreundet', 'ora sono amici']
+                tokens: ['sont maintenant amis', 'agora sao amigos', 'sind jetzt befreundet', 'ora sono amici', 'is nu bevriend met', 'blev vän med', 'blev ven med', 'ble ven med']
             },
             {
                 enabled: sf.hideJoinedGroups,
                 reason: 'Story Type: Joined Groups',
                 rx: /\b(joined (a )?group|joined .* group|se unio a(l)? (un )?grupo)\b/,
-                tokens: ['a rejoint le groupe', 'entrou no grupo', 'der gruppe beigetreten', 'si e unito al gruppo']
+                tokens: ['a rejoint le groupe', 'entrou no grupo', 'der gruppe beigetreten', 'si e unito al gruppo', 'lid van groep geworden', 'gick med i en grupp', 'blev medlem af en gruppe', 'ble med i en gruppe']
             },
             {
                 enabled: sf.hideCommentedOnThis,
                 reason: 'Story Type: Commented On This',
                 rx: /\b(commented on this|ha comentado|comento en esto)\b/,
-                tokens: ['a commente ceci', 'comentou isto', 'dies kommentiert', 'ha commentato questo']
+                tokens: ['a commente ceci', 'comentou isto', 'dies kommentiert', 'ha commentato questo', 'reageerde op', 'kommenterade', 'kommenterte']
             },
             {
                 enabled: sf.hideLikedThis,
                 reason: 'Story Type: Liked This',
                 rx: /\b(liked this|reacted to this|le gusto esto|reacciono a esto)\b/,
-                tokens: ['a aime ceci', 'curtiu isto', 'gefallt das', 'messo mi piace a questo']
+                tokens: ['a aime ceci', 'curtiu isto', 'gefallt das', 'messo mi piace a questo', 'vindt dit leuk', 'gillar detta', 'synes godt om dette', 'liker dette']
             },
             {
                 enabled: sf.hideAttendingEvents,
                 reason: 'Story Type: Event Attendance',
                 rx: /\b(is going to (an )?event|is interested in (an )?event|attending (an )?event|attended (an )?event|interesado en (un )?evento|asistira a (un )?evento|asistio a (un )?evento)\b/,
-                tokens: ['participe a un evenement', 'interesse par un evenement', 'vai a um evento', 'interessado em um evento', 'nimmt an einer veranstaltung teil', 'interessiert an einer veranstaltung', 'partecipera a un evento', 'interessato a un evento']
+                tokens: ['participe a un evenement', 'interesse par un evenement', 'vai a um evento', 'interessado em um evento', 'nimmt an einer veranstaltung teil', 'interessiert an einer veranstaltung', 'partecipera a un evento', 'interessato a un evento', 'is aanwezig bij', 'deltar i', 'deltager i', 'skal delta i', 'skal på']
             },
             {
                 enabled: sf.hideSharedMemories,
                 reason: 'Story Type: Shared Memory',
                 rx: /\b(shared a memory|your memories on facebook|compartio un recuerdo|recuerdos en facebook)\b/,
-                tokens: ['a partage un souvenir', 'souvenirs sur facebook', 'compartilhou uma lembranca', 'lembrancas no facebook', 'hat eine erinnerung geteilt', 'erinnerungen auf facebook', 'ha condiviso un ricordo', 'ricordi su facebook']
+                tokens: ['a partage un souvenir', 'souvenirs sur facebook', 'compartilhou uma lembranca', 'lembrancas no facebook', 'hat eine erinnerung geteilt', 'erinnerungen auf facebook', 'ha condiviso un ricordo', 'ricordi su facebook', 'deelde een herinnering', 'delade ett minne', 'delte et minde', 'delte et minne']
             },
             {
                 enabled: sf.hideProfilePhotoUpdates,
                 reason: 'Story Type: Profile Photo Update',
                 rx: /\b(updated (his|her|their) profile picture|updated profile picture|changed profile picture|actualizo su foto de perfil|cambio su foto de perfil)\b/,
-                tokens: ['a mis a jour sa photo de profil', 'a change sa photo de profil', 'atualizou a foto do perfil', 'alterou a foto do perfil', 'hat sein profilbild aktualisiert', 'profilbild aktualisiert', 'ha aggiornato la foto del profilo', 'ha cambiato la foto del profilo']
+                tokens: ['a mis a jour sa photo de profil', 'a change sa photo de profil', 'atualizou a foto do perfil', 'alterou a foto do perfil', 'hat sein profilbild aktualisiert', 'profilbild aktualisiert', 'ha aggiornato la foto del profilo', 'ha cambiato la foto del profilo', 'bijgewerkt profielfoto', 'uppdaterade sin profilbild', 'opdaterede sit profilbillede', 'oppdaterte profilbilde']
             },
             {
                 enabled: sf.hideCoverPhotoUpdates,
                 reason: 'Story Type: Cover Photo Update',
                 rx: /\b(updated (his|her|their) cover photo|updated cover photo|changed cover photo|actualizo su foto de portada|cambio su foto de portada)\b/,
-                tokens: ['a mis a jour sa photo de couverture', 'a change sa photo de couverture', 'atualizou a foto de capa', 'alterou a foto de capa', 'hat sein titelbild aktualisiert', 'titelbild aktualisiert', 'ha aggiornato la foto di copertina', 'ha cambiato la foto di copertina']
+                tokens: ['a mis a jour sa photo de couverture', 'a change sa photo de couverture', 'atualizou a foto de capa', 'alterou a foto de capa', 'hat sein titelbild aktualisiert', 'titelbild aktualisiert', 'ha aggiornato la foto di copertina', 'ha cambiato la foto di copertina', 'bijgewerkt omslagfoto', 'uppdaterade sin omslagsbild', 'opdaterede sit coverbillede', 'oppdaterte forsidebilde']
             },
             {
                 enabled: sf.hideLifeEvents,
                 reason: 'Story Type: Life Event',
                 rx: /\b(added a life event|life event|evento importante|agrego un evento importante)\b/,
-                tokens: ['a ajoute un evenement marquant', 'adicionou um evento importante', 'hat ein lebensereignis hinzugefugt', 'ha aggiunto un evento importante']
+                tokens: ['a ajoute un evenement marquant', 'adicionou um evento importante', 'hat ein lebensereignis hinzugefugt', 'ha aggiunto un evento importante', 'levensgebeurtenis', 'livshändelse', 'livsbegivenhed', 'livshendelse']
             },
             {
                 enabled: sf.hideCheckIns,
                 reason: 'Story Type: Check-In',
                 rx: /\b(checked in at|check-in|is at .* with|registro en|se registro en|esta en .* con)\b/,
-                tokens: ['s est enregistre a', 'fez check in em', 'hat eingecheckt bei', 'ha fatto il check in a']
+                tokens: ['s est enregistre a', 'fez check in em', 'hat eingecheckt bei', 'ha fatto il check in a', 'inchecken', 'ingecheckt bij', 'checka in', 'tjek ind', 'sjekk inn']
             },
             {
                 enabled: sf.hideMilestones,
                 reason: 'Story Type: Milestone',
                 rx: /\b(milestone|celebrating .* milestone|hito|celebrando un hito)\b/,
-                tokens: ['etape importante', 'marco importante', 'meilenstein', 'traguardo']
+                tokens: ['etape importante', 'marco importante', 'meilenstein', 'traguardo', 'belangrijke gebeurtenis', 'milstolpe', 'milepæl']
             },
             {
                 enabled: sf.hideJobWorkUpdates,
                 reason: 'Story Type: Job/Work Update',
                 rx: /\b(started working at|works at|new job|job update|comenzo a trabajar en|trabaja en|nuevo trabajo|actualizacion laboral)\b/,
-                tokens: ['a commence a travailler chez', 'travaille chez', 'comecou a trabalhar na', 'trabalha na', 'arbeitet bei', 'hat einen neuen job', 'ha iniziato a lavorare presso', 'lavora presso']
+                tokens: ['a commence a travailler chez', 'travaille chez', 'comecou a trabalhar na', 'trabalha na', 'arbeitet bei', 'hat einen neuen job', 'ha iniziato a lavorare presso', 'lavora presso', 'is gaan werken bij', 'började arbeta på', 'begyndte at arbejde hos', 'begynte å jobbe hos']
             },
             {
                 enabled: sf.hideRelationshipUpdates,
                 reason: 'Story Type: Relationship Update',
                 rx: /\b(is in a relationship|got engaged|got married|relationship status|esta en una relacion|se comprometio|se caso|estado de relacion)\b/,
-                tokens: ['est en couple', 's est fiance', 's est marie', 'status relationnel', 'esta em um relacionamento', 'ficou noivo', 'beziehungsstatus', 'ist in einer beziehung', 'hat sich verlobt', 'hat geheiratet', 'ha una relazione', 'si e fidanzato', 'si e sposato', 'stato sentimentale']
+                tokens: ['est en couple', 's est fiance', 's est marie', 'status relationnel', 'esta em um relacionamento', 'ficou noivo', 'beziehungsstatus', 'ist in einer beziehung', 'hat sich verlobt', 'hat geheiratet', 'ha una relazione', 'si e fidanzato', 'si e sposato', 'stato sentimentale', 'relatiestatus', 'relationsstatus', 'relasjonsstatus', 'i et forhold']
             },
             {
                 enabled: sf.hideGroupActivityPosts,
                 reason: 'Story Type: Group Activity Post',
                 rx: /\b(posted in .* group|shared in .* group|publico en .* grupo|compartio en .* grupo)\b/,
-                tokens: ['a publie dans le groupe', 'a partage dans le groupe', 'publicou em um grupo', 'compartilhou em um grupo', 'hat in einer gruppe gepostet', 'hat in einer gruppe geteilt', 'ha pubblicato nel gruppo', 'ha condiviso nel gruppo']
+                tokens: ['a publie dans le groupe', 'a partage dans le groupe', 'publicou em um grupo', 'compartilhou em um grupo', 'hat in einer gruppe gepostet', 'hat in einer gruppe geteilt', 'ha pubblicato nel gruppo', 'ha condiviso nel gruppo', 'gepost in', 'gedeeld in', 'postade i', 'delade i', 'postede i', 'delte i', 'postet i', 'delte i']
             }
         ].filter((r) => r.enabled);
 
@@ -468,7 +468,21 @@ class PF_Cleaner {
             const headerSignals = this._extractStoryHeaderSignals(postWrapper);
             if (!headerSignals.length) return;
 
+            // HARDENING: Body Text Guard (Phase 16)
+            // Legitimate feed posts where a friend simply interacted often have a
+            // substantial body of text. Pure low-signal activity stories (became friends,
+            // photo updates) almost never do. We extract text and skip if too long.
+            const bodyText = this._extractPostText(postWrapper);
+            const isSubstantialPost = bodyText && bodyText.length > 200;
+
             for (const rule of rules) {
+                // Skip if this is a substantial post UNLESS it is a Life Event or Milestone,
+                // which sometimes include a description. All other "Interaction" stories
+                // should be skipped if they have significant body text to avoid false positives.
+                if (isSubstantialPost && !['Story Type: Life Event', 'Story Type: Milestone'].includes(rule.reason)) {
+                    continue;
+                }
+
                 if (headerSignals.some((signal) => rule.rx.test(signal) || this._containsAnyToken(signal, rule.tokens))) {
                     matchedPosts.push({ node: postWrapper, reason: rule.reason });
                     break;
@@ -2248,7 +2262,7 @@ class PF_Cleaner {
     _looksLikeStoryActivitySignal(text) {
         if (!text) return false;
 
-        return /(friends?|group|commented|liked|reacted|shared a memory|memories on facebook|event|attending|interested in|going to|amigos?|grupo|comento|comentado|gusto|reacciono|recuerdo|recuerdos|evento|asistio|asistira|interesado|amis|groupe|commente|aime|souvenir|evenement|freund|gruppe|kommentiert|gefallt|erinnerung|veranstaltung|interessiert|interessato|partecipa|relazione)/.test(text);
+        return /(friends?|group|commented|liked|reacted|shared a memory|memories on facebook|event|attending|interested in|going to|amigos?|grupo|comento|comentado|gusto|reacciono|recuerdo|recuerdos|evento|asistio|asistira|interesado|amis|groupe|commente|aime|souvenir|evenement|freund|gruppe|kommentiert|gefallt|erinnerung|veranstaltung|interessiert|interessato|partecipa|relazione|bevriend|reageerde|vindt dit leuk|aanwezig|herinnering|profielfoto|vän|medlem|kommenterade|gillar|deltar|minne|profilbild|milepæl|forhold)/.test(text);
     }
 
     _extractImageSubjectSignals(node) {

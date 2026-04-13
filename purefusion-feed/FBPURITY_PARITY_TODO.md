@@ -14,8 +14,9 @@ Last updated: 2026-04-13
 
 - ✅ Phase 13: Power-User Rule Engine — COMPLETE (Selector + Text logic)
 - ✅ Phase 15: Context Menu "Zap" — COMPLETE (Instant rules + Undo support)
-- 1) Multilingual Phrase Expansion — Tuning story/activity keywords (Medium)
-- 2) Story/Activity Filter Hardening — Closing edge cases on "Friend Activity" posts (High)
+- ✅ Phase 16: Multilingual & Story Hardening — COMPLETE (NL/SV/DA/NO + Body Text Guard)
+- 1) Phase 17: Auto Comment Preview v3 — Data Layer Fetching (High)
+- 2) Phase 18: Performance Pass — Observer & Pipeline Budgeting (Medium)
 
 **Secondary:**
 
