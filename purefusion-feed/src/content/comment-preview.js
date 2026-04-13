@@ -38,6 +38,8 @@ class PF_CommentPreview {
         this.pollIntervalMs         = 220;
         this.maxPollAttempts        = 15;   // 15 × 220 ms ≈ 3.3 s adaptive window
         this.lastActionAt           = 0;
+        this.strategy               = 'inject'; // 'inject' or 'click'
+        this.injectedShells         = new WeakMap();
 
         this._syncRuntimeConfig();
         this._initIntersectionObserver();
@@ -360,6 +362,12 @@ class PF_CommentPreview {
 
         if (this._isCoolingDown()) {
             this._scheduleRetry(post, this._remainingCooldownMs() + 150);
+            return;
+        }
+
+        // ── Strategy Routing ──────────────────────────────────────────────
+        if (this.strategy === 'inject') {
+            this._injectCommentShell(post);
             return;
         }
 
@@ -961,6 +969,87 @@ class PF_CommentPreview {
         this.maxAttemptsPerPost = this._clamp(s.commentPreviewRetryCap,        1,  10, 4);
         this.maxPostsPerSweep   = this._clamp(s.commentPreviewMaxPostsPerSweep, 10, 60, 30);
         this.minActionGapMs     = this._clamp(s.commentPreviewCooldownMs,       300, 5000, 1200);
+        this.strategy           = s.commentPreviewStrategy === 'click' ? 'click' : 'inject';
+    }
+
+    // ── V3 Injection Logic ──────────────────────────────────────────────────
+
+    /**
+     * Directly injects a styled comment shell into the post instead of clicking.
+     * Prevents focus stealing and navigation jumps.
+     */
+    _injectCommentShell(post) {
+        if (!post || !post.querySelector || this.processedPosts.has(post)) return;
+        if (post.querySelector('.pf-comment-shell')) return;
+
+        // Find the interaction bar (Like/Comment/Share)
+        const toolbar = post.querySelector('div[role="toolbar"]') ||
+                        post.querySelector('.xn3w4p2.x1gslohp'); // Fallback obfuscated class
+
+        if (!toolbar) return;
+
+        const shell = document.createElement('div');
+        shell.className = 'pf-comment-shell';
+        shell.dataset.pfCommentInjected = 'true';
+        shell.innerHTML = `
+            <div class="pf-comment-shell-header">
+                <span>PureFusion Comment Preview</span>
+                <span class="pf-comment-shell-status">Loading safely...</span>
+            </div>
+            <div class="pf-comment-list-skeleton">
+                ${this._generateSkeletonLoader(3)}
+            </div>
+        `;
+
+        // Inject after the toolbar
+        toolbar.insertAdjacentElement('afterend', shell);
+        this.injectedShells.set(post, shell);
+        this.processedPosts.add(post);
+        post.dataset.pfCpStatus = 'injected-v3';
+
+        // Brief delay before potential data fetch (Phase 2 hardening)
+        this.lastActionAt = Date.now();
+
+        // Setup re-render protection
+        this._setupRerenderGuard(post, toolbar, shell);
+    }
+
+    _generateSkeletonLoader(count) {
+        let html = '';
+        for (let i = 0; i < count; i++) {
+            html += `
+                <div class="pf-skeleton-item">
+                    <div class="pf-skeleton-avatar"></div>
+                    <div class="pf-skeleton-content">
+                        <div class="pf-skeleton-line pf-skeleton-name"></div>
+                        <div class="pf-skeleton-line pf-skeleton-text"></div>
+                    </div>
+                </div>
+            `;
+        }
+        return html;
+    }
+
+    /**
+     * Facebook's React reconciliation often wipes injected nodes on state change.
+     * We attach a heavy-duty observer to the post to instantly re-inject if lost.
+     */
+    _setupRerenderGuard(post, toolbar, shell) {
+        if (!post || !toolbar || !shell) return;
+
+        const observer = new MutationObserver((mutations) => {
+            if (!document.contains(post)) {
+                observer.disconnect();
+                return;
+            }
+
+            if (!post.contains(shell)) {
+                // Shell was wiped by React, put it back
+                toolbar.insertAdjacentElement('afterend', shell);
+            }
+        });
+
+        observer.observe(post, { childList: true, subtree: true });
     }
 
     _clamp(value, min, max, fallback) {

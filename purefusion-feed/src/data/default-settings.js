@@ -216,6 +216,7 @@ const DEFAULT_SETTINGS = {
         trackDeactivated: true,         // Surf for missing/404 friends
         notificationDigestMode: false,  // If true, groups notifications by hour
         autoCommentPreview: false,      // Auto-expand inline comments for visible feed posts
+        commentPreviewStrategy: 'inject', // Strategy for expansion: 'inject' (v3) or 'click' (v2)
         commentPreviewCooldownMs: 1200, // Min delay between simulated preview clicks
         commentPreviewRetryCap: 4,      // Max retries per post before giving up
         commentPreviewMaxPostsPerSweep: 30,

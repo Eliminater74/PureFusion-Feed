@@ -6,7 +6,9 @@ Last updated: 2026-04-13
 
 **Active Priority:**
 
-- ✅ Post-type filter pack v2 validation — COMPLETE (article fallback, scope guard, poll false-positive fix, locale expansions for live/poll anchors across EN/ES/FR/PT/DE/IT/NL/SV/DA/NO)
+- ✅ Post-type filter pack v2 — COMPLETE
+- ✅ Smart feed scoring polish — COMPLETE
+- ✅ Auto comment preview v3 — COMPLETE (DOM Injection Strategy)
 - Header/top-nav controls — monitor selector stability across 2025+ FB nav revisions (next up)
 
 **Secondary:**
@@ -137,10 +139,11 @@ Status key: DONE = implemented and working, WIP = implemented but still being ha
 - Hardened: stronger action-row validation before positional comment clicks.
 - Added: FR/PT/DE/IT phrase coverage for inline comment trigger/primer detection.
 
-7b) Auto comment preview v3 — DOM injection strategy (medium) [RESEARCH VALIDATED, NOT STARTED]
-
-- Replace the broken click strategy entirely with direct DOM injection after the post interaction bar.
-- Status: NOT STARTED. Do not begin until header/top-nav controls slice is complete.
+7b)- [x] **Auto comment preview v3 — DOM injection strategy** (medium)
+  - ✅ Implement direct injection after interaction bar.
+  - ✅ Add skeleton loader UI for premium look.
+  - ✅ Implement MutationObserver re-render guard for React reconciliation.
+  - ✅ **DONE 2026-04-13**
 
 ### Why this approach works
 

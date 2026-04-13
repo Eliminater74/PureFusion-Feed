@@ -104,6 +104,95 @@ html.pf-widescreen-mode [data-pagelet^="FeedUnit"] {
     max-width: 100% !important;
 }
 
-html.pf-widescreen-mode [data-pagelet^="FeedUnit"] [dir="auto"] {
-    max-width: 100% !important;
+
+/* ==========================================================================
+   Comment Preview v3 (Injection Strategy)
+   ========================================================================== */
+
+.pf-comment-shell {
+    margin: 12px 16px;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(120, 132, 154, 0.25);
+    background: rgba(30, 35, 45, 0.95);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-family: inherit;
+    animation: pf-fade-in 0.3s ease-out;
+}
+
+.pf-comment-shell-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(120, 132, 154, 0.15);
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(18, 200, 220, 0.9);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.pf-comment-shell-status {
+    color: rgba(220, 230, 255, 0.6);
+    font-weight: 600;
+}
+
+.pf-comment-list-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.pf-skeleton-item {
+    display: flex;
+    gap: 12px;
+}
+
+.pf-skeleton-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(120, 132, 154, 0.15);
+    flex-shrink: 0;
+}
+
+.pf-skeleton-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-top: 4px;
+}
+
+.pf-skeleton-line {
+    height: 10px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, 
+        rgba(120, 132, 154, 0.1) 25%, 
+        rgba(120, 132, 154, 0.2) 50%, 
+        rgba(120, 132, 154, 0.1) 75%
+    );
+    background-size: 200% 100%;
+    animation: pf-skeleton-loading 1.5s infinite linear;
+}
+
+.pf-skeleton-name {
+    width: 40%;
+    height: 12px;
+}
+
+.pf-skeleton-text {
+    width: 90%;
+}
+
+@keyframes pf-skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+@keyframes pf-fade-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
 }
