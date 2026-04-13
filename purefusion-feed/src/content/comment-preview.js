@@ -51,22 +51,10 @@ class PF_CommentPreview {
     }
 
     sweepDocument() {
-        // Always log the current gate state so developers can verify in DevTools
-        // without needing to enable verbose console mode.
-        const autoOn      = !!this.settings?.social?.autoCommentPreview;
-        const surface     = this._currentSurface();
-        const surfaceOk   = this._isSurfaceAllowed();
-        const enabled     = autoOn && surfaceOk;
-        PF_Logger.info(
-            `[CommentPreview] sweepDocument — enabled=${enabled}` +
-            ` [autoCommentPreview=${autoOn}, surface=${surface}, surfaceAllowed=${surfaceOk}]`
-        );
+        if (!this._isEnabled()) return;
 
-        if (!enabled) return;
-
-        // Page-level sweep (fast path): confirmed via live DOM inspection that
-        // "View more comments" buttons are NOT inside [role="article"] or the
-        // per-post pagelet container. A document-level scan is required.
+        // Fast-path: click any visible "View more comments" / "X Comments" buttons
+        // that are already in the DOM and within the visible viewport area.
         this._globalCommentButtonSweep();
 
         const seen  = new WeakSet();
@@ -82,77 +70,228 @@ class PF_CommentPreview {
         // Primary: pagelet-based post wrappers (home feed, search results, etc.)
         document.querySelectorAll(PF_SELECTOR_MAP.postContainer).forEach(queueIfNew);
 
-        // Secondary: Group / Page / Watch feed posts that use different pagelet
-        // prefixes or no pagelet at all. Walk up from feed-direct children that
-        // contain a [role="article"] to find the actual post wrapper.
+        // Secondary: Group / Page / Watch feed posts — walk feed-direct children
+        // that contain a [role="article"] to find the actual post wrapper.
         document.querySelectorAll('[role="feed"] > div').forEach((child) => {
             if (child.querySelector('[role="article"]')) queueIfNew(child);
+        });
+
+        // Tertiary: Facebook's Comet DOM exposes [role="article"] directly on post
+        // containers even when pagelet attributes and [role="feed"] are absent.
+        // Skip nested articles (comment articles inside a parent post article).
+        document.querySelectorAll('[role="article"]').forEach((el) => {
+            if (!el.parentElement?.closest('[role="article"]')) queueIfNew(el);
         });
     }
 
     applyToNodes(nodes) {
         if (!this._isEnabled()) return;
 
-        // Also run the global sweep when new nodes are injected (infinite scroll).
+        // Re-run the global sweep on every new batch of nodes (infinite scroll).
         this._globalCommentButtonSweep();
 
         nodes.forEach((node) => {
             if (!node || node.nodeType !== Node.ELEMENT_NODE) return;
 
-            if (node.matches && node.matches(PF_SELECTOR_MAP.postContainer)) {
-                this._queuePost(node);
+            if (node.matches) {
+                if (node.matches(PF_SELECTOR_MAP.postContainer)) {
+                    this._queuePost(node);
+                }
+                // Also catch top-level article elements (Facebook Comet feed)
+                if (node.matches('[role="article"]') &&
+                    !node.parentElement?.closest('[role="article"]')) {
+                    this._queuePost(node);
+                }
             }
 
             if (node.querySelectorAll) {
                 node.querySelectorAll(PF_SELECTOR_MAP.postContainer)
                     .forEach((post) => this._queuePost(post));
-
-                // Also catch group/page posts that don't match the pagelet selector
-                if (node.matches && node.matches('[role="feed"] > div, [role="feed"]')) {
-                    node.querySelectorAll('[role="feed"] > div').forEach((child) => {
-                        if (child.querySelector('[role="article"]')) this._queuePost(child);
-                    });
-                }
+                // Nested article scan
+                node.querySelectorAll('[role="article"]').forEach((el) => {
+                    if (!el.parentElement?.closest('[role="article"]')) {
+                        this._queuePost(el);
+                    }
+                });
             }
         });
     }
 
+
     /**
-     * Page-level scan for comment expansion buttons using innerText.
+     * Page-level scan for comment expansion buttons.
      *
-     * "View more comments", "View all comments", "See previous comments", etc.
-     * have VISIBLE innerText but NO aria-label (confirmed via DOM inspection).
-     * These buttons are NOT contained within [role="article"] or the feed-unit
-     * pagelet — a document-level querySelectorAll is the only reliable way to
-     * find them. Each button is marked with data-pf-cp-clicked so it is only
-     * clicked once per page session.
+     * Covers two distinct button types:
+     *
+     *  A) innerText-visible buttons — "View more comments", "View all comments",
+     *     "See previous comments", "47 comments" inline trigger.
+     *
+     *  B) Stats-row comment count icon — the speech bubble showing "1.4K" ABOVE
+     *     the Like/Comment/Share bar. Its innerText is just "1.4K" (no "comments"
+     *     word), but its aria-label is "1,400 Comments". We check aria-label BEFORE
+     *     innerText so this button is found even when innerText has no "comments".
+     *
+     * SELECTOR NOTE: We deliberately do NOT use [aria-label*="comment"] in the
+     * CSS selector — that matches the composer textbox (role="textbox") and other
+     * non-button containers. We keep the selector narrow (only elements with an
+     * explicit interactive role or anchor href) and do the aria-label text check
+     * inside the loop. Stats-row buttons nearly always carry role="button" or are
+     * anchors, so the narrow selector still catches them.
+     *
+     * ONE CLICK PER SWEEP: We fire at most one click per call and stop. This
+     * prevents simultaneously expanding every visible post's comment section.
+     *
+     * VIEWPORT RESTRICTION: Only act on elements near the current scroll position
+     * (±500 px) — posts the user is actively viewing.
      */
     _globalCommentButtonSweep() {
+        if (this._isCoolingDown()) return;
+
+        // Live DOM inspection confirmed: Facebook's stats-row comment count is a
+        // PLAIN SPAN with no role — e.g. <span>22 comments</span> inside the
+        // "197 reactions · 22 comments" row. It is NOT a div[role="button"].
+        // Check plain spans for exact count match BEFORE the role-based scan.
+        if (this._globalStatsSpanSweep()) return;
+
         const candidates = document.querySelectorAll(
-            'div[role="button"], span[role="button"], button'
+            'div[role="button"], span[role="button"], button, a[role="link"], a[href]'
         );
 
         for (const btn of candidates) {
-            // Skip already-clicked or invisible buttons.
             if (btn.dataset.pfCpClicked) continue;
             if (!this._isVisible(btn)) continue;
 
-            const text = (btn.innerText || '').replace(/\s+/g, ' ').trim().toLowerCase();
-            if (!text || text.length > 100) continue;
+            // Skip the comment composer / textbox — it's not a button we should click.
+            if (btn.matches('[contenteditable], [role="textbox"], textarea, input')) continue;
+            if (btn.closest('[contenteditable], [role="textbox"], textarea, input')) continue;
 
-            // Must mention "comment/comments" somewhere in the text.
-            if (!/\bcomments?\b/.test(text)) continue;
+            // Viewport restriction — only expand posts the user is currently viewing.
+            const rect = btn.getBoundingClientRect();
+            if (rect.bottom < -500 || rect.top > window.innerHeight + 500) continue;
 
-            // Must also have a load-more signal word or a leading count.
-            // Avoids accidentally clicking the "Comment" action button (no leading number or load word).
-            const hasLoadWord = /\b(view|see|load|show|previous|more|all)\b/.test(text);
-            const hasLeadingCount = /^\d/.test(text); // e.g. "47 comments"
+            // Build the best-available label string.
+            // CRITICAL: aria-label must be checked FIRST. The stats-row speech-bubble
+            // button has innerText="1.4K" (just the count) but aria-label="1,400 Comments".
+            // Checking innerText first would miss it entirely.
+            const ariaLabel = this._normalizeText(
+                btn.getAttribute ? (btn.getAttribute('aria-label') || '') : ''
+            );
+            const titleAttr = this._normalizeText(
+                btn.getAttribute ? (btn.getAttribute('title') || '') : ''
+            );
+            const innerTxt  = (btn.innerText || '').replace(/\s+/g, ' ').trim().toLowerCase();
+
+            let matchText = '';
+            if (/\bcomments?\b/.test(ariaLabel)) {
+                matchText = ariaLabel;
+            } else if (/\bcomments?\b/.test(titleAttr)) {
+                matchText = titleAttr;
+            } else if (/\bcomments?\b/.test(innerTxt)) {
+                matchText = innerTxt;
+            }
+
+            if (!matchText || matchText.length > 120) continue;
+
+            // Must carry a load-word OR a leading digit count. This rejects:
+            //   "Leave a comment"  → no load word, no leading digit → skipped ✓
+            //   "Comment"          → no load word, no leading digit → skipped ✓
+            //   "Write a comment"  → no load word, no leading digit → skipped ✓
+            //   "1,400 Comments"   → leading digit → allowed ✓
+            //   "View 22 comments" → load word "view" → allowed ✓
+            const hasLoadWord     = /\b(view|see|load|show|previous|more|all)\b/.test(matchText);
+            const hasLeadingCount = /^\d/.test(matchText);
 
             if (!hasLoadWord && !hasLeadingCount) continue;
 
+            // Skip external links (never navigate away from Facebook).
+            if (btn.tagName === 'A') {
+                const href = (btn.getAttribute('href') || '').toLowerCase();
+                if (href && href.startsWith('http') && !href.includes('facebook.com')) continue;
+            }
+
             btn.dataset.pfCpClicked = '1';
-            try { btn.click(); } catch (_) { /* ignore */ }
+
+            // _safeClick walks up to the nearest clickable ancestor (catching cases
+            // where btn is a child div inside <a href>), adds navigation prevention
+            // for anchors, and fires the full pointer-event sequence.
+            const clicked = this._safeClick(btn);
+            if (!clicked) {
+                // Cooling down — undo the mark and stop the sweep.
+                delete btn.dataset.pfCpClicked;
+            }
+
+            // One click per sweep regardless of outcome — stop here.
+            // The next sweep (triggered by timer or mutation) will handle the
+            // next post in the viewport.
+            return;
         }
+    }
+
+    /**
+     * Secondary scan: finds plain <span> elements whose trimmed innerText exactly
+     * matches the comment-count pattern (e.g. "22 comments", "1.4K Comments").
+     *
+     * Facebook's stats-row renders comment counts as plain spans with React fiber
+     * handlers — no explicit role="button", no aria-label, no tabindex. Clicking
+     * the span fires React's event delegation and triggers inline comment loading
+     * exactly like a user click would.
+     *
+     * Returns true if a click was fired (caller should stop further scanning).
+     */
+    _globalStatsSpanSweep() {
+        // Exactly "N comments" — the specific comment-count segment.
+        // Does NOT match "197 reactions · 22 comments" (too long) or
+        // "Leave a comment" (no leading digit).
+        const exactCountRe = /^\d[\d,.]*(k|m)?\s+comments?$/i;
+
+        const spans = document.querySelectorAll('span');
+        for (const span of spans) {
+            if (span.dataset.pfCpClicked) continue;
+
+            const rect = span.getBoundingClientRect();
+            if (rect.width === 0 || rect.height === 0) continue;
+            if (rect.bottom < -500 || rect.top > window.innerHeight + 500) continue;
+
+            const text = (span.innerText || '').trim();
+            if (!exactCountRe.test(text)) continue;
+
+            span.dataset.pfCpClicked = '1';
+            const savedScrollY = window.scrollY;
+            try { span.click(); } catch (_) { /* ignore */ }
+            this._restoreScrollAndBlur(savedScrollY);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * After clicking any comment trigger, Facebook may:
+     *  1. Auto-focus the comment composer (causing the keyboard to pop or the
+     *     page to scroll to the text box).
+     *  2. Programmatically scroll the viewport to the newly expanded section.
+     *
+     * We fight both by restoring the saved scroll position and blurring any
+     * newly focused text input, repeatedly across a short window to beat React's
+     * async setState → layout → scroll pipeline.
+     */
+    _restoreScrollAndBlur(savedScrollY) {
+        [60, 180, 380, 700].forEach((delay) => {
+            setTimeout(() => {
+                // Restore scroll if it jumped by more than 80 px.
+                if (Math.abs(window.scrollY - savedScrollY) > 80) {
+                    window.scrollTo({ top: savedScrollY, behavior: 'instant' });
+                }
+                // Blur any text input that auto-focused (the comment composer).
+                const focused = document.activeElement;
+                if (focused && focused !== document.body) {
+                    if (focused.matches(
+                        '[role="textbox"], textarea, input, [contenteditable="true"]'
+                    )) {
+                        focused.blur();
+                    }
+                }
+            }, delay);
+        });
     }
 
     // ── Intersection + queuing ──────────────────────────────────────────────
@@ -179,6 +318,7 @@ class PF_CommentPreview {
     _queuePost(post) {
         if (!post) return;
         if (this.processedPosts.has(post) || this.observedPosts.has(post)) return;
+
         if (!this._isSafeFeedPostCandidate(post)) return;
 
         post.dataset.pfCpStatus = 'queued';
@@ -204,8 +344,8 @@ class PF_CommentPreview {
      *           Finds an already-rendered inline expand button and clicks it.
      *
      *  Step 3 — Action-row primer (fallback)
-     *           Clicks the "Comment" button to cause FB to render the section,
-     *           then polls adaptively for the inline trigger to appear.
+     *           Clicks the "Leave a comment" / "Comment" button to cause FB to
+     *           render the section, then polls adaptively for comments to appear.
      */
     _tryExpand(post) {
         if (!this._isEnabled()) return;
@@ -531,9 +671,26 @@ class PF_CommentPreview {
     }
 
     _findPositionalCommentButton(post) {
-        const toolbars = post.querySelectorAll('div[role="group"], div[role="toolbar"]');
+        // FB uses both explicit toolbar roles AND plain div rows for the action bar.
+        // Cast a wider net: any element with multiple role="button" children that
+        // looks like a Like/Comment/Share row.
+        const toolbars = post.querySelectorAll(
+            'div[role="group"], div[role="toolbar"], div[role="list"]'
+        );
 
-        for (const toolbar of toolbars) {
+        // Also consider direct flex children of the post that contain 3+ buttons
+        const fallbackRows = [];
+        if (post.querySelectorAll) {
+            post.querySelectorAll('div, li').forEach((el) => {
+                if (el.querySelectorAll('[role="button"], button').length >= 3) {
+                    fallbackRows.push(el);
+                }
+            });
+        }
+
+        const candidates = [...Array.from(toolbars), ...fallbackRows.slice(0, 5)];
+
+        for (const toolbar of candidates) {
             const buttons = Array.from(
                 toolbar.querySelectorAll('div[role="button"], span[role="button"], button, a[role="link"]')
             ).filter((el) => this._isSafeActionCandidate(el, post));
@@ -618,11 +775,17 @@ class PF_CommentPreview {
         if (post.dataset?.pfHidden === 'true') return false;
         if (post.matches('[role="dialog"], [aria-modal="true"]')) return false;
 
-        if (post.matches('[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"]')) return true;
+        // Pagelet-based wrappers are always valid (home feed, ads, etc.)
+        if (post.matches('[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"], [data-pagelet^="GroupsFeedUnit_"], [data-pagelet^="GroupFeedUnit_"]')) return true;
 
-        const hasArticle   = !!post.querySelector('[role="article"]');
-        const actionCount  = post.querySelectorAll('a[role="link"], a[href], [role="button"], button').length;
-        return hasArticle && actionCount >= 4;
+        // Facebook no longer reliably uses [role="article"] inside post wrappers
+        // (confirmed via live DOM inspection — articles=0 for all feed candidates).
+        // Fall back to action-count heuristic alone.
+        const actionCount = post.querySelectorAll('a[role="link"], a[href], [role="button"], button').length;
+
+        // Require at least 3 interactive elements (Like, Comment, Send minimum)
+        // but cap at 60 to avoid selecting the entire page container.
+        return actionCount >= 3 && actionCount <= 60;
     }
 
     _isSafeActionCandidate(el, post) {
@@ -673,6 +836,10 @@ class PF_CommentPreview {
     _safeClick(el) {
         if (this._isCoolingDown()) return false;
 
+        // Capture scroll position BEFORE the click so we can restore it if
+        // Facebook auto-scrolls to the newly expanded comment section.
+        const savedScrollY = window.scrollY;
+
         try {
             // Walk up to find the nearest clickable ancestor — avoids clicking a
             // child icon/svg when the parent button is the actual handler.
@@ -681,12 +848,13 @@ class PF_CommentPreview {
                 el.closest('div[role="button"], span[role="button"], button, a[role="link"], a[href]') || el
             )) || el;
 
+            const isAnchor  = target.tagName === 'A';
+            const isRoleBtn = !isAnchor && target.getAttribute && target.getAttribute('role') === 'button';
+
             // For anchor targets: add a capture-phase preventDefault so the
-            // browser doesn't navigate. React's handler still fires (React uses
-            // bubble-phase delegation and doesn't honour defaultPrevented for
-            // its own routing logic). This is necessary for stats-row comment
-            // count links whose href includes /posts/ or /permalink/.
-            const isAnchor = target.tagName === 'A';
+            // browser doesn't navigate. React's handler still fires because
+            // React uses bubble-phase delegation and reads defaultPrevented only
+            // for its own router — comment-section expansion uses a different path.
             let preventNav = null;
             if (isAnchor) {
                 preventNav = (e) => e.preventDefault();
@@ -705,6 +873,18 @@ class PF_CommentPreview {
             target.dispatchEvent(new PointerEvent('pointerup',   ptrOpts));
             target.click();
 
+            // Belt-and-suspenders for role="button" elements: React-based interactive
+            // elements often have keyboard handlers (Enter/Space) that are separate
+            // from their click handlers. Firing a keydown Enter after the click
+            // increases the chance that at least one of the handler paths fires.
+            if (isRoleBtn) {
+                try { target.focus({ preventScroll: true }); } catch (_) { /* ignore */ }
+                const kOpts = { key: 'Enter', code: 'Enter', keyCode: 13, which: 13,
+                                bubbles: true, cancelable: true, view: window };
+                target.dispatchEvent(new KeyboardEvent('keydown', kOpts));
+                target.dispatchEvent(new KeyboardEvent('keyup',   kOpts));
+            }
+
             // Belt-and-suspenders: clean up the nav guard if click() somehow
             // didn't fire the event.
             if (preventNav) {
@@ -712,9 +892,13 @@ class PF_CommentPreview {
             }
 
             this.lastActionAt = Date.now();
+
+            // Prevent Facebook from auto-scrolling the viewport to the newly
+            // expanded comment composer and from stealing keyboard focus.
+            this._restoreScrollAndBlur(savedScrollY);
+
             return true;
-        } catch (err) {
-            PF_Logger.warn('PF_CommentPreview: click failed.', err);
+        } catch (_) {
             return false;
         }
     }
