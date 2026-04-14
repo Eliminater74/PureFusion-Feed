@@ -17,8 +17,9 @@ Last updated: 2026-04-13
 - ✅ Phase 16: Multilingual & Story Hardening — COMPLETE (NL/SV/DA/NO + Body Text Guard)
 - ✅ Phase 18: Performance Pass — COMPLETE (Chunked Cleaning + Skip Markers)
 - ✅ Phase 17: Auto Comment Preview v3 — COMPLETE (Non-intrusive GraphQL fetching)
-- 1) Phase 19: Filter Logic Consolidation — Rule merging & legacy removal (High)
-- 2) Phase 20: Visual Polish & Theme Expansion — AMOLED / Pastel variants (Medium)
+- ✅ Phase 19: Filter Logic Consolidation — COMPLETE (Shared helpers, duplicate filter removal, locale token merge)
+- ✅ Phase 20: Visual Polish & Theme Expansion — COMPLETE (AMOLED refined, Pastel added, Insight Chip propagation)
+- 1) Phase 21: Post-type Filter Tuning — Locale expansion NL/SV/DA/NO (Medium)
 
 **Secondary:**
 
@@ -34,13 +35,12 @@ Always continue from the highest-priority unfinished item above.
 
 ## Last Action Log
 
-- **Last completed (2026-04-13):** Phase 19 — Filter Logic Consolidation.
-- **Extracted `_getFilterablePostCandidates(rootNode)`:** Replaced 3 identical 8-line post-candidate pre-filter blocks (in `removeStoryActivityPosts`, `removePostTypePosts`) with a single shared helper method.
-- **Extracted `_exceedsSafetyBailout(matched, scanned, threshold, label, minFloor)`:** Replaced 3 identical safety-bailout blocks with one unified helper used by both remaining per-post filter methods.
-- **Eliminated duplicate image subject filter:** `_applyAllFilters` was calling both `removeImageSubjectPosts` (inline token arrays) AND `applyImageSubjectFilters` (canonical path via `PF_SELECTOR_MAP.imageSubjectTokens`) for the same feature. Deleted `removeImageSubjectPosts` and orphaned `_extractImageSubjectSignals`. Single canonical path is `applyImageSubjectFilters`.
-- **Merged locale tokens into `selector-map.js`:** Spanish (ES) tokens that only existed in the deleted inline arrays are now part of `PF_SELECTOR_MAP.imageSubjectTokens` — the single source of truth.
-- **Removed orphaned settings from `sidebar`:** `fixTimestamps`, `showLinkPreviews`, `disableCommentAutofocus`, `widescreenMode`, `enforceChronologicalFeed` were duplicate legacy fields that had leaked into `sidebar` in `default-settings.js`. These exist correctly in `uiMode`; duplicates removed.
-- **Prior completed (2026-04-13):** Power-User Rule Engine & Context Menu "Zap" integration — `PF_RuleEngine` with CSS selector + text-matching rules, context menu "Zap Element" with Undo support, dashboard UI for rule management.
+- **Last completed (2026-04-13):** Phase 20 — Visual Polish & Theme Expansion.
+- **AMOLED accent fix:** Corrected accent color from `#00D4FF` to `#BB86FC` (Material You purple, consistent with `selector-map.js` stylePresets). Expanded AMOLED coverage to: true-black card backgrounds, reaction-bar/comment-field wells, dividers, right rail, and Insight Chip / post-date chip surfaces.
+- **New Pastel Warm theme:** Soft warm off-white palette (`#f5f0ea` bg / `#fffef8` card / `#3d3530` text / `#b58b8b` accent). Added to `feed-manager.js`, `options.html`, `options.js` themeNames, and `options.css` preview swatch.
+- **Insight Chip theme propagation:** All non-default themes now inject per-theme CSS overrides for `.pf-insight-chip`, `.pf-insight-status`, `.pf-insight-toggle`, `.pf-insight-meta`, `.pf-insight-details`, and `.pf-post-date-chip`. Light themes (classicBlue, zen, pastel) render readable dark-on-light chips. Dark themes (darkPro, amoled) render contrast-safe chip surfaces aligned to the theme accent.
+- **Prior completed (2026-04-13):** Phase 19 — Filter Logic Consolidation (shared helpers, duplicate image filter removal, locale token merge, orphaned settings cleanup).
+- **Prior completed (2026-04-13):** Power-User Rule Engine & Context Menu "Zap" integration.
 
 ## Goal
 
@@ -341,17 +341,18 @@ Step 7 — Settings wiring
 - [x] Merge ES locale tokens into `selector-map.js` imageSubjectTokens.
 - [x] Remove orphaned legacy fields from `sidebar` in `default-settings.js`.
 
-### Phase 20: Visual Polish & Theme Expansion (Next)
+### Phase 20: Visual Polish & Theme Expansion — DONE (2026-04-13)
 
-- [ ] AMOLED theme refinement — ensure true-black surfaces and contrast-safe accent tokens.
-- [ ] Pastel theme variant — soft, low-contrast palette for reduced visual fatigue.
-- [ ] Verify theme tokens propagate correctly to Insight Chip, debug chips, and credibility badges.
-- [ ] Options page theme preview swatch for each preset.
+- [x] AMOLED accent corrected to `#BB86FC`; full true-black surface coverage across cards, wells, rail, and chips.
+- [x] Pastel Warm theme added — `feed-manager.js`, `options.html`, `options.js`, `options.css`.
+- [x] Insight Chip & post-date chip theme propagation — per-theme overrides injected for all 5 non-default themes (darkPro, amoled, classicBlue, zen, pastel).
+- [x] Options page preview swatch added for Pastel Warm.
 
-### Phase 21: Post-type Filter Tuning (Ongoing)
+### Phase 21: Post-type Filter Tuning (Next)
 
 - [ ] Continue per-locale selector/phrase tuning for story activity detection.
 - [ ] Expand NL/SV/DA/NO phrase coverage for remaining post-type anchors.
+- [ ] Validate AMOLED and Pastel on live FB page — confirm no FB CSS variable conflicts with injected overrides.
 
 ## Safety Rules (Do Not Remove)
 

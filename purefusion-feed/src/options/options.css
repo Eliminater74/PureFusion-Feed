@@ -484,6 +484,16 @@ body.pf-view-basic .pf-advanced-card {
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
+.pf-theme-preview[data-theme="pastel"] .pf-theme-preview-card {
+    --pf-preview-bg: #fffef8;
+    --pf-preview-border: rgba(180, 158, 148, 0.38);
+    --pf-preview-text: #3d3530;
+    --pf-preview-subtle: #786c66;
+    --pf-preview-chip-bg: rgba(240, 234, 226, 0.9);
+    --pf-preview-chip-text: #5c4e48;
+    box-shadow: 0 2px 8px rgba(100, 80, 72, 0.08);
+}
+
 .pf-form-group label {
     display: block;
     font-weight: 500;

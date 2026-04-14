@@ -524,7 +524,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         darkPro: t('options_ui_theme_darkpro', 'Dark Pro'),
         amoled: t('options_ui_theme_amoled', 'AMOLED Pitch Black'),
         classicBlue: t('options_ui_theme_classic', 'Classic Blue'),
-        zen: t('options_ui_theme_zen', 'Zen Mode (Minimalist)')
+        zen: t('options_ui_theme_zen', 'Zen Mode (Minimalist)'),
+        pastel: t('options_ui_theme_pastel', 'Pastel Warm')
     };
 
     const presetPacks = {
