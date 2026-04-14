@@ -194,10 +194,6 @@ class PF_Cleaner {
             this.removeStoryActivityPosts(rootNode);
         }
 
-        if (this._hasImageSubjectFiltersEnabled()) {
-            this.removeImageSubjectPosts(rootNode);
-        }
-        
         if (this.settings.filters.removeColoredBackgrounds) this.removeColoredBackgrounds(rootNode);
         
         if (this._hasSidebarVisibilityFilters()) {
@@ -526,14 +522,7 @@ class PF_Cleaner {
 
         if (!rules.length) return;
 
-        const postCandidates = this._getPostCandidates(rootNode)
-            .filter((postWrapper) => {
-                if (!postWrapper || postWrapper.dataset.pfHidden) return false;
-                if (!this._isValidPostScope(postWrapper)) return false;
-                if (!this._isLikelySingleFeedPost(postWrapper)) return false;
-                return true;
-            });
-
+        const postCandidates = this._getFilterablePostCandidates(rootNode);
         if (!postCandidates.length) return;
 
         const matchedPosts = [];
@@ -566,13 +555,7 @@ class PF_Cleaner {
 
         if (!matchedPosts.length) return;
 
-        // Safety valve: if matching spikes too high, abort this pass.
-        const scannedCount = postCandidates.length;
-        const maxHide = Math.max(4, Math.floor(scannedCount * 0.45));
-        if ((scannedCount > 2 && matchedPosts.length >= scannedCount) || matchedPosts.length > maxHide) {
-            PF_Logger.warn(`Story activity filter safety bailout: matched ${matchedPosts.length}/${scannedCount}.`);
-            return;
-        }
+        if (this._exceedsSafetyBailout(matchedPosts.length, postCandidates.length, 0.45, 'Story activity filter', 4)) return;
 
         matchedPosts.forEach(({ node, reason }) => {
             this._hidePostNode(node, reason);
@@ -623,14 +606,7 @@ class PF_Cleaner {
 
         if (!rules.length) return;
 
-        const postCandidates = this._getPostCandidates(rootNode)
-            .filter((postWrapper) => {
-                if (!postWrapper || postWrapper.dataset.pfHidden) return false;
-                if (!this._isValidPostScope(postWrapper)) return false;
-                if (!this._isLikelySingleFeedPost(postWrapper)) return false;
-                return true;
-            });
-
+        const postCandidates = this._getFilterablePostCandidates(rootNode);
         if (!postCandidates.length) return;
 
         const matchedPosts = [];
@@ -649,89 +625,7 @@ class PF_Cleaner {
 
         if (!matchedPosts.length) return;
 
-        const scannedCount = postCandidates.length;
-        const maxHide = Math.max(3, Math.floor(scannedCount * 0.4));
-        if ((scannedCount > 2 && matchedPosts.length >= scannedCount) || matchedPosts.length > maxHide) {
-            PF_Logger.warn(`Post-type filter safety bailout: matched ${matchedPosts.length}/${scannedCount}.`);
-            return;
-        }
-
-        matchedPosts.forEach(({ node, reason }) => {
-            this._hidePostNode(node, reason);
-        });
-    }
-
-    removeImageSubjectPosts(rootNode) {
-        const imageFilters = this.settings?.imageFilters;
-        if (!imageFilters || !imageFilters.enabled) return;
-
-        const rules = [
-            {
-                enabled: imageFilters.hideSports,
-                reason: 'Image Subject: Sports',
-                tokens: ['soccer', 'football', 'basketball', 'baseball', 'hockey', 'tennis', 'athlete', 'stadium', 'sport']
-            },
-            {
-                enabled: imageFilters.hideFood,
-                reason: 'Image Subject: Food',
-                tokens: ['food', 'meal', 'dish', 'plate', 'pizza', 'burger', 'drink', 'restaurant', 'cocina', 'comida', 'bebida']
-            },
-            {
-                enabled: imageFilters.hidePets,
-                reason: 'Image Subject: Pets',
-                tokens: ['dog', 'cat', 'puppy', 'kitten', 'pet', 'perro', 'gato', 'mascota']
-            },
-            {
-                enabled: imageFilters.hideVehicles,
-                reason: 'Image Subject: Vehicles',
-                tokens: ['car', 'truck', 'vehicle', 'motorcycle', 'bike', 'van', 'bus', 'coche', 'camion', 'vehiculo', 'moto']
-            },
-            {
-                enabled: imageFilters.hideScreenshotsMemes,
-                reason: 'Image Subject: Screenshots/Memes',
-                tokens: ['screenshot', 'meme', 'text that says', 'caption', 'captura de pantalla', 'texto que dice']
-            },
-            {
-                enabled: imageFilters.hideTravelScenery,
-                reason: 'Image Subject: Travel/Scenery',
-                tokens: ['beach', 'mountain', 'sunset', 'landscape', 'travel', 'vacation', 'playa', 'montana', 'atardecer', 'paisaje', 'viaje', 'vacaciones']
-            }
-        ].filter((rule) => rule.enabled);
-
-        if (!rules.length) return;
-
-        const postCandidates = this._getPostCandidates(rootNode)
-            .filter((postWrapper) => {
-                if (!postWrapper || postWrapper.dataset.pfHidden) return false;
-                if (!this._isValidPostScope(postWrapper)) return false;
-                if (!this._isLikelySingleFeedPost(postWrapper)) return false;
-                return true;
-            });
-
-        if (!postCandidates.length) return;
-
-        const matchedPosts = [];
-
-        postCandidates.forEach((postWrapper) => {
-            const imageSignals = this._extractImageSubjectSignals(postWrapper);
-            if (!imageSignals.length) return;
-
-            for (const rule of rules) {
-                if (imageSignals.some((signal) => this._containsAnyToken(signal, rule.tokens))) {
-                    matchedPosts.push({ node: postWrapper, reason: rule.reason });
-                    break;
-                }
-            }
-        });
-
-        if (!matchedPosts.length) return;
-
-        const scannedCount = postCandidates.length;
-        const maxHide = Math.max(3, Math.floor(scannedCount * 0.35));
-        if ((scannedCount > 2 && matchedPosts.length >= scannedCount) || matchedPosts.length > maxHide) {
-            PF_Logger.warn(`Image subject filter safety bailout: matched ${matchedPosts.length}/${scannedCount}.`);
-            return;
-        }
+        if (this._exceedsSafetyBailout(matchedPosts.length, postCandidates.length, 0.4, 'Post-type filter')) return;
 
         matchedPosts.forEach(({ node, reason }) => {
             this._hidePostNode(node, reason);
@@ -2093,6 +1987,45 @@ class PF_Cleaner {
         });
     }
 
+    /**
+     * Phase 19 consolidation helper.
+     * Returns post candidates from rootNode that pass the standard pre-flight
+     * checks shared by all per-post filter methods.
+     * Replaces the identical inline filter chain that was copy-pasted across
+     * removeStoryActivityPosts, removePostTypePosts, and removeImageSubjectPosts.
+     * @param {HTMLElement} rootNode
+     * @returns {HTMLElement[]}
+     */
+    _getFilterablePostCandidates(rootNode) {
+        return this._getPostCandidates(rootNode).filter((postWrapper) => {
+            if (!postWrapper || postWrapper.dataset.pfHidden) return false;
+            if (!this._isValidPostScope(postWrapper)) return false;
+            if (!this._isLikelySingleFeedPost(postWrapper)) return false;
+            return true;
+        });
+    }
+
+    /**
+     * Phase 19 consolidation helper.
+     * Returns true when the number of matched posts exceeds the safety threshold
+     * and the caller should abort the current filter pass.
+     * Replaces the identically-structured bailout block in three filter methods.
+     * @param {number} matchedCount
+     * @param {number} scannedCount
+     * @param {number} threshold  fraction of scannedCount (e.g. 0.45)
+     * @param {string} label      used in the warning log
+     * @param {number} [minFloor=3] minimum absolute cap before threshold kicks in
+     * @returns {boolean}
+     */
+    _exceedsSafetyBailout(matchedCount, scannedCount, threshold, label, minFloor = 3) {
+        const maxHide = Math.max(minFloor, Math.floor(scannedCount * threshold));
+        if ((scannedCount > 2 && matchedCount >= scannedCount) || matchedCount > maxHide) {
+            PF_Logger.warn(`${label} safety bailout: matched ${matchedCount}/${scannedCount}.`);
+            return true;
+        }
+        return false;
+    }
+
     _getPostCandidates(rootNode) {
         const results = [];
         const seen = new Set();
@@ -2337,29 +2270,6 @@ class PF_Cleaner {
         if (!text) return false;
 
         return /(friends?|group|commented|liked|reacted|shared a memory|memories on facebook|event|attending|interested in|going to|amigos?|grupo|comento|comentado|gusto|reacciono|recuerdo|recuerdos|evento|asistio|asistira|interesado|amis|groupe|commente|aime|souvenir|evenement|freund|gruppe|kommentiert|gefallt|erinnerung|veranstaltung|interessiert|interessato|partecipa|relazione|bevriend|reageerde|vindt dit leuk|aanwezig|herinnering|profielfoto|vän|medlem|kommenterade|gillar|deltar|minne|profilbild|milepæl|forhold)/.test(text);
-    }
-
-    _extractImageSubjectSignals(node) {
-        if (!node || !node.querySelectorAll) return [];
-
-        const parts = [];
-        const seen = new Set();
-        const selectors = 'img[alt], [role="img"][aria-label], image[aria-label], video[aria-label]';
-
-        node.querySelectorAll(selectors).forEach((el) => {
-            if (parts.length >= 16) return;
-
-            const raw = (el.getAttribute('alt') || el.getAttribute('aria-label') || '').trim();
-            const comparable = this._normalizeComparableText(raw);
-            if (!comparable || comparable.length < 8 || comparable.length > 280) return;
-            if (!this._looksLikeImageDescriptor(comparable)) return;
-            if (seen.has(comparable)) return;
-
-            seen.add(comparable);
-            parts.push(comparable);
-        });
-
-        return parts;
     }
 
     _classifyPostType(node) {

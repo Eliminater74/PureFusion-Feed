@@ -34,11 +34,13 @@ Always continue from the highest-priority unfinished item above.
 
 ## Last Action Log
 
-- **Last completed (2026-04-13):** Power-User Rule Engine & Context Menu "Zap" integration.
-- **Major Accomplishment:** Implemented `PF_RuleEngine` supporting both CSS selectors and text-matching. Added "Zap Element" to the context menu via `background.js` and `main.js` to allow instant, persistent hiding of any DOM element with automatic selector generation and one-click Undo.
-- **Major Fix:** Hardened `PF_Cleaner` to coordinate with the Rule Engine during every sweep cycle.
-- **Stable Checkpoint:** Rule engine verified on Feed and Options dashboard.
-- **Known unstable area:** Auto comment preview v2 (PAUSED - see item 7b for v3 path).
+- **Last completed (2026-04-13):** Phase 19 — Filter Logic Consolidation.
+- **Extracted `_getFilterablePostCandidates(rootNode)`:** Replaced 3 identical 8-line post-candidate pre-filter blocks (in `removeStoryActivityPosts`, `removePostTypePosts`) with a single shared helper method.
+- **Extracted `_exceedsSafetyBailout(matched, scanned, threshold, label, minFloor)`:** Replaced 3 identical safety-bailout blocks with one unified helper used by both remaining per-post filter methods.
+- **Eliminated duplicate image subject filter:** `_applyAllFilters` was calling both `removeImageSubjectPosts` (inline token arrays) AND `applyImageSubjectFilters` (canonical path via `PF_SELECTOR_MAP.imageSubjectTokens`) for the same feature. Deleted `removeImageSubjectPosts` and orphaned `_extractImageSubjectSignals`. Single canonical path is `applyImageSubjectFilters`.
+- **Merged locale tokens into `selector-map.js`:** Spanish (ES) tokens that only existed in the deleted inline arrays are now part of `PF_SELECTOR_MAP.imageSubjectTokens` — the single source of truth.
+- **Removed orphaned settings from `sidebar`:** `fixTimestamps`, `showLinkPreviews`, `disableCommentAutofocus`, `widescreenMode`, `enforceChronologicalFeed` were duplicate legacy fields that had leaked into `sidebar` in `default-settings.js`. These exist correctly in `uiMode`; duplicates removed.
+- **Prior completed (2026-04-13):** Power-User Rule Engine & Context Menu "Zap" integration — `PF_RuleEngine` with CSS selector + text-matching rules, context menu "Zap Element" with Undo support, dashboard UI for rule management.
 
 ## Goal
 
@@ -331,18 +333,25 @@ Step 7 — Settings wiring
 
 ## Implementation Order (Next Priority)
 
-### Phase 16: Multilingual & Story Hardening (Next)
-- [ ] Expand Story Activity Filter (becomes friends, joined groups) to NL/SV/DA/NO.
-- [ ] Refine "Friend Activity" detection to avoid false positives on legitimate page posts.
-- [ ] Add specific toggles for Profile/Cover photo updates in non-English locales.
+### Phase 19: Filter Logic Consolidation — DONE (2026-04-13)
 
-### Phase 17: Auto Comment Preview v3 (Data Layer)
-- [ ] Research non-intrusive data fetching for comment text (GraphQL interception vs background fetch).
-- [ ] Populate injected `<ul>` with actual comment content.
+- [x] Extract `_getFilterablePostCandidates` shared helper (removes 3× copy-pasted pre-filter).
+- [x] Extract `_exceedsSafetyBailout` shared helper (removes 3× copy-pasted bailout block).
+- [x] Eliminate duplicate `removeImageSubjectPosts` / `_extractImageSubjectSignals`; consolidate to `applyImageSubjectFilters` + `PF_SELECTOR_MAP.imageSubjectTokens`.
+- [x] Merge ES locale tokens into `selector-map.js` imageSubjectTokens.
+- [x] Remove orphaned legacy fields from `sidebar` in `default-settings.js`.
 
-### Phase 18: Performance & Optimization (Ongoing)
-- [ ] Monitor pipeline budget telemetry in live sessions.
-- [ ] Further optimize `_isHighSignalPipelineNode` for large feeds.
+### Phase 20: Visual Polish & Theme Expansion (Next)
+
+- [ ] AMOLED theme refinement — ensure true-black surfaces and contrast-safe accent tokens.
+- [ ] Pastel theme variant — soft, low-contrast palette for reduced visual fatigue.
+- [ ] Verify theme tokens propagate correctly to Insight Chip, debug chips, and credibility badges.
+- [ ] Options page theme preview swatch for each preset.
+
+### Phase 21: Post-type Filter Tuning (Ongoing)
+
+- [ ] Continue per-locale selector/phrase tuning for story activity detection.
+- [ ] Expand NL/SV/DA/NO phrase coverage for remaining post-type anchors.
 
 ## Safety Rules (Do Not Remove)
 

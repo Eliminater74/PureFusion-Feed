@@ -119,12 +119,22 @@ const SELECTOR_MAP = {
     // IMAGE SUBJECT TOKENS (For AI Descriptor Filtering)
     // ------------------------------------------------------------------------
     imageSubjectTokens: {
-        sports: ['stadium', 'field', 'athlet', 'match', 'score', 'game', 'team', 'sport', 'ball', 'fitness', 'workout', 'player', 'coach', 'championship', 'tournament'],
-        food: ['food', 'dish', 'plate', 'meal', 'restaurant', 'cook', 'baked', 'delicious', 'breakfast', 'lunch', 'dinner', 'dessert', 'snack', 'drink', 'beverage', 'cup', 'bottle', 'tableware'],
-        pets: ['dog', 'cat', 'kitten', 'puppy', 'pet ', 'animal', 'furry', 'bird', 'hamster', 'rabbit', 'paw', 'bark', 'meow'],
-        vehicles: ['car', 'truck', 'vehicle', 'motorcycle', 'bike', 'aviation', 'airplane', 'aircraft', 'boat', 'ship', 'drive', 'road', 'highway', 'traffic', 'engine', 'wheel', 'tire'],
-        memes: ['text', 'screenshot', 'meme', 'digital image', 'white background', 'black background', 'interface', 'poster', 'graphic design', 'clip art', 'illustration'],
-        travel: ['mountain', 'beach', 'ocean', 'nature', 'sky', 'outdoor', 'sunset', 'travel', 'landscape', 'scenery', 'building', 'architecture', 'monument', 'landmark', 'vacation', 'resort']
+        // EN + ES/PT/FR/DE/IT locale tokens merged from both filter paths (Phase 19 consolidation)
+        sports: ['stadium', 'field', 'athlet', 'match', 'score', 'game', 'team', 'sport', 'ball', 'fitness', 'workout', 'player', 'coach', 'championship', 'tournament',
+                 'soccer', 'football', 'basketball', 'baseball', 'hockey', 'tennis'],
+        food: ['food', 'dish', 'plate', 'meal', 'restaurant', 'cook', 'baked', 'delicious', 'breakfast', 'lunch', 'dinner', 'dessert', 'snack', 'drink', 'beverage', 'cup', 'bottle', 'tableware',
+               'pizza', 'burger',
+               'cocina', 'comida', 'bebida'],          // ES
+        pets: ['dog', 'cat', 'kitten', 'puppy', 'pet ', 'animal', 'furry', 'bird', 'hamster', 'rabbit', 'paw', 'bark', 'meow',
+               'perro', 'gato', 'mascota'],             // ES
+        vehicles: ['car', 'truck', 'vehicle', 'motorcycle', 'bike', 'aviation', 'airplane', 'aircraft', 'boat', 'ship', 'drive', 'road', 'highway', 'traffic', 'engine', 'wheel', 'tire',
+                   'van', 'bus',
+                   'coche', 'camion', 'vehiculo', 'moto'], // ES
+        memes: ['text', 'screenshot', 'meme', 'digital image', 'white background', 'black background', 'interface', 'poster', 'graphic design', 'clip art', 'illustration',
+                'text that says', 'caption',
+                'captura de pantalla', 'texto que dice'], // ES
+        travel: ['mountain', 'beach', 'ocean', 'nature', 'sky', 'outdoor', 'sunset', 'travel', 'landscape', 'scenery', 'building', 'architecture', 'monument', 'landmark', 'vacation', 'resort',
+                 'playa', 'montana', 'atardecer', 'paisaje', 'viaje', 'vacaciones'] // ES
     },
 
     // ------------------------------------------------------------------------
