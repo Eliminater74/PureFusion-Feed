@@ -122,42 +122,89 @@ class PF_NotificationControls {
             if (!content || content.length < 8) return;
 
             if (this.settings.social.blockNotifGames && this._containsAny(content, [
-                'invited you to play',
-                'play game',
-                'game request',
-                'te invito a jugar',
-                'juego'
+                // EN
+                'invited you to play', 'play game', 'game request',
+                // ES
+                'te invito a jugar', 'juego',
+                // FR
+                'vous a invité à jouer', 'invitation de jeu', 'demande de jeu',
+                // DE
+                'zu einem spiel eingeladen', 'spielanfrage',
+                // IT
+                'ti ha invitato a giocare', 'richiesta di gioco', 'gioco',
+                // NL
+                'uitgenodigd om te spelen', 'spelverzoek',
+                // SV
+                'bjöd in dig att spela', 'spelförfrågan',
+                // DA
+                'inviterede dig til at spille', 'spilforspørgsel',
+                // NO
+                'inviterte deg til å spille', 'spillforespørsel'
             ])) {
                 PF_Helpers.hideElement(item, 'Game Notification');
                 return;
             }
 
             if (this.settings.social.blockNotifBirthdays && this._containsAny(content, [
+                // EN
                 'birthday',
-                'cumpleanos'
+                // ES
+                'cumpleanos',
+                // FR
+                'anniversaire',
+                // DE
+                'geburtstag',
+                // IT
+                'compleanno',
+                // NL
+                'verjaardag',
+                // SV
+                'födelsedag',
+                // DA
+                'fødselsdag',
+                // NO
+                'bursdag'
             ])) {
                 PF_Helpers.hideElement(item, 'Birthday Reminder');
                 return;
             }
 
             if (this.settings.social.blockNotifMarketplace && this._containsAny(content, [
-                'marketplace',
-                'facebook marketplace'
+                // EN / all locales (FB uses the English brand name universally)
+                'marketplace', 'facebook marketplace',
+                // FR
+                'place de marché',
+                // DE
+                'marktplatz'
             ])) {
                 PF_Helpers.hideElement(item, 'Marketplace Notification');
                 return;
             }
 
             if (this.settings.social.blockNotifEngagement && this._containsAny(content, [
-                'suggested for you',
-                'recommended for you',
-                'you might be interested',
-                'because you follow',
-                'popular on facebook',
-                'sugerido para ti',
-                'recomendado para ti',
-                'te podria interesar',
-                'popular en facebook'
+                // EN
+                'suggested for you', 'recommended for you', 'you might be interested',
+                'because you follow', 'popular on facebook',
+                // ES
+                'sugerido para ti', 'recomendado para ti', 'te podria interesar', 'popular en facebook',
+                // FR
+                'suggéré pour vous', 'recommandé pour vous', 'populaire sur facebook',
+                'vous pourriez être intéressé',
+                // DE
+                'vorgeschlagen für dich', 'empfohlen für dich', 'beliebt auf facebook',
+                'könnte dich interessieren',
+                // IT
+                'consigliato per te', 'raccomandato per te', 'potrebbe interessarti',
+                'popolare su facebook',
+                // NL
+                'voorgesteld voor jou', 'aanbevolen voor jou', 'populair op facebook',
+                'misschien ben je geïnteresseerd',
+                // SV
+                'föreslagen för dig', 'rekommenderad för dig', 'populärt på facebook',
+                // DA
+                'foreslået til dig', 'anbefalet til dig', 'populært på facebook',
+                // NO
+                'foreslått for deg', 'anbefalt for deg'
             ])) {
                 PF_Helpers.hideElement(item, 'Engagement Suggestion Notification');
             }
@@ -211,7 +258,26 @@ class PF_NotificationControls {
                 this._hideSearchItemsByHrefOrText(
                     popup,
                     ['/hashtag/', '/search/top/'],
-                    ['trending', 'tendencias', 'popular now'],
+                    [
+                        // EN
+                        'trending', 'popular now',
+                        // ES
+                        'tendencias',
+                        // FR
+                        'tendances', 'en vogue',
+                        // DE
+                        'im trend',
+                        // IT
+                        'di tendenza',
+                        // NL
+                        'populair',
+                        // SV
+                        'populärt',
+                        // DA
+                        'populært',
+                        // NO
+                        'populært'
+                    ],
                     'Search Popup: Trending'
                 );
             }
@@ -219,7 +285,26 @@ class PF_NotificationControls {
             if (this.settings.social.hideSearchRecent) {
                 this._hideSearchSectionHeadings(
                     popup,
-                    ['recent searches', 'busquedas recientes'],
+                    [
+                        // EN
+                        'recent searches',
+                        // ES
+                        'busquedas recientes',
+                        // FR
+                        'recherches récentes',
+                        // DE
+                        'letzte suchanfragen', 'letzte suchbegriffe',
+                        // IT
+                        'ricerche recenti',
+                        // NL
+                        'recente zoekopdrachten',
+                        // SV
+                        'senaste sökningar',
+                        // DA
+                        'seneste søgninger',
+                        // NO
+                        'siste søk', 'nylige søk'
+                    ],
                     'Search Popup: Recent Searches'
                 );
             }
@@ -229,10 +314,27 @@ class PF_NotificationControls {
     _getHeaderSearchPopupCandidates() {
         const candidates = [];
         const searchInputs = Array.from(document.querySelectorAll([
+            // EN
             'input[aria-label="Search Facebook"]',
-            'input[aria-label="Buscar en Facebook"]',
             'input[placeholder*="Search Facebook"]',
-            'input[placeholder*="Buscar en Facebook"]'
+            // ES
+            'input[aria-label="Buscar en Facebook"]',
+            'input[placeholder*="Buscar en Facebook"]',
+            // FR
+            'input[aria-label="Rechercher sur Facebook"]',
+            // DE
+            'input[aria-label="Facebook durchsuchen"]',
+            'input[aria-label="Auf Facebook suchen"]',
+            // IT
+            'input[aria-label="Cerca su Facebook"]',
+            // NL
+            'input[aria-label="Zoeken op Facebook"]',
+            // SV
+            'input[aria-label="Sök på Facebook"]',
+            // DA
+            'input[aria-label="Søg på Facebook"]',
+            // NO
+            'input[aria-label="Søk på Facebook"]'
         ].join(', ')));
 
         document.querySelectorAll('[role="listbox"]').forEach((listbox) => {
@@ -279,11 +381,24 @@ class PF_NotificationControls {
 
         const text = this._normalizeComparableText((node.textContent || '').slice(0, 500));
         return this._containsAny(text, [
-            'recent searches',
-            'busquedas recientes',
-            'trending',
-            'tendencias',
-            'popular now'
+            // EN
+            'recent searches', 'trending', 'popular now',
+            // ES
+            'busquedas recientes', 'tendencias',
+            // FR
+            'recherches recentes', 'tendances',
+            // DE
+            'letzte suchanfragen', 'letzte suchbegriffe', 'im trend',
+            // IT
+            'ricerche recenti', 'di tendenza',
+            // NL
+            'recente zoekopdrachten', 'populair',
+            // SV
+            'senaste sökningar', 'populärt',
+            // DA
+            'seneste søgninger', 'populært',
+            // NO
+            'siste søk', 'nylige søk'
         ]);
     }
 
