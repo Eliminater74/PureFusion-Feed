@@ -8,6 +8,20 @@
 
 const PF_Storage = {
     /**
+     * Returns false when the extension context has been invalidated (e.g. after a
+     * reload/update while the tab was still open). Chrome APIs throw a synchronous
+     * "Extension context invalidated" error in this state, so every entry point
+     * should bail out gracefully when this returns false.
+     */
+    _isContextValid() {
+        try {
+            return typeof chrome !== 'undefined' && !!chrome.runtime?.id;
+        } catch (_) {
+            return false;
+        }
+    },
+
+    /**
      * Initializes storage with default settings if none exist.
      * @returns {Promise<Object>} The current valid configuration
      */
@@ -35,41 +49,42 @@ const PF_Storage = {
      * @returns {Promise<Object>}
      */
     async getSettings() {
+        if (!this._isContextValid()) return {};
         return new Promise((resolve) => {
-            if (typeof chrome !== 'undefined' && chrome.storage) {
+            try {
                 chrome.storage.sync.get('pf_settings', (result) => {
+                    if (chrome.runtime.lastError) { resolve({}); return; }
                     const synced = result.pf_settings || {};
-
-                    chrome.storage.local.get('pf_llm_keys', (localResult) => {
-                        const localKeys = localResult.pf_llm_keys || {};
-                        if (!synced.llm) synced.llm = {};
-                        synced.llm.openAIApiKey = localKeys.openAIApiKey || '';
-                        synced.llm.geminiApiKey = localKeys.geminiApiKey || '';
-                        resolve(synced);
-                    });
+                    try {
+                        chrome.storage.local.get('pf_llm_keys', (localResult) => {
+                            if (chrome.runtime.lastError) { resolve(synced); return; }
+                            const localKeys = localResult.pf_llm_keys || {};
+                            if (!synced.llm) synced.llm = {};
+                            synced.llm.openAIApiKey = localKeys.openAIApiKey || '';
+                            synced.llm.geminiApiKey = localKeys.geminiApiKey || '';
+                            resolve(synced);
+                        });
+                    } catch (_) { resolve(synced); }
                 });
-            } else {
-                resolve({}); // Fallback for testing environments
-            }
+            } catch (_) { resolve({}); }
         });
     },
 
     /**
      * Saves settings to sync storage.
-     * @param {Object} settingsData 
+     * @param {Object} settingsData
      * @returns {Promise<void>}
      */
     async updateSettings(settingsData) {
+        if (!this._isContextValid()) return;
         const safeSettings = this._sanitizeSettings(settingsData);
-
         return new Promise((resolve) => {
-            if (typeof chrome !== 'undefined' && chrome.storage) {
+            try {
                 chrome.storage.sync.set({ pf_settings: safeSettings }, () => {
+                    if (chrome.runtime.lastError) { /* swallow */ }
                     resolve();
                 });
-            } else {
-                resolve();
-            }
+            } catch (_) { resolve(); }
         });
     },
 
@@ -78,7 +93,6 @@ const PF_Storage = {
             openAIApiKey: (keys.openAIApiKey || '').trim(),
             geminiApiKey: (keys.geminiApiKey || '').trim()
         };
-
         return this.setLocalData('pf_llm_keys', safeKeys);
     },
 
@@ -92,26 +106,34 @@ const PF_Storage = {
 
     /**
      * Local storage: Great for bulk data like AI prediction states, caches
-     * @param {string} key 
-     * @param {any} value 
+     * @param {string} key
+     * @param {any} value
      */
     async setLocalData(key, value) {
+        if (!this._isContextValid()) return;
         return new Promise((resolve) => {
-            if (typeof chrome !== 'undefined' && chrome.storage) {
-                chrome.storage.local.set({ [key]: value }, resolve);
-            } else resolve();
+            try {
+                chrome.storage.local.set({ [key]: value }, () => {
+                    if (chrome.runtime.lastError) { /* swallow */ }
+                    resolve();
+                });
+            } catch (_) { resolve(); }
         });
     },
 
     /**
      * Local storage retrieval
-     * @param {string} key 
+     * @param {string} key
      */
     async getLocalData(key) {
+        if (!this._isContextValid()) return null;
         return new Promise((resolve) => {
-            if (typeof chrome !== 'undefined' && chrome.storage) {
-                chrome.storage.local.get(key, (result) => resolve(result[key]));
-            } else resolve(null);
+            try {
+                chrome.storage.local.get(key, (result) => {
+                    if (chrome.runtime.lastError) { resolve(null); return; }
+                    resolve(result[key]);
+                });
+            } catch (_) { resolve(null); }
         });
     },
 
