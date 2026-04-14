@@ -211,9 +211,10 @@ class PF_Cleaner {
             this.applyReelsSessionLimiter(rootNode);
         }
         
-        // Hide features like Reels, Marketplace, Stories if toggled
+        // Hide features like Reels, Marketplace, Stories, Memories if toggled
         if (this.settings.filters.hideReels) this.removeReelsTray(rootNode);
         if (this.settings.filters.hideStories) this.removeStoriesTray(rootNode);
+        if (this.settings.filters.hideMemories) this.removeMemoriesPosts(rootNode);
         if (this.settings.filters.hideMarketplace) this.hideTarget(rootNode, PF_SELECTOR_MAP.marketplaceTray || '[data-pagelet*="Marketplace"]', "Marketplace Tray");
         if (this.settings.filters.hideMarketplace) {
             // General marketplace injections in the feed often share the 'suggested' wrappers or a specific aria-label
@@ -2024,6 +2025,50 @@ class PF_Cleaner {
     }
 
     /**
+     * Hides Facebook Memories / "On This Day" injection cards.
+     *
+     * Detection: any feed post containing a link whose href starts with "/memories"
+     * or contains "/memories/" — these hrefs are exclusive to Memories cards and
+     * never appear in organic friend content, so the false-positive risk is
+     * negligible.  Multi-locale text phrases are added as a secondary signal for
+     * cases where the href is absent (e.g. some mobile-web render variants).
+     */
+    removeMemoriesPosts(rootNode) {
+        const candidates = this._getFilterablePostCandidates(rootNode);
+        let matched = 0;
+
+        for (const postWrapper of candidates) {
+            // Primary: structural href signal — most reliable
+            if (postWrapper.querySelector('a[href^="/memories"], a[href*="/memories/"]')) {
+                this._hidePostNode(postWrapper, 'Memories Post');
+                matched++;
+                if (this._exceedsSafetyBailout(matched, candidates.length, 0.4, 'Memories filter')) break;
+                continue;
+            }
+
+            // Secondary: text-content fallback for render variants without the link
+            const text = this._normalizeComparableText(this._extractPostText(postWrapper));
+            if (
+                text.includes('see your memories') ||
+                text.includes('your memories on facebook') ||
+                text.includes('memories on facebook') ||
+                text.includes('recuerdos en facebook') ||
+                text.includes('erinnerungen auf facebook') ||
+                text.includes('souvenirs sur facebook') ||
+                text.includes('ricordi su facebook') ||
+                text.includes('herinneringen op facebook') ||
+                text.includes('minnen pa facebook') ||
+                text.includes('minder pa facebook') ||
+                text.includes('minner pa facebook')
+            ) {
+                this._hidePostNode(postWrapper, 'Memories Post');
+                matched++;
+                if (this._exceedsSafetyBailout(matched, candidates.length, 0.4, 'Memories filter')) break;
+            }
+        }
+    }
+
+    /**
      * Phase 19 consolidation helper.
      * Returns post candidates from rootNode that pass the standard pre-flight
      * checks shared by all per-post filter methods.
@@ -2680,6 +2725,13 @@ class PF_Cleaner {
             }
 
             if (reason.startsWith('Social: Hide Meta AI') && !this.settings?.social?.hideMetaAI) {
+                node.style.removeProperty('display');
+                delete node.dataset.pfHidden;
+                delete node.dataset.pfReason;
+                return;
+            }
+
+            if (reason === 'Memories Post' && !this.settings?.filters?.hideMemories) {
                 node.style.removeProperty('display');
                 delete node.dataset.pfHidden;
                 delete node.dataset.pfReason;

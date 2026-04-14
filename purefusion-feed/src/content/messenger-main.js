@@ -19,8 +19,28 @@ class PureFusionMessengerApp {
             this.uiTweaks = new window.PF_UiTweaks(this.getEffectiveSettings());
             this.messengerAI = new window.PF_MessengerAI(this.getEffectiveSettings());
             this.setupEventListeners();
+            this._startLifecycleGuard();
         } catch (error) {
             PF_Logger.error("Failed to initialize PureFusion Messenger app:", error);
+        }
+    }
+
+    _startLifecycleGuard() {
+        if (typeof chrome === 'undefined' || !chrome.runtime?.id) return;
+
+        try {
+            const port = chrome.runtime.connect({ name: 'pf-messenger-lifecycle' });
+            port.onDisconnect.addListener(() => {
+                this._destroy();
+            });
+        } catch (err) {
+            // Context already gone
+        }
+    }
+
+    _destroy() {
+        if (this.messengerAI && typeof this.messengerAI.destroy === 'function') {
+            try { this.messengerAI.destroy(); } catch (err) { /* swallow */ }
         }
     }
 
