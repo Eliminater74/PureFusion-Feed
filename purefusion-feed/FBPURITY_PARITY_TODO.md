@@ -23,6 +23,7 @@ Last updated: 2026-04-14
 - ✅ Phase 20: Visual Polish & Theme Expansion — COMPLETE (AMOLED refined, Pastel added, Insight Chip propagation)
 - ✅ Phase 21: Post-type Filter Tuning — COMPLETE (NL/SV/DA/NO locale expansion; gate filter diacritic correctness hardened)
 - ✅ Phase 22: Options UI Hardening & Locale Settings — COMPLETE (filterLocale setting, locale-aware gate filters, i18n/orphan fixes)
+- ✅ Phase 23: Sponsored Detection Locale Completion — COMPLETE (NL/SV/DA/NO aria-label selectors + token-driven right-rail text scan)
 
 **Secondary:**
 
@@ -38,7 +39,8 @@ Always continue from the highest-priority unfinished item above.
 
 ## Last Action Log
 
-- **Last completed (2026-04-14):** Phase 22 — Options UI Hardening & Locale Settings. Fixed `options_ui_theme_pastel` i18n gap (EN+ES). Fixed `commentPreviewStrategy` orphan (wired to UI). Fixed `hideMemories` orphan (HTML + i18n added). Added `filterLocale` setting + Feed Language card. Gate filters now locale-aware.
+- **Last completed (2026-04-14):** Phase 23 — Sponsored Detection Locale Completion. Added NL (`Gesponsord`), SV (`Sponsrad`), DA (`Sponsoreret`), NO (`Sponset`) aria-label selectors to `sponsoredIndicators` (both `a` and `span` variants). Added `span` variants for FR/DE/IT which previously only had `a[aria-label]`. Refactored `removeRightRailAds` text scan to drive from `this.sponsoredTokens` — all supported locales now covered automatically without hardcoded strings.
+- **Prior completed (2026-04-14):** Phase 22 — Options UI Hardening & Locale Settings. Fixed `options_ui_theme_pastel` i18n gap (EN+ES). Fixed `commentPreviewStrategy` orphan (wired to UI). Fixed `hideMemories` orphan (HTML + i18n added). Added `filterLocale` setting + Feed Language card. Gate filters now locale-aware.
 - **Prior completed (2026-04-13):** Phase 21 — Post-type Filter Tuning (NL/SV/DA/NO locale expansion).
 - **`_looksLikeStoryActivitySignal` gate expanded:** Added NL (`omslagfoto`, `levensgebeurtenis`, `ingecheckt`, `relatiestatus`, `gedeeld`, `gepost`, `deelde`), SV normalized (`gick med`, `delade`, `postade`, `milstolpe`, `checka in`, `relationsstatus`, `omslagsbild`, `livshändelse`), DA (`forholdsstatus`, `gik med`, `delte`, `postede`, `synes godt om`, `deltager`, `livsbegivenhed`, `tjek ind`, `omslagsbillede`), NO (`relasjonsstatus`, `ble med`, `delte`, `postet`, `livshendelse`, `sjekk inn`, `liker`, `forsidebilde`). Fixed multiline regex bug (was using newline-separated regex literal, invalid JS). Fixed broken `vän` token (was being tested against normalized text where `ä`→`a`; replaced with diacritic-free equivalents).
 - **`_looksLikePostTypeAnchor` gate expanded:** Added NL (`deelde`, `koppeling`, `lees meer`, `bericht`, `publicatie`), SV normalized (`delade`, `las mer`, `inlagg`), DA (`delte`, `opslag`, `læs mere`), NO (`lenke`, `les mer`, `innlegg`).

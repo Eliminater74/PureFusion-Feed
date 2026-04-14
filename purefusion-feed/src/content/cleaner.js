@@ -1414,11 +1414,16 @@ class PF_Cleaner {
             this._hideNodeSafely(ad, "Right Rail Target");
         });
 
-        // 2. Deep traverse for obfuscated text injection
-        // FB injects "Sponsored" as literal text nodes in the sidebar
-        const adSpans = PF_Helpers.findContains(rightCol, 'span, div, h2, h3', 'Sponsored')
-            .concat(PF_Helpers.findContains(rightCol, 'span, div, h2, h3', 'Publicidad'))
-            .concat(PF_Helpers.findContains(rightCol, 'span, div, h2, h3', 'Patrocinado'));
+        // 2. Deep traverse for obfuscated text injection.
+        // Driven from this.sponsoredTokens so all supported locales (EN/ES/FR/DE/IT/NL/SV/DA/NO)
+        // are covered automatically — no hardcoded locale list here.
+        const adSpans = this.sponsoredTokens.reduce((acc, token) => {
+            // Use the display-form token for findContains (case-insensitive text match).
+            // sponsoredTokens stores lowercase normalized forms so we capitalize first char
+            // to match FB's title-case label, e.g. "Gesponsord", "Sponsrad".
+            const display = token.charAt(0).toUpperCase() + token.slice(1);
+            return acc.concat(PF_Helpers.findContains(rightCol, 'span, div, h2, h3', display));
+        }, []);
         adSpans.forEach(el => {
             // Verify exact match to prevent false positives if someone's name contains the word
             if (this._isSponsoredLabel(el.textContent)) {

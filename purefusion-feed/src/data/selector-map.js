@@ -46,14 +46,35 @@ const SELECTOR_MAP = {
     // "· Public", "· Globe" etc to the label.  Exact-match selectors miss these variants.
     sponsoredIndicators: [
         // Aria-label based (most stable — FB populates aria-label with clean text)
+        // EN
         'a[aria-label*="Sponsored" i]',
         'span[aria-label*="Sponsored" i]',
+        // ES
         'a[aria-label*="Publicidad" i]',
         'span[aria-label*="Publicidad" i]',
         'a[aria-label*="Patrocinado" i]',
+        'span[aria-label*="Patrocinado" i]',
+        // FR
         'a[aria-label*="Sponsorisé" i]',
+        'span[aria-label*="Sponsorisé" i]',
+        // DE
         'a[aria-label*="Gesponsert" i]',
+        'span[aria-label*="Gesponsert" i]',
+        // IT
         'a[aria-label*="Sponsorizzato" i]',
+        'span[aria-label*="Sponsorizzato" i]',
+        // NL
+        'a[aria-label*="Gesponsord" i]',
+        'span[aria-label*="Gesponsord" i]',
+        // SV
+        'a[aria-label*="Sponsrad" i]',
+        'span[aria-label*="Sponsrad" i]',
+        // DA
+        'a[aria-label*="Sponsoreret" i]',
+        'span[aria-label*="Sponsoreret" i]',
+        // NO
+        'a[aria-label*="Sponset" i]',
+        'span[aria-label*="Sponset" i]',
         // Href-based: FB sponsored posts always link to the ad explanation page.
         // This href is never obfuscated — most reliable single signal.
         'a[href*="/ads/about"]',
