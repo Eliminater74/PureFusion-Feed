@@ -11,6 +11,8 @@ class PF_UiTweaks {
     constructor(settings) {
         this.settings = settings;
         this.styleTag = null;
+        this._autofocusGuardBound = false;
+        this._lastUserClickTarget = null;
         this.init();
     }
 
@@ -23,6 +25,7 @@ class PF_UiTweaks {
         this.styleTag = document.createElement('style');
         this.styleTag.id = 'purefusion-ui-tweaks';
         document.head.appendChild(this.styleTag);
+        this._setupAutofocusGuard();
         this.update();
     }
 
@@ -104,6 +107,48 @@ class PF_UiTweaks {
         // 4. Layout Hardening (Composer & Sidebar)
         if (this.settings.uiMode.hidePostComposer) {
             css += `${PF_SELECTOR_MAP.postComposer} { display: none !important; } \n`;
+        }
+
+        // 5. Font Size Scale (80–150%)
+        const fontScale = Number(this.settings.uiMode.fontSizeScale) || 100;
+        if (fontScale !== 100 && fontScale >= 80 && fontScale <= 150) {
+            css += `html { font-size: ${fontScale}% !important; } \n`;
+        }
+
+        // 6. Anonymizer Mode — blur profile pics and author names until hover
+        if (this.settings.uiMode.anonymizerMode) {
+            css += `
+                /* Anonymizer: profile pictures */
+                [role="article"] a[role="link"] img,
+                [role="complementary"] a[role="link"] img,
+                [role="navigation"] a[role="link"] img {
+                    filter: blur(8px) !important;
+                    transition: filter 0.2s ease;
+                }
+                [role="article"] a[role="link"]:hover img,
+                [role="complementary"] a[role="link"]:hover img,
+                [role="navigation"] a[role="link"]:hover img {
+                    filter: blur(0) !important;
+                }
+                /* Anonymizer: post author names */
+                [role="article"] h2 a[role="link"],
+                [role="article"] h3 a[role="link"] {
+                    filter: blur(5px) !important;
+                    transition: filter 0.2s ease;
+                }
+                [role="article"] h2 a[role="link"]:hover,
+                [role="article"] h3 a[role="link"]:hover {
+                    filter: blur(0) !important;
+                }
+                /* Anonymizer: right sidebar contact names */
+                [role="complementary"] [role="listitem"] a[role="link"] {
+                    filter: blur(5px) !important;
+                    transition: filter 0.2s ease;
+                }
+                [role="complementary"] [role="listitem"] a[role="link"]:hover {
+                    filter: blur(0) !important;
+                }
+            \n`;
         }
 
         css += this._buildCustomStylingCss();
@@ -311,6 +356,46 @@ class PF_UiTweaks {
         if (anchor.hasAttribute && anchor.hasAttribute('data-pf-abs-date')) {
             anchor.removeAttribute('data-pf-abs-date');
         }
+    }
+
+    /**
+     * Prevents Facebook from programmatically hijacking focus to the comment
+     * textbox (e.g. after clicking Like/Share or after React re-renders the post).
+     * Only blocks programmatic focuses — user clicks on the textbox still work.
+     */
+    _setupAutofocusGuard() {
+        if (this._autofocusGuardBound) return;
+        this._autofocusGuardBound = true;
+
+        // Track the last element the user actually clicked so we can distinguish
+        // user-initiated focus from programmatic autofocus.
+        document.addEventListener('mousedown', (e) => {
+            this._lastUserClickTarget = e.target || null;
+        }, true);
+
+        document.addEventListener('focus', (e) => {
+            if (!this.settings?.uiMode?.disableCommentAutofocus) return;
+
+            const target = e.target;
+            if (!target || !target.matches) return;
+            if (!target.matches('[role="textbox"][contenteditable="true"]')) return;
+
+            // Allow focus when the user explicitly clicked on or inside the textbox
+            const last = this._lastUserClickTarget;
+            const isUserInitiated = last && (
+                last === target ||
+                target.contains(last) ||
+                last.contains(target)
+            );
+
+            if (!isUserInitiated) {
+                // Schedule the blur as a microtask so it runs after the browser's
+                // focus machinery completes — otherwise some browsers ignore it.
+                Promise.resolve().then(() => {
+                    if (document.activeElement === target) target.blur();
+                });
+            }
+        }, true);
     }
 
     _buildCustomStylingCss() {
