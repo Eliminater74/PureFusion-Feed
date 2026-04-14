@@ -2881,6 +2881,13 @@ class PF_Cleaner {
         postNode.appendChild(overlay);
     }
 
+    destroy() {
+        if (this._recoveryIntervalId) {
+            clearInterval(this._recoveryIntervalId);
+            this._recoveryIntervalId = null;
+        }
+    }
+
     hideTarget(rootNode, selector, reason) {
         const targets = rootNode.querySelectorAll(selector);
         targets.forEach((node) => {

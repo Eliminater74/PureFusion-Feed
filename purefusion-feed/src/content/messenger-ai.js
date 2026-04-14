@@ -544,6 +544,13 @@ class PF_MessengerAI {
         this.processedComposers = new WeakSet();
         this.replyPanels = new WeakMap();
     }
+
+    destroy() {
+        if (this.observer) {
+            this.observer.disconnect();
+            this.observer = null;
+        }
+    }
 }
 
 window.PF_MessengerAI = PF_MessengerAI;

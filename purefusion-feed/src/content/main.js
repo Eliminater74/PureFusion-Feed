@@ -49,6 +49,9 @@ class PureFusionApp {
 
             this._syncModuleSettings();
 
+            // Lifecycle guard: detect extension invalidation via port disconnect
+            this._startLifecycleGuard();
+
             if (this.isEnabled()) {
                 // Initial manual sweep to clean anything already rendered
                 this.cleaner.sweepDocument();
@@ -994,6 +997,55 @@ class PureFusionApp {
 
     isEnabled() {
         return this.settings.enabled !== false;
+    }
+
+    /**
+     * Opens a chrome.runtime port that automatically disconnects when the
+     * extension is reloaded or updated.  The onDisconnect callback tears down
+     * all running observers and intervals so stale content-script code cannot
+     * keep calling invalidated Chrome APIs.
+     */
+    _startLifecycleGuard() {
+        if (typeof chrome === 'undefined' || !chrome.runtime?.id) return;
+
+        try {
+            const port = chrome.runtime.connect({ name: 'pf-content-lifecycle' });
+            port.onDisconnect.addListener(() => {
+                PF_Logger.info('PureFusion: extension context invalidated — shutting down content script.');
+                this._destroy();
+            });
+        } catch (err) {
+            // Context already gone; nothing to guard
+        }
+    }
+
+    /**
+     * Tears down all running observers and intervals.  Called when the
+     * extension context is invalidated (reload/update).
+     */
+    _destroy() {
+        // Stop main feed observer
+        if (this.observer) {
+            this.observer.stop();
+            this.observer = null;
+        }
+
+        // Clear follow-up resweep timers
+        this._clearFollowupResweeps();
+
+        // Delegate to each module's own cleanup
+        const destroyable = [
+            this.cleaner,
+            this.notifControls,
+            this.inpageUI,
+            this.messengerAI
+        ];
+
+        destroyable.forEach((mod) => {
+            if (mod && typeof mod.destroy === 'function') {
+                try { mod.destroy(); } catch (err) { /* swallow */ }
+            }
+        });
     }
 }
 

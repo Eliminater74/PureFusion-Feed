@@ -381,6 +381,10 @@ class PF_InPageUI {
             this.modalOverlay.classList.remove('open');
         }
     }
+
+    destroy() {
+        this._stopFabDockingLoop();
+    }
 }
 
 window.PF_InPageUI = PF_InPageUI;

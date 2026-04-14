@@ -421,6 +421,14 @@ class PF_NotificationControls {
         }
     }
 
+    destroy() {
+        if (this.popupScanIntervalId) {
+            clearInterval(this.popupScanIntervalId);
+            this.popupScanIntervalId = null;
+        }
+        this._clearDigestMode();
+    }
+
     _clearDigestMode() {
         if (this.digestIntervalId) {
             clearInterval(this.digestIntervalId);
