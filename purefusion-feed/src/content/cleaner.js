@@ -486,7 +486,7 @@ class PF_Cleaner {
                 enabled: sf.hideLifeEvents,
                 reason: 'Story Type: Life Event',
                 rx: /\b(added a life event|life event|evento importante|agrego un evento importante)\b/,
-                tokens: ['a ajoute un evenement marquant', 'adicionou um evento importante', 'hat ein lebensereignis hinzugefugt', 'ha aggiunto un evento importante', 'levensgebeurtenis', 'livshändelse', 'livsbegivenhed', 'livshendelse']
+                tokens: ['a ajoute un evenement marquant', 'adicionou um evento importante', 'hat ein lebensereignis hinzugefugt', 'ha aggiunto un evento importante', 'levensgebeurtenis', 'livshandelse', 'livsbegivenhed', 'livshendelse']
             },
             {
                 enabled: sf.hideCheckIns,
@@ -2269,7 +2269,10 @@ class PF_Cleaner {
     _looksLikeStoryActivitySignal(text) {
         if (!text) return false;
 
-        return /(friends?|group|commented|liked|reacted|shared a memory|memories on facebook|event|attending|interested in|going to|amigos?|grupo|comento|comentado|gusto|reacciono|recuerdo|recuerdos|evento|asistio|asistira|interesado|amis|groupe|commente|aime|souvenir|evenement|freund|gruppe|kommentiert|gefallt|erinnerung|veranstaltung|interessiert|interessato|partecipa|relazione|bevriend|reageerde|vindt dit leuk|aanwezig|herinnering|profielfoto|vän|medlem|kommenterade|gillar|deltar|minne|profilbild|milepæl|forhold)/.test(text);
+        // Tokens are matched against _normalizeComparableText output (NFD + strip U+0300-U+036F):
+        //   SV: ä->a, å->a, ö->o  |  DA/NO: ø and æ survive (no decomposition)
+        //   All tokens written in their post-normalization form.
+        return /(friends?|group|commented|liked|reacted|shared a memory|memories on facebook|event|attending|interested in|going to|amigos?|grupo|comento|comentado|gusto|reacciono|recuerdo|recuerdos|evento|asistio|asistira|interesado|amis|groupe|commente|aime|souvenir|evenement|freund|gruppe|kommentiert|gefallt|erinnerung|veranstaltung|interessiert|interessato|partecipa|relazione|bevriend|reageerde|vindt dit leuk|aanwezig|herinnering|profielfoto|omslagfoto|levensgebeurtenis|ingecheckt|relatiestatus|gedeeld|gepost|deelde|kommenterade|gillar|deltar|minne|profilbild|gick med|delade|postade|milstolpe|checka in|relationsstatus|omslagsbild|livshandelse|kommenterte|liker|livshendelse|sjekk inn|relasjonsstatus|ble med|delte|postet|forsidebilde|kommenteerde|synes godt om|deltager|livsbegivenhed|tjek ind|forholdsstatus|gik med|postede|omslagsbillede|milepæl|forhold)/.test(text);
     }
 
     _classifyPostType(node) {
@@ -2320,17 +2323,26 @@ class PF_Cleaner {
             || !!node.querySelector('[aria-label*="poll" i], [data-testid*="poll"], [data-testid*="Poll"]');
 
         // ── Anchor-phrase matchers ────────────────────────────────────────────
-        const hasVideoAnchor = /(shared (a )?video|watch(ing)?( now)?|reels?|short videos?|video en vivo|compartio (un )?video|ver video|videos? cortos?|a partage (une )?video|video en direct|regarder|partilhou (um )?video|video ao vivo|video curto|kurzvideos?|hat (ein )?video geteilt|ha condiviso (un )?video|guarda (il )?video)/.test(anchorText);
-        const hasPhotoAnchor = /(shared (a )?(photo|album)|photo(s)?( update)?|image(s)?|album|compartio (una )?(foto|imagen)|compartio (un )?album|fotos?|imagenes?|a partage (une )?(photo|image|album)|photo de profil|partilhou (uma )?(foto|imagem|album)|fotos? de perfil|hat (ein )?(foto|bild|album) geteilt|profilbild|titelbild|ha condiviso (una )?(foto|immagine|album)|foto del profilo)/.test(anchorText);
-        const hasLinkAnchor = /(shared (a )?link|read more|link preview|open link|enlace|leer mas|articulo|a partage (un )?lien|lire la suite|apercu du lien|partilhou (um )?link|ler mais|previa do link|hat (einen )?link geteilt|mehr lesen|linkvorschau|ha condiviso (un )?link|leggi di piu|anteprima link)/.test(anchorText)
+        // All patterns tested against anchorText which is already _normalizeComparableText output.
+        // SV tokens use diacritic-stripped form (ä→a, å→a, ö→o).
+        // DA/NO tokens keep ø and æ (they survive NFD normalization unchanged).
+
+        // Video: EN / ES / FR / PT / DE / IT / NL / SV / DA / NO
+        const hasVideoAnchor = /(shared (a )?video|watch(ing)?( now)?|reels?|short videos?|video en vivo|compartio (un )?video|ver video|videos? cortos?|a partage (une )?video|video en direct|regarder|partilhou (um )?video|video ao vivo|video curto|kurzvideos?|hat (ein )?video geteilt|ha condiviso (un )?video|guarda (il )?video|deelde een video|deelde (een )?video|bekijk video|delade en video|titta pa|delte en video)/.test(anchorText);
+
+        // Photo: EN / ES / FR / PT / DE / IT / NL / SV / DA / NO
+        const hasPhotoAnchor = /(shared (a )?(photo|album)|photo(s)?( update)?|image(s)?|album|compartio (una )?(foto|imagen)|compartio (un )?album|fotos?|imagenes?|a partage (une )?(photo|image|album)|photo de profil|partilhou (uma )?(foto|imagem|album)|fotos? de perfil|hat (ein )?(foto|bild|album) geteilt|profilbild|titelbild|ha condiviso (una )?(foto|immagine|album)|foto del profilo|deelde (een )?(foto|album)|profielfoto|omslagfoto|delade (ett )?(foto|album)|profilbild|omslagsbild|delte (et )?(foto|album)|profilbillede|omslagsbillede|forsidebilde)/.test(anchorText);
+
+        // Link: EN / ES / FR / PT / DE / IT / NL / SV / DA / NO
+        const hasLinkAnchor = /(shared (a )?link|read more|link preview|open link|enlace|leer mas|articulo|a partage (un )?lien|lire la suite|apercu du lien|partilhou (um )?link|ler mais|previa do link|hat (einen )?link geteilt|mehr lesen|linkvorschau|ha condiviso (un )?link|leggi di piu|anteprima link|deelde (een )?koppeling|lees meer|delade (en )?lank|las mer|delte (et )?link|læs mere|delte (en )?lenke|les mer)/.test(anchorText)
             || /\bhttps?:\/\/|www\./.test(anchorText);
 
         // Live video anchors: "is live now", "went live", "watching live", etc.
         // EN / ES / FR / PT / DE / IT / NL / SV / DA / NO
         const hasLiveAnchor = /(is live( now)?|went live|live( now)?|watching live|live stream|live video|live broadcast|esta(ba)? en vivo( ahora)?|esta ao vivo|est en direct( maintenant)?|diffuse en direct|live-video|ist live( jetzt)?|geht live|ging live|e in diretta( ora)?|va in diretta|is live nu|gaat live|ging live|ar live nu|gar live|er live nu|gar live)/.test(anchorText);
 
-        // Share/Repost anchors: "[name] shared [name]'s post", "shared a post", etc.
-        const hasRepostAnchor = /(shared [a-z\u00c0-\u024f\u0400-\u04ff\u4e00-\u9fff\s''\-]{2,40}'s post|shared a post|shared [a-z\u00c0-\u024f\u0400-\u04ff\u4e00-\u9fff\s''\-]{2,40}'s (status|update)|compartio la publicacion de|compartio un post|a partage la publication de|a partage un post|partilhou a publicacao de|partilhou um post|hat den beitrag von|hat einen post geteilt|ha condiviso il post di|ha condiviso un post)/.test(anchorText);
+        // Share/Repost: EN / ES / FR / PT / DE / IT / NL / SV / DA / NO
+        const hasRepostAnchor = /(shared [a-z\u00c0-\u024f\u0400-\u04ff\u4e00-\u9fff\s''\-]{2,40}'s post|shared a post|shared [a-z\u00c0-\u024f\u0400-\u04ff\u4e00-\u9fff\s''\-]{2,40}'s (status|update)|compartio la publicacion de|compartio un post|a partage la publication de|a partage un post|partilhou a publicacao de|partilhou um post|hat den beitrag von|hat einen post geteilt|ha condiviso il post di|ha condiviso un post|deelde (de publicatie van|een bericht)|deelde het bericht van|delade (inlagget av|ett inlagg)|delte (opslaget fra|et opslag)|delte (innlegget fra|et innlegg))/.test(anchorText);
 
         // Poll anchors: "voted in a poll", "created a poll", vote/result CTAs.
         const hasPollAnchor = /(voted? (in|on) a poll|created? a poll|see (poll )?results?|view (poll )?results?|voto en una encuesta|creo una encuesta|ver resultados de la encuesta|a vote dans un sondage|a cree un sondage|voir les resultats|votou numa sondagem|criou um inquerito|hat (an einer )?umfrage abgestimmt|ha votato (in|su) un sondaggio|heeft gestemd op een peiling|heeft een peiling aangemaakt|zie resultaten( van de peiling)?|rosta(de)? i en omrostning|skapade en omrostning|visa resultat(en)?|stemte pa en afstemning|se afstemningsresultaterne|stemte pa en avstemning|se resultatene)/.test(anchorText);
@@ -2421,8 +2433,10 @@ class PF_Cleaner {
     _looksLikePostTypeAnchor(text) {
         if (!text) return false;
 
-        // Base post-type tokens (video / photo / link / live / poll / repost)
-        return /(video|watch|reel|short video|photo|photos|image|album|shared a link|link preview|read more|live(?: now)?|went live|is live|live stream|live video|live broadcast|poll|voted?|see results|view results|shared .{0,40}'s post|shared a post|enlace|leer mas|articulo|compartio|fotos?|imagenes?|lien|lire la suite|apercu|partage|sondage|est en direct|linkvorschau|mehr lesen|geteilt|umfrage|abgestimmt|immagine|leggi di piu|anteprima|sondaggio|condiviso|partilhou|ler mais|previa do link|inquerito|ging live|is live nu|peiling|gestemd)/.test(text);
+        // EN / ES / FR / PT / DE / IT tokens (original set)
+        // NL / SV / DA / NO additions — all tokens in post-normalization form:
+        //   SV: ä→a, å→a, ö→o  |  DA/NO: ø and æ survive NFD unchanged
+        return /(video|watch|reel|short video|photo|photos|image|album|shared a link|link preview|read more|live(?: now)?|went live|is live|live stream|live video|live broadcast|poll|voted?|see results|view results|shared .{0,40}'s post|shared a post|enlace|leer mas|articulo|compartio|fotos?|imagenes?|lien|lire la suite|apercu|partage|sondage|est en direct|linkvorschau|mehr lesen|geteilt|umfrage|abgestimmt|immagine|leggi di piu|anteprima|sondaggio|condiviso|partilhou|ler mais|previa do link|inquerito|deelde|koppeling|lees meer|bericht|publicatie|ging live|is live nu|peiling|gestemd|delade|las mer|opslag|inlagg|delte|læs mere|opslag|lenke|les mer|innlegg)/.test(text);
     }
 
     _hasExternalLinkTarget(node) {

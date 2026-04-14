@@ -19,7 +19,8 @@ Last updated: 2026-04-13
 - ✅ Phase 17: Auto Comment Preview v3 — COMPLETE (Non-intrusive GraphQL fetching)
 - ✅ Phase 19: Filter Logic Consolidation — COMPLETE (Shared helpers, duplicate filter removal, locale token merge)
 - ✅ Phase 20: Visual Polish & Theme Expansion — COMPLETE (AMOLED refined, Pastel added, Insight Chip propagation)
-- 1) Phase 21: Post-type Filter Tuning — Locale expansion NL/SV/DA/NO (Medium)
+- ✅ Phase 21: Post-type Filter Tuning — COMPLETE (NL/SV/DA/NO locale expansion; gate filter diacritic correctness hardened)
+- 1) Phase 22: Options UI Hardening & Locale Settings — Locale preference selector, orphan/i18n key audit (Medium)
 
 **Secondary:**
 
@@ -35,12 +36,13 @@ Always continue from the highest-priority unfinished item above.
 
 ## Last Action Log
 
-- **Last completed (2026-04-13):** Phase 20 — Visual Polish & Theme Expansion.
-- **AMOLED accent fix:** Corrected accent color from `#00D4FF` to `#BB86FC` (Material You purple, consistent with `selector-map.js` stylePresets). Expanded AMOLED coverage to: true-black card backgrounds, reaction-bar/comment-field wells, dividers, right rail, and Insight Chip / post-date chip surfaces.
-- **New Pastel Warm theme:** Soft warm off-white palette (`#f5f0ea` bg / `#fffef8` card / `#3d3530` text / `#b58b8b` accent). Added to `feed-manager.js`, `options.html`, `options.js` themeNames, and `options.css` preview swatch.
-- **Insight Chip theme propagation:** All non-default themes now inject per-theme CSS overrides for `.pf-insight-chip`, `.pf-insight-status`, `.pf-insight-toggle`, `.pf-insight-meta`, `.pf-insight-details`, and `.pf-post-date-chip`. Light themes (classicBlue, zen, pastel) render readable dark-on-light chips. Dark themes (darkPro, amoled) render contrast-safe chip surfaces aligned to the theme accent.
-- **Prior completed (2026-04-13):** Phase 19 — Filter Logic Consolidation (shared helpers, duplicate image filter removal, locale token merge, orphaned settings cleanup).
-- **Prior completed (2026-04-13):** Power-User Rule Engine & Context Menu "Zap" integration.
+- **Last completed (2026-04-13):** Phase 21 — Post-type Filter Tuning (NL/SV/DA/NO locale expansion).
+- **`_looksLikeStoryActivitySignal` gate expanded:** Added NL (`omslagfoto`, `levensgebeurtenis`, `ingecheckt`, `relatiestatus`, `gedeeld`, `gepost`, `deelde`), SV normalized (`gick med`, `delade`, `postade`, `milstolpe`, `checka in`, `relationsstatus`, `omslagsbild`, `livshändelse`), DA (`forholdsstatus`, `gik med`, `delte`, `postede`, `synes godt om`, `deltager`, `livsbegivenhed`, `tjek ind`, `omslagsbillede`), NO (`relasjonsstatus`, `ble med`, `delte`, `postet`, `livshendelse`, `sjekk inn`, `liker`, `forsidebilde`). Fixed multiline regex bug (was using newline-separated regex literal, invalid JS). Fixed broken `vän` token (was being tested against normalized text where `ä`→`a`; replaced with diacritic-free equivalents).
+- **`_looksLikePostTypeAnchor` gate expanded:** Added NL (`deelde`, `koppeling`, `lees meer`, `bericht`, `publicatie`), SV normalized (`delade`, `las mer`, `inlagg`), DA (`delte`, `opslag`, `læs mere`), NO (`lenke`, `les mer`, `innlegg`).
+- **Anchor phrase regexes expanded in `_classifyPostType`:** All four regexes now cover NL/SV/DA/NO — `hasVideoAnchor` (NL: `deelde een video`, SV: `delade en video`, DA/NO: `delte en video`), `hasPhotoAnchor` (covers `profielfoto`/`omslagfoto` NL; `omslagsbild`/`profilbild` SV; `profilbillede`/`omslagsbillede` DA; `forsidebilde` NO), `hasLinkAnchor` (NL: `koppeling`/`lees meer`; SV: `lank`/`las mer`; DA: `læs mere`; NO: `lenke`/`les mer`), `hasRepostAnchor` (NL: `deelde het bericht van`; SV: `delade inlagget av`; DA: `delte opslaget fra`; NO: `delte innlegget fra`).
+- **Normalization note:** `_normalizeComparableText` strips SV `ä/å/ö` via NFD+combining strip but preserves DA/NO `ø`/`æ`. All added regex tokens written in their correct post-normalization form.
+- **Prior completed (2026-04-13):** Phase 20 — Visual Polish & Theme Expansion (AMOLED refined, Pastel Warm added, Insight Chip theme propagation for all 5 non-default themes).
+- **Prior completed (2026-04-13):** Phase 19 — Filter Logic Consolidation.
 
 ## Goal
 
@@ -348,11 +350,24 @@ Step 7 — Settings wiring
 - [x] Insight Chip & post-date chip theme propagation — per-theme overrides injected for all 5 non-default themes (darkPro, amoled, classicBlue, zen, pastel).
 - [x] Options page preview swatch added for Pastel Warm.
 
-### Phase 21: Post-type Filter Tuning (Next)
+### Phase 21: Post-type Filter Tuning — DONE (2026-04-13)
 
-- [ ] Continue per-locale selector/phrase tuning for story activity detection.
-- [ ] Expand NL/SV/DA/NO phrase coverage for remaining post-type anchors.
-- [ ] Validate AMOLED and Pastel on live FB page — confirm no FB CSS variable conflicts with injected overrides.
+- [x] Expand NL/SV/DA/NO phrase coverage for `_looksLikeStoryActivitySignal` gate filter.
+- [x] Expand NL/SV/DA/NO phrase coverage for `_looksLikePostTypeAnchor` gate filter.
+- [x] Expand NL/SV/DA/NO anchor phrase regexes in `_classifyPostType` (video/photo/link/repost).
+- [x] Fix multiline regex literal bug in `_looksLikeStoryActivitySignal`.
+- [x] Fix broken `vän` diacritic token (was tested against NFD-normalized text — replaced with diacritic-free equivalents).
+- [ ] **Manual validation needed:** Validate AMOLED and Pastel themes on live FB page — confirm no FB CSS variable conflicts with injected overrides (cannot be automated).
+
+### Phase 22: Options UI Hardening & Locale Settings (Next)
+
+**Goal:** Surface the locale-specific filter coverage gap in the options page; clean up orphaned settings wiring; add a user-selectable phrase-pack locale preference so filters match the user's actual Facebook language.
+
+- [ ] **Locale preference setting** — Add `filterLocale` setting (default: `"auto"`; options: `en`, `es`, `fr`, `de`, `nl`, `sv`, `da`, `no`). Gate multi-locale token loading behind this to avoid false positives for users in a single-language feed.
+- [ ] **Options page: Locale selector** — Add a "Feed language" selector card in the Filters section that surfaces `filterLocale`. Include note: "Auto uses all phrase packs (may over-filter mixed-language feeds)."
+- [ ] **Cleaner: locale-aware gate filters** — `_looksLikeStoryActivitySignal` and `_looksLikePostTypeAnchor` should skip locale-specific token branches when `filterLocale !== 'auto'` and the token group doesn't match the selected locale, reducing false positive risk.
+- [ ] **Orphan audit** — Grep options.js, options.html, and default-settings.js for any `data-i18n` keys or settings fields added in Phases 19–21 but not wired to a visible control, and either wire or remove them.
+- [ ] **i18n key audit** — Confirm `options_ui_theme_pastel` and any Phase 20/21 keys exist in `_locales/en/messages.json`; add stubs for any missing keys.
 
 ## Safety Rules (Do Not Remove)
 
