@@ -1,4 +1,6 @@
-Last updated: 2026-04-13
+# PureFusion Feed — Parity Roadmap
+
+Last updated: 2026-04-14
 
 ## Definition of Done (DoD)
 
@@ -20,7 +22,7 @@ Last updated: 2026-04-13
 - ✅ Phase 19: Filter Logic Consolidation — COMPLETE (Shared helpers, duplicate filter removal, locale token merge)
 - ✅ Phase 20: Visual Polish & Theme Expansion — COMPLETE (AMOLED refined, Pastel added, Insight Chip propagation)
 - ✅ Phase 21: Post-type Filter Tuning — COMPLETE (NL/SV/DA/NO locale expansion; gate filter diacritic correctness hardened)
-- 1) Phase 22: Options UI Hardening & Locale Settings — Locale preference selector, orphan/i18n key audit (Medium)
+- ✅ Phase 22: Options UI Hardening & Locale Settings — COMPLETE (filterLocale setting, locale-aware gate filters, i18n/orphan fixes)
 
 **Secondary:**
 
@@ -36,7 +38,8 @@ Always continue from the highest-priority unfinished item above.
 
 ## Last Action Log
 
-- **Last completed (2026-04-13):** Phase 21 — Post-type Filter Tuning (NL/SV/DA/NO locale expansion).
+- **Last completed (2026-04-14):** Phase 22 — Options UI Hardening & Locale Settings. Fixed `options_ui_theme_pastel` i18n gap (EN+ES). Fixed `commentPreviewStrategy` orphan (wired to UI). Fixed `hideMemories` orphan (HTML + i18n added). Added `filterLocale` setting + Feed Language card. Gate filters now locale-aware.
+- **Prior completed (2026-04-13):** Phase 21 — Post-type Filter Tuning (NL/SV/DA/NO locale expansion).
 - **`_looksLikeStoryActivitySignal` gate expanded:** Added NL (`omslagfoto`, `levensgebeurtenis`, `ingecheckt`, `relatiestatus`, `gedeeld`, `gepost`, `deelde`), SV normalized (`gick med`, `delade`, `postade`, `milstolpe`, `checka in`, `relationsstatus`, `omslagsbild`, `livshändelse`), DA (`forholdsstatus`, `gik med`, `delte`, `postede`, `synes godt om`, `deltager`, `livsbegivenhed`, `tjek ind`, `omslagsbillede`), NO (`relasjonsstatus`, `ble med`, `delte`, `postet`, `livshendelse`, `sjekk inn`, `liker`, `forsidebilde`). Fixed multiline regex bug (was using newline-separated regex literal, invalid JS). Fixed broken `vän` token (was being tested against normalized text where `ä`→`a`; replaced with diacritic-free equivalents).
 - **`_looksLikePostTypeAnchor` gate expanded:** Added NL (`deelde`, `koppeling`, `lees meer`, `bericht`, `publicatie`), SV normalized (`delade`, `las mer`, `inlagg`), DA (`delte`, `opslag`, `læs mere`), NO (`lenke`, `les mer`, `innlegg`).
 - **Anchor phrase regexes expanded in `_classifyPostType`:** All four regexes now cover NL/SV/DA/NO — `hasVideoAnchor` (NL: `deelde een video`, SV: `delade en video`, DA/NO: `delte en video`), `hasPhotoAnchor` (covers `profielfoto`/`omslagfoto` NL; `omslagsbild`/`profilbild` SV; `profilbillede`/`omslagsbillede` DA; `forsidebilde` NO), `hasLinkAnchor` (NL: `koppeling`/`lees meer`; SV: `lank`/`las mer`; DA: `læs mere`; NO: `lenke`/`les mer`), `hasRepostAnchor` (NL: `deelde het bericht van`; SV: `delade inlagget av`; DA: `delte opslaget fra`; NO: `delte innlegget fra`).
@@ -359,15 +362,14 @@ Step 7 — Settings wiring
 - [x] Fix broken `vän` diacritic token (was tested against NFD-normalized text — replaced with diacritic-free equivalents).
 - [ ] **Manual validation needed:** Validate AMOLED and Pastel themes on live FB page — confirm no FB CSS variable conflicts with injected overrides (cannot be automated).
 
-### Phase 22: Options UI Hardening & Locale Settings (Next)
+### Phase 22: Options UI Hardening & Locale Settings — DONE (2026-04-14)
 
-**Goal:** Surface the locale-specific filter coverage gap in the options page; clean up orphaned settings wiring; add a user-selectable phrase-pack locale preference so filters match the user's actual Facebook language.
-
-- [ ] **Locale preference setting** — Add `filterLocale` setting (default: `"auto"`; options: `en`, `es`, `fr`, `de`, `nl`, `sv`, `da`, `no`). Gate multi-locale token loading behind this to avoid false positives for users in a single-language feed.
-- [ ] **Options page: Locale selector** — Add a "Feed language" selector card in the Filters section that surfaces `filterLocale`. Include note: "Auto uses all phrase packs (may over-filter mixed-language feeds)."
-- [ ] **Cleaner: locale-aware gate filters** — `_looksLikeStoryActivitySignal` and `_looksLikePostTypeAnchor` should skip locale-specific token branches when `filterLocale !== 'auto'` and the token group doesn't match the selected locale, reducing false positive risk.
-- [ ] **Orphan audit** — Grep options.js, options.html, and default-settings.js for any `data-i18n` keys or settings fields added in Phases 19–21 but not wired to a visible control, and either wire or remove them.
-- [ ] **i18n key audit** — Confirm `options_ui_theme_pastel` and any Phase 20/21 keys exist in `_locales/en/messages.json`; add stubs for any missing keys.
+- [x] **Locale preference setting** — `filterLocale: 'auto'` added to `filters` in `default-settings.js`.
+- [x] **Options page: Locale selector** — Feed Language card added to the Filters tab (`options.html`); `opt_filters_filterLocale` wired in `options.js` uiMap.
+- [x] **Cleaner: locale-aware gate filters** — `_looksLikeStoryActivitySignal` and `_looksLikePostTypeAnchor` now read `this.settings.filters.filterLocale`; `auto` = unified regex (unchanged behavior); specific locale = EN base + selected locale group only.
+- [x] **Orphan fix: `opt_filters_hideMemories`** — was in uiMap with no HTML control or i18n key; added `options_filters_hide_memories` to EN + ES locales; added toggle to Clutter & Injections card.
+- [x] **Orphan fix: `commentPreviewStrategy`** — setting existed in default-settings.js and messages.json but had no HTML control or uiMap entry; added select to comment preview section and wired in uiMap.
+- [x] **i18n key audit** — Fixed missing `options_ui_theme_pastel` in EN locale (confirmed gap). Added `options_ui_theme_zen` + `options_ui_theme_pastel` to ES locale (both were absent). Added locale selector keys to both EN and ES.
 
 ## Safety Rules (Do Not Remove)
 

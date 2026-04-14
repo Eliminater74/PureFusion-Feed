@@ -227,12 +227,35 @@
                     <input type="checkbox" id="opt_widescreen" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
+                    <label data-i18n="options_filters_hide_memories">Hide Memories Posts</label>
+                    <input type="checkbox" id="opt_filters_hideMemories" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row">
                     <label data-i18n="options_filters_hide_stories">Hide Stories Bar</label>
                     <input type="checkbox" id="opt_filters_hideStories" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
                     <label data-i18n="options_filters_remove_colored_bg">Remove Colored Background Posts</label>
                     <input type="checkbox" id="opt_filters_removeColoredBackgrounds" class="pf-toggle">
+                </div>
+            </div>
+
+            <div class="pf-card mt-4 pf-advanced-card">
+                <h3 data-i18n="options_filters_locale_label">Feed Language</h3>
+                <p class="pf-desc" data-i18n="options_filters_locale_desc">Match phrase filters to your Facebook language. Auto tests all supported languages (may over-filter mixed-language feeds).</p>
+                <div class="pf-setting-row auto-height">
+                    <label data-i18n="options_filters_locale_label">Feed Language</label>
+                    <select id="opt_filters_filterLocale" class="pf-select">
+                        <option value="auto" data-i18n="options_filters_locale_auto">Auto (all supported languages)</option>
+                        <option value="en">English</option>
+                        <option value="es">Español</option>
+                        <option value="fr">Français</option>
+                        <option value="de">Deutsch</option>
+                        <option value="nl">Nederlands</option>
+                        <option value="sv">Svenska</option>
+                        <option value="da">Dansk</option>
+                        <option value="no">Norsk</option>
+                    </select>
                 </div>
             </div>
 
@@ -449,6 +472,13 @@
                 </div>
 
                 <p class="pf-desc" data-i18n="options_social_comment_preview_desc">Tune cooldown and scope below. Higher cooldowns and lower sweep caps reduce the chance of triggering FB rate limits.</p>
+                <div class="pf-setting-row auto-height">
+                    <label data-i18n="options_social_comment_preview_strategy">Preview Strategy</label>
+                    <select id="opt_social_commentPreviewStrategy" class="pf-select">
+                        <option value="inject" data-i18n="options_social_comment_preview_strategy_inject">Smart Inject (Stable, v3)</option>
+                        <option value="click" data-i18n="options_social_comment_preview_strategy_click">Legacy Click (v2)</option>
+                    </select>
+                </div>
                 <div class="pf-setting-row auto-height">
                     <label data-i18n="options_social_comment_preview_cooldown">Comment preview cooldown (ms)</label>
                     <input type="number" id="opt_social_commentPreviewCooldownMs" min="300" max="5000" class="pf-input-number">

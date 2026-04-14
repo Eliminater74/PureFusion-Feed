@@ -301,6 +301,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const uiMap = {
         // Filters
+        'opt_filters_filterLocale': { obj: 'filters', prop: 'filterLocale', type: 'select' },
         'opt_filters_removeAds': { obj: 'filters', prop: 'removeAds', type: 'checkbox' },
         'opt_filters_removeSuggested': { obj: 'filters', prop: 'removeSuggested', type: 'checkbox' },
         'opt_filters_removePYMK': { obj: 'filters', prop: 'removePYMK', type: 'checkbox' },
@@ -455,6 +456,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_social_trackUnfriends': { obj: 'social', prop: 'trackUnfriends', type: 'checkbox' },
         'opt_social_notificationDigestMode': { obj: 'social', prop: 'notificationDigestMode', type: 'checkbox' },
         'opt_social_autoCommentPreview': { obj: 'social', prop: 'autoCommentPreview', type: 'checkbox' },
+        'opt_social_commentPreviewStrategy': { obj: 'social', prop: 'commentPreviewStrategy', type: 'select' },
         'opt_social_commentPreviewCooldownMs': { obj: 'social', prop: 'commentPreviewCooldownMs', type: 'number', fallback: 1200 },
         'opt_social_commentPreviewRetryCap': { obj: 'social', prop: 'commentPreviewRetryCap', type: 'number', fallback: 4 },
         'opt_social_commentPreviewMaxPostsPerSweep': { obj: 'social', prop: 'commentPreviewMaxPostsPerSweep', type: 'number', fallback: 30 },

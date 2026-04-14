@@ -1279,15 +1279,46 @@ class PF_Cleaner {
         const normalized = names.map((name) => this._normalizeComparableText(name)).filter(Boolean);
         if (!normalized.length) return;
 
+        const hidden = new Set();
+
+        const hideEntry = (entry) => {
+            if (!entry || hidden.has(entry)) return;
+            // Primary: walk up to role="listitem" | role="link" | x1i10hfl class (proven stable container)
+            let container = entry;
+            for (let i = 0; i < 10; i++) {
+                const p = container.parentElement;
+                if (!p || p === scopeNode) break;
+                const role = p.getAttribute('role');
+                if (role === 'listitem' || role === 'link' || p.classList.contains('x1i10hfl')) {
+                    container = p;
+                    break;
+                }
+                container = p;
+            }
+            // Fallback to rect-based heuristic if walk produced only the original node
+            if (container === entry) {
+                container = this._findCompactNavContainer(entry, scopeNode) || entry;
+            }
+            hidden.add(container);
+            this._hideNodeSafely(container, reason);
+        };
+
+        // Path 1 — aria-label attribute (most reliable; FB sets this explicitly on contact rows)
+        scopeNode.querySelectorAll('[aria-label]').forEach((el) => {
+            const label = this._normalizeComparableText(el.getAttribute('aria-label') || '');
+            if (!label) return;
+            if (normalized.some((value) => label === value || label.startsWith(`${value} `) || label.includes(value))) {
+                hideEntry(el);
+            }
+        });
+
+        // Path 2 — text content fallback (catches cases where aria-label is absent or generic)
         scopeNode.querySelectorAll('a[role="link"], a[href], [role="button"], [role="link"]').forEach((entry) => {
             if (!entry || !this._isVisibleNavRow(entry)) return;
-
             const text = this._normalizeComparableText(entry.textContent || '');
             if (!text || text.length < 3 || text.length > 48) return;
             if (!normalized.some((value) => text === value || text.startsWith(`${value} `))) return;
-
-            const target = this._findCompactNavContainer(entry, scopeNode);
-            this._hideNodeSafely(target, reason);
+            hideEntry(entry);
         });
     }
 
@@ -2272,7 +2303,33 @@ class PF_Cleaner {
         // Tokens are matched against _normalizeComparableText output (NFD + strip U+0300-U+036F):
         //   SV: ä->a, å->a, ö->o  |  DA/NO: ø and æ survive (no decomposition)
         //   All tokens written in their post-normalization form.
-        return /(friends?|group|commented|liked|reacted|shared a memory|memories on facebook|event|attending|interested in|going to|amigos?|grupo|comento|comentado|gusto|reacciono|recuerdo|recuerdos|evento|asistio|asistira|interesado|amis|groupe|commente|aime|souvenir|evenement|freund|gruppe|kommentiert|gefallt|erinnerung|veranstaltung|interessiert|interessato|partecipa|relazione|bevriend|reageerde|vindt dit leuk|aanwezig|herinnering|profielfoto|omslagfoto|levensgebeurtenis|ingecheckt|relatiestatus|gedeeld|gepost|deelde|kommenterade|gillar|deltar|minne|profilbild|gick med|delade|postade|milstolpe|checka in|relationsstatus|omslagsbild|livshandelse|kommenterte|liker|livshendelse|sjekk inn|relasjonsstatus|ble med|delte|postet|forsidebilde|kommenteerde|synes godt om|deltager|livsbegivenhed|tjek ind|forholdsstatus|gik med|postede|omslagsbillede|milepæl|forhold)/.test(text);
+        //
+        // When filterLocale is 'auto' (default), the unified pattern tests all phrase groups.
+        // When a specific locale is selected, only EN + that locale's group is tested to
+        // reduce false positives on single-language feeds.
+        const locale = this.settings?.filters?.filterLocale || 'auto';
+
+        if (locale === 'auto') {
+            return /(friends?|group|commented|liked|reacted|shared a memory|memories on facebook|event|attending|interested in|going to|amigos?|grupo|comento|comentado|gusto|reacciono|recuerdo|recuerdos|evento|asistio|asistira|interesado|amis|groupe|commente|aime|souvenir|evenement|freund|gruppe|kommentiert|gefallt|erinnerung|veranstaltung|interessiert|interessato|partecipa|relazione|bevriend|reageerde|vindt dit leuk|aanwezig|herinnering|profielfoto|omslagfoto|levensgebeurtenis|ingecheckt|relatiestatus|gedeeld|gepost|deelde|kommenterade|gillar|deltar|minne|profilbild|gick med|delade|postade|milstolpe|checka in|relationsstatus|omslagsbild|livshandelse|kommenterte|liker|livshendelse|sjekk inn|relasjonsstatus|ble med|delte|postet|forsidebilde|kommenteerde|synes godt om|deltager|livsbegivenhed|tjek ind|forholdsstatus|gik med|postede|omslagsbillede|milepæl|forhold)/.test(text);
+        }
+
+        // EN base group — always tested regardless of locale setting.
+        if (/friends?|group|commented|liked|reacted|shared a memory|memories on facebook|event|attending|interested in|going to/.test(text)) return true;
+
+        // Per-locale extension groups (post-normalization form).
+        const localePatterns = {
+            es: /amigos?|grupo|comento|comentado|gusto|reacciono|recuerdo|recuerdos|evento|asistio|asistira|interesado/,
+            fr: /amis|groupe|commente|aime|souvenir|evenement/,
+            de: /freund|gruppe|kommentiert|gefallt|erinnerung|veranstaltung|interessiert/,
+            it: /interessato|partecipa|relazione/,
+            nl: /bevriend|reageerde|vindt dit leuk|aanwezig|herinnering|profielfoto|omslagfoto|levensgebeurtenis|ingecheckt|relatiestatus|gedeeld|gepost|deelde|kommenteerde/,
+            sv: /kommenterade|gillar|deltar|minne|profilbild|gick med|delade|postade|milstolpe|checka in|relationsstatus|omslagsbild|livshandelse/,
+            da: /kommenterede|synes godt om|deltager|livsbegivenhed|tjek ind|forholdsstatus|gik med|postede|omslagsbillede|milepæl|forhold/,
+            no: /kommenterte|liker|livshendelse|sjekk inn|relasjonsstatus|ble med|delte|postet|forsidebilde/,
+        };
+
+        const lp = localePatterns[locale];
+        return lp ? lp.test(text) : false;
     }
 
     _classifyPostType(node) {
@@ -2433,10 +2490,35 @@ class PF_Cleaner {
     _looksLikePostTypeAnchor(text) {
         if (!text) return false;
 
-        // EN / ES / FR / PT / DE / IT tokens (original set)
-        // NL / SV / DA / NO additions — all tokens in post-normalization form:
+        // All tokens in post-normalization form (NFD + strip U+0300-U+036F):
         //   SV: ä→a, å→a, ö→o  |  DA/NO: ø and æ survive NFD unchanged
-        return /(video|watch|reel|short video|photo|photos|image|album|shared a link|link preview|read more|live(?: now)?|went live|is live|live stream|live video|live broadcast|poll|voted?|see results|view results|shared .{0,40}'s post|shared a post|enlace|leer mas|articulo|compartio|fotos?|imagenes?|lien|lire la suite|apercu|partage|sondage|est en direct|linkvorschau|mehr lesen|geteilt|umfrage|abgestimmt|immagine|leggi di piu|anteprima|sondaggio|condiviso|partilhou|ler mais|previa do link|inquerito|deelde|koppeling|lees meer|bericht|publicatie|ging live|is live nu|peiling|gestemd|delade|las mer|opslag|inlagg|delte|læs mere|opslag|lenke|les mer|innlegg)/.test(text);
+        //
+        // When filterLocale is 'auto', the unified pattern is used.
+        // When a specific locale is set, only EN core + that locale's group is tested.
+        const locale = this.settings?.filters?.filterLocale || 'auto';
+
+        if (locale === 'auto') {
+            return /(video|watch|reel|short video|photo|photos|image|album|shared a link|link preview|read more|live(?: now)?|went live|is live|live stream|live video|live broadcast|poll|voted?|see results|view results|shared .{0,40}'s post|shared a post|enlace|leer mas|articulo|compartio|fotos?|imagenes?|lien|lire la suite|apercu|partage|sondage|est en direct|linkvorschau|mehr lesen|geteilt|umfrage|abgestimmt|immagine|leggi di piu|anteprima|sondaggio|condiviso|partilhou|ler mais|previa do link|inquerito|deelde|koppeling|lees meer|bericht|publicatie|ging live|is live nu|peiling|gestemd|delade|las mer|opslag|inlagg|delte|læs mere|opslag|lenke|les mer|innlegg)/.test(text);
+        }
+
+        // EN core — always tested.
+        if (/(video|watch|reel|short video|photo|photos|image|album|shared a link|link preview|read more|live(?: now)?|went live|is live|live stream|live video|live broadcast|poll|voted?|see results|view results|shared .{0,40}'s post|shared a post)/.test(text)) return true;
+
+        // Per-locale extension tokens.
+        const localePatterns = {
+            es: /enlace|leer mas|articulo|compartio|fotos?|imagenes?/,
+            fr: /lien|lire la suite|apercu|partage|sondage|est en direct/,
+            de: /linkvorschau|mehr lesen|geteilt|umfrage|abgestimmt/,
+            it: /immagine|leggi di piu|anteprima|sondaggio|condiviso/,
+            pt: /partilhou|ler mais|previa do link|inquerito/,
+            nl: /deelde|koppeling|lees meer|bericht|publicatie|ging live|is live nu|peiling|gestemd/,
+            sv: /delade|las mer|opslag|inlagg/,
+            da: /delte|læs mere|opslag/,
+            no: /lenke|les mer|innlegg/,
+        };
+
+        const lp = localePatterns[locale];
+        return lp ? lp.test(text) : false;
     }
 
     _hasExternalLinkTarget(node) {

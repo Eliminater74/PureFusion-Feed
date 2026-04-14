@@ -12,6 +12,7 @@ const DEFAULT_SETTINGS = {
     // CORE FILTERS (Ads & Spam)
     // ------------------------------------------------------------------------
     filters: {
+        filterLocale: 'auto',           // Phrase-pack language scope: 'auto'|'en'|'es'|'fr'|'de'|'nl'|'sv'|'da'|'no'
         removeAds: true,                // Sponsored posts, right-col ads
         removeSuggested: true,          // "Suggested for you"
         removePYMK: true,               // "People You May Know"
