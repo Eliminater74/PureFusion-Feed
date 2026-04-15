@@ -20,6 +20,9 @@ class PF_Predictor {
         this.boundVisibilityHandler = null;
         this.boundInsightToggleHandler = null;
         this._stylesInjected = false;
+
+        // Session content-type filters — populated by "Hide similar" action; cleared on reset or page reload
+        this.sessionContentFilters = new Set();
         
         this._injectPredictorStyles();
         this.init();
@@ -300,10 +303,30 @@ class PF_Predictor {
 
         // 4. Attach Engagement Listeners (so we can learn)
         this._bindInteractionListeners(node);
+
+        // 5. Session content-type filter (set by "Hide similar posts" action)
+        if (this.sessionContentFilters.size > 0) {
+            const ct = String(node.dataset.pfContentType || '').trim();
+            if (ct && this.sessionContentFilters.has(ct)) {
+                node.style.setProperty('display', 'none', 'important');
+                node.dataset.pfSessionFiltered = 'true';
+            }
+        }
+
         node.dataset.pfLastInsightRefresh = String(Date.now());
     }
 
     _refreshPredictionDecorations(postNode) {
+        // Re-apply session content-type filter on already-processed nodes
+        if (this.sessionContentFilters.size > 0) {
+            const ct = String(postNode.dataset.pfContentType || '').trim();
+            if (ct && this.sessionContentFilters.has(ct)) {
+                postNode.style.setProperty('display', 'none', 'important');
+                postNode.dataset.pfSessionFiltered = 'true';
+                return;
+            }
+        }
+
         const predictions = this.settings?.predictions || {};
         const score = Number(postNode?.dataset?.pfScored || 0);
         const scoreDetails = {
@@ -360,6 +383,12 @@ class PF_Predictor {
             postNode.style.removeProperty('display');
             delete postNode.dataset.pfCollapsedLowScore;
             delete postNode.dataset.pfCollapsedReason;
+        }
+
+        // Temporarily restore session-filtered posts so _scorePost can re-classify and re-hide them
+        if (postNode.dataset.pfSessionFiltered) {
+            postNode.style.removeProperty('display');
+            delete postNode.dataset.pfSessionFiltered;
         }
 
         delete postNode.dataset.pfCollapseGuardBypass;
@@ -823,7 +852,8 @@ class PF_Predictor {
             points: Math.max(0, Number(postNode.dataset.pfCredibilityPoints || 0)),
             sourceTier: String(postNode.dataset.pfCredibilitySourceTier || 'none'),
             collapseGuardBypass: postNode.dataset.pfCollapseGuardBypass === 'true',
-            collapseGuardFloor: Number(postNode.dataset.pfCollapseGuardFloor || 0)
+            collapseGuardFloor: Number(postNode.dataset.pfCollapseGuardFloor || 0),
+            sessionFilters: Array.from(this.sessionContentFilters)
         });
         const isExpanded = postNode.dataset.pfInsightExpanded === 'true' || this._hasExpandedInsightInHost(postNode);
         const toggleLabel = isExpanded ? 'Hide' : 'Details';
@@ -926,10 +956,23 @@ class PF_Predictor {
 
         if (action === 'hide-similar') {
             const contentType = String(postNode?.dataset?.pfContentType || '').trim();
-            const label = contentType && contentType !== 'Personal' ? contentType : 'this content type';
-            toast(`"Hide similar" noted for: ${label}. This preference will guide future scoring.`, 'info', 3500);
-            btn.textContent = 'Noted';
+            if (contentType && contentType !== 'Personal') {
+                this.sessionContentFilters.add(contentType);
+                // Force a full re-sweep so all currently visible matching posts are hidden immediately
+                this.sweepDocument(true);
+                toast(`Hiding all "${contentType}" posts for this session. Reload page to reset.`, 'info', 4500);
+                btn.textContent = 'Hidden';
+            } else {
+                toast('Could not determine a specific content type for this post.', 'warn', 2500);
+                btn.textContent = 'Noted';
+            }
             btn.disabled = true;
+        }
+
+        if (action === 'reset-session-filters') {
+            this.sessionContentFilters.clear();
+            this.sweepDocument(true);
+            toast('Session filters cleared — hidden posts restored.', 'success', 3000);
         }
 
         if (action === 'always-show') {
@@ -1124,6 +1167,19 @@ class PF_Predictor {
         if (data.collapseGuardBypass) {
             const floor = Math.max(1, Number(data.collapseGuardFloor || 0) || 1);
             items.push(`<p class="pf-insight-debug"><strong>Guard:</strong> kept visible to maintain at least ${floor} posts on screen.</p>`);
+        }
+
+        // --- Active session filters notice ---
+        const sessionFilters = Array.isArray(data.sessionFilters) ? data.sessionFilters : [];
+        if (sessionFilters.length > 0) {
+            const filterList = sessionFilters.map((f) => `<em>${this._escapeHtml(f)}</em>`).join(', ');
+            items.push(`
+                <div class="pf-insight-section pf-insight-session-section">
+                    <div class="pf-insight-section-title">Session Filters Active</div>
+                    <p>Currently hiding: ${filterList}</p>
+                    <button type="button" class="pf-insight-action-btn pf-insight-action-btn-reset" data-pf-action="reset-session-filters">Reset (restore hidden posts)</button>
+                </div>
+            `);
         }
 
         // --- Quick Action hooks ---
@@ -2085,6 +2141,30 @@ class PF_Predictor {
                 border-color: rgba(255, 160, 175, 0.9);
                 background: rgba(120, 36, 52, 0.52);
                 color: #ffffff;
+            }
+
+            .pf-insight-action-btn.pf-insight-action-btn-reset {
+                border-color: rgba(255, 200, 80, 0.55);
+                background: rgba(80, 60, 10, 0.28);
+                color: #ffe080;
+            }
+
+            .pf-insight-action-btn.pf-insight-action-btn-reset:hover {
+                border-color: rgba(255, 220, 100, 0.9);
+                background: rgba(100, 80, 20, 0.52);
+                color: #ffffff;
+            }
+
+            .pf-insight-session-section {
+                margin-top: 8px;
+                padding-top: 6px;
+                border-top: 1px solid rgba(255, 200, 80, 0.22);
+            }
+
+            .pf-insight-session-section em {
+                font-style: normal;
+                color: #ffe080;
+                font-weight: 800;
             }
 
             .pf-cred-chip {
