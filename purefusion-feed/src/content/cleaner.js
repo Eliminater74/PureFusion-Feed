@@ -187,7 +187,8 @@ class PF_Cleaner {
         // Apply Power-User Rules (Phase 12)
         this.ruleEngine.applyRules(rootNode);
         
-        if (this.settings.filters.removeSuggested) this.removeSuggestedPosts(rootNode); // Shared logic for suggested, pymk, groups
+        if (this.settings.filters.removeSuggested) this.removeSuggestedPosts(rootNode);
+        if (this.settings.filters.removePageSuggestions) this.removePageSuggestions(rootNode);
 
         if (this._hasPostTypeFiltersEnabled()) {
             this.removePostTypePosts(rootNode);
@@ -2110,7 +2111,7 @@ class PF_Cleaner {
                 } else {
                     targets = Array.from(rootNode.querySelectorAll(selector));
                 }
-                
+
                 targets.forEach(node => {
                     // Try to find the bounding pagelet or post container
                     const wrap = PF_Helpers.getClosest(node, 'div[data-pagelet]') || node;
@@ -2118,6 +2119,95 @@ class PF_Cleaner {
                 });
             }
         }
+
+        // Text-based heuristic — catches "Suggested for you" / "Recommended for you"
+        // subheader labels across all 9 locales for injection patterns without a
+        // known pagelet identifier.
+        this._getPostCandidates(rootNode).forEach((post) => {
+            if (post.dataset.pfHidden) return;
+            if (this._hasSuggestedSubheaderLabel(post)) {
+                this._hidePostNode(post, 'Suggested Posts');
+            }
+        });
+    }
+
+    /**
+     * Hides "Suggested Pages" (Like Page cards) injected into the feed.
+     * Controlled by filters.removePageSuggestions, separate from removeSuggested.
+     * Uses the same subheader label heuristic but emits a distinct reason string
+     * so toggle-OFF restoration operates independently.
+     */
+    removePageSuggestions(rootNode) {
+        // Speculative pagelet names — add confirmed variants as observed.
+        [
+            '[data-pagelet*="SuggestedPage"]',
+            '[data-pagelet*="PageSuggestion"]',
+            '[data-pagelet*="LikePageUnit"]',
+        ].forEach(sel => {
+            rootNode.querySelectorAll(sel).forEach(node => {
+                this._hidePostNode(node, 'Page Suggestion');
+            });
+        });
+
+        // Text heuristic — FB uses the same "Suggested for you" subheader for page
+        // suggestion cards; the reason string differentiates them for restoration.
+        this._getPostCandidates(rootNode).forEach((post) => {
+            if (post.dataset.pfHidden) return;
+            if (this._hasSuggestedSubheaderLabel(post)) {
+                this._hidePostNode(post, 'Page Suggestion');
+            }
+        });
+    }
+
+    /**
+     * Returns true if the post's header area contains a locale-aware
+     * "Suggested for you" or "Recommended for you" label.
+     * Scans the first ~120 px of the article to avoid matching body text.
+     *
+     * Tokens are pre-normalized (NFD decomposed + diacritics stripped + lower-case)
+     * to match the output of _normalizeComparableText:
+     *   é→e, ü→u, ö→o, å→a, ñ→n; æ and ø are unchanged (no NFD decomposition).
+     */
+    _hasSuggestedSubheaderLabel(postNode) {
+        const tokens = [
+            'suggested for you', 'recommended for you',      // EN
+            'sugerido para ti', 'recomendado para ti',        // ES
+            'suggere pour vous', 'recommande pour vous',      // FR
+            'fur dich empfohlen', 'empfohlen fur dich',       // DE
+            'consigliato per te', 'raccomandato per te',      // IT
+            'voorgesteld voor jou', 'aanbevolen voor jou',    // NL
+            'foreslagen for dig', 'rekommenderat for dig',    // SV
+            'foreslaet til dig', 'anbefalet til dig',         // DA
+            'foreslatt for deg', 'anbefalt for deg',          // NO
+        ];
+
+        const postRect = postNode.getBoundingClientRect ? postNode.getBoundingClientRect() : null;
+        const elems = postNode.querySelectorAll('span, [role="link"], a, div');
+
+        for (const el of elems) {
+            const raw = el.getAttribute('aria-label') || el.textContent || '';
+            const text = this._normalizeComparableText(raw);
+            if (!text || text.length > 36) continue;
+
+            // Only examine the post header zone (first ~120 px).
+            if (postRect && el.getBoundingClientRect) {
+                const rect = el.getBoundingClientRect();
+                // If both rects are zero (off-screen / background tab) skip the guard
+                // and rely solely on text-length + token matching.
+                const bothZero = postRect.top === 0 && rect.top === 0 && postRect.height === 0;
+                if (!bothZero && rect.top - postRect.top > 120) continue;
+            }
+
+            if (tokens.some(token =>
+                text === token ||
+                text.startsWith(token + ' ') ||
+                text.startsWith(token + ' \u00b7') // middle dot separator
+            )) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     removeFriendActivity(rootNode) {
@@ -3007,6 +3097,7 @@ class PF_Cleaner {
 
                 // -- Simple feed-filter toggles --
                 if (reason === 'Suggested Posts'       && !f?.removeSuggested)        { _pfUnhide(); return; }
+                if (reason === 'Page Suggestion'       && !f?.removePageSuggestions)  { _pfUnhide(); return; }
                 if (reason === 'People You May Know'   && !f?.removePYMK)             { _pfUnhide(); return; }
                 if (reason === 'Suggested Groups'      && !f?.removeGroupSuggestions) { _pfUnhide(); return; }
                 if (reason === 'Marketplace Unit'      && !f?.hideMarketplace)        { _pfUnhide(); return; }
