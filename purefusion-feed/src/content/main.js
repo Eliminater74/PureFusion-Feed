@@ -740,7 +740,8 @@ class PureFusionApp {
                     hideReels: true,
                     hideMarketplace: true,
                     hideStories: true,
-                    hideFundraisers: true
+                    hideFundraisers: true,
+                    hideMemories: true
                 },
                 storyFilters: {
                     hideBecameFriends: true,
@@ -750,7 +751,9 @@ class PureFusionApp {
                 },
                 sidebar: {
                     enableModuleFilters: true,
-                    hideRightTrending: true
+                    hideRightTrending: true,
+                    hideLeftMetaAI: true,
+                    hideRightMetaAIContact: true
                 },
                 social: {
                     hideSearchPopupSuggestions: true,
@@ -784,7 +787,8 @@ class PureFusionApp {
                     hideReels: true,
                     hideMarketplace: true,
                     hideStories: true,
-                    hideFundraisers: true
+                    hideFundraisers: true,
+                    hideMemories: true
                 },
                 storyFilters: {
                     hideBecameFriends: true,
@@ -801,6 +805,14 @@ class PureFusionApp {
                     hideJobWorkUpdates: true,
                     hideRelationshipUpdates: true,
                     hideGroupActivityPosts: true
+                },
+                sidebar: {
+                    enableModuleFilters: true,
+                    hideRightTrending: true,
+                    hideLeftMetaAI: true,
+                    hideLeftManusAI: true,
+                    hideRightMetaAIContact: true,
+                    hideRightManusAIContact: true
                 },
                 uiMode: {
                     friendsOnlyMode: true,
@@ -847,9 +859,18 @@ class PureFusionApp {
                     hideReels: true,
                     hideStories: true,
                     hideFundraisers: true,
+                    hideMemories: true,
                     hideVideoPosts: true,
                     hidePhotoPosts: true,
                     removeColoredBackgrounds: true
+                },
+                sidebar: {
+                    enableModuleFilters: true,
+                    hideRightTrending: true,
+                    hideLeftMetaAI: true,
+                    hideLeftManusAI: true,
+                    hideRightMetaAIContact: true,
+                    hideRightManusAIContact: true
                 },
                 uiMode: {
                     compactMode: true,
@@ -933,13 +954,20 @@ class PureFusionApp {
                     hideReels: true,
                     hideMarketplace: true,
                     hideStories: true,
-                    hideFundraisers: true
+                    hideFundraisers: true,
+                    hideMemories: true
                 },
                 storyFilters: {
                     hideBecameFriends: true,
                     hideJoinedGroups: true,
                     hideCommentedOnThis: true,
                     hideLikedThis: true
+                },
+                sidebar: {
+                    enableModuleFilters: true,
+                    hideRightTrending: true,
+                    hideLeftMetaAI: true,
+                    hideRightMetaAIContact: true
                 },
                 uiMode: {
                     enforceChronologicalFeed: true,
