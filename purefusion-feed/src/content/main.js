@@ -1032,6 +1032,13 @@ class PureFusionApp {
      * extension is reloaded or updated.  The onDisconnect callback tears down
      * all running observers and intervals so stale content-script code cannot
      * keep calling invalidated Chrome APIs.
+     *
+     * MV3 caveat: the background service worker may be terminated by Chrome
+     * after ~30 s of inactivity.  When that happens ALL ports are disconnected,
+     * firing onDisconnect — but the extension itself is still alive.
+     * We distinguish the two cases via chrome.runtime.id:
+     *   • Still set  → service worker went idle; reconnect, do NOT destroy.
+     *   • Undefined  → extension truly invalidated; destroy and stop.
      */
     _startLifecycleGuard() {
         if (typeof chrome === 'undefined' || !chrome.runtime?.id) return;
@@ -1039,8 +1046,17 @@ class PureFusionApp {
         try {
             const port = chrome.runtime.connect({ name: 'pf-content-lifecycle' });
             port.onDisconnect.addListener(() => {
-                PF_Logger.info('PureFusion: extension context invalidated — shutting down content script.');
-                this._destroy();
+                if (typeof chrome === 'undefined' || !chrome.runtime?.id) {
+                    // Extension context truly gone — tear down everything.
+                    PF_Logger.info('PureFusion: extension context invalidated — shutting down content script.');
+                    this._destroy();
+                } else {
+                    // Service worker idle-terminated; extension still live.
+                    // Reconnect after a short delay so we remain guarded on the
+                    // next SW wake-up without destroying the running UI.
+                    PF_Logger.info('PureFusion: service worker idle — reconnecting lifecycle guard.');
+                    setTimeout(() => this._startLifecycleGuard(), 2000);
+                }
             });
         } catch (err) {
             // Context already gone; nothing to guard
