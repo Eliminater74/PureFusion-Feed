@@ -140,22 +140,131 @@ const SELECTOR_MAP = {
     // IMAGE SUBJECT TOKENS (For AI Descriptor Filtering)
     // ------------------------------------------------------------------------
     imageSubjectTokens: {
-        // EN + ES/PT/FR/DE/IT locale tokens merged from both filter paths (Phase 19 consolidation)
-        sports: ['stadium', 'field', 'athlet', 'match', 'score', 'game', 'team', 'sport', 'ball', 'fitness', 'workout', 'player', 'coach', 'championship', 'tournament',
-                 'soccer', 'football', 'basketball', 'baseball', 'hockey', 'tennis'],
-        food: ['food', 'dish', 'plate', 'meal', 'restaurant', 'cook', 'baked', 'delicious', 'breakfast', 'lunch', 'dinner', 'dessert', 'snack', 'drink', 'beverage', 'cup', 'bottle', 'tableware',
-               'pizza', 'burger',
-               'cocina', 'comida', 'bebida'],          // ES
-        pets: ['dog', 'cat', 'kitten', 'puppy', 'pet ', 'animal', 'furry', 'bird', 'hamster', 'rabbit', 'paw', 'bark', 'meow',
-               'perro', 'gato', 'mascota'],             // ES
-        vehicles: ['car', 'truck', 'vehicle', 'motorcycle', 'bike', 'aviation', 'airplane', 'aircraft', 'boat', 'ship', 'drive', 'road', 'highway', 'traffic', 'engine', 'wheel', 'tire',
-                   'van', 'bus',
-                   'coche', 'camion', 'vehiculo', 'moto'], // ES
-        memes: ['text', 'screenshot', 'meme', 'digital image', 'white background', 'black background', 'interface', 'poster', 'graphic design', 'clip art', 'illustration',
-                'text that says', 'caption',
-                'captura de pantalla', 'texto que dice'], // ES
-        travel: ['mountain', 'beach', 'ocean', 'nature', 'sky', 'outdoor', 'sunset', 'travel', 'landscape', 'scenery', 'building', 'architecture', 'monument', 'landmark', 'vacation', 'resort',
-                 'playa', 'montana', 'atardecer', 'paisaje', 'viaje', 'vacaciones'] // ES
+        // EN + ES + FR/DE/IT/NL/SV/DA/NO (Phase 29 — full 9-locale expansion + false-positive audit)
+        sports: [
+            // EN
+            'stadium', 'field', 'athlet', 'match', 'score', 'game', 'team', 'sport', 'ball', 'fitness', 'workout', 'player', 'coach', 'championship', 'tournament',
+            'soccer', 'football', 'basketball', 'baseball', 'hockey', 'tennis',
+            // ES
+            'estadio', 'jugador', 'equipo', 'campeonato', 'torneo',
+            // FR
+            'stade', 'terrain', 'joueur', 'équipe', 'championnat', 'tournoi',
+            // DE
+            'stadion', 'mannschaft', 'spieler', 'wettkampf', 'fußball', 'fussball',
+            // IT
+            'squadra', 'giocatore', 'campionato', 'calcio',
+            // NL
+            'voetbal', 'speler', 'kampioenschap',
+            // SV
+            'fotboll', 'spelare', 'mästerskap',
+            // DA
+            'fodbold', 'spiller',
+            // NO
+            'fotball'
+        ],
+        food: [
+            // EN
+            'food', 'dish', 'plate', 'meal', 'restaurant', 'cook', 'baked', 'delicious', 'breakfast', 'lunch', 'dinner', 'dessert', 'snack', 'drink', 'beverage', 'cup', 'bottle', 'tableware',
+            'pizza', 'burger',
+            // ES
+            'cocina', 'comida', 'bebida',
+            // FR
+            'nourriture', 'repas', 'plat', 'boisson', 'déjeuner', 'dîner', 'petit-déjeuner', 'cuisine',
+            // DE
+            'essen', 'mahlzeit', 'gericht', 'getränk', 'frühstück', 'mittagessen', 'abendessen', 'küche',
+            // IT
+            'cibo', 'pasto', 'piatto', 'bevanda', 'pranzo', 'cena', 'colazione', 'cucina',
+            // NL
+            'maaltijd', 'gerecht', 'drank', 'ontbijt', 'avondeten', 'keuken',
+            // SV
+            'mat', 'måltid', 'dryck', 'frukost', 'middag', 'kök',
+            // DA
+            'mad', 'ret', 'drikke', 'morgenmad', 'aftensmad', 'køkken',
+            // NO
+            'kjøkken'
+        ],
+        pets: [
+            // EN
+            'dog', 'cat', 'kitten', 'puppy', 'pet ', 'animal', 'furry', 'bird', 'hamster', 'rabbit', 'paw', 'bark', 'meow',
+            // ES
+            'perro', 'gato', 'mascota',
+            // FR
+            'chien', 'chat ', 'chaton', 'chiot', 'oiseau', 'lapin', 'animaux',
+            // DE
+            'hund', 'katze', 'kätzchen', 'welpe', 'vogel', 'kaninchen', 'haustier',
+            // IT
+            'cane', 'gatto', 'gattino', 'cucciolo', 'uccello', 'coniglio', 'animale',
+            // NL
+            'hond', 'kat ', 'katje', 'konijn', 'huisdier', 'dier',
+            // SV
+            'katt', 'kattunge', 'valp', 'fågel', 'kanin', 'husdjur', 'djur',
+            // DA
+            'killing', 'hvalp', 'fugl', 'kæledyr',
+            // NO
+            'kattunge', 'kjæledyr'
+        ],
+        vehicles: [
+            // EN
+            'car', 'truck', 'vehicle', 'motorcycle', 'bike', 'aviation', 'airplane', 'aircraft', 'boat', 'ship', 'drive', 'road', 'highway', 'traffic', 'engine', 'wheel', 'tire',
+            'van', 'bus',
+            // ES
+            'coche', 'camion', 'vehiculo', 'moto',
+            // FR
+            'voiture', 'camion', 'moto', 'avion', 'bateau', 'véhicule', 'route',
+            // DE
+            'auto', 'lkw', 'motorrad', 'flugzeug', 'boot', 'fahrzeug', 'straße',
+            // IT
+            'automobile', 'aereo', 'barca', 'veicolo', 'strada',
+            // NL
+            'vrachtwagen', 'motorfiets', 'vliegtuig', 'voertuig', 'rijweg',
+            // SV
+            'bil', 'lastbil', 'motorcykel', 'flygplan', 'båt', 'fordon', 'väg',
+            // DA
+            'lastbil', 'motorcykel', 'fly', 'båd', 'køretøj', 'vej',
+            // NO
+            'lastebil', 'motorsykkel', 'kjøretøy', 'vei'
+        ],
+        memes: [
+            // EN
+            'text', 'screenshot', 'meme', 'digital image', 'white background', 'black background', 'interface', 'poster', 'graphic design', 'clip art', 'illustration',
+            'text that says', 'caption',
+            // ES
+            'captura de pantalla', 'texto que dice',
+            // FR
+            "capture d'écran", 'fond blanc', 'fond noir', 'affiche', 'texte qui dit',
+            // DE
+            'weißer hintergrund', 'schwarzer hintergrund', 'plakat', 'text der sagt',
+            // IT
+            'sfondo bianco', 'sfondo nero', 'testo che dice',
+            // NL
+            'schermafbeelding', 'witte achtergrond', 'zwarte achtergrond', 'tekst die zegt', 'illustratie',
+            // SV
+            'skärmbild', 'vit bakgrund', 'svart bakgrund', 'text som säger',
+            // DA
+            'skærmbillede', 'hvid baggrund', 'sort baggrund', 'tekst der siger',
+            // NO
+            'skjermbilde', 'hvit bakgrunn', 'svart bakgrunn', 'tekst som sier', 'illustrasjon'
+        ],
+        travel: [
+            // EN — 'outdoor' and 'building' removed (false-positive: food/sports photos taken outside)
+            'mountain', 'beach', 'ocean', 'nature', 'sky', 'sunset', 'travel', 'landscape', 'scenery', 'architecture', 'monument', 'landmark', 'vacation', 'resort',
+            // ES
+            'playa', 'montana', 'atardecer', 'paisaje', 'viaje', 'vacaciones',
+            // FR
+            'plage', 'montagne', 'océan', 'mer', 'coucher de soleil', 'paysage', 'monument', 'vacances', 'voyage',
+            // DE
+            'strand', 'berg', 'ozean', 'meer', 'sonnenuntergang', 'landschaft', 'denkmal', 'urlaub', 'reise',
+            // IT
+            'spiaggia', 'montagna', 'oceano', 'mare', 'tramonto', 'paesaggio', 'monumento', 'vacanza', 'viaggio',
+            // NL
+            'oceaan', 'zee', 'zonsondergang', 'landschap', 'vakantie', 'reis',
+            // SV
+            'hav', 'solnedgång', 'landskap', 'semester', 'resa',
+            // DA
+            'bjerg', 'solnedgang', 'landskab', 'ferie', 'rejse',
+            // NO
+            'fjell', 'solnedgang', 'ferie', 'reise'
+        ]
     },
 
     // ------------------------------------------------------------------------

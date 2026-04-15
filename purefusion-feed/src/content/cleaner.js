@@ -1899,9 +1899,13 @@ class PF_Cleaner {
                 const alt = (img.getAttribute('alt') || '').toLowerCase();
                 if (!alt || alt.length < 5) continue;
 
-                // Typical FB AI formats: "Image may contain: [tags]", "May be an image of [tags]"
-                // We prune the prefix to get just the subject tokens
-                const cleanAlt = alt.replace(/.*(?:contain|of|de|von|nir|nga|contenga|contenha):\s*/i, '');
+                // Typical FB AI formats per locale:
+                //   EN: "Image may contain: …"  FR: "L'image peut contenir : …"
+                //   DE: "Das Bild könnte enthalten: …"  IT: "L'immagine potrebbe contenere: …"
+                //   NL: "Afbeelding kan bevatten: …"  SV: "Bilden kan innehålla: …"
+                //   DA: "Billedet kan indeholde: …"  NO: "Bildet kan inneholde: …"
+                // Strip everything up to and including the colon so only subject tags remain.
+                const cleanAlt = alt.replace(/.*(?:contain|contenir|enthalten|contenere|bevatten|innehålla|indeholde|inneholde|of|de|von|nir|nga|contenga|contenha)\s*:\s*/i, '');
                 
                 const blockedCategory = this._checkImageAgainstBlockedCategories(cleanAlt);
                 if (blockedCategory) {

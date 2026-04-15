@@ -20,6 +20,7 @@ Always continue from the highest-priority unfinished item. Do not jump ahead.
 
 **Completed phases (most recent first):**
 
+- ✅ Phase 29: Image Subject Filter Hardening (FR/DE/IT/NL/SV/DA/NO tokens for all 6 categories; false-positive audit removes 'outdoor'+'building' from travel; prefix-stripping regex expanded for all 9 locales)
 - ✅ Phase 28: Granular Sidebar Hardening (position-aware `_resolveRightSidebarContainer`; all heading/aria-label tokens expanded to 9 locales for Trending/Contacts/Events/Birthdays; `_hasShortcutsHeading` 9-locale; `_looksLikeContactsModule` 9-locale)
 - ✅ Phase 27: UI Tweaks — Unimplemented Settings Activation (fontSizeScale CSS, anonymizerMode hover-reveal blur, disableCommentAutofocus guard)
 - ✅ Phase 26: Notification + Search Popup Full Locale Expansion (FR/DE/IT/NL/SV/DA/NO for all 4 notif categories + search input selectors + trending/recent tokens)
@@ -45,7 +46,8 @@ Always continue from the highest-priority unfinished item. Do not jump ahead.
 
 ## Last Action Log
 
-- **Last completed (2026-04-14):** Phase 28 — Granular Sidebar Hardening. Replaced naive `document.querySelector('[role="complementary"]')` first-match with `_resolveRightSidebarContainer(rootNode)`: filters all complementary panels to those whose left edge exceeds 50% viewport width, width 100–560px, height > 200px, sorted rightmost-first — correctly targets FB's main sidebar when chat panel is also present. Expanded `_hasShortcutsHeading` from EN+ES to all 9 locales (EN/ES/FR/DE/IT/NL/SV/DA/NO). Expanded all right sidebar heading/aria-label token arrays (Trending, Contacts, Events, Birthdays) to 9 locales. Expanded `_looksLikeContactsModule` aria-label selector string, heading Set, and body-text token array to all locale variants.
+- **Last completed (2026-04-14):** Phase 29 — Image Subject Filter Hardening. All 6 image categories (sports/food/pets/vehicles/memes/travel) expanded from EN+ES to full 9-locale coverage in `selector-map.js imageSubjectTokens`. Removed `'outdoor'` and `'building'` from travel tokens (false-positive audit: food photos taken outdoors and any building photo were incorrectly triggering travel filter). Fixed alt-text prefix-stripping regex in `applyImageSubjectFilters` to handle FR (`contenir`), DE (`enthalten`), IT (`contenere`), NL (`bevatten`), SV (`innehålla`), DA (`indeholde`), NO (`inneholde`) — without this fix, non-English FB UI alt text passed the raw prefix through to token matching, causing misses. Updated regex separator to `\s*:\s*` to handle French typographic space-before-colon convention.
+- **Prior (2026-04-14):** Phase 28 — Granular Sidebar Hardening. Replaced naive `document.querySelector('[role="complementary"]')` first-match with `_resolveRightSidebarContainer(rootNode)`: filters all complementary panels to those whose left edge exceeds 50% viewport width, width 100–560px, height > 200px, sorted rightmost-first — correctly targets FB's main sidebar when chat panel is also present. Expanded `_hasShortcutsHeading` from EN+ES to all 9 locales (EN/ES/FR/DE/IT/NL/SV/DA/NO). Expanded all right sidebar heading/aria-label token arrays (Trending, Contacts, Events, Birthdays) to 9 locales. Expanded `_looksLikeContactsModule` aria-label selector string, heading Set, and body-text token array to all locale variants.
 - **Prior (2026-04-14):** Phase 27 — UI Tweaks Unimplemented Settings Activation. `fontSizeScale` (80–150): generates `html { font-size: N% }` when not 100; only fires when in range and non-default. `anonymizerMode`: CSS blur (8px imgs, 5px author name links) with hover-reveal transition; scoped to article/complementary/navigation. `disableCommentAutofocus`: capture-phase focus listener tracks last mousedown target; blurs programmatic textbox focus via microtask. All three were wired in options.html/js but had zero content-script implementation.
 - **Prior (2026-04-14):** Phase 26 — Notification + Search Popup Full Locale Expansion. All 4 notification filter categories and all search popup detection paths expanded to FR/DE/IT/NL/SV/DA/NO.
 - **Prior (2026-04-14):** Phase 25 — Memories Filter + Messenger Lifecycle Guard. `removeMemoriesPosts()`: primary href signal + multi-locale text fallback; toggle-OFF reversal in `_restoreCriticalContainers`. Messenger runtime got `_startLifecycleGuard()` + `_destroy()`.
@@ -72,7 +74,7 @@ Status key: **DONE** = implemented and working | **WIP** = implemented but being
 | Top header micro-controls | DONE | Per-icon toggles + Notification Soul-Soother jewel styles |
 | Notification popup filtering | DONE | Games, birthdays, marketplace, engagement — all 9 locales |
 | Search popup suppression | DONE | All suggestions / trending / recent — all 9 locales |
-| Image subject filtering | WIP | 6 categories implemented in safe mode; needs selector hardening |
+| Image subject filtering | DONE | 6 categories; 9-locale alt-text tokens; false-positive audit complete |
 | Auto comment preview v3 | DONE | DOM injection strategy; placeholder shell; MutationObserver re-render guard |
 | Smart feed quality scoring | DONE | Ragebait/credibility/engagement-bait; insight chips; score thresholds |
 | Feed mode presets | DONE | Custom/Clean/Focus/Ultra Fast/Smart/Classic |
@@ -90,14 +92,7 @@ Status key: **DONE** = implemented and working | **WIP** = implemented but being
 
 ## Remaining Work (Priority Order)
 
-### High — Image Subject Filter Hardening (WIP)
-
-The 6 image categories (sports/food/pets/vehicles/memes/travel) work but rely on FB's alt-text descriptor strings which are locale-sensitive. Needs:
-
-- Expanded token coverage for FR/DE/IT/NL/SV/DA/NO image descriptors
-- False-positive audit on food/travel overlap
-
-### Medium — Auto Comment Preview v3.1 — Real Comment Data
+### High — Auto Comment Preview v3.1 — Real Comment Data
 
 v3.0 (DOM shell injection) is DONE. v3.1 would intercept FB GraphQL responses via the service worker to populate real comment text. High complexity and ToS-adjacent — do not start without explicit decision to pursue.
 
