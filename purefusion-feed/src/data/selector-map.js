@@ -45,49 +45,63 @@ const SELECTOR_MAP = {
     // aria-label selectors use *= (partial) and i (case-insensitive) because FB appends
     // "· Public", "· Globe" etc to the label.  Exact-match selectors miss these variants.
     sponsoredIndicators: [
-        // Aria-label based (most stable — FB populates aria-label with clean text)
+        // Aria-label based — a, span, AND [role="link"] variants.
+        // FB sometimes uses div/custom elements with role="link" instead of <a>.
         // EN
         'a[aria-label*="Sponsored" i]',
         'span[aria-label*="Sponsored" i]',
+        '[role="link"][aria-label*="Sponsored" i]',
         // ES
         'a[aria-label*="Publicidad" i]',
         'span[aria-label*="Publicidad" i]',
+        '[role="link"][aria-label*="Publicidad" i]',
         'a[aria-label*="Patrocinado" i]',
         'span[aria-label*="Patrocinado" i]',
+        '[role="link"][aria-label*="Patrocinado" i]',
         // FR
         'a[aria-label*="Sponsorisé" i]',
         'span[aria-label*="Sponsorisé" i]',
+        '[role="link"][aria-label*="Sponsorisé" i]',
         // DE
         'a[aria-label*="Gesponsert" i]',
         'span[aria-label*="Gesponsert" i]',
+        '[role="link"][aria-label*="Gesponsert" i]',
         // IT
         'a[aria-label*="Sponsorizzato" i]',
         'span[aria-label*="Sponsorizzato" i]',
+        '[role="link"][aria-label*="Sponsorizzato" i]',
         // NL
         'a[aria-label*="Gesponsord" i]',
         'span[aria-label*="Gesponsord" i]',
+        '[role="link"][aria-label*="Gesponsord" i]',
         // SV
         'a[aria-label*="Sponsrad" i]',
         'span[aria-label*="Sponsrad" i]',
+        '[role="link"][aria-label*="Sponsrad" i]',
         // DA
         'a[aria-label*="Sponsoreret" i]',
         'span[aria-label*="Sponsoreret" i]',
+        '[role="link"][aria-label*="Sponsoreret" i]',
         // NO
         'a[aria-label*="Sponset" i]',
         'span[aria-label*="Sponset" i]',
+        '[role="link"][aria-label*="Sponset" i]',
         // Href-based: FB sponsored posts always link to the ad explanation page.
         // This href is never obfuscated — most reliable single signal.
         'a[href*="/ads/about"]',
         'a[href*="ad_preferences"]',
         'a[href*="about_ads"]',
+        'a[href*="adabouturl"]',
         // NOTE: [attributionsrc*="privacy_sandbox"] and [attributionsrc*="comet/register"] removed.
         // Both appear on organic comment profile links (every commenter's avatar/name),
         // not exclusive to ads. Caused every comment to be falsely hidden.
         // NOTE: [data-ad-rendering-role] removed — confirmed present on ALL organic post
         // profile name elements, not exclusive to ads. Caused false-positive comment hiding.
         // Content Flow Token in ad page-name links (confirmed via live DOM)
+        // Both uppercase (%5B) and lowercase (%5b) percent-encoding variants covered.
         'a[href*="_cft_[0]"]',
         'a[href*="_cft_%5B0%5D"]',
+        'a[href*="_cft_%5b0%5d"]',
         // testid fallback
         '[data-testid="fbfeed_ads_native_container"]',
         // Legacy text-contains (handled via findContains in removeSponsored)

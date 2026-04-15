@@ -1799,12 +1799,15 @@ class PF_Cleaner {
                 'a[href*="ad_preferences"]',
                 'a[href*="about_ads"]',
                 'a[href*="adchoices"]',
+                'a[href*="adabouturl"]',
                 'a[href*="facebook.com/ads"]',
                 'a[href*="fb.com/ads"]',
                 // Content Flow Token (_cft_) in href = Facebook ad tracking parameter.
                 // FB appends this exclusively to links inside sponsored posts.
+                // Both uppercase (%5B) and lowercase (%5b) percent-encoding variants covered.
                 'a[href*="_cft_[0]"]',
                 'a[href*="_cft_%5B0%5D"]',
+                'a[href*="_cft_%5b0%5d"]',
                 // testid fallback
                 '[data-testid="fbfeed_ads_native_container"]',
                 // NOTE: [attributionsrc], [data-ad-rendering-role] removed —
@@ -1839,16 +1842,28 @@ class PF_Cleaner {
             }
         }
 
-        // 2. aria-labelledby heuristic
+        // 2a. aria-labelledby heuristic
         // FB often uses: <span aria-labelledby="some-id"></span> ... <span id="some-id">Sponsored</span>
         const labeledElements = rootNode.querySelectorAll('[aria-labelledby]');
         labeledElements.forEach(el => {
             const labelId = el.getAttribute('aria-labelledby');
             const labelNode = document.getElementById(labelId);
-            if (labelNode) {
-                const text = labelNode.textContent.trim();
-                if (this._isSponsoredLabel(text)) {
+            if (labelNode && this._isSponsoredLabel(labelNode.textContent.trim())) {
+                targets.push(el);
+            }
+        });
+
+        // 2b. aria-describedby heuristic — FB's second obfuscation variant.
+        // aria-describedby can list multiple IDs separated by spaces; check each.
+        const describedElements = rootNode.querySelectorAll('[aria-describedby]');
+        describedElements.forEach(el => {
+            const ids = (el.getAttribute('aria-describedby') || '').split(/\s+/);
+            for (const id of ids) {
+                if (!id) continue;
+                const descNode = document.getElementById(id);
+                if (descNode && this._isSponsoredLabel(descNode.textContent.trim())) {
                     targets.push(el);
+                    break;
                 }
             }
         });
@@ -2310,8 +2325,10 @@ class PF_Cleaner {
     _findSponsoredMarkerInPost(postNode) {
         const postRect = postNode.getBoundingClientRect ? postNode.getBoundingClientRect() : null;
 
-        // Pass 1: aria-label and single-node textContent scan (fast path)
-        const candidates = postNode.querySelectorAll('[aria-label], a[role="link"], span, div');
+        // Pass 1: aria-label and single-node textContent scan (fast path).
+        // 400px height limit covers tall posts where the label sits below a large image.
+        // 48 char limit allows "Sponsored · 3 hours ago" style combined labels through.
+        const candidates = postNode.querySelectorAll('[aria-label], [role="link"], a, span, div');
         for (const node of candidates) {
             const text = this._normalizeComparableText(
                 node.getAttribute('aria-label')
@@ -2319,13 +2336,13 @@ class PF_Cleaner {
                 || ''
             );
 
-            if (!text || text.length > 32) continue;
+            if (!text || text.length > 48) continue;
             if (!this._isSponsoredLabel(text)) continue;
 
             // Prefer markers near the top header area of a post.
             if (postRect && node.getBoundingClientRect) {
                 const rect = node.getBoundingClientRect();
-                if (rect.top - postRect.top > 260) continue;
+                if (rect.top - postRect.top > 400) continue;
             }
 
             return node;
@@ -2362,10 +2379,19 @@ class PF_Cleaner {
         if (!normalized) return false;
 
         return this.sponsoredTokens.some((token) => {
-            return normalized === token
-                || normalized.startsWith(`${token} `)
-                || normalized.startsWith(`${token} ·`)
-                || normalized.startsWith(`${token}:`);
+            // Exact match or "Sponsored" is a prefix (e.g. "Sponsored · 3h ago")
+            if (normalized === token) return true;
+            if (normalized.startsWith(`${token} `)) return true;
+            if (normalized.startsWith(`${token} ·`)) return true;
+            if (normalized.startsWith(`${token}:`)) return true;
+            // "Sponsored" at end — FB can prefix with a page badge or dot separator
+            // e.g. "Page Name · Sponsored" or "Promoted · Sponsored"
+            if (normalized.endsWith(` ${token}`)) return true;
+            if (normalized.endsWith(` · ${token}`)) return true;
+            // Mid-string: "Posted by Page · Sponsored · Follow"
+            if (normalized.includes(` · ${token} ·`)) return true;
+            if (normalized.includes(` · ${token}`)) return true;
+            return false;
         });
     }
 
