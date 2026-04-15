@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     elements.ads.checked = settings.filters.removeAds;
     elements.sponsored.checked = !!settings.filters.removeSponsored;
     elements.suggested.checked = settings.filters.removeSuggested;
-    elements.reels.checked = (settings.filters.hideReels && settings.filters.hideStories);
+    elements.reels.checked = !!settings.filters.hideReels;
     elements.chronological.checked = !!settings.uiMode.enforceChronologicalFeed;
     elements.groups.checked = settings.filters.removeGroupSuggestions;
     // Ghost mode is on if both sub-settings are on
@@ -105,9 +105,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         settings.filters.removeSponsored = elements.sponsored.checked;
         settings.filters.removeSuggested = elements.suggested.checked;
         
-        // Combine reels/stories together in the quick UI
         settings.filters.hideReels = elements.reels.checked;
-        settings.filters.hideStories = elements.reels.checked;
+        // hideStories has its own default (false) — do not couple it to the reels toggle
         
         settings.uiMode.forceMostRecent = elements.chronological.checked;
         settings.uiMode.enforceChronologicalFeed = elements.chronological.checked;

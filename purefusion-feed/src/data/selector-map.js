@@ -117,7 +117,17 @@ const SELECTOR_MAP = {
         'span:contains("Group suggestions")',
         'span:contains("Sugerencias de grupos")'
     ],
-    reelsTray: '[data-pagelet="FeedUnit_Reels_Tray"], [data-pagelet^="ShortsAndReels"], [data-pagelet*="Reels"]',
+    // Reels tray — data-pagelet primary, aria-label fallback, role="region" structural
+    reelsTray: [
+        '[data-pagelet="FeedUnit_Reels_Tray"]',
+        '[data-pagelet^="ShortsAndReels"]',
+        '[data-pagelet*="Reels"]',
+        '[data-pagelet*="reels"]',
+        '[aria-label="Reels"]',
+        '[aria-label^="Reels,"]',
+        '[role="region"][aria-label*="Reels" i]',
+        '[aria-label*="Reels and short videos" i]',
+    ].join(', '),
     storiesTray: '[data-pagelet="Stories"]',
 
     // ------------------------------------------------------------------------

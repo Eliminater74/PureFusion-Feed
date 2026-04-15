@@ -1657,17 +1657,32 @@ class PF_Cleaner {
         // 1. Map Check
         this.hideTarget(rootNode, PF_SELECTOR_MAP.reelsTray, "Reels Target Array");
 
-        // 2. Text Heuristic Check
-        // The rootNode is usually the feed post itself during dynamic injection
-        const textNodes = PF_Helpers.findContains(rootNode, 'span, h2, h3, div', 'Reels');
+        // 2. Aria-label structural scan — catches FB layouts without data-pagelet
+        const ariaReels = rootNode.querySelectorAll
+            ? rootNode.querySelectorAll('[aria-label*="Reels" i]')
+            : [];
+        ariaReels.forEach(node => {
+            const label = (node.getAttribute('aria-label') || '').trim();
+            if (/^reels\b/i.test(label)) {
+                const postWrapper = PF_Helpers.getClosest(node, PF_SELECTOR_MAP.postContainer) || node;
+                if (postWrapper && !postWrapper.dataset.pfHidden) {
+                    this._hidePostNode(postWrapper, 'Reels Tray Heuristic');
+                }
+            }
+        });
+
+        // 3. Text content heuristic — heading-level nodes only to avoid false-positives
+        const textNodes = PF_Helpers.findContains(rootNode, 'span, h2, h3, div[role="heading"]', 'Reels');
         textNodes.forEach(node => {
             const text = node.textContent.trim();
-            // Match "Reels", "Reels and short videos", etc., ignoring long sentences
-            if (text === 'Reels' || text.includes('Reels and short videos')) {
-                // Try to find the specific post wrapper enclosing this element
-                const postWrapper = PF_Helpers.getClosest(node, PF_SELECTOR_MAP.postContainer) || node.parentElement.parentElement.parentElement.parentElement;
+            // "Reels" (exact), "Reels and short videos", "Reels for you", etc.
+            // /^reels\b/i guards against matching unrelated longer sentences.
+            if (/^reels\b/i.test(text) && text.length < 60) {
+                const postWrapper = PF_Helpers.getClosest(node, PF_SELECTOR_MAP.postContainer)
+                    || node.closest('[data-pagelet]')
+                    || node.parentElement?.parentElement?.parentElement?.parentElement;
                 if (postWrapper && !postWrapper.dataset.pfHidden) {
-                    this._hidePostNode(postWrapper, "Reels Tray Heuristic");
+                    this._hidePostNode(postWrapper, 'Reels Tray Heuristic');
                 }
             }
         });
