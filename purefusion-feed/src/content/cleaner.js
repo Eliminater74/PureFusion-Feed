@@ -1803,10 +1803,24 @@ class PF_Cleaner {
      * These never appear on organic posts — zero false-positive risk.
      */
     _removeAdsByHardSignals(rootNode) {
+        // Step 1: Direct AdUnit_ pagelet targeting.
+        // Facebook uses [data-pagelet^="AdUnit_"] exclusively for feed ad units.
+        // Hiding the pagelet wrapper (not just the inner article) prevents blank-space
+        // artifacts and catches all ad formats — native, carousel, and video — with
+        // zero false-positive risk. No inner scan needed for these containers.
+        rootNode.querySelectorAll('[data-pagelet^="AdUnit_"]').forEach((adUnit) => {
+            if (adUnit.dataset.pfHidden) return;
+            this._hidePostNode(adUnit, 'Ad (Hard Signal)');
+        });
+
+        // Step 2: Article-level scan for ads not enclosed in an AdUnit_ pagelet.
+        // Some FB variants serve sponsored content inside FeedUnit_ wrappers with
+        // no dedicated pagelet identifier — these must be detected via inner signals.
         rootNode.querySelectorAll('[role="article"]').forEach((article) => {
-            if (article.parentElement?.closest('[role="article"]')) return;
-            if (article.closest('[role="complementary"]')) return;
+            if (article.parentElement?.closest('[role="article"]')) return; // nested/comment
+            if (article.closest('[role="complementary"]')) return;          // sidebar
             if (article.dataset.pfHidden) return;
+            if (article.closest('[data-pagelet^="AdUnit_"]')) return;       // handled in Step 1
 
             const adSignal = article.querySelector([
                 // Ad explanation page links (various FB domains)
@@ -1823,8 +1837,9 @@ class PF_Cleaner {
                 'a[href*="_cft_[0]"]',
                 'a[href*="_cft_%5B0%5D"]',
                 'a[href*="_cft_%5b0%5d"]',
-                // testid fallback
+                // testid fallbacks — confirmed FB ad container markers.
                 '[data-testid="fbfeed_ads_native_container"]',
+                '[data-testid="ad_boundary"]',
                 // NOTE: [attributionsrc], [data-ad-rendering-role] removed —
                 // both appear on organic comment profile links, not exclusive to ads.
             ].join(', '));
@@ -2390,7 +2405,9 @@ class PF_Cleaner {
         // (e.g. U+200B ZERO WIDTH SPACE, U+200C/D, U+2060, U+FEFF) to defeat text
         // matching. Then strip diacritics so accented forms match the token list.
         const cleaned = String(text || '').replace(/[\u00ad\u200b-\u200f\u2028\u2029\u202a-\u202f\u2060\u2061\ufeff]/g, '');
-        const normalized = this._normalizeComparableText(cleaned);
+        // Normalize separators: U+2022 BULLET (•) and U+00B7 MIDDLE DOT (·) are used
+        // interchangeably by FB across locales and UI variants. Collapse all to ' · '.
+        const normalized = this._normalizeComparableText(cleaned).replace(/\s*[•·]\s*/g, ' · ');
         if (!normalized) return false;
 
         return this.sponsoredTokens.some((token) => {
