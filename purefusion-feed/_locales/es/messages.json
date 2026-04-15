@@ -477,6 +477,7 @@
   "inpage_fab_title": { "message": "Abrir Panel PureFusion" },
   "inpage_modal_title": { "message": "Panel PureFusion" },
   "inpage_modal_ads": { "message": "Bloquear Anuncios" },
+  "inpage_modal_sponsored": { "message": "Ocultar Publicaciones Patrocinadas" },
   "inpage_modal_sugg": { "message": "Ocultar Sugeridos" },
   "inpage_modal_stories": { "message": "Ocultar Historias" },
   "inpage_modal_ai": { "message": "Filtro de IA/Clickbait" },

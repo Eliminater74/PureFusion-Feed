@@ -177,8 +177,11 @@ class PF_Cleaner {
         }
 
         if (this.settings.filters.removeAds) {
-            this.removeSponsored(rootNode);
+            this._removeAdsByHardSignals(rootNode);
             this.removeRightRailAds(rootNode);
+        }
+        if (this.settings.filters.removeSponsored) {
+            this._removeSponsoredByLabels(rootNode);
         }
 
         // Apply Power-User Rules (Phase 12)
@@ -1779,50 +1782,12 @@ class PF_Cleaner {
      * Hunt for sponsored elements, tracking up to their feed post parent to eradicate.
      * @param {HTMLElement} rootNode 
      */
-    removeSponsored(rootNode) {
-        let targets = [];
-
-        // 1. Standard Selector / SVG heuristic
-        for (const selector of PF_SELECTOR_MAP.sponsoredIndicators) {
-            if (selector.includes(':contains')) {
-                const text = selector.match(/:contains\("([^"]+)"\)/)[1];
-                const parts = selector.split(':');
-                const baseSelector = parts[0];
-                targets = targets.concat(PF_Helpers.findContains(rootNode, baseSelector, text));
-            } else {
-                targets = targets.concat(Array.from(rootNode.querySelectorAll(selector)));
-            }
-        }
-
-        // 2. Advanced aria-labelledby heuristic (Manifest V3 God-Mode)
-        // FB often uses: <span aria-labelledby="some-id"></span> ... <span id="some-id">Sponsored</span>
-        const labeledElements = rootNode.querySelectorAll('[aria-labelledby]');
-        labeledElements.forEach(el => {
-            const labelId = el.getAttribute('aria-labelledby');
-            const labelNode = document.getElementById(labelId);
-            if (labelNode) {
-                const text = labelNode.textContent.trim();
-                if (this._isSponsoredLabel(text)) {
-                    targets.push(el);
-                }
-            }
-        });
-
-        // 3. Post-level fallback scan for localized Sponsored markers.
-        const postCandidates = this._getPostCandidates(rootNode);
-        postCandidates.forEach((post) => {
-            if (!post || post.dataset.pfHidden) return;
-            const marker = this._findSponsoredMarkerInPost(post);
-            if (marker) targets.push(marker);
-        });
-
-        // 4. data-ad-preview attribute scan — DISABLED.
-        // Facebook uses data-ad-preview on both ad post bodies AND comment text containers.
-        // There is no reliable way to distinguish the two without false-positive comment hiding.
-        // Sponsored detection is handled by Steps 1, 2, 3, and 5.
-
-        // 5. Multi-signal article scan — uses signals confirmed from live DOM inspection.
-        // All of these are FB ad-infrastructure markers, never present on organic posts.
+    /**
+     * Hard ad-infrastructure signal scan (controlled by filters.removeAds).
+     * Only matches FB ad-exclusive href markers and testid attributes.
+     * These never appear on organic posts — zero false-positive risk.
+     */
+    _removeAdsByHardSignals(rootNode) {
         rootNode.querySelectorAll('[role="article"]').forEach((article) => {
             if (article.parentElement?.closest('[role="article"]')) return;
             if (article.closest('[role="complementary"]')) return;
@@ -1846,24 +1811,71 @@ class PF_Cleaner {
                 // both appear on organic comment profile links, not exclusive to ads.
             ].join(', '));
 
-            if (adSignal) this._hidePostNode(article, 'Sponsored Post (Ad Signal)');
+            if (adSignal) this._hidePostNode(article, 'Ad (Hard Signal)');
+        });
+    }
+
+    /**
+     * Soft "Sponsored" label detection (controlled by filters.removeSponsored).
+     * Uses locale-aware text selectors, aria-labelledby, and post-level fallback.
+     * More aggressive but less precise — kept separate for independent testing/tuning.
+     *
+     * data-ad-preview scan — DISABLED.
+     * Facebook uses data-ad-preview on both ad post bodies AND comment text containers.
+     * There is no reliable way to distinguish the two without false-positive comment hiding.
+     */
+    _removeSponsoredByLabels(rootNode) {
+        let targets = [];
+
+        // 1. Standard selector / locale token heuristic
+        for (const selector of PF_SELECTOR_MAP.sponsoredIndicators) {
+            if (selector.includes(':contains')) {
+                const text = selector.match(/:contains\("([^"]+)"\)/)[1];
+                const parts = selector.split(':');
+                const baseSelector = parts[0];
+                targets = targets.concat(PF_Helpers.findContains(rootNode, baseSelector, text));
+            } else {
+                targets = targets.concat(Array.from(rootNode.querySelectorAll(selector)));
+            }
+        }
+
+        // 2. aria-labelledby heuristic
+        // FB often uses: <span aria-labelledby="some-id"></span> ... <span id="some-id">Sponsored</span>
+        const labeledElements = rootNode.querySelectorAll('[aria-labelledby]');
+        labeledElements.forEach(el => {
+            const labelId = el.getAttribute('aria-labelledby');
+            const labelNode = document.getElementById(labelId);
+            if (labelNode) {
+                const text = labelNode.textContent.trim();
+                if (this._isSponsoredLabel(text)) {
+                    targets.push(el);
+                }
+            }
+        });
+
+        // 3. Post-level fallback scan for localized Sponsored markers
+        const postCandidates = this._getPostCandidates(rootNode);
+        postCandidates.forEach((post) => {
+            if (!post || post.dataset.pfHidden) return;
+            const marker = this._findSponsoredMarkerInPost(post);
+            if (marker) targets.push(marker);
         });
 
         for (const indicator of targets) {
-            // Skip any indicator that is inside a comment dialog or comment section.
-            // Facebook uses identical markup for comments and ads, so any ad-signal
-            // inside a comment area is a false positive.
+            // Skip indicators inside comment dialogs — FB uses identical markup for both.
             if (indicator.closest('[role="dialog"]')) continue;
 
-            // Only hide if the indicator is inside a proper pagelet feed unit.
-            // Do NOT fall back to hiding [role="article"] — comment articles pass
-            // that check and are not distinguishable from post articles here.
             const postWrapper = PF_Helpers.getClosest(indicator, PF_SELECTOR_MAP.postContainer);
-
             if (postWrapper) {
-                this._hidePostNode(postWrapper, "Sponsored Post (Heuristic)");
+                this._hidePostNode(postWrapper, 'Sponsored Post (Label Heuristic)');
             }
         }
+    }
+
+    /** @deprecated Use _removeAdsByHardSignals / _removeSponsoredByLabels directly. */
+    removeSponsored(rootNode) {
+        this._removeAdsByHardSignals(rootNode);
+        this._removeSponsoredByLabels(rootNode);
     }
 
     /**

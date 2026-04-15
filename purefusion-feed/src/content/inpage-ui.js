@@ -224,6 +224,10 @@ class PF_InPageUI {
                     <input type="checkbox" id="pfm_ads" class="pf-modal-toggle" ${this.settings.filters.removeAds ? 'checked' : ''}>
                 </div>
                 <div class="pf-modal-row">
+                    <span>${chrome.i18n.getMessage("inpage_modal_sponsored")}</span>
+                    <input type="checkbox" id="pfm_sponsored" class="pf-modal-toggle" ${this.settings.filters.removeSponsored ? 'checked' : ''}>
+                </div>
+                <div class="pf-modal-row">
                     <span>${chrome.i18n.getMessage("inpage_modal_sugg")}</span>
                     <input type="checkbox" id="pfm_sugg" class="pf-modal-toggle" ${this.settings.filters.removeSuggested ? 'checked' : ''}>
                 </div>
@@ -260,6 +264,7 @@ class PF_InPageUI {
         // Quick Toggles mapped out to settings via message event
         const toggles = [
             { id: 'pfm_ads', obj: 'filters', prop: 'removeAds' },
+            { id: 'pfm_sponsored', obj: 'filters', prop: 'removeSponsored' },
             { id: 'pfm_sugg', obj: 'filters', prop: 'removeSuggested' },
             { id: 'pfm_stor', obj: 'filters', prop: 'hideStories' },
             { id: 'pfm_ai', obj: 'wellbeing', prop: 'ragebaitDetector' },

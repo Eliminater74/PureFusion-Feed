@@ -13,7 +13,8 @@ const DEFAULT_SETTINGS = {
     // ------------------------------------------------------------------------
     filters: {
         filterLocale: 'auto',           // Phrase-pack language scope: 'auto'|'en'|'es'|'fr'|'de'|'nl'|'sv'|'da'|'no'
-        removeAds: true,                // Sponsored posts, right-col ads
+        removeAds: true,                // Hard ad-infrastructure signals (href/_cft_ markers)
+        removeSponsored: false,         // Soft "Sponsored" label detection (text/aria heuristics — separate for testing)
         removeSuggested: true,          // "Suggested for you"
         removePYMK: true,               // "People You May Know"
         removeGroupSuggestions: true,   // "Suggested Groups"
