@@ -26,6 +26,9 @@ class PF_Predictor {
 
         // Persistent author blocklist — loaded from local storage, survives page reloads
         this.blocklist = new Set();
+
+        // Persistent author allowlist — "Always show source" entries; exempt from session filters
+        this.allowlist = new Set();
         
         this._injectPredictorStyles();
         this.init();
@@ -43,6 +46,12 @@ class PF_Predictor {
         const blocklistData = await PF_Storage.getLocalData('pf_blocklist');
         if (Array.isArray(blocklistData) && blocklistData.length > 0) {
             this.blocklist = new Set(blocklistData);
+        }
+
+        // Load persistent author allowlist
+        const allowlistData = await PF_Storage.getLocalData('pf_allowlist');
+        if (Array.isArray(allowlistData) && allowlistData.length > 0) {
+            this.allowlist = new Set(allowlistData);
         }
 
         // Start periodic sync
@@ -131,6 +140,7 @@ class PF_Predictor {
                 delete postNode.dataset.pfContentTone;
                 delete postNode.dataset.pfContentConfidence;
                 delete postNode.dataset.pfBlocked;
+                delete postNode.dataset.pfAllowlisted;
             });
         }
 
@@ -276,7 +286,7 @@ class PF_Predictor {
     }
 
     _processSingleNode(node) {
-        const predictVersion = 'v12-persistent-blocklist';
+        const predictVersion = 'v13-allowlist';
 
         if (node.dataset.pfPredictProcessed === predictVersion) {
             const lastRefresh = Number(node.dataset.pfLastInsightRefresh || 0);
@@ -327,7 +337,8 @@ class PF_Predictor {
         this._bindInteractionListeners(node);
 
         // 5. Session content-type filter (set by "Hide similar posts" action)
-        if (this.sessionContentFilters.size > 0) {
+        // Allowlisted sources are always exempt from session filters.
+        if (this.sessionContentFilters.size > 0 && !this._isAllowlisted(node)) {
             const ct = String(node.dataset.pfContentType || '').trim();
             if (ct && this.sessionContentFilters.has(ct)) {
                 node.style.setProperty('display', 'none', 'important');
@@ -350,7 +361,8 @@ class PF_Predictor {
         }
 
         // Re-apply session content-type filter on already-processed nodes
-        if (this.sessionContentFilters.size > 0) {
+        // Allowlisted sources are always exempt.
+        if (this.sessionContentFilters.size > 0 && !this._isAllowlisted(postNode)) {
             const ct = String(postNode.dataset.pfContentType || '').trim();
             if (ct && this.sessionContentFilters.has(ct)) {
                 postNode.style.setProperty('display', 'none', 'important');
@@ -671,11 +683,12 @@ class PF_Predictor {
         const t = text.toLowerCase();
 
         // Political framing tokens (EN + major EU languages)
+        // Note: 'bill' and 'cabinet' removed — too ambiguous (restaurant bill, kitchen cabinet).
         const politicalTokens = [
             'president', 'congress', 'senate', 'democrat', 'republican', 'gop', 'liberal', 'conservative',
-            'election', 'vote', 'voter', 'ballot', 'government', 'policy', 'legislation', 'bill',
+            'election', 'vote', 'voter', 'ballot', 'government', 'policy', 'legislation',
             'politician', 'political', 'white house', 'governor', 'mayor', 'parliament',
-            'prime minister', 'cabinet', 'administration', 'federal', 'supreme court', 'constitution',
+            'prime minister', 'administration', 'federal', 'supreme court', 'constitution',
             'immigration', 'border wall', 'tax cut', 'welfare', 'social security', 'medicare',
             'military funding', 'pentagon', 'second amendment', 'department of defense',
             // DE
@@ -687,10 +700,11 @@ class PF_Predictor {
         ];
 
         // News framing tokens
+        // Note: 'exclusive' removed — too easily confused with commercial promotional language.
         const newsTokens = [
             'breaking', 'breaking news', 'report', 'reported', 'according to', 'sources say',
             'officials say', 'study shows', 'research shows', 'published', 'investigation',
-            'latest update', 'developing', 'exclusive', 'survey', 'poll shows',
+            'latest update', 'developing', 'survey', 'poll shows',
             'data shows', 'statistics show', 'per cent', 'officials confirm', 'journalists'
         ];
 
@@ -726,11 +740,11 @@ class PF_Predictor {
 
         let politicalScore = 0, newsScore = 0, opinionScore = 0, commercialScore = 0, emotionalScore = 0;
 
-        for (const token of politicalTokens) if (t.includes(token)) politicalScore++;
-        for (const token of newsTokens)     if (t.includes(token)) newsScore++;
-        for (const token of opinionTokens)  if (t.includes(token)) opinionScore++;
-        for (const token of commercialTokens) if (t.includes(token)) commercialScore++;
-        for (const token of emotionalTokens)  if (t.includes(token)) emotionalScore++;
+        for (const token of politicalTokens)  if (this._tokenMatch(t, token)) politicalScore++;
+        for (const token of newsTokens)        if (this._tokenMatch(t, token)) newsScore++;
+        for (const token of opinionTokens)     if (this._tokenMatch(t, token)) opinionScore++;
+        for (const token of commercialTokens)  if (this._tokenMatch(t, token)) commercialScore++;
+        for (const token of emotionalTokens)   if (this._tokenMatch(t, token)) emotionalScore++;
 
         const topDomainScore = Math.max(politicalScore, newsScore, opinionScore, commercialScore);
 
@@ -877,6 +891,7 @@ class PF_Predictor {
         const safeSummaryText = this._escapeHtml(summaryText);
         const safeStatusText = this._escapeHtml(insight.label);
         const toneText = this._escapeHtml(insight.tone);
+        const authorAllowlisted = this._isAllowlisted(postNode);
         const detailHtml = this._buildUnifiedInsightDetailsHtml({
             score,
             shouldShowScore,
@@ -896,22 +911,30 @@ class PF_Predictor {
                 const a = this._extractAuthor(postNode);
                 return !!(a && a !== 'Unknown' && this.blocklist.has(a));
             })(),
-            blocklistSize: this.blocklist.size
+            blocklistSize: this.blocklist.size,
+            authorAllowlisted,
+            allowlistSize: this.allowlist.size
         });
         const isExpanded = postNode.dataset.pfInsightExpanded === 'true' || this._hasExpandedInsightInHost(postNode);
         const toggleLabel = isExpanded ? 'Hide' : 'Details';
         const detailsHiddenAttr = isExpanded ? '' : ' hidden';
 
-        // Classification row (Model F)
+        // Classification row (Model F) — also shows Trusted Source badge if allowlisted
         const chipContentType = String(postNode.dataset.pfContentType || '').trim();
         const chipContentTone = String(postNode.dataset.pfContentTone || '').trim();
         const chipContentConf = String(postNode.dataset.pfContentConfidence || '').trim();
-        const showClassification = chipContentType && chipContentType !== 'Personal' && chipContentConf !== 'Low';
+        const showClassification = (chipContentType && chipContentType !== 'Personal' && chipContentConf !== 'Low') || authorAllowlisted;
+        const trustedBadge = authorAllowlisted
+            ? `<span class="pf-insight-trusted-badge">Trusted Source</span>`
+            : '';
         const classificationHtml = showClassification
             ? `<div class="pf-insight-classification">` +
-              `<span class="pf-insight-type-badge">${this._escapeHtml(chipContentType)}</span>` +
-              `<span class="pf-insight-tone-badge">${this._escapeHtml(chipContentTone)}</span>` +
-              `<span class="pf-insight-conf-label">Confidence: ${this._escapeHtml(chipContentConf)}</span>` +
+              trustedBadge +
+              (chipContentType && chipContentType !== 'Personal' && chipContentConf !== 'Low'
+                  ? `<span class="pf-insight-type-badge">${this._escapeHtml(chipContentType)}</span>` +
+                    `<span class="pf-insight-tone-badge">${this._escapeHtml(chipContentTone)}</span>` +
+                    `<span class="pf-insight-conf-label">Confidence: ${this._escapeHtml(chipContentConf)}</span>`
+                  : '') +
               `</div>`
             : '';
 
@@ -1021,18 +1044,34 @@ class PF_Predictor {
         if (action === 'always-show') {
             const author = postNode ? this._extractAuthor(postNode) : null;
             if (author && author !== 'Unknown') {
+                // Add to persistent allowlist — exempt from session content-type filters permanently
+                this.allowlist.add(author);
+                this._saveAllowlist();
+                // Also boost affinity so the post scores higher
                 if (!this.engagementProfiles[author]) {
                     this.engagementProfiles[author] = { reactions: 0, clicks: 0, comments: 0 };
                 }
-                // Boost affinity for this author — equivalent to ~5 reaction events
                 this.engagementProfiles[author].reactions = (this.engagementProfiles[author].reactions || 0) + 10;
                 this._stateDirty = true;
-                toast(`Affinity boosted for: ${author}`, 'success', 2800);
+                this.sweepDocument(true);
+                toast(`"${author}" added to trusted sources — always shown, even with active session filters.`, 'success', 4000);
             } else {
                 toast('Could not identify a source for this post.', 'warn', 2500);
             }
-            btn.textContent = 'Boosted';
+            btn.textContent = 'Trusted';
             btn.disabled = true;
+        }
+
+        if (action === 'unallow-source') {
+            const author = postNode ? this._extractAuthor(postNode) : null;
+            if (author && this.allowlist.has(author)) {
+                this.allowlist.delete(author);
+                this._saveAllowlist();
+                this.sweepDocument(true);
+                toast(`"${author}" removed from trusted sources.`, 'info', 3000);
+            } else {
+                toast('Source not found in trusted list.', 'warn', 2500);
+            }
         }
 
         if (action === 'block-source') {
@@ -1085,6 +1124,10 @@ class PF_Predictor {
 
     _saveBlocklist() {
         PF_Storage.setLocalData('pf_blocklist', Array.from(this.blocklist)).catch(() => {});
+    }
+
+    _saveAllowlist() {
+        PF_Storage.setLocalData('pf_allowlist', Array.from(this.allowlist)).catch(() => {});
     }
 
     _resolveUnifiedInsightState(postNode, score) {
@@ -1257,6 +1300,17 @@ class PF_Predictor {
             `);
         }
 
+        // --- Trusted source notice ---
+        if (data.authorAllowlisted) {
+            items.push(`
+                <div class="pf-insight-section pf-insight-trusted-section">
+                    <div class="pf-insight-section-title">Source Status</div>
+                    <p>This source is <strong>trusted</strong> — exempt from session content filters.</p>
+                    <button type="button" class="pf-insight-action-btn pf-insight-action-btn-reset" data-pf-action="unallow-source">Remove from trusted sources</button>
+                </div>
+            `);
+        }
+
         // --- Blocked source notice ---
         if (data.authorBlocked) {
             items.push(`
@@ -1269,17 +1323,22 @@ class PF_Predictor {
         }
 
         // --- Quick Action hooks ---
-        const blockLabel    = data.authorBlocked ? 'Already blocked' : 'Block source';
-        const blockDisabled = data.authorBlocked ? ' disabled' : '';
+        const blockLabel       = data.authorBlocked    ? 'Already blocked'  : 'Block source';
+        const blockDisabled    = data.authorBlocked    ? ' disabled'         : '';
+        const alwaysShowLabel  = data.authorAllowlisted ? 'Already trusted'  : 'Always show source';
+        const alwaysShowDis    = data.authorAllowlisted ? ' disabled'         : '';
         const blocklistNote = data.blocklistSize > 0
             ? `<span class="pf-insight-blocklist-count">${data.blocklistSize} source${data.blocklistSize !== 1 ? 's' : ''} blocked</span>`
             : '';
+        const allowlistNote = data.allowlistSize > 0
+            ? `<span class="pf-insight-blocklist-count">${data.allowlistSize} trusted</span>`
+            : '';
         items.push(`
             <div class="pf-insight-section pf-insight-actions-section">
-                <div class="pf-insight-section-title">Quick Actions ${blocklistNote}</div>
+                <div class="pf-insight-section-title">Quick Actions ${blocklistNote}${allowlistNote}</div>
                 <div class="pf-insight-action-row">
                     <button type="button" class="pf-insight-action-btn" data-pf-action="hide-similar">Hide similar posts</button>
-                    <button type="button" class="pf-insight-action-btn" data-pf-action="always-show">Always show source</button>
+                    <button type="button" class="pf-insight-action-btn"${alwaysShowDis} data-pf-action="always-show">${alwaysShowLabel}</button>
                     <button type="button" class="pf-insight-action-btn pf-insight-action-btn-danger"${blockDisabled} data-pf-action="block-source">${blockLabel}</button>
                 </div>
             </div>
@@ -2258,6 +2317,28 @@ class PF_Predictor {
                 font-weight: 800;
             }
 
+            .pf-insight-trusted-badge {
+                display: inline-flex;
+                align-items: center;
+                border-radius: 999px;
+                padding: 1px 7px;
+                font-size: 10px;
+                font-weight: 700;
+                border: 1px solid rgba(90, 230, 160, 0.55);
+                background: rgba(20, 80, 50, 0.35);
+                color: #7effc8;
+            }
+
+            .pf-insight-trusted-section {
+                margin-top: 8px;
+                padding-top: 6px;
+                border-top: 1px solid rgba(90, 230, 160, 0.28);
+            }
+
+            .pf-insight-trusted-section p strong {
+                color: #7effc8;
+            }
+
             .pf-insight-blocked-section {
                 margin-top: 8px;
                 padding-top: 6px;
@@ -2487,6 +2568,31 @@ class PF_Predictor {
     _extractText(postNode) {
         const messageContainer = postNode.querySelector(PF_SELECTOR_MAP.postTextBody);
         return messageContainer ? messageContainer.textContent : "";
+    }
+
+    /**
+     * Word-boundary-aware token match.
+     * Multi-word tokens (containing a space) are matched with a plain substring check.
+     * Single-word tokens verify that the match is not surrounded by [a-z0-9] characters,
+     * eliminating false positives like 'bill' inside 'billboard' or 'ability'.
+     */
+    _tokenMatch(text, token) {
+        if (token.includes(' ')) return text.includes(token);
+        let idx = text.indexOf(token);
+        while (idx !== -1) {
+            const before = idx > 0 ? text[idx - 1] : ' ';
+            const after  = idx + token.length < text.length ? text[idx + token.length] : ' ';
+            if (!/[a-z0-9]/.test(before) && !/[a-z0-9]/.test(after)) return true;
+            idx = text.indexOf(token, idx + 1);
+        }
+        return false;
+    }
+
+    /** Returns true if the post's author is in the persistent allowlist. */
+    _isAllowlisted(node) {
+        if (!node || this.allowlist.size === 0) return false;
+        const author = this._extractAuthor(node);
+        return !!(author && author !== 'Unknown' && this.allowlist.has(author));
     }
 
     _syncState() {
