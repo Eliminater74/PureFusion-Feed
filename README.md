@@ -1,78 +1,202 @@
+<div align="center">
+
+<img src="purefusion-feed/icons/icon128.png" alt="PureFusion Feed logo" width="96" height="96"/>
+
 # PureFusion Feed v1.8.1
 
 **Your Facebook. Filtered. Predicted. Perfected.**
 
-PureFusion Feed is an advanced, privacy-first Chrome Extension designed to take absolute control over your Facebook experience. Unlike traditional ad-blockers that rely on simple blacklists, PureFusion intelligently restructures the DOM, nukes invasive algorithmic trays, and leverages local AI to curate your timeline.
+[![Version](https://img.shields.io/badge/version-1.8.1-6C3FC5?style=for-the-badge&logo=googlechrome&logoColor=white)](https://github.com/Eliminater74/PureFusion-Feed/releases)
+[![Manifest V3](https://img.shields.io/badge/Manifest-V3-00D4FF?style=for-the-badge&logo=googlechrome&logoColor=white)](https://developer.chrome.com/docs/extensions/develop/migrate/what-is-mv3)
+[![License: MIT](https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge)](LICENSE)
+[![Platform](https://img.shields.io/badge/Platform-Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white)](https://www.facebook.com)
 
-## 🚀 Core Features
+[![Stars](https://img.shields.io/github/stars/Eliminater74/PureFusion-Feed?style=social)](https://github.com/Eliminater74/PureFusion-Feed/stargazers)
+[![Forks](https://img.shields.io/github/forks/Eliminater74/PureFusion-Feed?style=social)](https://github.com/Eliminater74/PureFusion-Feed/network/members)
+[![Issues](https://img.shields.io/github/issues/Eliminater74/PureFusion-Feed)](https://github.com/Eliminater74/PureFusion-Feed/issues)
+[![Last Commit](https://img.shields.io/github/last-commit/Eliminater74/PureFusion-Feed)](https://github.com/Eliminater74/PureFusion-Feed/commits/main)
+[![Repo Size](https://img.shields.io/github/repo-size/Eliminater74/PureFusion-Feed)](https://github.com/Eliminater74/PureFusion-Feed)
 
-- **Algorithmic Disarmament:** Eradicates the "Suggested For You", "People You May Know", and Group injection modules.
-- **Aggressive Reels & Stories Blocking:** Fully removes horizontal scrolling distraction trays (Reels natively blocked via heuristic text-node traversal to prevent bypasses).
-- **Ad & Sponsored Content Eradication:** Nests deep into the virtual DOM to remove sponsored posts masquerading as standard feed items.
-- **Smart Comment Control:** Enforces "All Comments" timeline sorting automatically and auto-expands hidden comment threads so you can read seamlessly while scrolling.
-- **Widescreen Mode:** Breaks Facebook's rigid center-column constraints to utilize your entire ultrawide monitor.
-- **Core Engine:** Cleaner, Predictor, and Observer loops.
-- **Privacy:** Screenshot Anonymizer and Friends-Only mode.
-- **Wellbeing:** Clickbait blocker and Scroll stopper.
-- **Global Support:** Smart, automatic i18n with English and Spanish presets.
-- **AI Intelligence:** Gemini and Window.ai integrations.
+[![Visitors](https://visitor-badge.laobi.icu/badge?page_id=Eliminater74.PureFusion-Feed&left_color=%236C3FC5&right_color=%2300D4FF&left_text=Visitors)](https://github.com/Eliminater74/PureFusion-Feed)
+
+</div>
 
 ---
 
-[PureFusion Dev Documentation](https://github.com/Eliminater74/PureFusion-Feed)
+PureFusion Feed is an advanced, **privacy-first Chrome extension** that gives you full control over your Facebook experience. Unlike traditional ad-blockers that rely on static blacklists, PureFusion intelligently restructures the DOM, eliminates invasive algorithmic modules, and runs an **on-device AI engine** to curate your timeline — with zero data ever leaving your browser.
+
+---
+
+## What's New in v1.8.1
+
+| Phase | Feature |
+|-------|---------|
+| **40** | **Word-Boundary Classification** — eliminates false-positive content tagging (e.g. "bill" in "billboard"). **Persistent Allowlist** — "Always show source" now survives page reloads; allowlisted authors are immune to session content filters. |
+| **39** | **Persistent Author Blocklist** — "Block source" is now permanent across page reloads, stored in `chrome.storage.local`. |
+| **38** | **Session Content-Type Filters** — "Hide similar posts" now hides all matching content types feed-wide for the session. |
+| **37** | **Insight Chip UX Overhaul** — replaced "Neutral Relevance" with context-aware labels: Political Opinion, News/Report, Opinion/Editorial, Promotional, and more. |
+
+---
+
+## 🚀 Core Features
+
+### Feed Cleaner
+- **Algorithmic Disarmament** — removes Suggested For You, People You May Know, and Group injection modules
+- **Aggressive Reels & Stories Blocking** — fully removes horizontal distraction trays via heuristic text-node traversal (bypass-proof)
+- **Ad & Sponsored Content Eradication** — deep virtual-DOM inspection removes sponsored posts disguised as organic content; both hard-signal (`AdUnit_` pagelet) and label-heuristic detection
+- **Multilingual Support** — 9-locale coverage (EN / ES / FR / DE / IT / NL / SV / DA / NO) across all filter paths
+
+### AI Prediction Engine (100% On-Device)
+- **Local-first ML scoring** — ranks posts by predicted relevance based entirely on your own engagement history
+- **Content Classification (Model F)** — word-boundary-accurate detection of Political, Opinion, News, Commercial, and Emotional content
+- **Ragebait & Engagement-Bait Detection** — flags manipulation patterns with on-chip severity badges
+- **Credibility Signals** — multi-factor source credibility scoring with one-click verification search links
+- **Persistent Author Blocklist** — permanently suppress any source; survives page reloads
+- **Persistent Allowlist** — mark trusted sources so they always appear, even when session content filters are active
+
+### Insight Chip — Per-Post AI Panel
+Each feed post gets a compact, non-intrusive intelligence chip showing:
+
+| Info | Detail |
+|------|--------|
+| PF Score | Relevance score based on your history |
+| Content type | Political / Opinion / News / Commercial / Personal |
+| Tone | Opinionated / Informational / Emotional / Promotional |
+| Confidence | Low / Medium / High |
+| Quick Actions | Hide similar · Always show source · Block source |
+
+### Smart Controls
+- **Feed Mode Presets** — Clean / Focus / Ultra Fast / Smart / Classic — one-click feed personality
+- **Widescreen Mode** — breaks Facebook's center-column layout for ultrawide monitors
+- **Context-menu Zap** — right-click any post to instantly remove it or teach PureFusion to filter it
+- **Daily Feed Report** — session and weekly stats; open with `Alt+Shift+R`
+- **Power-User Rule Engine** — custom filter rules by selector, author, or text match
+
+### Privacy & Wellbeing
+- **Screenshot Anonymizer** — blurs profile images and author names; hover to reveal
+- **Clickbait Blocker & Scroll Stopper**
+- **AI features are 100% opt-in** — the AI wand hides itself completely if no key is configured
+
+---
 
 ## 🧠 AI Assistant Configuration (100% Free)
 
-You do **not** need a paid subscription (like ChatGPT Plus) to use the powerful AI features in PureFusion. You have two completely free options to power the AI Assistant Wand:
+You do **not** need a paid subscription. Choose either option:
 
-### Option 1: Chrome Native Local AI (window.ai) - *Recommended for Privacy*
+### Option 1: Chrome Built-in AI — Gemini Nano *(Recommended for Privacy)*
 
-Google recently built a lightweight version of Gemini directly into the Chrome browser that runs entirely offline on your local machine. It costs nothing, requires no API keys, and never sends your data to the cloud.
+Runs entirely offline. No API key, no cloud, no cost.
 
-### Setup Instructions (Local Chrome AI)
+1. Go to `chrome://flags`
+2. Enable **Prompt API for Gemini Nano** → `Enabled`
+3. Enable **Enables optimization guide on device model** → `Enabled BypassPerfRequirement`
+4. Relaunch Chrome — check download progress at `chrome://components` → *Optimization Guide On Device Model*
 
-1.  Navigate to `chrome://flags` in your browser.
-2.  Enable: `Prompt API for Gemini Nano` (**Enabled**).
-3.  Enable: `Enables optimization guide on device model` (**Enabled BypassPerfRequirement**).
-4.  Relaunch Chrome and wait a few minutes for the model to download (check `chrome://components` for "Optimization Guide On Device Model").
+### Option 2: Free Gemini Developer API
 
-### Option 2: The Free Gemini Developer API
+Google's Gemini API is free up to 15 requests/minute.
 
-Google provides access to their world-class Gemini API completely for free (up to 15 requests per minute). 
+1. Get a free key at [Google AI Studio](https://aistudio.google.com/)
+2. Open **PureFusion Settings → AI Engine** and paste your key
 
-### Setup Instructions (Gemini API Free Tier)
+> If both keys are left blank the AI wand hides itself automatically, keeping your UI clean.
 
-1.  Get your free API Key from [Google AI Studio](https://aistudio.google.com/).
-2.  Open **PureFusion Settings** > **AI Engine** tab.
-3.  Choose **Google Gemini** as the provider and paste your key.
-
-*(Note: If you leave the API keys completely blank, the AI Assistant Wand will automatically hide itself entirely from your feed to keep your interface absolutely clean!)*
+---
 
 ## 🛠 Installation
 
-1. Clone or download this repository.
-2. Open Google Chrome and navigate to `chrome://extensions/`.
-3. Enable **Developer mode** in the top right corner.
-4. Click **Load unpacked** and select the `/purefusion-feed` folder inside this directory.
-5. Alternatively, install it directly from the [Chrome Web Store](#) *(Link coming soon)*.
+### Developer Mode (from source)
+
+```bash
+git clone https://github.com/Eliminater74/PureFusion-Feed.git
+```
+
+1. Open Chrome → `chrome://extensions/`
+2. Enable **Developer mode** (top-right toggle)
+3. Click **Load unpacked** → select the `purefusion-feed/` folder inside this repo
+4. Visit Facebook — the **PF** button appears in your header bar automatically
+
+### Chrome Web Store
+
+> **Coming soon** — submission in progress.
+
+---
 
 ## ⚙️ Usage
 
-Once installed, a native dashboard button ("PF") will dock itself into your Facebook header bar.
-- Click the **PF Button** for quick-toggles (Grayscale, Hide Reels, Hide Ads).
-- Click **Advanced Settings** to open the full glassmorphism UI configuration panel where you can input API keys, adjust font scaling, toggle widescreen mode, and manage blocklists.
+| Action | Result |
+|--------|--------|
+| Click **PF** in the Facebook header | Quick-toggle popup: Grayscale, Hide Reels, Hide Ads |
+| Click **Advanced Settings** | Full glassmorphism settings panel |
+| Right-click any post | Context-menu Zap — filter by author, text, or selector |
+| Click **Details** on an Insight Chip | AI score breakdown, Quick Actions, active filter status |
+| Press `Alt+Shift+R` | Open Daily Feed Report |
+
+---
 
 ## 🔒 Privacy First
 
-PureFusion operates with a strict local-first architecture. 
-- All timeline modifications happen directly in your browser.
-- Your personal API keys (OpenAI / Gemini) are encrypted and stored in `chrome.storage.local`.
-- **Zero data** is collected, harvested, or transmitted to third-party tracking servers.
+| What PureFusion does | What PureFusion never does |
+|----------------------|---------------------------|
+| All DOM modifications run inside your browser | No telemetry, analytics, or usage reporting |
+| Engagement history stored in `chrome.storage.local` | No data sent to any external server |
+| API keys stored in local encrypted storage | No third-party tracking or fingerprinting |
+| Blocklist & allowlist stored locally | No account linking or identity inference |
+
+---
+
+## 📁 Project Structure
+
+```
+PureFusion-Feed/
+├── purefusion-feed/              # Chrome extension root (load this folder)
+│   ├── src/
+│   │   ├── content/              # Content scripts
+│   │   │   ├── predictor.js      # AI scoring engine (Model F classification)
+│   │   │   ├── cleaner.js        # Feed filter engine
+│   │   │   ├── observer.js       # MutationObserver loop
+│   │   │   └── ...
+│   │   ├── background/           # MV3 service worker
+│   │   ├── popup/                # Quick-toggle popup UI
+│   │   ├── options/              # Full settings panel
+│   │   ├── welcome/              # First-run welcome page
+│   │   └── utils/                # Storage, helpers, LLM engine
+│   ├── icons/                    # Extension icons (16 / 32 / 48 / 128 px)
+│   ├── manifest.json
+│   └── CHANGELOG.md
+└── scripts/                      # Developer utilities
+    ├── bump_version.py           # Version manager (--patch / --minor / --major / --set)
+    ├── make_icons.py             # Generate placeholder icons
+    └── resize_icons.py          # Resize a source PNG to all required icon sizes
+```
+
+---
 
 ## 🤝 Contributing
 
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](#) if you discover Facebook has updated their DOM structures.
+Contributions, bug reports, and feature requests are welcome!
+
+1. Fork the repo and create a feature branch
+2. Make your changes inside `purefusion-feed/src/`
+3. Test on a live Facebook feed (Developer Mode → reload extension)
+4. Open a Pull Request — describe what changed and why
+
+If Facebook has updated their DOM structure and broken a filter, please [open an issue](https://github.com/Eliminater74/PureFusion-Feed/issues) with the broken selector or a description of what stopped working.
+
+---
 
 ## 📝 License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the **MIT License**.
+
+---
+
+<div align="center">
+
+Made with ☕ by [Eliminater74](https://github.com/Eliminater74)
+
+[![GitHub](https://img.shields.io/badge/GitHub-Eliminater74-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/Eliminater74)
+
+*If PureFusion Feed has saved your sanity from the algorithmic chaos, consider leaving a ⭐*
+
+</div>
