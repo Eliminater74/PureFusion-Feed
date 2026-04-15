@@ -115,6 +115,9 @@ class PF_Predictor {
                 delete postNode.dataset.pfInsightExpanded;
                 delete postNode.dataset.pfCredBadgeInjected;
                 delete postNode.dataset.pfCredDebugInjected;
+                delete postNode.dataset.pfContentType;
+                delete postNode.dataset.pfContentTone;
+                delete postNode.dataset.pfContentConfidence;
             });
         }
 
@@ -369,6 +372,9 @@ class PF_Predictor {
 
         delete postNode.dataset.pfInsightChipInjected;
         delete postNode.dataset.pfInsightExpanded;
+        delete postNode.dataset.pfContentType;
+        delete postNode.dataset.pfContentTone;
+        delete postNode.dataset.pfContentConfidence;
     }
 
     _applyNativeAffinitySort(postNode, score) {
@@ -568,6 +574,13 @@ class PF_Predictor {
             delete postNode.dataset.pfCredibilityClaimSeed;
         }
 
+        // --- Model F: Content Type + Tone Classifier ---
+        const contentClassification = this._classifyContentType(textContent);
+        postNode.dataset.pfContentType = contentClassification.contentType;
+        postNode.dataset.pfContentTone = contentClassification.tone;
+        postNode.dataset.pfContentConfidence = contentClassification.confidence;
+        // Model F is purely classificatory — no numeric score adjustment.
+
         // Clamp 0 to 100
         const rawRounded = Math.round(score);
         const finalScore = Math.max(0, Math.min(100, rawRounded));
@@ -581,6 +594,114 @@ class PF_Predictor {
             reasonDetails: reasonSignals.map((signal) => signal.detail),
             credibility
         };
+    }
+
+    _classifyContentType(text) {
+        if (!text || text.length < 10) {
+            return { contentType: 'Personal', tone: 'Neutral', confidence: 'Low' };
+        }
+
+        const t = text.toLowerCase();
+
+        // Political framing tokens (EN + major EU languages)
+        const politicalTokens = [
+            'president', 'congress', 'senate', 'democrat', 'republican', 'gop', 'liberal', 'conservative',
+            'election', 'vote', 'voter', 'ballot', 'government', 'policy', 'legislation', 'bill',
+            'politician', 'political', 'white house', 'governor', 'mayor', 'parliament',
+            'prime minister', 'cabinet', 'administration', 'federal', 'supreme court', 'constitution',
+            'immigration', 'border wall', 'tax cut', 'welfare', 'social security', 'medicare',
+            'military funding', 'pentagon', 'second amendment', 'department of defense',
+            // DE
+            'bundestag', 'kanzler', 'regierung', 'bundesregierung', 'wahl', 'wahlkampf',
+            // FR
+            'gouvernement', 'parlement', 'premier ministre', 'parti politique', 'ministre',
+            // ES
+            'gobierno', 'parlamento', 'elecciones', 'partido', 'ministro', 'presidente'
+        ];
+
+        // News framing tokens
+        const newsTokens = [
+            'breaking', 'breaking news', 'report', 'reported', 'according to', 'sources say',
+            'officials say', 'study shows', 'research shows', 'published', 'investigation',
+            'latest update', 'developing', 'exclusive', 'survey', 'poll shows',
+            'data shows', 'statistics show', 'per cent', 'officials confirm', 'journalists'
+        ];
+
+        // Opinion / editorial framing tokens
+        const opinionTokens = [
+            'i think', 'i believe', 'in my opinion', 'i feel', 'i argue',
+            'it seems to me', 'my view is', 'unpopular opinion', 'hot take',
+            'change my mind', 'fight me on this', 'prove me wrong', 'just saying',
+            'let that sink in', 'think about it', 'wake up people', 'open your eyes',
+            'nobody talks about', 'truth is', 'the real truth',
+            // FR
+            'je pense', 'a mon avis', 'je crois',
+            // DE
+            'ich denke', 'meiner meinung nach', 'ich glaube',
+            // ES
+            'yo creo', 'en mi opinion', 'pienso que'
+        ];
+
+        // Commercial / promotional framing tokens
+        const commercialTokens = [
+            'buy now', 'shop now', 'order now', 'limited time offer', 'discount', 'promo code', 'coupon',
+            'free shipping', 'flash sale', 'link in bio', 'dm for info',
+            'check out my', 'use code', 'affiliate', 'click the link', 'swipe up'
+        ];
+
+        // Emotional framing tokens (beyond ragebait)
+        const emotionalTokens = [
+            'so proud', 'so excited', 'crying right now', 'tears of joy', 'heartbroken',
+            'devastated', 'blessed', 'grateful', 'rest in peace', 'thoughts and prayers',
+            'broke my heart', 'can\'t believe this', 'speechless', 'sending prayers',
+            'life changing', 'never forget', 'emotional', 'brought me to tears'
+        ];
+
+        let politicalScore = 0, newsScore = 0, opinionScore = 0, commercialScore = 0, emotionalScore = 0;
+
+        for (const token of politicalTokens) if (t.includes(token)) politicalScore++;
+        for (const token of newsTokens)     if (t.includes(token)) newsScore++;
+        for (const token of opinionTokens)  if (t.includes(token)) opinionScore++;
+        for (const token of commercialTokens) if (t.includes(token)) commercialScore++;
+        for (const token of emotionalTokens)  if (t.includes(token)) emotionalScore++;
+
+        const topDomainScore = Math.max(politicalScore, newsScore, opinionScore, commercialScore);
+
+        // Determine content type (political > opinion > news > commercial > personal)
+        let contentType = 'Personal';
+        if (topDomainScore > 0) {
+            if (politicalScore >= topDomainScore) {
+                contentType = (opinionScore >= 2) ? 'Political Opinion' : 'Political / News';
+            } else if (opinionScore >= topDomainScore) {
+                contentType = 'Opinion';
+            } else if (newsScore >= topDomainScore) {
+                contentType = 'News / Report';
+            } else if (commercialScore >= topDomainScore) {
+                contentType = 'Commercial';
+            }
+        }
+
+        // Determine tone
+        let tone = 'Neutral';
+        if (opinionScore >= 2 || (opinionScore >= 1 && politicalScore >= 2)) {
+            tone = 'Opinionated';
+        } else if (emotionalScore >= 2) {
+            tone = 'Emotional';
+        } else if (newsScore >= 2) {
+            tone = 'Informational';
+        } else if (politicalScore >= 2) {
+            tone = 'Political framing';
+        } else if (commercialScore >= 1) {
+            tone = 'Promotional';
+        }
+
+        // Confidence: based on total evidence count
+        const totalSignals = politicalScore + newsScore + opinionScore + commercialScore + emotionalScore;
+        let confidence = 'Low';
+        if (totalSignals >= 5) confidence = 'High';
+        else if (totalSignals >= 2) confidence = 'Medium';
+
+        return { contentType, tone, confidence };
     }
 
     _injectBadge(postNode, score, scoreDetails = null) {
@@ -708,6 +829,19 @@ class PF_Predictor {
         const toggleLabel = isExpanded ? 'Hide' : 'Details';
         const detailsHiddenAttr = isExpanded ? '' : ' hidden';
 
+        // Classification row (Model F)
+        const chipContentType = String(postNode.dataset.pfContentType || '').trim();
+        const chipContentTone = String(postNode.dataset.pfContentTone || '').trim();
+        const chipContentConf = String(postNode.dataset.pfContentConfidence || '').trim();
+        const showClassification = chipContentType && chipContentType !== 'Personal' && chipContentConf !== 'Low';
+        const classificationHtml = showClassification
+            ? `<div class="pf-insight-classification">` +
+              `<span class="pf-insight-type-badge">${this._escapeHtml(chipContentType)}</span>` +
+              `<span class="pf-insight-tone-badge">${this._escapeHtml(chipContentTone)}</span>` +
+              `<span class="pf-insight-conf-label">Confidence: ${this._escapeHtml(chipContentConf)}</span>` +
+              `</div>`
+            : '';
+
         chip.innerHTML = `
             <div class="pf-insight-row">
                 <span class="pf-insight-status">${safeStatusText}</span>
@@ -715,6 +849,7 @@ class PF_Predictor {
                 <button type="button" class="pf-insight-toggle">${toggleLabel}</button>
             </div>
             <div class="pf-insight-meta">Signal: ${toneText}</div>
+            ${classificationHtml}
             <div class="pf-insight-details"${detailsHiddenAttr}>${detailHtml}</div>
         `;
 
@@ -736,6 +871,16 @@ class PF_Predictor {
     _onInsightToggleClick(event) {
         const target = event?.target;
         if (!target || !target.closest) return;
+
+        // Handle quick action buttons
+        const actionBtn = target.closest('.pf-insight-action-btn');
+        if (actionBtn) {
+            if (event.preventDefault) event.preventDefault();
+            if (event.stopPropagation) event.stopPropagation();
+            if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+            this._handleInsightAction(actionBtn);
+            return;
+        }
 
         const toggle = target.closest('.pf-insight-toggle');
         if (!toggle) return;
@@ -764,6 +909,64 @@ class PF_Predictor {
             if (!node || !node.dataset) return;
             node.dataset.pfInsightExpanded = willOpen ? 'true' : 'false';
         });
+    }
+
+    _handleInsightAction(btn) {
+        const action = String(btn.dataset.pfAction || '');
+        const chip = btn.closest('.pf-insight-chip');
+        const postNode = chip
+            ? (chip.closest('[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"]') || chip.closest('[role="article"]'))
+            : null;
+
+        const toast = (msg, type, dur) => {
+            if (window.PF_Helpers && typeof window.PF_Helpers.showToast === 'function') {
+                window.PF_Helpers.showToast(msg, type || 'info', dur || 3000);
+            }
+        };
+
+        if (action === 'hide-similar') {
+            const contentType = String(postNode?.dataset?.pfContentType || '').trim();
+            const label = contentType && contentType !== 'Personal' ? contentType : 'this content type';
+            toast(`"Hide similar" noted for: ${label}. This preference will guide future scoring.`, 'info', 3500);
+            btn.textContent = 'Noted';
+            btn.disabled = true;
+        }
+
+        if (action === 'always-show') {
+            const author = postNode ? this._extractAuthor(postNode) : null;
+            if (author && author !== 'Unknown') {
+                if (!this.engagementProfiles[author]) {
+                    this.engagementProfiles[author] = { reactions: 0, clicks: 0, comments: 0 };
+                }
+                // Boost affinity for this author — equivalent to ~5 reaction events
+                this.engagementProfiles[author].reactions = (this.engagementProfiles[author].reactions || 0) + 10;
+                this._stateDirty = true;
+                toast(`Affinity boosted for: ${author}`, 'success', 2800);
+            } else {
+                toast('Could not identify a source for this post.', 'warn', 2500);
+            }
+            btn.textContent = 'Boosted';
+            btn.disabled = true;
+        }
+
+        if (action === 'block-source') {
+            const author = postNode ? this._extractAuthor(postNode) : null;
+            if (author && author !== 'Unknown') {
+                if (!this.engagementProfiles[author]) {
+                    this.engagementProfiles[author] = { reactions: 0, clicks: 0, comments: 0 };
+                }
+                // Severe affinity penalty — posts from this source will score much lower
+                this.engagementProfiles[author].reactions = -20;
+                this.engagementProfiles[author].clicks    = -20;
+                this.engagementProfiles[author].comments  = -20;
+                this._stateDirty = true;
+                toast(`Source penalized: ${author}. Future posts will score lower.`, 'warn', 3500);
+            } else {
+                toast('Could not identify a source for this post.', 'warn', 2500);
+            }
+            btn.textContent = 'Penalized';
+            btn.disabled = true;
+        }
     }
 
     _resolveUnifiedInsightState(postNode, score) {
@@ -804,26 +1007,76 @@ class PF_Predictor {
             };
         }
 
+        // --- Content classification (Model F) ---
+        const contentType = String(postNode?.dataset?.pfContentType || '').trim();
+        const contentTone = String(postNode?.dataset?.pfContentTone || '').trim();
+        const contentConf  = String(postNode?.dataset?.pfContentConfidence || 'Low').trim();
+        const hasClassification = contentType && contentType !== 'Personal';
+
         if (predictions.enabled && score <= lowThreshold) {
             return {
                 severity: 'warn',
                 label: 'Likely low-value content',
-                tone: 'low relevance for your profile'
+                tone: hasClassification
+                    ? `${contentTone} signals · low relevance for your profile`
+                    : 'low relevance for your profile'
             };
         }
 
         if (predictions.enabled && score >= highThreshold) {
             return {
                 severity: 'ok',
-                label: 'High Relevance',
-                tone: 'strong match for your interests'
+                label: hasClassification ? `High Relevance · ${contentType}` : 'High Relevance',
+                tone: hasClassification
+                    ? `${contentTone} · strong match for your interests`
+                    : 'strong match for your interests'
             };
         }
 
+        // Classification-aware labels for mid-range scores
+        if (contentType === 'Political Opinion') {
+            return {
+                severity: 'info',
+                label: 'Opinionated Political Content',
+                tone: `${contentTone} framing detected · ${contentConf} confidence`
+            };
+        }
+        if (contentType === 'Political / News') {
+            return {
+                severity: 'ok',
+                label: 'Political / News Content',
+                tone: `${contentTone} framing · ${contentConf} confidence`
+            };
+        }
+        if (contentType === 'Opinion') {
+            return {
+                severity: 'info',
+                label: 'Opinion / Editorial',
+                tone: `${contentTone} signals · ${contentConf} confidence`
+            };
+        }
+        if (contentType === 'News / Report') {
+            return {
+                severity: 'ok',
+                label: 'News / Report',
+                tone: `${contentTone} signals · ${contentConf} confidence`
+            };
+        }
+        if (contentType === 'Commercial') {
+            return {
+                severity: 'warn',
+                label: 'Possible Promotional Content',
+                tone: `commercial patterns detected · ${contentConf} confidence`
+            };
+        }
+
+        // Final fallback
         return {
             severity: 'ok',
-            label: 'Neutral Relevance',
-            tone: 'balanced signals with no strong flags'
+            label: contentTone && contentTone !== 'Neutral' ? `${contentTone} Content` : 'Mixed Signals',
+            tone: contentTone && contentTone !== 'Neutral'
+                ? `${contentTone} signals present · low classification confidence`
+                : 'insufficient signals to classify content type'
         };
     }
 
@@ -872,6 +1125,18 @@ class PF_Predictor {
             const floor = Math.max(1, Number(data.collapseGuardFloor || 0) || 1);
             items.push(`<p class="pf-insight-debug"><strong>Guard:</strong> kept visible to maintain at least ${floor} posts on screen.</p>`);
         }
+
+        // --- Quick Action hooks ---
+        items.push(`
+            <div class="pf-insight-section pf-insight-actions-section">
+                <div class="pf-insight-section-title">Quick Actions</div>
+                <div class="pf-insight-action-row">
+                    <button type="button" class="pf-insight-action-btn" data-pf-action="hide-similar">Hide similar posts</button>
+                    <button type="button" class="pf-insight-action-btn" data-pf-action="always-show">Always show source</button>
+                    <button type="button" class="pf-insight-action-btn pf-insight-action-btn-danger" data-pf-action="block-source">Block source</button>
+                </div>
+            </div>
+        `);
 
         if (!items.length) {
             return '<p>No additional details yet.</p>';
@@ -1615,6 +1880,11 @@ class PF_Predictor {
                 background: rgba(66, 26, 36, 0.94);
             }
 
+            .pf-insight-chip.pf-insight-info {
+                border-color: rgba(186, 162, 255, 0.62);
+                background: rgba(40, 28, 72, 0.94);
+            }
+
             .pf-insight-row {
                 display: flex;
                 align-items: center;
@@ -1737,6 +2007,84 @@ class PF_Predictor {
                 border-color: rgba(162, 210, 255, 0.95);
                 color: #ffffff;
                 background: rgba(39, 77, 132, 0.52);
+            }
+
+            .pf-insight-classification {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                margin-top: 4px;
+                flex-wrap: wrap;
+            }
+
+            .pf-insight-type-badge,
+            .pf-insight-tone-badge {
+                display: inline-flex;
+                align-items: center;
+                border-radius: 999px;
+                padding: 1px 7px;
+                font-size: 10px;
+                font-weight: 700;
+                border: 1px solid rgba(180, 165, 255, 0.5);
+                background: rgba(80, 50, 160, 0.3);
+                color: #d9cdff;
+            }
+
+            .pf-insight-conf-label {
+                font-size: 10px;
+                color: #9ab0cc;
+                font-weight: 600;
+            }
+
+            .pf-insight-actions-section {
+                margin-top: 8px;
+                padding-top: 6px;
+                border-top: 1px solid rgba(144, 166, 198, 0.18);
+            }
+
+            .pf-insight-action-row {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 5px;
+                margin-top: 4px;
+            }
+
+            .pf-insight-action-btn {
+                appearance: none;
+                border: 1px solid rgba(136, 188, 255, 0.5);
+                background: rgba(29, 58, 102, 0.28);
+                color: #c8deff;
+                border-radius: 999px;
+                padding: 3px 9px;
+                cursor: pointer;
+                font: 700 10px/1.2 "Segoe UI Variable Text", "Segoe UI", sans-serif;
+                pointer-events: auto;
+                position: relative;
+                z-index: 3;
+                transition: background 0.15s, border-color 0.15s;
+            }
+
+            .pf-insight-action-btn:hover {
+                border-color: rgba(162, 210, 255, 0.9);
+                background: rgba(39, 77, 132, 0.48);
+                color: #ffffff;
+            }
+
+            .pf-insight-action-btn:disabled {
+                opacity: 0.55;
+                cursor: default;
+            }
+
+            .pf-insight-action-btn.pf-insight-action-btn-danger {
+                border-color: rgba(255, 130, 150, 0.5);
+                background: rgba(100, 26, 40, 0.28);
+                color: #ffb8c6;
+            }
+
+            .pf-insight-action-btn.pf-insight-action-btn-danger:hover {
+                border-color: rgba(255, 160, 175, 0.9);
+                background: rgba(120, 36, 52, 0.52);
+                color: #ffffff;
             }
 
             .pf-cred-chip {
