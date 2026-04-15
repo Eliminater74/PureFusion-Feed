@@ -18,14 +18,14 @@ What it does:
 - Hides suggested posts, recommended groups, and People You May Know injections.
 - Hides Reels injected into your feed — toggle is on by default and accurately reflected in the popup.
 - Hides Stories bar, Memories posts, and selected recommendation modules.
-- Two-level ad blocking: hard infrastructure signal blocker (always on) plus a separate "Hide Sponsored Posts" label-detection toggle you can enable independently.
+- Ad blocker that removes feed ads via infrastructure signals.
 - Supports a keyword blocklist and allowlist — automatically collapses posts matching words you choose.
 - Includes preset packs (Work Focus, Friends Only, Minimal, News Heavy, Messenger Privacy).
 - Image subject filters: hide posts by visual content category (sports, food, pets, vehicles, memes, travel) — 9-locale alt-text coverage.
 
 2) Settings and usability
 
-- Popup quick toggles for common filters, including independent Reels and Sponsored Posts controls.
+- Popup quick toggles for common filters.
 - Full options dashboard with import/export of your configuration.
 - Undo chips for hidden posts (show once or always allow a source).
 - ⚡ **Power-User Rule Engine**: Create your own persistent CSS or text-matching rules for deep customization.
@@ -64,8 +64,7 @@ Important compatibility note:
 1. Install extension and open `https://www.facebook.com`.
 2. Open the extension popup. The **Hide Reels** toggle will be ON by default — Reels trays injected into the feed should already be hidden on page load. Toggle it off and on to confirm live effect.
 3. Confirm that recommendation modules (People You May Know, Suggested Groups) are removed from the feed.
-4. To test sponsored post label detection: enable the **Hide Sponsored Posts** toggle in the popup (off by default — separate from the Ad Blocker).
-5. Open full settings and apply a preset pack from Core Filters.
+4. Open full settings and apply a preset pack from Core Filters.
 6. Verify feed updates without page reload.
 7. Context Menu "Zap" test:
    - Right-click any non-critical element (e.g., a sidebar link or group badge).
