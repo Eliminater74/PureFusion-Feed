@@ -70,8 +70,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const active = elements.ads.checked;
         if (section) section.classList.toggle('ads-active', active);
         if (statusEl) statusEl.textContent = active
-            ? t('popup_ad_blocker_on', '✓ Blocking sponsored posts in your feed')
-            : t('popup_ad_blocker_off', '⚠ Sponsored posts are visible — click to block');
+            ? t('popup_ad_blocker_on', '✓ Blocking ads via infrastructure signals')
+            : t('popup_ad_blocker_off', '⚠ Ad blocker is off — click to enable');
     };
 
     updateAdBlockerUI();
@@ -99,6 +99,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Build updated settings object
         settings.filters.removeAds = elements.ads.checked;
+        // removeSponsored is managed from the in-page panel and options page; preserve it here
         settings.filters.removeSuggested = elements.suggested.checked;
         
         // Combine reels/stories together in the quick UI

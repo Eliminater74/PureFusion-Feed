@@ -303,6 +303,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Filters
         'opt_filters_filterLocale': { obj: 'filters', prop: 'filterLocale', type: 'select' },
         'opt_filters_removeAds': { obj: 'filters', prop: 'removeAds', type: 'checkbox' },
+        'opt_filters_removeSponsored': { obj: 'filters', prop: 'removeSponsored', type: 'checkbox' },
         'opt_filters_removeSuggested': { obj: 'filters', prop: 'removeSuggested', type: 'checkbox' },
         'opt_filters_removePYMK': { obj: 'filters', prop: 'removePYMK', type: 'checkbox' },
         'opt_filters_removeGroupSuggestions': { obj: 'filters', prop: 'removeGroupSuggestions', type: 'checkbox' },
