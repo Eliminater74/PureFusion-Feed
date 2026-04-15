@@ -23,6 +23,9 @@ class PF_Predictor {
 
         // Session content-type filters — populated by "Hide similar" action; cleared on reset or page reload
         this.sessionContentFilters = new Set();
+
+        // Persistent author blocklist — loaded from local storage, survives page reloads
+        this.blocklist = new Set();
         
         this._injectPredictorStyles();
         this.init();
@@ -34,6 +37,12 @@ class PF_Predictor {
         if (history) {
             this.engagementProfiles = history.profiles || {};
             this.keywordFrequency = history.freq || {};
+        }
+
+        // Load persistent author blocklist
+        const blocklistData = await PF_Storage.getLocalData('pf_blocklist');
+        if (Array.isArray(blocklistData) && blocklistData.length > 0) {
+            this.blocklist = new Set(blocklistData);
         }
 
         // Start periodic sync
@@ -121,6 +130,7 @@ class PF_Predictor {
                 delete postNode.dataset.pfContentType;
                 delete postNode.dataset.pfContentTone;
                 delete postNode.dataset.pfContentConfidence;
+                delete postNode.dataset.pfBlocked;
             });
         }
 
@@ -266,16 +276,28 @@ class PF_Predictor {
     }
 
     _processSingleNode(node) {
-        const predictVersion = 'v11-unified-insight-chip';
+        const predictVersion = 'v12-persistent-blocklist';
 
         if (node.dataset.pfPredictProcessed === predictVersion) {
             const lastRefresh = Number(node.dataset.pfLastInsightRefresh || 0);
             const now = Date.now();
             if (now - lastRefresh < 2000) return; // Throttle: only refresh once every 2 seconds per node
-            
+
             this._refreshPredictionDecorations(node);
             node.dataset.pfLastInsightRefresh = String(now);
             return;
+        }
+
+        // Persistent blocklist check — skip all expensive processing for blocked authors
+        if (this.blocklist.size > 0) {
+            const author = this._extractAuthor(node);
+            if (author && author !== 'Unknown' && this.blocklist.has(author)) {
+                node.dataset.pfPredictProcessed = predictVersion;
+                node.dataset.pfBlocked = 'true';
+                node.dataset.pfLastInsightRefresh = String(Date.now());
+                node.style.setProperty('display', 'none', 'important');
+                return;
+            }
         }
 
         node.dataset.pfPredictProcessed = predictVersion;
@@ -317,6 +339,16 @@ class PF_Predictor {
     }
 
     _refreshPredictionDecorations(postNode) {
+        // Re-apply persistent blocklist on already-processed nodes
+        if (this.blocklist.size > 0) {
+            const author = this._extractAuthor(postNode);
+            if (author && author !== 'Unknown' && this.blocklist.has(author)) {
+                postNode.style.setProperty('display', 'none', 'important');
+                postNode.dataset.pfBlocked = 'true';
+                return;
+            }
+        }
+
         // Re-apply session content-type filter on already-processed nodes
         if (this.sessionContentFilters.size > 0) {
             const ct = String(postNode.dataset.pfContentType || '').trim();
@@ -389,6 +421,12 @@ class PF_Predictor {
         if (postNode.dataset.pfSessionFiltered) {
             postNode.style.removeProperty('display');
             delete postNode.dataset.pfSessionFiltered;
+        }
+
+        // Temporarily restore blocked posts — blocklist check in _processSingleNode will re-hide them
+        if (postNode.dataset.pfBlocked) {
+            postNode.style.removeProperty('display');
+            delete postNode.dataset.pfBlocked;
         }
 
         delete postNode.dataset.pfCollapseGuardBypass;
@@ -853,7 +891,12 @@ class PF_Predictor {
             sourceTier: String(postNode.dataset.pfCredibilitySourceTier || 'none'),
             collapseGuardBypass: postNode.dataset.pfCollapseGuardBypass === 'true',
             collapseGuardFloor: Number(postNode.dataset.pfCollapseGuardFloor || 0),
-            sessionFilters: Array.from(this.sessionContentFilters)
+            sessionFilters: Array.from(this.sessionContentFilters),
+            authorBlocked: (() => {
+                const a = this._extractAuthor(postNode);
+                return !!(a && a !== 'Unknown' && this.blocklist.has(a));
+            })(),
+            blocklistSize: this.blocklist.size
         });
         const isExpanded = postNode.dataset.pfInsightExpanded === 'true' || this._hasExpandedInsightInHost(postNode);
         const toggleLabel = isExpanded ? 'Hide' : 'Details';
@@ -995,21 +1038,53 @@ class PF_Predictor {
         if (action === 'block-source') {
             const author = postNode ? this._extractAuthor(postNode) : null;
             if (author && author !== 'Unknown') {
+                // Add to persistent blocklist
+                this.blocklist.add(author);
+                this._saveBlocklist();
+                // Also penalize engagement profile so scores reflect the block even before next full sweep
                 if (!this.engagementProfiles[author]) {
                     this.engagementProfiles[author] = { reactions: 0, clicks: 0, comments: 0 };
                 }
-                // Severe affinity penalty — posts from this source will score much lower
                 this.engagementProfiles[author].reactions = -20;
                 this.engagementProfiles[author].clicks    = -20;
                 this.engagementProfiles[author].comments  = -20;
                 this._stateDirty = true;
-                toast(`Source penalized: ${author}. Future posts will score lower.`, 'warn', 3500);
+                // Hide the current post immediately, then sweep the rest
+                if (postNode) {
+                    postNode.style.setProperty('display', 'none', 'important');
+                    postNode.dataset.pfBlocked = 'true';
+                }
+                this.sweepDocument(true);
+                toast(`"${author}" permanently blocked. All posts hidden — survives page reload.`, 'warn', 4500);
             } else {
                 toast('Could not identify a source for this post.', 'warn', 2500);
             }
-            btn.textContent = 'Penalized';
+            btn.textContent = 'Blocked';
             btn.disabled = true;
         }
+
+        if (action === 'unblock-source') {
+            const author = postNode ? this._extractAuthor(postNode) : null;
+            if (author && this.blocklist.has(author)) {
+                this.blocklist.delete(author);
+                this._saveBlocklist();
+                // Reset engagement penalty
+                if (this.engagementProfiles[author]) {
+                    this.engagementProfiles[author].reactions = 0;
+                    this.engagementProfiles[author].clicks    = 0;
+                    this.engagementProfiles[author].comments  = 0;
+                    this._stateDirty = true;
+                }
+                this.sweepDocument(true);
+                toast(`"${author}" unblocked. Posts from this source will reappear.`, 'success', 3500);
+            } else {
+                toast('Source not found in blocklist.', 'warn', 2500);
+            }
+        }
+    }
+
+    _saveBlocklist() {
+        PF_Storage.setLocalData('pf_blocklist', Array.from(this.blocklist)).catch(() => {});
     }
 
     _resolveUnifiedInsightState(postNode, score) {
@@ -1182,14 +1257,30 @@ class PF_Predictor {
             `);
         }
 
+        // --- Blocked source notice ---
+        if (data.authorBlocked) {
+            items.push(`
+                <div class="pf-insight-section pf-insight-blocked-section">
+                    <div class="pf-insight-section-title">Source Status</div>
+                    <p>This source is <strong>permanently blocked</strong>.</p>
+                    <button type="button" class="pf-insight-action-btn pf-insight-action-btn-reset" data-pf-action="unblock-source">Unblock source</button>
+                </div>
+            `);
+        }
+
         // --- Quick Action hooks ---
+        const blockLabel    = data.authorBlocked ? 'Already blocked' : 'Block source';
+        const blockDisabled = data.authorBlocked ? ' disabled' : '';
+        const blocklistNote = data.blocklistSize > 0
+            ? `<span class="pf-insight-blocklist-count">${data.blocklistSize} source${data.blocklistSize !== 1 ? 's' : ''} blocked</span>`
+            : '';
         items.push(`
             <div class="pf-insight-section pf-insight-actions-section">
-                <div class="pf-insight-section-title">Quick Actions</div>
+                <div class="pf-insight-section-title">Quick Actions ${blocklistNote}</div>
                 <div class="pf-insight-action-row">
                     <button type="button" class="pf-insight-action-btn" data-pf-action="hide-similar">Hide similar posts</button>
                     <button type="button" class="pf-insight-action-btn" data-pf-action="always-show">Always show source</button>
-                    <button type="button" class="pf-insight-action-btn pf-insight-action-btn-danger" data-pf-action="block-source">Block source</button>
+                    <button type="button" class="pf-insight-action-btn pf-insight-action-btn-danger"${blockDisabled} data-pf-action="block-source">${blockLabel}</button>
                 </div>
             </div>
         `);
@@ -2165,6 +2256,25 @@ class PF_Predictor {
                 font-style: normal;
                 color: #ffe080;
                 font-weight: 800;
+            }
+
+            .pf-insight-blocked-section {
+                margin-top: 8px;
+                padding-top: 6px;
+                border-top: 1px solid rgba(255, 130, 150, 0.28);
+            }
+
+            .pf-insight-blocked-section p strong {
+                color: #ffb8c6;
+            }
+
+            .pf-insight-blocklist-count {
+                font-size: 9px;
+                font-weight: 600;
+                color: #9ab0cc;
+                margin-left: 6px;
+                text-transform: none;
+                letter-spacing: 0;
             }
 
             .pf-cred-chip {
