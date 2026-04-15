@@ -2,6 +2,13 @@
 
 All notable changes to PureFusion Feed are documented in this file.
 
+## v1.8.1 - 2026-04-15
+
+### Changed
+- Session content-type filter (Hide similar posts), Insight Chip classification labels, and ad detection hardening
+
+---
+
 ## v1.8.0 - 2026-04-15
 
 ### Added
