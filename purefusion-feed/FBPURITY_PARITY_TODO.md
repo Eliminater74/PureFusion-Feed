@@ -20,6 +20,7 @@ Always continue from the highest-priority unfinished item. Do not jump ahead.
 
 **Completed phases (most recent first):**
 
+- ✅ Phase 28: Granular Sidebar Hardening (position-aware `_resolveRightSidebarContainer`; all heading/aria-label tokens expanded to 9 locales for Trending/Contacts/Events/Birthdays; `_hasShortcutsHeading` 9-locale; `_looksLikeContactsModule` 9-locale)
 - ✅ Phase 27: UI Tweaks — Unimplemented Settings Activation (fontSizeScale CSS, anonymizerMode hover-reveal blur, disableCommentAutofocus guard)
 - ✅ Phase 26: Notification + Search Popup Full Locale Expansion (FR/DE/IT/NL/SV/DA/NO for all 4 notif categories + search input selectors + trending/recent tokens)
 - ✅ Phase 25: Memories Filter + Messenger Lifecycle Guard (removeMemoriesPosts; toggle-OFF reversal; messenger-main lifecycle guard)
@@ -44,7 +45,8 @@ Always continue from the highest-priority unfinished item. Do not jump ahead.
 
 ## Last Action Log
 
-- **Last completed (2026-04-14):** Phase 27 — UI Tweaks Unimplemented Settings Activation. `fontSizeScale` (80–150): generates `html { font-size: N% }` when not 100; only fires when in range and non-default. `anonymizerMode`: CSS blur (8px imgs, 5px author name links) with hover-reveal transition; scoped to article/complementary/navigation. `disableCommentAutofocus`: capture-phase focus listener tracks last mousedown target; blurs programmatic textbox focus via microtask. All three were wired in options.html/js but had zero content-script implementation.
+- **Last completed (2026-04-14):** Phase 28 — Granular Sidebar Hardening. Replaced naive `document.querySelector('[role="complementary"]')` first-match with `_resolveRightSidebarContainer(rootNode)`: filters all complementary panels to those whose left edge exceeds 50% viewport width, width 100–560px, height > 200px, sorted rightmost-first — correctly targets FB's main sidebar when chat panel is also present. Expanded `_hasShortcutsHeading` from EN+ES to all 9 locales (EN/ES/FR/DE/IT/NL/SV/DA/NO). Expanded all right sidebar heading/aria-label token arrays (Trending, Contacts, Events, Birthdays) to 9 locales. Expanded `_looksLikeContactsModule` aria-label selector string, heading Set, and body-text token array to all locale variants.
+- **Prior (2026-04-14):** Phase 27 — UI Tweaks Unimplemented Settings Activation. `fontSizeScale` (80–150): generates `html { font-size: N% }` when not 100; only fires when in range and non-default. `anonymizerMode`: CSS blur (8px imgs, 5px author name links) with hover-reveal transition; scoped to article/complementary/navigation. `disableCommentAutofocus`: capture-phase focus listener tracks last mousedown target; blurs programmatic textbox focus via microtask. All three were wired in options.html/js but had zero content-script implementation.
 - **Prior (2026-04-14):** Phase 26 — Notification + Search Popup Full Locale Expansion. All 4 notification filter categories and all search popup detection paths expanded to FR/DE/IT/NL/SV/DA/NO.
 - **Prior (2026-04-14):** Phase 25 — Memories Filter + Messenger Lifecycle Guard. `removeMemoriesPosts()`: primary href signal + multi-locale text fallback; toggle-OFF reversal in `_restoreCriticalContainers`. Messenger runtime got `_startLifecycleGuard()` + `_destroy()`.
 - **Prior (2026-04-14):** Phase 24 — Content Script Lifecycle Hardening. `_startLifecycleGuard()` in main.js; `_destroy()` covers PF_Observer, PF_Cleaner, PF_NotificationControls, PF_InPageUI, PF_MessengerAI.
@@ -66,7 +68,7 @@ Status key: **DONE** = implemented and working | **WIP** = implemented but being
 | Feature Area | Status | Notes |
 | --- | --- | --- |
 | Story/activity post filters | DONE | All 14 subtypes wired (became friends, joined group, photo updates, life events, check-ins, milestones, job, relationship, group activity, memories) |
-| Granular sidebar module controls | WIP | Left/right module toggles implemented; selector paths still tightened per-module |
+| Granular sidebar module controls | DONE | Position-aware resolver + 9-locale heading tokens for all left/right modules |
 | Top header micro-controls | DONE | Per-icon toggles + Notification Soul-Soother jewel styles |
 | Notification popup filtering | DONE | Games, birthdays, marketplace, engagement — all 9 locales |
 | Search popup suppression | DONE | All suggestions / trending / recent — all 9 locales |
@@ -88,14 +90,7 @@ Status key: **DONE** = implemented and working | **WIP** = implemented but being
 
 ## Remaining Work (Priority Order)
 
-### High — Granular Sidebar Hardening (WIP)
-
-Selector paths for left nav and right sidebar modules are implemented but periodically break when FB rotates class names. Each module needs at least two stable selector strategies (aria-label primary + structural fallback).
-
-- Left nav: Marketplace, Gaming, Watch, Memories, Meta AI, Manus AI
-- Right col: Trending, Contacts, Events, Birthdays, Meta AI contact, Manus AI contact
-
-### Medium — Image Subject Filter Hardening (WIP)
+### High — Image Subject Filter Hardening (WIP)
 
 The 6 image categories (sports/food/pets/vehicles/memes/travel) work but rely on FB's alt-text descriptor strings which are locale-sensitive. Needs:
 

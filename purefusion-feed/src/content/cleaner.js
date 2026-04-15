@@ -637,10 +637,8 @@ class PF_Cleaner {
         const sidebar = this.settings?.sidebar;
         if (!sidebar || !sidebar.enableModuleFilters) return;
 
-        const rightSelector = PF_SELECTOR_MAP.rightSidebar || '[role="complementary"]';
-
         const leftNav = this._resolveLeftNavigationContainer(rootNode);
-        const rightNav = this._resolveScopedContainer(rootNode, rightSelector);
+        const rightNav = this._resolveRightSidebarContainer(rootNode);
 
         // Optional check for topbar again (rootNode might be the whole body or just a fragment)
         // If removeTopbarModules is called separately, we ensure it's robust.
@@ -676,13 +674,49 @@ class PF_Cleaner {
 
         if (rightNav) {
             if (sidebar.hideRightTrending) {
-                this._hideRightModuleByHeading(rightNav, ['trending', 'tendencias', 'popular now'], 'Right Sidebar: Trending');
+                this._hideRightModuleByHeading(rightNav, [
+                    // EN
+                    'trending', 'popular now',
+                    // ES
+                    'tendencias',
+                    // FR
+                    'tendances',
+                    // DE
+                    'trends', 'im trend',
+                    // IT
+                    'di tendenza',
+                    // NL
+                    'populair',
+                    // SV
+                    'trender', 'populärt',
+                    // DA
+                    'tendenser', 'populært',
+                    // NO
+                    'trender'
+                ], 'Right Sidebar: Trending');
                 this._hideRightModuleByLink(rightNav, ['/search/top/', '/hashtag/'], 'Right Sidebar: Trending');
             }
 
             if (sidebar.hideRightContacts) {
-                this._hideRightModuleByAriaLabel(rightNav, ['contacts', 'contactos'], 'Right Sidebar: Contacts');
-                this._hideRightModuleByHeading(rightNav, ['contacts', 'contactos'], 'Right Sidebar: Contacts');
+                this._hideRightModuleByAriaLabel(rightNav, [
+                    'contacts', 'contactos', 'kontakte', 'contatti', 'contacten', 'kontakter'
+                ], 'Right Sidebar: Contacts');
+                this._hideRightModuleByHeading(rightNav, [
+                    // EN
+                    'contacts',
+                    // ES
+                    'contactos',
+                    // FR
+                    'contacts',
+                    // DE
+                    'kontakte',
+                    // IT
+                    'contatti',
+                    // NL
+                    'contacten',
+                    // SV / DA / NO
+                    'kontakter'
+                ], 'Right Sidebar: Contacts');
             }
 
             if (sidebar.hideRightMetaAIContact) {
@@ -694,12 +728,50 @@ class PF_Cleaner {
             }
 
             if (sidebar.hideRightEvents) {
-                this._hideRightModuleByHeading(rightNav, ['events', 'eventos', 'upcoming events', 'proximos eventos'], 'Right Sidebar: Events');
+                this._hideRightModuleByHeading(rightNav, [
+                    // EN
+                    'events', 'upcoming events',
+                    // ES
+                    'eventos', 'proximos eventos',
+                    // FR
+                    'événements', 'evenements',
+                    // DE
+                    'veranstaltungen',
+                    // IT
+                    'eventi',
+                    // NL
+                    'evenementen',
+                    // SV
+                    'evenemang',
+                    // DA
+                    'begivenheder',
+                    // NO
+                    'arrangementer', 'hendelser'
+                ], 'Right Sidebar: Events');
                 this._hideRightModuleByLink(rightNav, ['/events/'], 'Right Sidebar: Events');
             }
 
             if (sidebar.hideRightBirthdays) {
-                this._hideRightModuleByHeading(rightNav, ['birthdays', 'birthday', 'cumpleanos', 'cumpleanos proximos'], 'Right Sidebar: Birthdays');
+                this._hideRightModuleByHeading(rightNav, [
+                    // EN
+                    'birthdays', 'birthday',
+                    // ES
+                    'cumpleanos', 'cumpleanos proximos',
+                    // FR
+                    'anniversaires',
+                    // DE
+                    'geburtstage',
+                    // IT
+                    'compleanni', 'compleanno',
+                    // NL
+                    'verjaardagen',
+                    // SV
+                    'födelsedagar',
+                    // DA
+                    'fødselsdage',
+                    // NO
+                    'bursdager'
+                ], 'Right Sidebar: Birthdays');
                 this._hideRightModuleByLink(rightNav, ['/events/birthdays/', '/birthdays/'], 'Right Sidebar: Birthdays');
             }
         }
@@ -759,10 +831,72 @@ class PF_Cleaner {
     _hasShortcutsHeading(node) {
         if (!node || !node.querySelectorAll) return false;
 
+        const tokens = new Set([
+            // EN
+            'your shortcuts',
+            // ES
+            'tus accesos directos',
+            // FR
+            'vos raccourcis',
+            // DE
+            'deine verknüpfungen', 'deine verknupfungen',
+            // IT
+            'i tuoi collegamenti',
+            // NL
+            'jouw snelkoppelingen',
+            // SV
+            'dina genvägar', 'dina genvagar',
+            // DA
+            'dine genveje',
+            // NO
+            'snarveiene dine'
+        ]);
+
         return Array.from(node.querySelectorAll('h2, h3, [role="heading"], span, div')).some((el) => {
             const text = this._normalizeComparableText(el.textContent || '');
-            return text === 'your shortcuts' || text === 'tus accesos directos';
+            return tokens.has(text);
         });
+    }
+
+    /**
+     * Resolves the main right sidebar `[role="complementary"]` container.
+     * When multiple complementary regions exist (e.g. a chat panel + the main
+     * sidebar), picks the one on the right side of the viewport rather than
+     * blindly taking the first DOM match.
+     */
+    _resolveRightSidebarContainer(rootNode) {
+        const selector = PF_SELECTOR_MAP.rightSidebar || '[role="complementary"]';
+
+        // Fast path: rootNode itself is or contains the sidebar
+        if (rootNode?.matches && rootNode.matches(selector)) return rootNode;
+        if (rootNode?.querySelector) {
+            const inner = rootNode.querySelector(selector);
+            if (inner) return inner;
+        }
+        if (rootNode?.closest) {
+            const ancestor = rootNode.closest(selector);
+            if (ancestor) return ancestor;
+        }
+
+        // Full-document search: collect all complementary regions and pick the
+        // rightmost one that looks like the main sidebar (wide enough, tall enough,
+        // positioned in the right half of the viewport).
+        const all = Array.from(document.querySelectorAll(selector));
+        if (all.length === 0) return null;
+        if (all.length === 1) return all[0];
+
+        const midpoint = window.innerWidth * 0.5;
+        const candidates = all.filter((node) => {
+            if (!node.getBoundingClientRect) return false;
+            const rect = node.getBoundingClientRect();
+            return rect.left > midpoint && rect.width > 100 && rect.width < 560 && rect.height > 200;
+        });
+
+        if (candidates.length === 0) return all[0];
+
+        // Prefer the one furthest to the right
+        candidates.sort((a, b) => b.getBoundingClientRect().left - a.getBoundingClientRect().left);
+        return candidates[0];
     }
 
     removeTopbarModules(rootNode) {
@@ -1464,16 +1598,33 @@ class PF_Cleaner {
     _looksLikeContactsModule(node) {
         if (!node || !node.querySelector) return false;
 
-        if (node.querySelector('[aria-label="Contacts"], [aria-label="Contactos"]')) return true;
+        // Aria-label exact match (all locale variants)
+        const contactsAriaSelector = [
+            '[aria-label="Contacts"]',
+            '[aria-label="Contactos"]',
+            '[aria-label="Kontakte"]',
+            '[aria-label="Contatti"]',
+            '[aria-label="Contacten"]',
+            '[aria-label="Kontakter"]'
+        ].join(', ');
+        if (node.querySelector(contactsAriaSelector)) return true;
 
+        // Heading text match
         const heading = node.querySelector('h2, h3, [role="heading"]');
         const headingText = this._normalizeComparableText(heading?.textContent || '');
-        if (headingText === 'contacts' || headingText === 'contactos') return true;
+        const contactsHeadings = new Set([
+            'contacts', 'contactos', 'kontakte', 'contatti', 'contacten', 'kontakter'
+        ]);
+        if (contactsHeadings.has(headingText)) return true;
 
+        // Body text + link count heuristic
         const text = this._normalizeComparableText((node.textContent || '').slice(0, 800));
         if (!text) return false;
 
-        const hasContactsToken = text.includes('contacts') || text.includes('contactos');
+        const hasContactsToken = [
+            'contacts', 'contactos', 'kontakte', 'contatti', 'contacten', 'kontakter'
+        ].some((token) => text.includes(token));
+
         const manyLinks = node.querySelectorAll('a[role="link"], a[href]').length >= 8;
         return hasContactsToken && manyLinks;
     }
