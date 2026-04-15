@@ -2,6 +2,26 @@
 
 All notable changes to PureFusion Feed are documented in this file.
 
+## v1.8.0 - 2026-04-15
+
+### Added
+- **Sponsored Posts toggle** — split "Block Ads & Sponsored" into two independent controls: a hard infrastructure signal blocker (`removeAds`, always reliable, zero false positives) and a separate "Hide Sponsored Posts" label-detection toggle (`removeSponsored`, off by default, iterating). Both are accessible from the popup, in-page panel, and options page.
+- **Image subject filters** — 9-locale alt-text token coverage (FR/DE/IT/NL/SV/DA/NO) for all 6 categories (sports, food, pets, vehicles, memes, travel). False-positive audit removed overly broad travel tokens.
+- **Granular sidebar hardening** — position-aware right sidebar resolver correctly targets the main sidebar when a Messenger chat panel is also present. All heading/aria-label tokens expanded to 9 locales.
+- **Memories filter** — hides "On This Day" Memories posts; toggle-OFF restores them.
+- **UI tweaks activated** — `fontSizeScale` (80–150%), `anonymizerMode` blur with hover-reveal, `disableCommentAutofocus` guard.
+- **Notification + search popup locale expansion** — all 4 notification categories and search popup paths cover 9 locales.
+
+### Fixed
+- **Hide Reels toggle showed wrong state** — popup initialized the toggle using `hideReels && hideStories` (AND condition), so it always displayed OFF even though Reels were actively hidden. Fixed to reflect `hideReels` state independently. Decoupled from Stories toggle.
+- **Reels selector hardening** — added `aria-label`, `role="region"` structural, and lowercase pagelet variants. Text heuristic now uses `^reels\b` regex guard with ancestor walk.
+- **Sponsored toggle-OFF restoration** — toggling either ad/sponsored switch OFF now correctly un-hides posts that were hidden by that specific filter (DoD regression rule compliance).
+- **Content script lifecycle** — port-disconnect guard and `destroy()` on all interval/observer modules prevents stale callbacks after extension reload.
+
+### Changed
+- Ad Blocker section in popup renamed from "Sponsored Ad Blocker" to "Ad Blocker" to accurately reflect hard-signal scope.
+- Popup "Hide Reels & Stories" renamed to "Hide Reels" — Stories is a separate setting in the options dashboard.
+
 ## v1.7.0 - 2026-04-13
 
 ### Added
