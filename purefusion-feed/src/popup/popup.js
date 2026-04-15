@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const elements = {
         master: document.getElementById('masterToggle'),
         ads: document.getElementById('tgl_removeAds'),
+        sponsored: document.getElementById('tgl_removeSponsored'),
         suggested: document.getElementById('tgl_removeSuggested'),
         reels: document.getElementById('tgl_hideReelsStories'),
         chronological: document.getElementById('tgl_forceChronological'),
@@ -44,6 +45,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const quickToggles = [
         elements.ads,
+        elements.sponsored,
         elements.suggested,
         elements.reels,
         elements.chronological,
@@ -54,6 +56,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 3. Initialize UI values from settings
     elements.ads.checked = settings.filters.removeAds;
+    elements.sponsored.checked = !!settings.filters.removeSponsored;
     elements.suggested.checked = settings.filters.removeSuggested;
     elements.reels.checked = (settings.filters.hideReels && settings.filters.hideStories);
     elements.chronological.checked = !!settings.uiMode.enforceChronologicalFeed;
@@ -99,7 +102,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Build updated settings object
         settings.filters.removeAds = elements.ads.checked;
-        // removeSponsored is managed from the in-page panel and options page; preserve it here
+        settings.filters.removeSponsored = elements.sponsored.checked;
         settings.filters.removeSuggested = elements.suggested.checked;
         
         // Combine reels/stories together in the quick UI

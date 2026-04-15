@@ -17,6 +17,8 @@
   "common_logo_alt": { "message": "Logo de PureFusion" },
   "options_page_title": { "message": "PureFusion Feed - Ajustes" },
   "popup_quick_filters": { "message": "Filtros Rápidos" },
+  "popup_hide_sponsored_posts": { "message": "Ocultar Publicaciones Patrocinadas" },
+  "popup_hide_sponsored_posts_desc": { "message": "Detección por etiqueta — desactivada por defecto" },
   "popup_block_sponsored": { "message": "Bloquear Anuncios" },
   "popup_block_sponsored_desc": { "message": "Bloquea anuncios por señales de infraestructura" },
   "popup_ad_blocker_on": { "message": "✓ Bloqueando anuncios por señales de infraestructura" },

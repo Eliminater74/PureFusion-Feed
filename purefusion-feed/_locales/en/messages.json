@@ -17,6 +17,8 @@
   "common_logo_alt": { "message": "PureFusion logo" },
   "options_page_title": { "message": "PureFusion Feed - Settings" },
   "popup_quick_filters": { "message": "Quick Filters" },
+  "popup_hide_sponsored_posts": { "message": "Hide Sponsored Posts" },
+  "popup_hide_sponsored_posts_desc": { "message": "Label-based detection — off by default" },
   "popup_block_sponsored": { "message": "Block Ads" },
   "popup_block_sponsored_desc": { "message": "Blocks ads via infrastructure signals" },
   "popup_ad_blocker_on": { "message": "✓ Blocking ads via infrastructure signals" },

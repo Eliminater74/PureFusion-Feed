@@ -2931,6 +2931,26 @@ class PF_Cleaner {
                 return;
             }
 
+            // Restore ad-hidden posts when removeAds is toggled OFF.
+            if (reason === 'Ad (Hard Signal)' && !this.settings?.filters?.removeAds) {
+                node.style.removeProperty('display');
+                delete node.dataset.pfHidden;
+                delete node.dataset.pfReason;
+                return;
+            }
+
+            // Restore sponsored-label-hidden posts when removeSponsored is toggled OFF.
+            // Also handles legacy 'Sponsored Post (Heuristic)' reason from before the split.
+            if (
+                (reason === 'Sponsored Post (Label Heuristic)' || reason === 'Sponsored Post (Heuristic)')
+                && !this.settings?.filters?.removeSponsored
+            ) {
+                node.style.removeProperty('display');
+                delete node.dataset.pfHidden;
+                delete node.dataset.pfReason;
+                return;
+            }
+
             const isCritical = node.matches && node.matches('html, body, [role="main"], [role="feed"]');
             const containsFeed = !!(node.querySelector && node.querySelector('[role="feed"]'));
             const containsMain = !!(node.querySelector && node.querySelector('[role="main"]'));
