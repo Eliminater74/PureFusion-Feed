@@ -2083,7 +2083,13 @@ class PF_Cleaner {
     }
 
     removeSuggestedPosts(rootNode) {
-        // Suggested for you
+        // Direct SuggestedUnit_ pagelet targeting — FB uses these for all recommended
+        // content injections that aren't in a FeedUnit_ wrapper.
+        rootNode.querySelectorAll('[data-pagelet^="SuggestedUnit_"]').forEach(node => {
+            this._hidePostNode(node, "Suggested Posts");
+        });
+
+        // Named pagelet for the primary "Suggested for you" feed injection
         const suggestedWrapper = rootNode.querySelectorAll(PF_SELECTOR_MAP.suggestedForYouWrapper);
         suggestedWrapper.forEach(node => this._hidePostNode(node, "Suggested Posts"));
 
@@ -2982,6 +2988,84 @@ class PF_Cleaner {
                 delete node.dataset.pfReason;
                 return;
             }
+
+            // ── Toggle-OFF Restoration — Feed Filters (Phase 35) ─────────────────────
+            // Every filter that can hide content must have a corresponding restore guard.
+            // Without these, hidden posts persist in the session after the user toggles
+            // the setting back off (DoD regression rule #3).
+            {
+                const f  = this.settings?.filters;
+                const sf = this.settings?.storyFilters;
+                const imgf = this.settings?.imageFilters;
+
+                // Helper — unhide node and clear markers, then signal caller to return.
+                const _pfUnhide = () => {
+                    node.style.removeProperty('display');
+                    delete node.dataset.pfHidden;
+                    delete node.dataset.pfReason;
+                };
+
+                // -- Simple feed-filter toggles --
+                if (reason === 'Suggested Posts'       && !f?.removeSuggested)        { _pfUnhide(); return; }
+                if (reason === 'People You May Know'   && !f?.removePYMK)             { _pfUnhide(); return; }
+                if (reason === 'Suggested Groups'      && !f?.removeGroupSuggestions) { _pfUnhide(); return; }
+                if (reason === 'Marketplace Unit'      && !f?.hideMarketplace)        { _pfUnhide(); return; }
+                if (reason === 'Fundraiser Module'     && !f?.hideFundraisers)        { _pfUnhide(); return; }
+                if ((reason === 'Reels Target Array' || reason === 'Reels Tray Heuristic')
+                    && !f?.hideReels) { _pfUnhide(); return; }
+                if ((reason === 'Stories Tray Heuristic' || reason === 'Stories Tray')
+                    && !f?.hideStories) { _pfUnhide(); return; }
+
+                // -- Post type filters --
+                const postTypeMap = {
+                    'Post Type: Video':        f?.hideVideoPosts,
+                    'Post Type: Photo':        f?.hidePhotoPosts,
+                    'Post Type: Link Share':   f?.hideLinkPosts,
+                    'Post Type: Text Only':    f?.hideTextOnlyPosts,
+                    'Post Type: Live Video':   f?.hideLiveVideoPosts,
+                    'Post Type: Share/Repost': f?.hideShareReposts,
+                    'Post Type: Poll':         f?.hidePollPosts,
+                };
+                if (Object.prototype.hasOwnProperty.call(postTypeMap, reason) && !postTypeMap[reason]) {
+                    _pfUnhide(); return;
+                }
+
+                // -- Story activity type filters --
+                const storyTypeMap = {
+                    'Story Type: Became Friends':       sf?.hideBecameFriends,
+                    'Story Type: Joined Groups':        sf?.hideJoinedGroups,
+                    'Story Type: Commented On This':    sf?.hideCommentedOnThis,
+                    'Story Type: Liked This':           sf?.hideLikedThis,
+                    'Story Type: Event Attendance':     sf?.hideAttendingEvents,
+                    'Story Type: Shared Memory':        sf?.hideSharedMemories,
+                    'Story Type: Profile Photo Update': sf?.hideProfilePhotoUpdates,
+                    'Story Type: Cover Photo Update':   sf?.hideCoverPhotoUpdates,
+                    'Story Type: Life Event':           sf?.hideLifeEvents,
+                    'Story Type: Check-In':             sf?.hideCheckIns,
+                    'Story Type: Milestone':            sf?.hideMilestones,
+                    'Story Type: Job/Work Update':      sf?.hideJobWorkUpdates,
+                    'Story Type: Relationship Update':  sf?.hideRelationshipUpdates,
+                    'Story Type: Group Activity Post':  sf?.hideGroupActivityPosts,
+                };
+                if (Object.prototype.hasOwnProperty.call(storyTypeMap, reason) && !storyTypeMap[reason]) {
+                    _pfUnhide(); return;
+                }
+
+                // -- Image subject filters --
+                if (reason.startsWith('Image Subject Filter:')) {
+                    const cat = reason.slice(21).trim();
+                    const shouldKeep = imgf && (
+                        (cat === 'Sports'            && imgf.hideSports) ||
+                        (cat === 'Food'              && imgf.hideFood) ||
+                        (cat === 'Pets'              && imgf.hidePets) ||
+                        (cat === 'Vehicles'          && imgf.hideVehicles) ||
+                        (cat === 'Memes/Screenshots' && imgf.hideScreenshotsMemes) ||
+                        (cat === 'Travel/Scenery'    && imgf.hideTravelScenery)
+                    );
+                    if (!shouldKeep) { _pfUnhide(); return; }
+                }
+            }
+            // ── End Toggle-OFF Restoration ──────────────────────────────────────────────
 
             const isCritical = node.matches && node.matches('html, body, [role="main"], [role="feed"]');
             const containsFeed = !!(node.querySelector && node.querySelector('[role="feed"]'));
