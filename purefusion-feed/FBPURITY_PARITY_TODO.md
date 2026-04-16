@@ -1,6 +1,6 @@
 # PureFusion Feed — Parity Roadmap
 
-Last updated: 2026-04-15 (Phase 42)
+Last updated: 2026-04-15 (Phase 42 — Phases 43 & 44 queued)
 
 ---
 
@@ -55,6 +55,11 @@ Always continue from the highest-priority unfinished item. Do not jump ahead.
 - Auto Comment Preview v3.1 (needs explicit go decision)
 - Plugin SDK (needs explicit go decision)
 - Non-critical UI cleanup
+
+**Queued and approved (next in line):**
+
+- Phase 43: Messenger Enhancements (timestamps, mark-all-read, conversation filter) — user approved 2026-04-15
+- Phase 44: Marketplace Local Filter (distance parsing, max-distance slider, local-first sort) — user approved 2026-04-15
 
 ---
 
@@ -118,10 +123,89 @@ Status key: **DONE** = complete and stable | **DONE+** = complete but intentiona
 | Sponsored post detection | DONE+ | Hard-signal + label-heuristic split; iterating detection coverage |
 | Auto comment preview v3.1 (real data) | DEFERRED | GraphQL interception — ToS-adjacent; needs explicit go decision |
 | Plugin SDK | DEFERRED | Extension plugin hooks — low priority; after core is stable |
+| Messenger enhancements | QUEUED | Phase 43 — always-visible timestamps, mark-all-read, conversation filter, unsend detection |
+| Marketplace local filter | QUEUED | Phase 44 — client-side distance parsing, max-distance slider, local-first sort, MutationObserver for scroll |
 
 ---
 
 ## Remaining Work (Priority Order)
+
+### Phase 43 — Messenger Enhancements
+
+**Approved 2026-04-15. Start after Phase 42 sign-off.**
+
+Facebook hides most Messenger UI convenience features behind interactions. Four improvements are feasible via CSS injection and DOM mutation:
+
+#### 1. Always-Visible Message Timestamps
+
+Facebook only shows per-message timestamps on hover. Fix: inject a scoped CSS rule into Messenger pages that forces `opacity: 1` and `max-height: unset` on the timestamp elements that are normally hidden with `opacity: 0` or `height: 0`. Target selector research needed at implementation time — FB's class names rotate, so the rule must use a structural approach (e.g. `[data-testid*="message-timestamp"]` or an aria-label/role anchor if stable). Gate behind a new `settings.social.alwaysShowMessageTimestamps` (default: false). Wire in options → Messenger section.
+
+#### 2. Mark All Read Button
+
+Inject a "Mark all read" button into the Messenger conversation list header (the bar above the conversation list on `messenger.com`). On click, select each conversation row that has an unread indicator (bold name text or blue dot) and simulate a mouse event to open + immediately close it — or (if FB fires the read-receipt on DOM selection) simply dispatch a click. This is a best-effort DOM simulation; it will not work without opening each conversation briefly. Alternative: hide the unread badge dots (cosmetic only, doesn't mark server-side). Both approaches should be offered. Gate behind `settings.social.messengerMarkAllRead` (default: false). Add toggle to options → Messenger section.
+
+#### 3. Conversation Sort / Filter
+
+Inject a small filter bar at the top of the Messenger conversation list with three quick-filter buttons:
+
+- **All** — default (show everything)
+- **Unread** — show only conversations where the name element has bold weight or a blue unread dot
+- **Groups** — show only group conversations (detected via multiple-avatar presence or `[aria-label*="group"]`)
+
+Implementation: MutationObserver on the conversation list container; on filter change, iterate visible rows and toggle `display: none` on non-matching rows. Sorting (unread first) is a bonus: collect all rows, split into matched/unmatched, reorder via `appendChild` (DOM order = visual order). Gate behind `settings.social.messengerConversationFilter` (default: false). Wire toggle in options → Messenger section.
+
+#### 4. Unsend Detection
+
+When a message disappears from a conversation view (a `MutationObserver` records a node removal where the removed node contained message text), replace the node with a placeholder: `"[Message removed by sender at HH:MM]"`. Store the message text and timestamp in session memory (not persisted across page reloads — privacy-first). The placeholder is styled subtly (italic, muted color) and can be dismissed. This runs only on `messenger.com` conversation pages. Gate behind `settings.social.detectUnsends` (default: false). Wire toggle in options → Messenger section.
+
+#### Implementation Notes
+
+- All four features live in `messenger-ai.js` (or a new dedicated `messenger-tools.js` if the file grows too large — current size is ~556 lines, adding ~150 lines should be fine in the same file).
+- Existing `PF_MessengerAI` class already has an observer loop and lifecycle guard — extend it rather than creating a new class.
+- Each sub-feature should be independently toggleable so users can use timestamps without enabling unsend detection.
+- No server-side interaction, no API calls — pure DOM manipulation and CSS injection.
+
+---
+
+### Phase 44 — Marketplace Local Filter
+
+**Approved 2026-04-15. Start after Phase 43 sign-off.**
+
+Facebook Marketplace shows listings from a wide radius even when the user is searching for local items. The server-side search radius cannot be changed by the extension (it controls what the server returns). However, every listing card in the DOM contains a distance string ("47 miles away", "Local pickup", "12 mi", etc.) — the extension can parse these and hide or sort listings entirely client-side.
+
+#### What IS Feasible (client-side only)
+
+1. **Distance parsing** — Extract the distance number from listing card text nodes. Patterns to match:
+   - `(\d+(?:\.\d+)?)\s*(mi|mile|miles|km|kilometer|kilometers)` — numeric distance
+   - `"Local pickup"` / `"local"` — treat as 0 miles (always show)
+   - No distance text found — treat as unknown (configurable: show or hide)
+
+2. **Max-distance filter** — User configures a maximum distance (slider: 5, 10, 15, 25, 50, 100 miles, or "No limit"). Listing cards beyond the threshold get `display: none`. A small counter overlay shows "X listings hidden (beyond Y mi)". Gate behind `settings.marketplace.enabled` (default: false) and `settings.marketplace.maxDistanceMiles` (default: 25).
+
+3. **Local-first sorting** — After parsing distances, reorder the listing grid by distance ascending using `flexbox order` property (`el.style.order = distanceBucketIndex`). This does not move DOM nodes — it only changes visual order. Works as long as the listing container uses flexbox or CSS grid (it does on current FB Marketplace). Falls back gracefully if the container layout cannot be detected.
+
+4. **"Local Only" quick-toggle overlay** — Inject a small floating filter bar at the top of the Marketplace listing grid (`/marketplace/` URL detection) with:
+   - "Local Only" toggle button (hides everything beyond the configured max distance)
+   - Distance slider with live label (updates hiding in real-time without page reload)
+   - Count pill: "Showing X / Y listings"
+
+5. **MutationObserver for infinite scroll** — Marketplace uses infinite scroll / pagination injection. Wrap the filter pass in a `MutationObserver` on the listing grid container so new cards loaded by scrolling are immediately filtered/sorted without requiring a re-trigger.
+
+#### What Is NOT Feasible
+
+- **Changing the server-side search radius** — The extension cannot modify the FB Marketplace search query. It can only filter the listings the server already returned. If FB returns 200 listings within 50 miles, the extension can hide/sort those 200; it cannot force the server to return only 10-mile listings.
+- **Adding a "search local only" button** that changes FB's internal search — FB's search bar is server-controlled; injecting radius parameters into the URL/query is not reliably possible without reverse-engineering internal GraphQL variables that change frequently.
+
+#### Implementation Notes (Marketplace Filter)
+
+- New content script module: `marketplace-filter.js` (new file, ~200 lines). Injected only on `/marketplace/` URL patterns.
+- Register in `manifest.json` `content_scripts` with `"matches": ["*://www.facebook.com/marketplace/*"]`.
+- Options: add a new "Marketplace" section in the options page with enable toggle + max distance slider + "unknown distance" behaviour select (show / hide).
+- Default settings entry: `marketplace: { enabled: false, maxDistanceMiles: 25, hideUnknownDistance: false }` added to `default-settings.js`.
+- The floating filter bar overlay uses a style similar to the existing Insight Chip overlay (same dark glass morphism theme) — reuse the CSS variables already defined.
+- The distance parser must handle both "miles" (US default) and "km" (international) — add a `distanceUnit` setting defaulting to `'mi'` with automatic detection from the first parsed listing if possible.
+
+---
 
 ### Deferred — Auto Comment Preview v3.1 — Real Comment Data
 
