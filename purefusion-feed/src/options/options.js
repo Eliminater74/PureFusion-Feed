@@ -488,6 +488,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_llm_geminiApiKey': { obj: 'llm', prop: 'geminiApiKey', type: 'text' },
         'opt_llm_tldr': { obj: 'llm', prop: 'tldrEnabled', type: 'checkbox' },
         'opt_llm_smartcomment': { obj: 'llm', prop: 'smartCommentEnabled', type: 'checkbox' },
+        'opt_llm_smartCommentOnMessenger': { obj: 'llm', prop: 'smartCommentOnMessenger', type: 'checkbox' },
         'opt_llm_clickbaitdecode': { obj: 'llm', prop: 'clickbaitDecoder', type: 'checkbox' },
         'opt_llm_messengerRewriteEnabled': { obj: 'llm', prop: 'messengerRewriteEnabled', type: 'checkbox' },
         'opt_llm_messengerSmartRepliesEnabled': { obj: 'llm', prop: 'messengerSmartRepliesEnabled', type: 'checkbox' },

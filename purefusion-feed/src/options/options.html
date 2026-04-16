@@ -716,8 +716,12 @@
                     <input type="checkbox" id="opt_llm_tldr" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
-                    <label data-i18n="options_ai_smart_comment_toggle">Smart Comment Co-Pilot (Wand icon)</label>
+                    <label data-i18n="options_ai_smart_comment_toggle">Smart Comment Co-Pilot (Wand icon) — Feed posts</label>
                     <input type="checkbox" id="opt_llm_smartcomment" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row" style="padding-left:16px;border-left:2px solid rgba(108,63,197,0.3);margin-left:4px">
+                    <label style="font-size:12px">Also enable in Messenger chat popups <span style="font-size:10px;color:var(--pf-text-muted,#6b7a99)">(off by default — can cause chat jitter)</span></label>
+                    <input type="checkbox" id="opt_llm_smartCommentOnMessenger" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row">
                     <label data-i18n="options_ai_clickbait_decode_toggle">Clickbait Decoder (Rewrite sensational headlines with facts)</label>

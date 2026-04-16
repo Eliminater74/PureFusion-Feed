@@ -270,7 +270,8 @@ const DEFAULT_SETTINGS = {
         openAIApiKey: '',               // Secure local storage only
         geminiApiKey: '',               // Secure local storage only
         tldrEnabled: true,              // Inject summarize buttons
-        smartCommentEnabled: true,      // Inject Co-Pilot into comment boxes
+        smartCommentEnabled: true,      // Inject Co-Pilot into comment boxes (feed posts)
+        smartCommentOnMessenger: false, // Also inject Co-Pilot into Messenger chat popup composers (default OFF — causes jitter)
         clickbaitDecoder: true,         // Rewrite headlines instead of just blocking
         messengerRewriteEnabled: true,
         messengerSmartRepliesEnabled: true

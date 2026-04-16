@@ -157,19 +157,36 @@ class PF_LLMFeatures {
         return anchor;
     }
 
+    _isMessengerChatPopup(box) {
+        const dialog = box.closest('[role="dialog"]');
+        if (!dialog) return false;
+        const signals = [
+            '[aria-label*="Call"]', '[aria-label*="Video"]', '[aria-label*="chat"]',
+            '[aria-label*="Messenger"]', '[aria-label*="Llam"]', '[aria-label*="Cerrar chat"]',
+            '[aria-label*="Minimize"]', '[aria-label*="Minimizar"]'
+        ];
+        return signals.some((sel) => !!dialog.querySelector(sel));
+    }
+
     injectCommentCopilot(rootNode) {
         if (!rootNode.querySelectorAll) return;
-        
+
         // Handle cases where the mutated node is the actual text box, or contains it
         const isMatch = rootNode.matches && rootNode.matches(window.PF_SELECTOR_MAP.commentInputBox);
         const commentBoxes = isMatch ? [rootNode] : Array.from(rootNode.querySelectorAll(window.PF_SELECTOR_MAP.commentInputBox));
-        
+
         commentBoxes.forEach(node => {
             // Because React replaces this element often, we hook into the parent wrapper safely
-            const box = node.tagName === 'DIV' && node.getAttribute('role') === 'textbox' 
+            const box = node.tagName === 'DIV' && node.getAttribute('role') === 'textbox'
             ? node : node.querySelector('div[role="textbox"]');
 
             if (!box || box.dataset.pfWandInjected) return;
+
+            // Skip Messenger chat popup composers unless the user has opted in.
+            // Messenger re-renders its composer aggressively and causes jitter when the
+            // wand is injected. The separate smartCommentOnMessenger setting (default OFF)
+            // gives users an explicit opt-in for this surface.
+            if (this._isMessengerChatPopup(box) && !this.settings?.llm?.smartCommentOnMessenger) return;
 
             // Hide the wand entirely if no AI Engine is configured, to avoid clutter
             if (!this.engine.isReady()) return;
