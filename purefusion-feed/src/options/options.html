@@ -479,6 +479,27 @@
                 <p class="pf-desc" style="margin-top:-6px">When a message disappears from view, leaves a "[Message removed at HH:MM]" placeholder. Session-only — cleared on page reload.</p>
             </div>
 
+            <div class="pf-card mt-4">
+                <h3>Marketplace Local Filter</h3>
+                <p class="pf-desc">Hides Marketplace listings beyond a set distance and re-sorts visible results nearest-first. Client-side only — cannot change Facebook's server search radius, only filters results already on screen.</p>
+                <div class="pf-setting-row">
+                    <label>Enable Marketplace Local Filter</label>
+                    <input type="checkbox" id="opt_marketplace_enabled" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row" style="flex-direction:column;align-items:flex-start;gap:6px">
+                    <label style="font-size:12px;color:var(--pf-text-secondary,#a9b3c8)">Max distance — <span id="pf-mp-dist-preview">25 mi</span></label>
+                    <input type="range" id="opt_marketplace_maxDistanceMiles" min="5" max="100" step="5" value="25"
+                        style="width:100%;accent-color:#6C3FC5"
+                        oninput="document.getElementById('pf-mp-dist-preview').textContent=this.value>=100?'No limit':this.value+' mi'">
+                    <span style="font-size:10px;color:var(--pf-text-muted,#6b7a99)">5–95 mi hides listings beyond threshold · 100 = no distance limit (sort only)</span>
+                </div>
+                <div class="pf-setting-row">
+                    <label style="font-size:12px">Hide listings with no distance text</label>
+                    <input type="checkbox" id="opt_marketplace_hideUnknownDistance" class="pf-toggle">
+                </div>
+                <p class="pf-desc" style="margin-top:4px">When enabled, visit <strong>facebook.com/marketplace</strong> — a filter overlay appears in the top-right corner of the page.</p>
+            </div>
+
             <div class="pf-card mt-4 pf-advanced-card">
                 <h3 data-i18n="options_social_meta_title">Meta AI & Algorithmic Clutter</h3>
 

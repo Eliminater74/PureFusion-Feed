@@ -283,6 +283,15 @@ const DEFAULT_SETTINGS = {
         customRules: [] // Array of { id, type, selector, label, enabled }
     },
     // ------------------------------------------------------------------------
+    // MARKETPLACE LOCAL FILTER (Phase 44)
+    // ------------------------------------------------------------------------
+    marketplace: {
+        enabled: false,             // Master toggle — off by default
+        maxDistanceMiles: 25,       // Hide listings beyond this distance (5–100; 100 = no limit)
+        hideUnknownDistance: false, // Hide listings whose cards show no distance text
+    },
+
+    // ------------------------------------------------------------------------
     // SUPPORT & LINKS
     // ------------------------------------------------------------------------
     supportUrl: 'https://www.paypal.com/donate/?business=X76ZW4RHA6T9C&no_recurring=0&item_name=PureFusion+returns+feed+control+to+you.+Support+our+independent%2C+private%2C+ad-free+social+tools.+Keep+your+feed+pure%21&currency_code=USD'

@@ -40,6 +40,7 @@ class PureFusionApp {
             this.wellbeing = new window.PF_Wellbeing(initialSettings);
             this.llmFeatures = new window.PF_LLMFeatures(initialSettings);
             this.messengerAI = new window.PF_MessengerAI(initialSettings);
+            this.marketplaceFilter = new window.PF_MarketplaceFilter(initialSettings);
             this.inpageUI = new window.PF_InPageUI(initialSettings);
             this.diagnostics = new window.PF_Diagnostics(initialSettings);
             this.observer = new window.PF_Observer();
@@ -443,6 +444,7 @@ class PureFusionApp {
         if (this.diagnostics) this.diagnostics.applyDocumentLevelTweaks();
         if (this.commentPreview) this.commentPreview.sweepDocument();
         if (this.llmFeatures) this.llmFeatures.sweepDocument();
+        if (this.marketplaceFilter) this.marketplaceFilter.sweepDocument();
 
         this._dispatchDiagnosticsEvent('pf:resweep_pass', {
             phase,
@@ -494,6 +496,7 @@ class PureFusionApp {
             { name: 'commentPreview', run: () => this.commentPreview && this.commentPreview.applyToNodes(nodes) },
             { name: 'llmFeatures', run: () => this.llmFeatures && this.llmFeatures.applyToNodes(nodes) },
             { name: 'messengerAI', run: () => this.messengerAI && this.messengerAI.applyToNodes(nodes) },
+            { name: 'marketplaceFilter', run: () => this.marketplaceFilter && this.marketplaceFilter.applyToNodes(nodes) },
             { name: 'notifControls', run: () => this.notifControls && this.notifControls.applyToNodes(nodes) },
             { name: 'diagnostics', run: () => this.diagnostics && this.diagnostics.applyToNodes(nodes) }
         ];
@@ -561,6 +564,7 @@ class PureFusionApp {
             this.wellbeing,
             this.llmFeatures,
             this.messengerAI,
+            this.marketplaceFilter,
             this.inpageUI,
             this.diagnostics
         ];
@@ -710,6 +714,11 @@ class PureFusionApp {
             clickbaitDecoder: false,
             messengerRewriteEnabled: false,
             messengerSmartRepliesEnabled: false
+        };
+
+        effective.marketplace = {
+            ...effective.marketplace,
+            enabled: false
         };
 
         return effective;
@@ -1082,7 +1091,8 @@ class PureFusionApp {
             this.cleaner,
             this.notifControls,
             this.inpageUI,
-            this.messengerAI
+            this.messengerAI,
+            this.marketplaceFilter
         ];
 
         destroyable.forEach((mod) => {

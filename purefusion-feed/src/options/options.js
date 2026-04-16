@@ -474,6 +474,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_social_messengerMarkAllRead': { obj: 'social', prop: 'messengerMarkAllRead', type: 'checkbox' },
         'opt_social_messengerConversationFilter': { obj: 'social', prop: 'messengerConversationFilter', type: 'checkbox' },
         'opt_social_detectUnsends': { obj: 'social', prop: 'detectUnsends', type: 'checkbox' },
+        // Marketplace Local Filter
+        'opt_marketplace_enabled': { obj: 'marketplace', prop: 'enabled', type: 'checkbox' },
+        'opt_marketplace_maxDistanceMiles': { obj: 'marketplace', prop: 'maxDistanceMiles', type: 'number', fallback: 25 },
+        'opt_marketplace_hideUnknownDistance': { obj: 'marketplace', prop: 'hideUnknownDistance', type: 'checkbox' },
         'opt_social_blockNotifGames': { obj: 'social', prop: 'blockNotifGames', type: 'checkbox' },
         'opt_social_blockNotifBirthdays': { obj: 'social', prop: 'blockNotifBirthdays', type: 'checkbox' },
         'opt_social_blockNotifMarketplace': { obj: 'social', prop: 'blockNotifMarketplace', type: 'checkbox' },
@@ -821,6 +825,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             else if (mapping.type === 'select') el.value = val || '';
             else if (mapping.type === 'number') el.value = Number.isFinite(val) ? val : (mapping.fallback ?? 100);
             else if (mapping.type === 'text') el.value = val || '';
+        }
+
+        // Sync range-input preview labels after values are loaded
+        const mpSlider = document.getElementById('opt_marketplace_maxDistanceMiles');
+        const mpPreview = document.getElementById('pf-mp-dist-preview');
+        if (mpSlider && mpPreview) {
+            const v = parseInt(mpSlider.value, 10);
+            mpPreview.textContent = v >= 100 ? 'No limit' : v + ' mi';
         }
 
         // Handle Keywords Mapping

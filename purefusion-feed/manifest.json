@@ -47,6 +47,7 @@
         "src/content/wellbeing.js",
         "src/content/llm-features.js",
         "src/content/messenger-ai.js",
+        "src/content/marketplace-filter.js",
         "src/content/inpage-ui.js",
         "src/content/diagnostics.js",
         "src/content/main.js"
