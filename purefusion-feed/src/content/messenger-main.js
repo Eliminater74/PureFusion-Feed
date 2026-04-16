@@ -207,7 +207,11 @@ class PureFusionMessengerApp {
             effective.social = {
                 ...effective.social,
                 hideMessengerTyping: false,
-                messengerPrivacyBlur: false
+                messengerPrivacyBlur: false,
+                alwaysShowMessageTimestamps: false,
+                messengerMarkAllRead: false,
+                messengerConversationFilter: false,
+                detectUnsends: false
             };
 
             effective.llm = {

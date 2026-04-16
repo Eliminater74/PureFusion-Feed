@@ -1,4 +1,4 @@
-# Chrome Web Store Listing Package — PureFusion Feed v1.8.1
+# Chrome Web Store Listing Package — PureFusion Feed v1.9.0
 
 Use this file as copy-ready content for your Chrome Web Store submission.
 
@@ -46,6 +46,7 @@ PureFusion Feed gives you full control over your Facebook feed. It removes clutt
 ### 4. Popup Feed Intelligence
 
 - AI Scoring toggle directly accessible from the popup — no need to open Full Settings
+- Live session stats: real counts of ads blocked and spam hidden since the page loaded
 - Live counts of blocked and trusted sources shown in the popup
 - "Manage Sources" link opens the Source Manager directly
 
@@ -64,18 +65,29 @@ PureFusion Feed gives you full control over your Facebook feed. It removes clutt
 - All filter paths, notification controls, and search popup suppression cover all 9 locales
 - Intelligent Body Text Guard prevents legitimate posts from being accidentally hidden in any language
 
-### 7. Optional AI Features (BYOK — Bring Your Own Key)
+### 7. Marketplace Local Filter
+
+- Distance-based listing filter — set a max distance in miles to hide listings outside your area
+- Works with both "X miles away" and "X km away" listing labels (auto-converts)
+- Local pickup listings are treated as zero distance and always shown
+- Local-first sort reorders matching results to surface nearby deals at the top
+- Hide unknown distance listings option — for a strictly local-only view
+- Compact overlay panel injected directly on the Marketplace page with a live preview of your distance setting
+
+### 8. Optional AI Features (BYOK — Bring Your Own Key)
 
 - TL;DR post summaries and comment-assist tools
 - Messenger composer tools: rewrite draft and generate smart replies
 - AI permissions only requested when a provider is enabled by you
 - Supports Chrome's built-in Gemini Nano (fully offline, no key needed) or free Google Gemini API
 
-### 8. Messenger Privacy Tools
+### 9. Messenger Enhancements
 
-- Hide seen receipts
-- Hide typing indicators
-- Privacy blur mode
+- Always-visible message timestamps — see exact send times without hovering
+- Mark All Read button — clears all unread badges in one click from the chat list
+- Conversation filter bar — instantly filter your inbox to show only Unread, Direct, or Group conversations
+- Unsend detection — notifies you when a message you received is deleted by the sender
+- Hide seen receipts, typing indicators, and privacy blur mode
 
 ---
 
@@ -113,8 +125,16 @@ Facebook and Messenger interfaces change frequently. Filter results may vary by 
    - Click "Details" on a chip to expand the panel — confirm score, content type, and Quick Actions are visible.
    - Click "Block source" and confirm the post hides immediately.
    - Open Settings → Keyword Filters → AI Source Manager and confirm the blocked author appears in the Blocked Sources list.
-10. Open Messenger and verify Ghost Mode options (seen receipts hidden, typing indicator hidden, privacy blur).
-11. Optional AI test:
+10. Marketplace Local Filter test:
+    - Open `https://www.facebook.com/marketplace/` — confirm the PureFusion distance filter overlay appears.
+    - Set Max Distance to 10 miles — confirm listings beyond that distance are hidden.
+    - Enable "Hide unknown distance" and confirm listings with no distance label are hidden.
+11. Open Messenger (`https://messenger.com`) and verify:
+    - Message timestamps are visible on each bubble without hovering (if enabled).
+    - "Mark All Read" button appears in the chat list header (if enabled).
+    - The conversation filter bar appears above the inbox (if enabled).
+    - Ghost Mode options work: seen receipts hidden, typing indicator hidden, privacy blur.
+12. Optional AI test:
     - In Options → AI Engine, choose Gemini or OpenAI and save.
     - Allow the optional host permission prompt.
     - Trigger TL;DR on a feed post or Rewrite / Smart Replies in the Messenger composer.

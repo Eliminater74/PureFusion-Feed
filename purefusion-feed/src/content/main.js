@@ -17,6 +17,8 @@ class PureFusionApp {
         this.isSyncingSettings = false;
         this.hasQueuedSettingsSync = false;
         this.quickContextCaptureBound = false;
+        this._sessionStats = { ads: 0, spam: 0 };
+        this._sessionStatsFlushTimer = null;
     }
 
     async boot() {
@@ -209,6 +211,20 @@ class PureFusionApp {
                 PF_Logger.log("In-Page Settings update detected. Resweeping.");
                 this.updateSettingsAndResweep();
             }
+        });
+
+        // 3. Track hidden elements for popup session stats
+        window.addEventListener('pf:element_hidden', (e) => {
+            const reason = String(e?.detail?.reason || '');
+            if (/\bAd\b|Sponsored/i.test(reason)) {
+                this._sessionStats.ads++;
+            } else {
+                this._sessionStats.spam++;
+            }
+            if (this._sessionStatsFlushTimer) clearTimeout(this._sessionStatsFlushTimer);
+            this._sessionStatsFlushTimer = setTimeout(() => {
+                PF_Storage.setLocalData('pf_session_stats', { ...this._sessionStats });
+            }, 600);
         });
 
         this._setupQuickActionContextCapture();
