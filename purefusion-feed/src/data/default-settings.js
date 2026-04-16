@@ -34,6 +34,7 @@ const DEFAULT_SETTINGS = {
         hidePollPosts: false,           // Hide Facebook poll posts
         removeColoredBackgrounds: true, // Giant font/colored posts -> standard text
         removeLargeReactions: true,     // Downsize large emoji reactions
+        deduplicatePosts: false,        // Hide posts whose ID has already appeared this session
     },
 
     // ------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 # PureFusion Feed — Parity Roadmap
 
-Last updated: 2026-04-16 (Phase 57)
+Last updated: 2026-04-16 (Phase 58)
 
 ---
 
@@ -20,6 +20,7 @@ Always continue from the highest-priority unfinished item. Do not jump ahead.
 
 **Completed phases (most recent first):**
 
+- ✅ Phase 58: Post Deduplication — `_seenPostIds` Set in `PF_Cleaner` constructor tracks post IDs across the session. `_extractPostId(articleNode)` uses three fallback strategies mirroring `PF_PostIDResolver`: (1) `data-pagelet` attribute 10-digit match, (2) share-button href `story_fbid=` / `id=` param, (3) `/posts/<id>` or `/permalink/<id>` or `?story_fbid=` link in the article. Dedup check runs at the top of `_applyAllFilters` before any other filter pipeline — if the resolved ID is already in `_seenPostIds` the post wrapper is passed to `_hidePostNode` with reason `'Duplicate Post'` and the function returns early. On toggle-OFF: `_restoreCriticalContainers` matches reason `'Duplicate Post'`, unhides, and calls `_seenPostIds.clear()` so the session resets cleanly. `updateSettings` also clears `_seenPostIds` when dedup is re-enabled (fresh session). Default OFF. `deduplicatePosts: false` added to `default-settings.js` `filters` block and `main.js` disabled-state. Options: new `auto-height` toggle row in Core Filters card with description. i18n: 2 keys added in EN + ES.
 - ✅ Phase 57: Tracking Parameter Cleaner — Strips fbclid, all utm_*, gclid, msclkid, mc_cid and 20+ other spy params from every feed link on-the-fly. Default ON. Restores original hrefs on toggle-OFF. Works independently of (but co-operates with) the link-reveal feature.
 - ✅ Phase 56: Auto-Expand "See More" — Automatically dismisses Facebook's artificial text truncation. Exact-match regex covers 11 locales (EN/ES/FR/DE/NL/SV/DA/NO/IT/PT/VI). Scoped to `[role="article"]` to avoid expanding comment counts or reactions. 180ms click delay prevents racing the render. `data-pf-see-more-done` marker prevents duplicate processing. Off by default.
 - ✅ Phase 55: Video Autoplay Control — Capture-phase `play` listener mutes or pauses feed videos the moment they start playing. Default `'mute'`. User-initiated plays (click-tracked within 600ms window) are exempted from pause re-triggering. Sweep runs on new nodes via `applyToNodes`. Teardown restores muted-by-PF videos. Options select: Off / Mute audio / Pause.

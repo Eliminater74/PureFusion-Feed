@@ -33,7 +33,8 @@ class PF_Cleaner {
         this._processedNodes = new WeakSet();
         this._nodeQueue = [];
         this._processingChunks = false;
-        
+        this._seenPostIds = new Set();
+
         this._injectUndoChipStyles();
         this._startRecoveryWatchdog();
     }
@@ -41,6 +42,7 @@ class PF_Cleaner {
     updateSettings(settings) {
         const prevLimiterEnabled = !!this.settings?.wellbeing?.reelsLimiterEnabled;
         const prevLimit = Number(this.settings?.wellbeing?.reelsSessionLimit || 3);
+        const prevDedup = !!this.settings?.filters?.deduplicatePosts;
 
         this.settings = settings;
         this.ruleEngine.updateSettings(settings);
@@ -50,6 +52,11 @@ class PF_Cleaner {
 
         if (!nextLimiterEnabled || !prevLimiterEnabled || nextLimit !== prevLimit) {
             this._resetReelsLimiterSession();
+        }
+
+        // Clear dedup history when the toggle is re-enabled so a fresh session starts.
+        if (!prevDedup && !!this.settings?.filters?.deduplicatePosts) {
+            this._seenPostIds.clear();
         }
     }
 
@@ -174,6 +181,26 @@ class PF_Cleaner {
 
         if (!this._shouldApplyForCurrentSurface()) {
             return;
+        }
+
+        // Phase 58 — Post Deduplication
+        // Run before other filters so duplicates are caught regardless of their content.
+        if (this.settings?.filters?.deduplicatePosts) {
+            const article = rootNode.matches?.('[role="article"]')
+                ? rootNode
+                : rootNode.querySelector?.('[role="article"]');
+            if (article) {
+                const postId = this._extractPostId(article);
+                if (postId) {
+                    if (this._seenPostIds.has(postId)) {
+                        const wrapper = PF_Helpers.getClosest(article, PF_SELECTOR_MAP.postContainer) || article;
+                        this._hidePostNode(wrapper, 'Duplicate Post');
+                        this._markNodeAsProcessed(rootNode);
+                        return;
+                    }
+                    this._seenPostIds.add(postId);
+                }
+            }
         }
 
         if (this.settings.filters.removeAds) {
@@ -3072,6 +3099,45 @@ class PF_Cleaner {
         return this._normalizeText(node.textContent || '');
     }
 
+    // ── Phase 58 — Post Deduplication ───────────────────────────────────────────
+    /**
+     * Extract a stable post ID from an article node using three fallback strategies
+     * mirroring PF_PostIDResolver in comment-preview.js.
+     *   1. data-pagelet attribute — FeedUnit_<id> or AdUnit_<id>
+     *   2. Share button href — contains story_fbid= or id= parameters
+     *   3. Permalink/post link in the article — /posts/<id> or /permalink/<id>
+     */
+    _extractPostId(articleNode) {
+        if (!articleNode) return null;
+
+        // Strategy 1: pagelet attribute (most reliable)
+        const pagelet = articleNode.dataset?.pagelet || '';
+        const pageletMatch = pagelet.match(/\d{10,}/);
+        if (pageletMatch) return pageletMatch[0];
+
+        // Strategy 2: share button href
+        const shareBtn = articleNode.querySelector('a[href*="story_fbid"], a[href*="/sharer"], [aria-label="Share"][href]');
+        if (shareBtn) {
+            const href = shareBtn.getAttribute('href') || '';
+            const m = href.match(/story_fbid=(\d+)/) || href.match(/[?&]id=(\d+)/);
+            if (m) return m[1];
+        }
+
+        // Strategy 3: permalink / post timestamp link
+        const permLink = articleNode.querySelector(
+            'a[href*="/posts/"], a[href*="/permalink/"], a[href*="?story_fbid="]'
+        );
+        if (permLink) {
+            const href = permLink.getAttribute('href') || '';
+            const m = href.match(/\/posts\/(\d+)/)
+                || href.match(/\/permalink\/(\d+)/)
+                || href.match(/story_fbid=(\d+)/);
+            if (m) return m[1];
+        }
+
+        return null;
+    }
+
     _restoreCriticalContainers() {
         const hidden = document.querySelectorAll('[data-pf-hidden="true"]');
         hidden.forEach((node) => {
@@ -3151,6 +3217,7 @@ class PF_Cleaner {
                 };
 
                 // -- Simple feed-filter toggles --
+                if (reason === 'Duplicate Post'        && !f?.deduplicatePosts)       { _pfUnhide(); this._seenPostIds.clear(); return; }
                 if (reason === 'Suggested Posts'       && !f?.removeSuggested)        { _pfUnhide(); return; }
                 if (reason === 'Page Suggestion'       && !f?.removePageSuggestions)  { _pfUnhide(); return; }
                 if (reason === 'People You May Know'   && !f?.removePYMK)             { _pfUnhide(); return; }

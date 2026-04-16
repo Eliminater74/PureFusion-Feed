@@ -624,7 +624,8 @@ class PureFusionApp {
             hideShareReposts: false,
             hidePollPosts: false,
             removeColoredBackgrounds: false,
-            removeLargeReactions: false
+            removeLargeReactions: false,
+            deduplicatePosts: false
         };
 
         effective.uiMode = {

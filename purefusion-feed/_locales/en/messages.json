@@ -157,6 +157,8 @@
   "options_filters_remove_colored_bg": { "message": "Remove Colored Background Posts" },
   "options_filters_remove_game_invites": { "message": "Hide Game Invite & Activity Posts" },
   "options_filters_remove_large_reactions": { "message": "Normalize Oversized Emoji Posts" },
+  "options_filters_deduplicate_posts_label": { "message": "Hide Duplicate Posts" },
+  "options_filters_deduplicate_posts_desc": { "message": "Suppress posts whose ID has already appeared this session — catches FB re-injecting the same story multiple times." },
   "options_filters_locale_label": { "message": "Feed Language" },
   "options_filters_locale_desc": { "message": "Match phrase filters to your Facebook language. Auto tests all supported languages (may over-filter mixed-language feeds)." },
   "options_filters_locale_auto": { "message": "Auto (all supported languages)" },

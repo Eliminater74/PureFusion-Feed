@@ -157,6 +157,8 @@
   "options_filters_remove_colored_bg": { "message": "Quitar publicaciones con fondo de color" },
   "options_filters_remove_game_invites": { "message": "Ocultar invitaciones y actividad de juegos" },
   "options_filters_remove_large_reactions": { "message": "Normalizar publicaciones con emojis gigantes" },
+  "options_filters_deduplicate_posts_label": { "message": "Ocultar publicaciones duplicadas" },
+  "options_filters_deduplicate_posts_desc": { "message": "Suprime publicaciones cuyo ID ya apareció en esta sesión — detecta cuando FB reinyecta la misma historia varias veces." },
   "options_filters_locale_label": { "message": "Idioma del feed" },
   "options_filters_locale_desc": { "message": "Ajusta los filtros de frases al idioma de tu Facebook. 'Auto' prueba todos los idiomas compatibles (puede filtrar en exceso feeds mixtos)." },
   "options_filters_locale_auto": { "message": "Auto (todos los idiomas compatibles)" },
