@@ -13,11 +13,17 @@ class PF_UiTweaks {
         this.styleTag = null;
         this._autofocusGuardBound = false;
         this._lastUserClickTarget = null;
+        this._dfmActive = false;
+        this._dfmKeyHandler = null;
         this.init();
     }
 
     updateSettings(settings) {
         this.settings = settings;
+        // Sync DFM toggle from options page; keyboard-toggled runtime state takes
+        // precedence only until the next settings push (by design — options is authoritative).
+        this._dfmActive = !!(settings?.uiMode?.distractionFreeMode);
+        this._applyDfmClass();
         this.update();
     }
 
@@ -26,6 +32,7 @@ class PF_UiTweaks {
         this.styleTag.id = 'purefusion-ui-tweaks';
         document.head.appendChild(this.styleTag);
         this._setupAutofocusGuard();
+        this._setupDistractionFreeMode();
         this.update();
     }
 
@@ -202,6 +209,21 @@ class PF_UiTweaks {
             \n`;
         }
 
+        // 8. Distraction-Free Mode — hide sidebars, center feed
+        css += `
+            html.pf-dfm-active [data-pagelet="LeftRail"],
+            html.pf-dfm-active [data-pagelet="RightRail"],
+            html.pf-dfm-active [role="complementary"],
+            html.pf-dfm-active [role="navigation"]:not([aria-label="Facebook"]) {
+                display: none !important;
+            }
+            html.pf-dfm-active [role="main"] {
+                max-width: 680px !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+            }
+        \n`;
+
         this.styleTag.textContent = css;
 
         if (this.settings?.uiMode?.fixTimestamps) {
@@ -248,6 +270,33 @@ class PF_UiTweaks {
             link.removeAttribute('data-pf-original-href');
             link.removeAttribute('data-pf-revealed');
         });
+    }
+
+    // ── Distraction-Free Mode ─────────────────────────────────────────────────
+
+    _setupDistractionFreeMode() {
+        // Apply the persisted setting on load
+        this._dfmActive = !!(this.settings?.uiMode?.distractionFreeMode);
+        this._applyDfmClass();
+
+        // Register Alt+Shift+F keyboard shortcut (one handler, stored for cleanup)
+        this._dfmKeyHandler = (e) => {
+            if (e.altKey && e.shiftKey && (e.key === 'F' || e.key === 'f')) {
+                e.preventDefault();
+                this._dfmActive = !this._dfmActive;
+                this._applyDfmClass();
+                PF_Logger.info(`PF_UiTweaks: Distraction-Free Mode ${this._dfmActive ? 'ON' : 'OFF'}`);
+            }
+        };
+        document.addEventListener('keydown', this._dfmKeyHandler, true);
+    }
+
+    _applyDfmClass() {
+        if (this._dfmActive) {
+            document.documentElement.classList.add('pf-dfm-active');
+        } else {
+            document.documentElement.classList.remove('pf-dfm-active');
+        }
     }
 
     // ── Comment Sort Enforcement ───────────────────────────────────────────────

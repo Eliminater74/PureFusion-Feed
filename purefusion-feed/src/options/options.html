@@ -683,6 +683,13 @@
                     <input type="checkbox" id="opt_pred_showTrending" class="pf-toggle">
                 </div>
                 <div class="pf-setting-row auto-height">
+                    <div>
+                        <label data-i18n="options_ai_true_affinity_sort">True-Affinity Sort</label>
+                        <p class="pf-desc" data-i18n="options_ai_true_affinity_sort_desc">Reorder the feed by your local engagement score in real time — highest-scored posts float to the top using CSS flexbox order, without breaking React's virtual DOM.</p>
+                    </div>
+                    <input type="checkbox" id="opt_pred_trueAffinitySort" class="pf-toggle">
+                </div>
+                <div class="pf-setting-row auto-height">
                     <label data-i18n="options_ai_low_threshold">Low score threshold</label>
                     <input type="number" id="opt_pred_lowThreshold" min="0" max="95" class="pf-input-number">
                 </div>
@@ -819,6 +826,14 @@
                         <option value="Newest" data-i18n="options_ui_comment_sort_newest">Newest First</option>
                         <option value="Top Comments" data-i18n="options_ui_comment_sort_top">Most Relevant</option>
                     </select>
+                </div>
+
+                <div class="pf-setting-row auto-height">
+                    <div>
+                        <label data-i18n="options_ui_distraction_free_label">Distraction-Free Reading Mode (Alt+Shift+F)</label>
+                        <p class="pf-desc" data-i18n="options_ui_distraction_free_desc">Hides left/right sidebars and centers the feed for a clean reading experience. Toggle with Alt+Shift+F at any time.</p>
+                    </div>
+                    <input type="checkbox" id="opt_uiMode_distractionFreeMode" class="pf-toggle">
                 </div>
 
                 <hr class="pf-hr">
