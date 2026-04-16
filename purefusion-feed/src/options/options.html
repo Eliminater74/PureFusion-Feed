@@ -809,9 +809,20 @@
                     <label data-i18n="options_ui_hide_composer">Hide "What's on your mind?" box</label>
                     <input type="checkbox" id="opt_uiMode_hidePostComposer" class="pf-toggle">
                 </div>
+                <div class="pf-setting-row auto-height">
+                    <div>
+                        <label data-i18n="options_ui_comment_sort_label">Default Comment Sort</label>
+                        <p class="pf-desc" data-i18n="options_ui_comment_sort_desc">Auto-apply a sort preference when comments expand on a post. Only fires when comments are already loaded — does not force-expand collapsed comment sections.</p>
+                    </div>
+                    <select id="opt_uiMode_commentSortDefault" class="pf-select">
+                        <option value="All Comments" data-i18n="options_ui_comment_sort_all">All Comments (FB default)</option>
+                        <option value="Newest" data-i18n="options_ui_comment_sort_newest">Newest First</option>
+                        <option value="Top Comments" data-i18n="options_ui_comment_sort_top">Most Relevant</option>
+                    </select>
+                </div>
 
                 <hr class="pf-hr">
-                
+
                 <div class="pf-setting-row auto-height">
                     <div>
                         <label data-i18n="options_ui_theme_label">Application Theme</label>

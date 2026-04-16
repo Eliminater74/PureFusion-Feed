@@ -31,12 +31,22 @@ class PF_UiTweaks {
 
     applyDocumentLevelTweaks() {
         this.update();
+        if (this.settings?.uiMode?.showLinkPreviews) {
+            this._revealLinkDestinations(null);
+        }
     }
 
     applyToNodes(nodes) {
         // Most UI tweaks are global CSS based — update() keeps the stylesheet current.
         if (this.settings?.uiMode?.fixTimestamps && Array.isArray(nodes) && nodes.length) {
             this._syncAbsoluteTimestamps(nodes);
+        }
+        if (this.settings?.uiMode?.showLinkPreviews && Array.isArray(nodes) && nodes.length) {
+            this._revealLinkDestinations(nodes);
+        }
+        const sortPref = this.settings?.uiMode?.commentSortDefault;
+        if (sortPref && sortPref !== 'All Comments' && Array.isArray(nodes) && nodes.length) {
+            this._enforceCommentSort(nodes);
         }
     }
 
@@ -198,6 +208,117 @@ class PF_UiTweaks {
         } else {
             this._clearAbsoluteTimestampLabels();
         }
+
+        if (!this.settings?.uiMode?.showLinkPreviews) {
+            this._restoreWrappedLinks();
+        }
+    }
+
+    // ── Link Destination Reveal ────────────────────────────────────────────────
+
+    _revealLinkDestinations(nodes) {
+        const roots = this._resolveTimestampRoots(nodes);
+        roots.forEach((root) => {
+            if (!root || !root.querySelectorAll) return;
+            const links = root.querySelectorAll(
+                'a[href*="l.facebook.com/l.php"]:not([data-pf-revealed]),' +
+                'a[href*="lm.facebook.com/l.php"]:not([data-pf-revealed])'
+            );
+            links.forEach((link) => {
+                const href = link.getAttribute('href') || '';
+                let realUrl = '';
+                try {
+                    const parsed = new URL(href);
+                    const u = parsed.searchParams.get('u');
+                    if (u && /^https?:\/\//i.test(u)) realUrl = u;
+                } catch { /* malformed href — skip */ }
+                if (!realUrl) return;
+                link.setAttribute('data-pf-original-href', href);
+                link.setAttribute('href', realUrl);
+                link.setAttribute('data-pf-revealed', '1');
+            });
+        });
+    }
+
+    _restoreWrappedLinks() {
+        document.querySelectorAll('a[data-pf-revealed]').forEach((link) => {
+            const orig = link.getAttribute('data-pf-original-href');
+            if (orig) link.setAttribute('href', orig);
+            link.removeAttribute('data-pf-original-href');
+            link.removeAttribute('data-pf-revealed');
+        });
+    }
+
+    // ── Comment Sort Enforcement ───────────────────────────────────────────────
+
+    _enforceCommentSort(nodes) {
+        const pref = this.settings?.uiMode?.commentSortDefault;
+        if (!pref || pref === 'All Comments') return;
+
+        // Map setting values to FB menu item text patterns (EN)
+        const targetMap = {
+            'Newest':       ['newest', 'most recent'],
+            'Top Comments': ['most relevant', 'top comments']
+        };
+        const targets = targetMap[pref];
+        if (!targets) return;
+
+        // Text content that uniquely identifies the comment sort button
+        const sortLabels = ['most relevant', 'all comments', 'newest', 'top comments', 'most recent'];
+
+        const roots = this._resolveTimestampRoots(nodes);
+        roots.forEach((root) => {
+            if (!root || !root.querySelectorAll) return;
+
+            const articles = (root.matches && root.matches('[role="article"]'))
+                ? [root]
+                : Array.from(root.querySelectorAll('[role="article"]'));
+
+            articles.forEach((article) => {
+                if (article.dataset.pfSortEnforced) return;
+
+                const sortBtn = this._findCommentSortButton(article, sortLabels);
+                if (!sortBtn) return;
+
+                const currentText = sortBtn.textContent.trim().toLowerCase();
+                if (targets.some((t) => currentText === t)) {
+                    article.dataset.pfSortEnforced = '1';
+                    return; // Already showing preferred sort
+                }
+
+                // Mark before the async click to prevent re-entry on observer callbacks
+                article.dataset.pfSortEnforced = '1';
+
+                setTimeout(() => {
+                    if (!sortBtn.isConnected) return;
+                    sortBtn.click();
+                    setTimeout(() => {
+                        const menus = document.querySelectorAll('[role="menu"]:not([data-pf-menu-handled])');
+                        menus.forEach((menu) => {
+                            menu.setAttribute('data-pf-menu-handled', '1');
+                            const items = menu.querySelectorAll('[role="menuitem"]');
+                            for (const item of items) {
+                                if (targets.some((t) => item.textContent.trim().toLowerCase().includes(t))) {
+                                    item.click();
+                                    break;
+                                }
+                            }
+                        });
+                    }, 200);
+                }, 350);
+            });
+        });
+    }
+
+    _findCommentSortButton(article, sortLabels) {
+        // Comment sort buttons are [role="button"] with aria-haspopup whose full
+        // text content matches a known sort label — this distinguishes them from
+        // the broader set of aria-haspopup menus on FB (Like picker, share menus, etc.)
+        const candidates = article.querySelectorAll('[role="button"][aria-haspopup]');
+        for (const btn of candidates) {
+            if (sortLabels.includes(btn.textContent.trim().toLowerCase())) return btn;
+        }
+        return null;
     }
 
     _syncAbsoluteTimestamps(nodes = null) {
