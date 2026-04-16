@@ -37,6 +37,28 @@
             </div>
         </section>
 
+        <!-- FEED INTELLIGENCE — AI scoring toggle + live source counts -->
+        <section class="pf-feed-intel-section" id="pf-feed-intel">
+            <div class="pf-feed-intel-row pf-feed-intel-header-row">
+                <div class="pf-feed-intel-info">
+                    <span class="pf-feed-intel-icon">🧠</span>
+                    <div>
+                        <span class="pf-feed-intel-title">Feed Intelligence</span>
+                        <span class="pf-feed-intel-subtitle" id="pf-intel-scoring-desc">AI post scoring &amp; classification</span>
+                    </div>
+                </div>
+                <label class="pf-switch pf-switch-large">
+                    <input type="checkbox" id="tgl_aiScoring">
+                    <span class="pf-slider round"></span>
+                </label>
+            </div>
+            <div class="pf-feed-intel-row pf-feed-intel-counts-row" id="pf-intel-counts">
+                <span id="pf-intel-blocked" class="pf-intel-pill pf-intel-pill-block">0 blocked</span>
+                <span id="pf-intel-trusted" class="pf-intel-pill pf-intel-pill-trust">0 trusted</span>
+                <button id="pf-intel-manage-btn" class="pf-intel-manage-btn">Manage Sources</button>
+            </div>
+        </section>
+
         <!-- AD BLOCKER CONTROL — prominent, always visible regardless of master toggle -->
         <section class="pf-ad-blocker-section">
             <div class="pf-ad-blocker-row">

@@ -32,12 +32,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         groups: document.getElementById('tgl_removeGroups'),
         ghost: document.getElementById('tgl_ghostMode'),
         metaAI: document.getElementById('tgl_hideMetaAI'),
-        
+
+        // Feed Intelligence
+        aiScoring: document.getElementById('tgl_aiScoring'),
+        intelSection: document.getElementById('pf-feed-intel'),
+        intelScoringDesc: document.getElementById('pf-intel-scoring-desc'),
+        intelCounts: document.getElementById('pf-intel-counts'),
+        intelBlocked: document.getElementById('pf-intel-blocked'),
+        intelTrusted: document.getElementById('pf-intel-trusted'),
+        intelManageBtn: document.getElementById('pf-intel-manage-btn'),
+
         btnOptions: document.getElementById('openOptionsBtn'),
         inputKeyword: document.getElementById('quickKeywordInput'),
         btnAddKeyword: document.getElementById('addKeywordBtn'),
         statusMsg: document.getElementById('keywordStatus'),
-        
+
         // Mock stats for demo purposes until real messaging is implemented
         statAds: document.getElementById('statAds'),
         statSpam: document.getElementById('statSpam')
@@ -51,7 +60,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         elements.chronological,
         elements.groups,
         elements.ghost,
-        elements.metaAI
+        elements.metaAI,
+        elements.aiScoring
     ];
 
     // 3. Initialize UI values from settings
@@ -65,6 +75,58 @@ document.addEventListener('DOMContentLoaded', async () => {
     elements.ghost.checked = (settings.uiMode.hideMessengerSeen && settings.social.hideMessengerTyping);
     elements.metaAI.checked = settings.social.hideMetaAI;
     elements.master.checked = settings.enabled !== false;
+    elements.aiScoring.checked = !!(settings.predictions?.enabled);
+
+    // Feed Intelligence — AI toggle visual state + live source counts
+    const updateFeedIntelUI = () => {
+        const on = elements.aiScoring.checked;
+        if (elements.intelScoringDesc) {
+            elements.intelScoringDesc.textContent = on
+                ? t('popup_ai_scoring_on', 'AI scoring active — classifying posts')
+                : t('popup_ai_scoring_off', 'AI scoring off');
+        }
+        if (elements.intelSection) {
+            elements.intelSection.classList.toggle('intel-active', on);
+        }
+        if (elements.intelCounts) {
+            elements.intelCounts.style.opacity = on ? '1' : '0.45';
+        }
+    };
+
+    const loadIntelCounts = async () => {
+        const blocklist = await PF_Storage.getLocalData('pf_blocklist');
+        const allowlist = await PF_Storage.getLocalData('pf_allowlist');
+        const blockedCount  = Array.isArray(blocklist) ? blocklist.length : 0;
+        const trustedCount  = Array.isArray(allowlist) ? allowlist.length : 0;
+
+        if (elements.intelBlocked) {
+            elements.intelBlocked.textContent = `${blockedCount} blocked`;
+        }
+        if (elements.intelTrusted) {
+            elements.intelTrusted.textContent = `${trustedCount} trusted`;
+        }
+    };
+
+    updateFeedIntelUI();
+    loadIntelCounts();
+
+    elements.aiScoring.addEventListener('change', async () => {
+        if (!settings.predictions) settings.predictions = {};
+        settings.predictions.enabled = elements.aiScoring.checked;
+        updateFeedIntelUI();
+        await PF_Storage.updateSettings(settings);
+        broadcastUpdate();
+    });
+
+    if (elements.intelManageBtn) {
+        elements.intelManageBtn.addEventListener('click', () => {
+            if (chrome.runtime.openOptionsPage) {
+                chrome.runtime.openOptionsPage();
+            } else {
+                window.open(chrome.runtime.getURL('src/options/options.html'));
+            }
+        });
+    }
 
     // Ad blocker section visual state — active/inactive banner color + status text
     const updateAdBlockerUI = () => {
