@@ -1303,11 +1303,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Import / Export
     // =========================================================================
 
-    document.getElementById('btnExport').addEventListener('click', () => {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(currentSettings, null, 2));
+    document.getElementById('btnExport').addEventListener('click', async () => {
+        const blocklist = await PF_Storage.getLocalData('pf_blocklist') || [];
+        const allowlist = await PF_Storage.getLocalData('pf_allowlist') || [];
+        const dateStr = new Date().toISOString().slice(0, 10);
+        const backup = {
+            version: '2.0.0',
+            exportedAt: new Date().toISOString(),
+            settings: currentSettings,
+            blocklist: Array.isArray(blocklist) ? blocklist : [],
+            allowlist: Array.isArray(allowlist) ? allowlist : []
+        };
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backup, null, 2));
         const anchor = document.createElement('a');
         anchor.href = dataStr;
-        anchor.download = "purefusion_backup.json";
+        anchor.download = `purefusion_backup_${dateStr}.json`;
         anchor.click();
     });
 
@@ -1321,14 +1331,30 @@ document.addEventListener('DOMContentLoaded', async () => {
         const reader = new FileReader();
         reader.onload = async (event) => {
             try {
-                const imported = JSON.parse(event.target.result);
-                if (imported.filters && imported.uiMode) {
-                    currentSettings = mergeDeep(JSON.parse(JSON.stringify(PF_DEFAULT_SETTINGS)), imported);
-                    loadUIFromSettings();
-                    await saveSettingsFromUI();
-                    showSaveToast(t('options_toast_imported', 'Settings imported successfully.'));
-                } else {
+                const raw = JSON.parse(event.target.result);
+                // Enhanced format: { version, exportedAt, settings, blocklist, allowlist }
+                // Legacy format:   { filters, uiMode, ... } (flat settings object)
+                const isEnhanced = raw.settings && raw.settings.filters && raw.settings.uiMode;
+                const isLegacy   = !raw.settings && raw.filters && raw.uiMode;
+                if (!isEnhanced && !isLegacy) {
                     showSaveToast(t('options_toast_invalid_backup', 'Invalid PureFusion backup file.'), true);
+                    return;
+                }
+                const importedSettings = isEnhanced ? raw.settings : raw;
+                currentSettings = mergeDeep(JSON.parse(JSON.stringify(PF_DEFAULT_SETTINGS)), importedSettings);
+                loadUIFromSettings();
+                await saveSettingsFromUI();
+                if (isEnhanced) {
+                    const bl = Array.isArray(raw.blocklist) ? raw.blocklist : [];
+                    const al = Array.isArray(raw.allowlist) ? raw.allowlist : [];
+                    if (bl.length) await PF_Storage.setLocalData('pf_blocklist', bl);
+                    if (al.length) await PF_Storage.setLocalData('pf_allowlist', al);
+                    const extra = (bl.length || al.length)
+                        ? ` (${bl.length} blocked, ${al.length} trusted sources restored)`
+                        : '';
+                    showSaveToast(t('options_toast_imported', 'Settings imported successfully.') + extra);
+                } else {
+                    showSaveToast(t('options_toast_imported', 'Settings imported successfully.'));
                 }
             } catch (err) {
                 showSaveToast(t('options_toast_import_error', 'Error importing file. It might be corrupted.'), true);
