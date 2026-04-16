@@ -27,14 +27,19 @@ const SELECTOR_MAP = {
     // WITHIN A POST
     // ------------------------------------------------------------------------
     
-    // The text block of a status message
-    postTextBody: '[data-ad-preview="message"]',
-    
+    // The text block of a status message (FB uses both attributes across post variants)
+    postTextBody: '[data-ad-preview="message"], [data-ad-comet-preview="message"]',
+
     // Standard timestamp link which can be modified for absolute dates
     postTimestamp: 'a[role="link"] span[id] > span, a[role="link"] span[dir="auto"]',
-    
+
     // Colored background large font wrapper within a post
-    postColoredBackground: 'div[data-ad-preview="message"][style*="background"], div[data-ad-preview="message"] [style*="background"]',
+    postColoredBackground: [
+        'div[data-ad-preview="message"][style*="background"]',
+        'div[data-ad-preview="message"] [style*="background"]',
+        'div[data-ad-comet-preview="message"][style*="background"]',
+        'div[data-ad-comet-preview="message"] [style*="background"]'
+    ].join(', '),
 
     // ------------------------------------------------------------------------
     // SPAM / ADS / SPONSORED IDENTIFIERS

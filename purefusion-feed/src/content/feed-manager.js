@@ -97,7 +97,8 @@ class PF_FeedManager {
                     }
                     /* Reaction bar and comment input wells */
                     [role="article"] [role="toolbar"],
-                    [role="article"] [data-ad-preview="message"] {
+                    [role="article"] [data-ad-preview="message"],
+                    [role="article"] [data-ad-comet-preview="message"] {
                         background-color: #000000 !important;
                     }
                     /* Dividers between sections */

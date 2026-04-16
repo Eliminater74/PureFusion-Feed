@@ -195,6 +195,7 @@ class PF_UiTweaks {
         if (this.settings?.filters?.removeLargeReactions) {
             css += `
                 [data-pagelet^="FeedUnit_"] div[dir="auto"] > span[style*="font-size"],
+                [data-pagelet^="FeedUnit_"] [data-ad-preview="message"] > div > span[style*="font-size"],
                 [data-pagelet^="FeedUnit_"] [data-ad-comet-preview="message"] > div > span[style*="font-size"] {
                     font-size: 1rem !important;
                 }
