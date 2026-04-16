@@ -649,7 +649,8 @@ class PureFusionApp {
             customTextColor: '',
             customCardBackground: '',
             customBackground: '',
-            customCss: ''
+            customCss: '',
+            imageHoverExpand: false
         };
 
         effective.social = {

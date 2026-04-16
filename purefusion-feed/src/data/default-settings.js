@@ -115,6 +115,7 @@ const DEFAULT_SETTINGS = {
         friendsOnlyMode: false,         // Hide Groups and Pages
         anonymizerMode: false,          // Blur names and profile pictures
         hidePostComposer: false,        // Hide 'What's on your mind?' box
+        imageHoverExpand: false,        // Hover over feed images to preview full-size with save option
     },
 
     // ------------------------------------------------------------------------

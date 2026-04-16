@@ -15,15 +15,28 @@ class PF_UiTweaks {
         this._lastUserClickTarget = null;
         this._dfmActive = false;
         this._dfmKeyHandler = null;
+        // Image Hover Expand state
+        this._imgHoverPanel = null;
+        this._imgHoverTimer = null;
+        this._imgLeaveTimer = null;
+        this._imgHoverBound = null;
+        this._imgHoverOutBound = null;
+        this._panelEnterBound = null;
+        this._panelLeaveBound = null;
+        this._currentHoveredImg = null;
         this.init();
     }
 
     updateSettings(settings) {
+        const prevHoverExpand = !!(this.settings?.uiMode?.imageHoverExpand);
         this.settings = settings;
         // Sync DFM toggle from options page; keyboard-toggled runtime state takes
         // precedence only until the next settings push (by design — options is authoritative).
         this._dfmActive = !!(settings?.uiMode?.distractionFreeMode);
         this._applyDfmClass();
+        const nextHoverExpand = !!(settings?.uiMode?.imageHoverExpand);
+        if (nextHoverExpand && !prevHoverExpand) this._setupImageHover();
+        else if (!nextHoverExpand && prevHoverExpand) this._teardownImageHover();
         this.update();
     }
 
@@ -40,6 +53,8 @@ class PF_UiTweaks {
         this._restoreWrappedLinks();
         // Clear timestamp chips
         this._clearAbsoluteTimestampLabels();
+        // Tear down image hover expand
+        this._teardownImageHover();
         // Remove injected styles
         if (this.styleTag && this.styleTag.parentElement) {
             this.styleTag.parentElement.removeChild(this.styleTag);
@@ -53,6 +68,7 @@ class PF_UiTweaks {
         document.head.appendChild(this.styleTag);
         this._setupAutofocusGuard();
         this._setupDistractionFreeMode();
+        if (this.settings?.uiMode?.imageHoverExpand) this._setupImageHover();
         this.update();
     }
 
@@ -74,6 +90,16 @@ class PF_UiTweaks {
         const sortPref = this.settings?.uiMode?.commentSortDefault;
         if (sortPref && sortPref !== 'All Comments' && Array.isArray(nodes) && nodes.length) {
             this._enforceCommentSort(nodes);
+        }
+        // Image hover expand uses event delegation — no per-node wiring needed.
+        // Clear eligibility cache on new nodes so newly added images are re-evaluated.
+        if (this.settings?.uiMode?.imageHoverExpand && Array.isArray(nodes) && nodes.length) {
+            nodes.forEach((node) => {
+                if (!node || !node.querySelectorAll) return;
+                node.querySelectorAll('img[data-pf-hover-eligible]').forEach((img) => {
+                    img.removeAttribute('data-pf-hover-eligible');
+                });
+            });
         }
     }
 
@@ -243,6 +269,59 @@ class PF_UiTweaks {
                 margin-right: auto !important;
             }
         \n`;
+
+        // 9. Image Hover Expand panel styles (always injected when feature is on)
+        if (this.settings?.uiMode?.imageHoverExpand) {
+            css += `
+                #pf-img-hover-panel {
+                    position: fixed;
+                    z-index: 2147483647;
+                    background: #1c1e21;
+                    border: 1px solid #3a3b3c;
+                    border-radius: 12px;
+                    padding: 8px;
+                    box-shadow: 0 8px 32px rgba(0,0,0,0.55);
+                    display: none;
+                    flex-direction: column;
+                    gap: 8px;
+                    width: 320px;
+                    max-width: calc(100vw - 24px);
+                    max-height: 420px;
+                    pointer-events: auto;
+                    user-select: none;
+                }
+                #pf-img-hover-panel.pf-img-hover-visible {
+                    display: flex;
+                }
+                #pf-img-hover-panel .pf-ihp-img {
+                    width: 100%;
+                    max-height: 340px;
+                    object-fit: contain;
+                    border-radius: 8px;
+                    display: block;
+                }
+                #pf-img-hover-panel .pf-ihp-actions {
+                    display: flex;
+                    gap: 6px;
+                    justify-content: flex-end;
+                    flex-shrink: 0;
+                }
+                #pf-img-hover-panel .pf-ihp-btn {
+                    padding: 5px 12px;
+                    border-radius: 6px;
+                    border: none;
+                    cursor: pointer;
+                    font-size: 12px;
+                    font-weight: 600;
+                    line-height: 1.4;
+                    transition: opacity 0.15s;
+                }
+                #pf-img-hover-panel .pf-ihp-btn:hover { opacity: 0.85; }
+                #pf-img-hover-panel .pf-ihp-save { background: #0866ff; color: #fff; }
+                #pf-img-hover-panel .pf-ihp-open { background: #3a3b3c; color: #e4e6eb; }
+                #pf-img-hover-panel .pf-ihp-close { background: #3a3b3c; color: #e4e6eb; }
+            \n`;
+        }
 
         this.styleTag.textContent = css;
 
@@ -749,6 +828,233 @@ class PF_UiTweaks {
         if (hex.test(color) || rgb.test(color) || hsl.test(color)) return color;
 
         return '';
+    }
+
+    // ── Image Hover Expand ────────────────────────────────────────────────────
+
+    _setupImageHover() {
+        if (this._imgHoverBound) return; // Already wired
+
+        // Build the floating panel
+        const panel = document.createElement('div');
+        panel.id = 'pf-img-hover-panel';
+        panel.innerHTML = `
+            <img class="pf-ihp-img" src="" alt="">
+            <div class="pf-ihp-actions">
+                <button class="pf-ihp-btn pf-ihp-save" title="Save image">⬇ Save</button>
+                <button class="pf-ihp-btn pf-ihp-open" title="Open in new tab">↗ Open</button>
+                <button class="pf-ihp-btn pf-ihp-close" title="Close">× Close</button>
+            </div>
+        `;
+        document.body.appendChild(panel);
+        this._imgHoverPanel = panel;
+
+        // Panel button handlers
+        panel.querySelector('.pf-ihp-save').addEventListener('click', () => {
+            const src = panel.dataset.src;
+            if (src) this._saveImage(src);
+        });
+        panel.querySelector('.pf-ihp-open').addEventListener('click', () => {
+            const src = panel.dataset.src;
+            if (src) window.open(src, '_blank', 'noopener,noreferrer');
+        });
+        panel.querySelector('.pf-ihp-close').addEventListener('click', () => {
+            this._dismissImgPreview();
+        });
+
+        // Event delegation on document for feed images
+        this._imgHoverBound = (e) => this._onImgHoverOver(e);
+        this._imgHoverOutBound = (e) => this._onImgHoverOut(e);
+        document.addEventListener('mouseover', this._imgHoverBound);
+        document.addEventListener('mouseout', this._imgHoverOutBound);
+
+        // Keep panel alive while mouse is inside it
+        this._panelEnterBound = () => {
+            clearTimeout(this._imgLeaveTimer);
+            this._imgLeaveTimer = null;
+        };
+        this._panelLeaveBound = () => {
+            clearTimeout(this._imgLeaveTimer);
+            this._imgLeaveTimer = setTimeout(() => this._dismissImgPreview(), 250);
+        };
+        panel.addEventListener('mouseenter', this._panelEnterBound);
+        panel.addEventListener('mouseleave', this._panelLeaveBound);
+    }
+
+    _teardownImageHover() {
+        clearTimeout(this._imgHoverTimer);
+        clearTimeout(this._imgLeaveTimer);
+        this._imgHoverTimer = null;
+        this._imgLeaveTimer = null;
+        this._currentHoveredImg = null;
+
+        if (this._imgHoverBound) {
+            document.removeEventListener('mouseover', this._imgHoverBound);
+            this._imgHoverBound = null;
+        }
+        if (this._imgHoverOutBound) {
+            document.removeEventListener('mouseout', this._imgHoverOutBound);
+            this._imgHoverOutBound = null;
+        }
+
+        if (this._imgHoverPanel) {
+            if (this._panelEnterBound) this._imgHoverPanel.removeEventListener('mouseenter', this._panelEnterBound);
+            if (this._panelLeaveBound) this._imgHoverPanel.removeEventListener('mouseleave', this._panelLeaveBound);
+            if (this._imgHoverPanel.parentElement) this._imgHoverPanel.parentElement.removeChild(this._imgHoverPanel);
+            this._imgHoverPanel = null;
+        }
+        this._panelEnterBound = null;
+        this._panelLeaveBound = null;
+
+        // Remove eligibility cache markers
+        document.querySelectorAll('img[data-pf-hover-eligible]').forEach((img) => {
+            img.removeAttribute('data-pf-hover-eligible');
+        });
+    }
+
+    _onImgHoverOver(e) {
+        const img = e.target;
+        if (!img || img.tagName !== 'IMG') return;
+        if (!this._isEligibleFeedImage(img)) return;
+
+        clearTimeout(this._imgLeaveTimer);
+        this._imgLeaveTimer = null;
+        this._currentHoveredImg = img;
+
+        // If already showing this image, cancel any leave timer and stay
+        const hiRes = this._getHighResFbUrl(img.src || img.currentSrc || '');
+        if (this._imgHoverPanel && this._imgHoverPanel.dataset.src === hiRes &&
+            this._imgHoverPanel.classList.contains('pf-img-hover-visible')) return;
+
+        clearTimeout(this._imgHoverTimer);
+        this._imgHoverTimer = setTimeout(() => {
+            this._showImgPreview(img);
+        }, 350);
+    }
+
+    _onImgHoverOut(e) {
+        if (e.target !== this._currentHoveredImg) return;
+
+        // If the mouse is moving into the panel, keep the preview alive
+        if (e.relatedTarget && this._imgHoverPanel && this._imgHoverPanel.contains(e.relatedTarget)) return;
+
+        clearTimeout(this._imgHoverTimer);
+        this._imgHoverTimer = null;
+        this._currentHoveredImg = null;
+
+        clearTimeout(this._imgLeaveTimer);
+        this._imgLeaveTimer = setTimeout(() => this._dismissImgPreview(), 250);
+    }
+
+    _showImgPreview(img) {
+        if (!this._imgHoverPanel) return;
+        const src = img.src || img.currentSrc || '';
+        const hiRes = this._getHighResFbUrl(src);
+        if (!hiRes) return;
+
+        const panel = this._imgHoverPanel;
+        const previewImg = panel.querySelector('.pf-ihp-img');
+        panel.dataset.src = hiRes;
+        previewImg.src = hiRes;
+        panel.classList.add('pf-img-hover-visible');
+
+        // Position panel: prefer right of image, fall back to left
+        const rect = img.getBoundingClientRect();
+        const PANEL_W = 336; // 320 content + 16 padding
+        const PANEL_H = 420;
+        const vpW = window.innerWidth;
+        const vpH = window.innerHeight;
+        const GAP = 12;
+
+        let left = rect.right + GAP;
+        if (left + PANEL_W > vpW - 8) {
+            left = rect.left - PANEL_W - GAP;
+        }
+        left = Math.max(8, Math.min(left, vpW - PANEL_W - 8));
+
+        let top = rect.top + (rect.height / 2) - (PANEL_H / 2);
+        top = Math.max(8, Math.min(top, vpH - PANEL_H - 8));
+
+        panel.style.left = `${left}px`;
+        panel.style.top = `${top}px`;
+    }
+
+    _dismissImgPreview() {
+        if (!this._imgHoverPanel) return;
+        this._imgHoverPanel.classList.remove('pf-img-hover-visible');
+        this._imgHoverPanel.dataset.src = '';
+        const previewImg = this._imgHoverPanel.querySelector('.pf-ihp-img');
+        if (previewImg) previewImg.src = '';
+        clearTimeout(this._imgLeaveTimer);
+        this._imgLeaveTimer = null;
+    }
+
+    _isEligibleFeedImage(img) {
+        // Use cached result to avoid repeated DOM traversal on every mouseover
+        const cached = img.getAttribute('data-pf-hover-eligible');
+        if (cached !== null) return cached === '1';
+
+        const src = img.src || img.currentSrc || '';
+        if (!src || src.startsWith('data:') || img.getAttribute('aria-hidden') === 'true') {
+            img.setAttribute('data-pf-hover-eligible', '0');
+            return false;
+        }
+
+        // Must be inside a feed article or feed container — not a nav/sidebar icon
+        if (!img.closest('[role="article"], [role="feed"], [data-pagelet^="FeedUnit_"]')) {
+            img.setAttribute('data-pf-hover-eligible', '0');
+            return false;
+        }
+
+        // Skip tiny icons and avatars (avatars are typically ≤40px)
+        const w = img.offsetWidth || img.naturalWidth || 0;
+        const h = img.offsetHeight || img.naturalHeight || 0;
+        if (w < 80 || h < 60) {
+            img.setAttribute('data-pf-hover-eligible', '0');
+            return false;
+        }
+
+        // Skip the panel's own preview image
+        if (this._imgHoverPanel && this._imgHoverPanel.contains(img)) {
+            img.setAttribute('data-pf-hover-eligible', '0');
+            return false;
+        }
+
+        img.setAttribute('data-pf-hover-eligible', '1');
+        return true;
+    }
+
+    _getHighResFbUrl(src) {
+        if (!src || src.startsWith('data:')) return src;
+        try {
+            // Remove dimension path segments: /s320x320/, /p320x320/, /c0.0.320.320a.320/
+            let url = src.replace(/\/[spc]\d+x\d+(?:\.\d+\.\d+\.\d+(?:\.\d+)?)?(?=\/)/, '');
+            // Upgrade low-quality suffixes _s, _t, _q → _n (high resolution)
+            url = url.replace(/_(s|t|q)(\.(jpg|jpeg|png|webp))(\?|$)/i, '_n$2$4');
+            return url;
+        } catch {
+            return src;
+        }
+    }
+
+    async _saveImage(src) {
+        try {
+            const response = await fetch(src, { mode: 'cors' });
+            const blob = await response.blob();
+            const blobUrl = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            // Derive filename from URL path, stripping query strings
+            const namePart = src.split('/').pop().split('?')[0] || 'purefusion_image';
+            a.download = namePart;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 15000);
+        } catch {
+            // CORS or network failure — open in new tab as fallback
+            window.open(src, '_blank', 'noopener,noreferrer');
+        }
     }
 }
 

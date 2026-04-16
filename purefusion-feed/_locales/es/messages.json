@@ -239,6 +239,8 @@
   "options_ui_comment_sort_top": { "message": "Más relevantes" },
   "options_ui_distraction_free_label": { "message": "Modo de Lectura Sin Distracciones (Alt+Shift+F)" },
   "options_ui_distraction_free_desc": { "message": "Oculta las barras laterales izquierda y derecha y centra el feed para una lectura limpia. Actívalo con Alt+Shift+F en cualquier momento." },
+  "options_ui_image_hover_label": { "message": "Expandir imagen al pasar el cursor" },
+  "options_ui_image_hover_desc": { "message": "Pasa el cursor sobre imágenes del feed para verlas en tamaño completo. Guárdalas o ábrelas en una nueva pestaña desde el panel. Desactivado por defecto." },
   "options_nav_filters_title": { "message": "Modulos de navegacion y barra lateral" },
   "options_nav_filters_desc": { "message": "Oculta modulos especificos de la navegacion izquierda y la barra lateral derecha." },
   "options_nav_master_enable": { "message": "Activar filtrado modular de navegacion (Modo seguro)" },
