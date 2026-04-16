@@ -651,7 +651,8 @@ class PureFusionApp {
             customBackground: '',
             customCss: '',
             imageHoverExpand: false,
-            autoplayVideoAction: 'off'
+            autoplayVideoAction: 'off',
+            autoExpandSeeMore: false
         };
 
         effective.social = {

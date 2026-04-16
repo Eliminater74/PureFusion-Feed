@@ -117,6 +117,7 @@ const DEFAULT_SETTINGS = {
         hidePostComposer: false,        // Hide 'What's on your mind?' box
         imageHoverExpand: false,        // Hover over feed images to preview full-size with save option
         autoplayVideoAction: 'mute',    // 'off' | 'mute' (silence autoplay) | 'pause' (stop until clicked)
+        autoExpandSeeMore: false,       // Auto-click "See more" on truncated posts so full text is always visible
     },
 
     // ------------------------------------------------------------------------

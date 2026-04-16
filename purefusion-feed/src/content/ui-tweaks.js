@@ -90,6 +90,9 @@ class PF_UiTweaks {
         if (this.settings?.uiMode?.showLinkPreviews) {
             this._revealLinkDestinations(null);
         }
+        if (this.settings?.uiMode?.autoExpandSeeMore) {
+            this._autoExpandSeeMore(null);
+        }
     }
 
     applyToNodes(nodes) {
@@ -118,6 +121,10 @@ class PF_UiTweaks {
         const videoAction = this.settings?.uiMode?.autoplayVideoAction || 'off';
         if (videoAction !== 'off' && Array.isArray(nodes) && nodes.length) {
             this._sweepFeedVideos(nodes);
+        }
+        // Auto-expand "See more" on newly injected post nodes.
+        if (this.settings?.uiMode?.autoExpandSeeMore && Array.isArray(nodes) && nodes.length) {
+            this._autoExpandSeeMore(nodes);
         }
     }
 
@@ -846,6 +853,32 @@ class PF_UiTweaks {
         if (hex.test(color) || rgb.test(color) || hsl.test(color)) return color;
 
         return '';
+    }
+
+    // ── Auto-Expand "See More" ────────────────────────────────────────────────
+
+    _autoExpandSeeMore(nodes) {
+        // Multi-locale "See more" button text — exact match prevents accidental expansion
+        // of "See more comments", "See more reactions", or other multi-word variants.
+        const SEE_MORE_RE = /^(see more|ver m[aá]s|voir plus|voir la suite|mehr anzeigen|meer weergeven|se mer|vis mere|vedi altro|mostra di pi[uù]|ver mais|xem th[eê]m)$/i;
+
+        const roots = (Array.isArray(nodes) && nodes.length) ? nodes : [document];
+        roots.forEach((root) => {
+            if (!root || !root.querySelectorAll) return;
+            // Scope strictly to feed articles. Excludes dialogs, header, sidebar.
+            root.querySelectorAll(
+                '[role="article"] [role="button"]:not([data-pf-see-more-done])'
+            ).forEach((btn) => {
+                const text = (btn.textContent || '').trim();
+                if (!SEE_MORE_RE.test(text)) return;
+                // Mark immediately to prevent duplicate processing on rapid MutationObserver calls
+                btn.setAttribute('data-pf-see-more-done', '1');
+                // Small delay lets FB finish rendering the article before we click
+                setTimeout(() => {
+                    if (btn.isConnected) btn.click();
+                }, 180);
+            });
+        });
     }
 
     // ── Video Autoplay Control ────────────────────────────────────────────────

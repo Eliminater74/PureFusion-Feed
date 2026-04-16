@@ -390,6 +390,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_uiMode_commentSortDefault':   { obj: 'uiMode', prop: 'commentSortDefault', type: 'select' },
         'opt_uiMode_distractionFreeMode':  { obj: 'uiMode', prop: 'distractionFreeMode', type: 'checkbox' },
         'opt_uiMode_imageHoverExpand':     { obj: 'uiMode', prop: 'imageHoverExpand', type: 'checkbox' },
+        'opt_uiMode_autoExpandSeeMore':    { obj: 'uiMode', prop: 'autoExpandSeeMore', type: 'checkbox' },
         'opt_uiMode_autoplayVideoAction':  { obj: 'uiMode', prop: 'autoplayVideoAction', type: 'select' },
         'opt_uiMode_hideMessengerSeen': { obj: 'uiMode', prop: 'hideMessengerSeen', type: 'checkbox' },
         'opt_uiMode_notificationJewelStyle': { obj: 'uiMode', prop: 'notificationJewelStyle', type: 'select' },
