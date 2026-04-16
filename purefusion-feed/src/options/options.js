@@ -1322,4 +1322,140 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
+    // =========================================================================
+    // AI Source Manager — pf_blocklist / pf_allowlist
+    // These are stored directly in local storage (not in the main settings
+    // object) by the Insight Chip predictor. This UI provides centralized
+    // management so users don't need to find individual posts to unblock/untrust.
+    // =========================================================================
+
+    async function loadSourceManager() {
+        const blocklist = await PF_Storage.getLocalData('pf_blocklist');
+        const allowlist = await PF_Storage.getLocalData('pf_allowlist');
+
+        const blocklistArr = Array.isArray(blocklist) ? blocklist : [];
+        const allowlistArr = Array.isArray(allowlist) ? allowlist : [];
+
+        renderSourceList(
+            'pf-blocklist-list',
+            'pf-blocklist-count',
+            blocklistArr,
+            'blocked',
+            'No blocked sources yet. Use "Block source" in the Insight Chip on any Facebook post.',
+            async (nameToRemove) => {
+                const updated = blocklistArr.filter((n) => n !== nameToRemove);
+                await PF_Storage.setLocalData('pf_blocklist', updated);
+                showSaveToast(`"${nameToRemove}" removed from blocklist.`);
+                loadSourceManager();
+            }
+        );
+
+        renderSourceList(
+            'pf-allowlist-list',
+            'pf-allowlist-count',
+            allowlistArr,
+            'trusted',
+            'No trusted sources yet. Use "Always show source" in the Insight Chip on any Facebook post.',
+            async (nameToRemove) => {
+                const updated = allowlistArr.filter((n) => n !== nameToRemove);
+                await PF_Storage.setLocalData('pf_allowlist', updated);
+                showSaveToast(`"${nameToRemove}" removed from trusted sources.`);
+                loadSourceManager();
+            }
+        );
+    }
+
+    function renderSourceList(listId, countId, items, countLabel, emptyMsg, onRemove) {
+        const listEl  = document.getElementById(listId);
+        const countEl = document.getElementById(countId);
+        if (!listEl) return;
+
+        if (countEl) countEl.textContent = `${items.length} ${countLabel}`;
+
+        if (!items.length) {
+            listEl.innerHTML = `<p class="pf-source-empty pf-desc">${emptyMsg}</p>`;
+            return;
+        }
+
+        listEl.innerHTML = '';
+        items.forEach((name) => {
+            const row = document.createElement('div');
+            row.className = 'pf-source-row';
+
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'pf-source-name';
+            nameSpan.textContent = name;
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'pf-btn pf-btn-danger pf-btn-xs';
+            removeBtn.textContent = 'Remove';
+            removeBtn.addEventListener('click', () => onRemove(name));
+
+            row.appendChild(nameSpan);
+            row.appendChild(removeBtn);
+            listEl.appendChild(row);
+        });
+    }
+
+    async function addToSourceList(storageKey, inputId, countLabel) {
+        const inputEl = document.getElementById(inputId);
+        const name = String(inputEl?.value || '').trim();
+        if (!name) return;
+
+        const current = await PF_Storage.getLocalData(storageKey);
+        const arr = Array.isArray(current) ? current : [];
+
+        if (arr.includes(name)) {
+            showSaveToast(`"${name}" is already in the ${countLabel} list.`, true);
+            return;
+        }
+
+        arr.push(name);
+        await PF_Storage.setLocalData(storageKey, arr);
+        if (inputEl) inputEl.value = '';
+        showSaveToast(`"${name}" added to ${countLabel} list.`);
+        loadSourceManager();
+    }
+
+    // Clear All
+    document.getElementById('btnClearBlocklist')?.addEventListener('click', async () => {
+        const current = await PF_Storage.getLocalData('pf_blocklist');
+        const count = Array.isArray(current) ? current.length : 0;
+        if (!count) { showSaveToast('Blocklist is already empty.'); return; }
+        if (!confirm(`Clear all ${count} blocked source${count !== 1 ? 's' : ''}? They will reappear on next page load.`)) return;
+        await PF_Storage.setLocalData('pf_blocklist', []);
+        showSaveToast('Blocklist cleared.');
+        loadSourceManager();
+    });
+
+    document.getElementById('btnClearAllowlist')?.addEventListener('click', async () => {
+        const current = await PF_Storage.getLocalData('pf_allowlist');
+        const count = Array.isArray(current) ? current.length : 0;
+        if (!count) { showSaveToast('Trusted sources list is already empty.'); return; }
+        if (!confirm(`Clear all ${count} trusted source${count !== 1 ? 's' : ''}?`)) return;
+        await PF_Storage.setLocalData('pf_allowlist', []);
+        showSaveToast('Trusted sources list cleared.');
+        loadSourceManager();
+    });
+
+    // Add entries
+    document.getElementById('btnAddToBlocklist')?.addEventListener('click', () => {
+        addToSourceList('pf_blocklist', 'pf-blocklist-add-input', 'blocked');
+    });
+    document.getElementById('btnAddToAllowlist')?.addEventListener('click', () => {
+        addToSourceList('pf_allowlist', 'pf-allowlist-add-input', 'trusted');
+    });
+
+    // Enter key support
+    document.getElementById('pf-blocklist-add-input')?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') document.getElementById('btnAddToBlocklist')?.click();
+    });
+    document.getElementById('pf-allowlist-add-input')?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') document.getElementById('btnAddToAllowlist')?.click();
+    });
+
+    // Initial load
+    loadSourceManager();
+
 });

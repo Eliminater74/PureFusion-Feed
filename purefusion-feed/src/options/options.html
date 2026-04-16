@@ -988,6 +988,48 @@
                     <textarea id="opt_keywords_allowlistFriends" class="pf-textarea" rows="3" data-i18n-placeholder="options_keywords_allowlist_friends_placeholder" placeholder="Jane Doe, My Favorite Page..."></textarea>
                 </div>
             </div>
+
+            <!-- AI Source Manager — reads/writes pf_blocklist and pf_allowlist directly -->
+            <div class="pf-card mt-4">
+                <h3>AI Source Manager</h3>
+                <p class="pf-desc">Manage authors blocked or trusted through the Insight Chip on Facebook. Changes apply on the next page load. These lists are separate from the keyword-based source filters above.</p>
+
+                <hr class="pf-hr">
+
+                <!-- Blocked Sources -->
+                <div class="pf-source-manager-section">
+                    <div class="pf-source-manager-header">
+                        <span class="pf-source-manager-title">Blocked Sources</span>
+                        <span id="pf-blocklist-count" class="pf-source-count">0 blocked</span>
+                        <button id="btnClearBlocklist" class="pf-btn pf-btn-danger pf-btn-sm">Clear All</button>
+                    </div>
+                    <div id="pf-blocklist-list" class="pf-source-list">
+                        <p class="pf-source-empty pf-desc">No blocked sources yet. Use "Block source" in the Insight Chip on any Facebook post.</p>
+                    </div>
+                    <div class="pf-source-add-row mt-2">
+                        <input type="text" id="pf-blocklist-add-input" class="pf-input-number pf-source-input" placeholder="Author name to block…">
+                        <button id="btnAddToBlocklist" class="pf-btn pf-btn-danger pf-btn-sm">Block</button>
+                    </div>
+                </div>
+
+                <hr class="pf-hr">
+
+                <!-- Trusted Sources (Allowlist) -->
+                <div class="pf-source-manager-section">
+                    <div class="pf-source-manager-header">
+                        <span class="pf-source-manager-title">Trusted Sources</span>
+                        <span id="pf-allowlist-count" class="pf-source-count">0 trusted</span>
+                        <button id="btnClearAllowlist" class="pf-btn pf-btn-secondary pf-btn-sm">Clear All</button>
+                    </div>
+                    <div id="pf-allowlist-list" class="pf-source-list">
+                        <p class="pf-source-empty pf-desc">No trusted sources yet. Use "Always show source" in the Insight Chip on any Facebook post.</p>
+                    </div>
+                    <div class="pf-source-add-row mt-2">
+                        <input type="text" id="pf-allowlist-add-input" class="pf-input-number pf-source-input" placeholder="Author name to trust…">
+                        <button id="btnAddToAllowlist" class="pf-btn pf-btn-secondary pf-btn-sm">Trust</button>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- TAB: DATA -->
