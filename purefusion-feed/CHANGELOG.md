@@ -2,6 +2,27 @@
 
 All notable changes to PureFusion Feed are documented in this file.
 
+## v2.0.0 - 2026-04-16
+
+### Added
+
+- **Distraction-Free Reading Mode** — `Alt+Shift+F` keyboard shortcut hides both sidebars and centers the feed to 680px for a focused, clutter-free reading experience. Also accessible via a new Quick Toggle in the popup and in Options → UI Tweaks. The setting persists across sessions; the keyboard shortcut overrides until the next settings push.
+- **Game Invite Filter** — New `removeGameInvites` toggle (Core Filters) hides web game notification and invite posts using three-signal detection: pagelet name, link href pattern, and 9-locale text-phrase matching. Toggle-OFF restores hidden posts.
+- **True-Affinity Sort** — New `trueAffinitySort` toggle (AI Predictions) reorders the feed by your local engagement score in real time using CSS `flexbox order`, so your highest-interest posts float to the top without modifying React's virtual DOM.
+- **Link Destination Reveal** — `showLinkPreviews` (on by default) now actively replaces Facebook's `l.facebook.com/l.php` tracking redirect hrefs with the real destination URL, making the browser status bar and copy-link show the true target. Fully reversible on toggle-OFF.
+- **Comment Sort Enforcement** — `commentSortDefault` select (UI Tweaks) auto-clicks the comment sort menu to your preferred sort order (Newest / Most Relevant) when comment sections are expanded.
+- **Absolute Timestamp Chips** — `fixTimestamps` (on by default) injects a compact "Posted: [date]" chip below each post heading, replacing relative timestamps ("3 hours ago") with exact dates.
+- **Friend Activity Feed Insight** — When enabled (`showFriendActivity` in AI Predictions), marks contacts in the right-sidebar Contacts panel whose posts haven't appeared in your feed this session, revealing friends Facebook may be algorithmically suppressing. Requires ≥3 authors seen before badging to avoid false noise.
+- **Large Reaction Normalization** — `removeLargeReactions` (on by default) caps the oversized font-size Facebook applies to emoji-only posts (3× normal) back to standard body text size.
+- **Session Stats Live Counting** — The popup "Ads Blocked / Spam Hidden" counters now reflect real session activity. Main script listens for `pf:element_hidden` events and writes totals to `pf_session_stats` local storage, which the popup reads on open.
+
+### Changed
+
+- Popup Quick Filters section now includes a **Distraction-Free Mode** toggle alongside the existing quick controls.
+- `data-ad-comet-preview="message"` added alongside `data-ad-preview="message"` in all post-body selectors — fixes TL;DR "Summarize with AI" chip disappearing on post variants that use the comet attribute.
+
+---
+
 ## v1.8.1 - 2026-04-15
 
 ### Changed

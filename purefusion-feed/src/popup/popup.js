@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         groups: document.getElementById('tgl_removeGroups'),
         ghost: document.getElementById('tgl_ghostMode'),
         metaAI: document.getElementById('tgl_hideMetaAI'),
+        distractionFree: document.getElementById('tgl_distractionFree'),
 
         // Feed Intelligence
         aiScoring: document.getElementById('tgl_aiScoring'),
@@ -61,6 +62,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         elements.groups,
         elements.ghost,
         elements.metaAI,
+        elements.distractionFree,
         elements.aiScoring
     ];
 
@@ -75,6 +77,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     elements.ghost.checked = (settings.uiMode.hideMessengerSeen && settings.social.hideMessengerTyping);
     elements.metaAI.checked = settings.social.hideMetaAI;
     elements.master.checked = settings.enabled !== false;
+    elements.distractionFree.checked = !!(settings.uiMode?.distractionFreeMode);
     elements.aiScoring.checked = !!(settings.predictions?.enabled);
 
     // Feed Intelligence — AI toggle visual state + live source counts
@@ -179,6 +182,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         settings.social.hideMessengerTyping = elements.ghost.checked;
         
         settings.social.hideMetaAI = elements.metaAI.checked;
+        settings.uiMode.distractionFreeMode = elements.distractionFree.checked;
 
         // Save
         await PF_Storage.updateSettings(settings);
@@ -197,6 +201,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     elements.groups.addEventListener('change', handleToggle);
     elements.ghost.addEventListener('change', handleToggle);
     elements.metaAI.addEventListener('change', handleToggle);
+    elements.distractionFree.addEventListener('change', handleToggle);
 
     // 5. Keyword Quick Add
     elements.btnAddKeyword.addEventListener('click', async () => {
