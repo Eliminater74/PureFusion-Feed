@@ -8,7 +8,9 @@
       "Bash(python bump_version.py --set 1.8.1 --note \"Session content-type filter \\(Hide similar posts\\), Insight Chip classification labels, and ad detection hardening\")",
       "Bash(python -c \"import json; m=json.load\\(open\\('manifest.json'\\)\\); print\\('manifest:', m['version']\\)\")",
       "Bash(python scripts/bump_version.py --dry-run --patch)",
-      "Bash(python bump_version.py --dry-run --patch)"
+      "Bash(python bump_version.py --dry-run --patch)",
+      "Bash(grep -o \"PF_SELECTOR_MAP\\\\.[a-zA-Z_]*\" /i/GITHUB/Projects/Chrome/Extension/purefusion-feed/src/content/*.js)",
+      "Bash(grep -v \"^$\")"
     ]
   }
 }

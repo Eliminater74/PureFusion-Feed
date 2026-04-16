@@ -34,10 +34,10 @@ class PF_UiTweaks {
     }
 
     applyToNodes(nodes) {
-        // Most UI tweaks are global CSS based, so we just ensure update() is current
-        // if settings were to change dynamically.
-        // Timestamp enhancement intentionally disabled in live node path
-        // to avoid mutating Facebook's fragile post-meta row.
+        // Most UI tweaks are global CSS based — update() keeps the stylesheet current.
+        if (this.settings?.uiMode?.fixTimestamps && Array.isArray(nodes) && nodes.length) {
+            this._syncAbsoluteTimestamps(nodes);
+        }
     }
 
     update() {
@@ -181,11 +181,23 @@ class PF_UiTweaks {
             }
         `;
 
+        // Large Emoji/Reaction Normalization — cap oversized inline font-size on feed post text
+        if (this.settings?.filters?.removeLargeReactions) {
+            css += `
+                [data-pagelet^="FeedUnit_"] div[dir="auto"] > span[style*="font-size"],
+                [data-pagelet^="FeedUnit_"] [data-ad-comet-preview="message"] > div > span[style*="font-size"] {
+                    font-size: 1rem !important;
+                }
+            \n`;
+        }
+
         this.styleTag.textContent = css;
 
-        // Safety rollback: do not mutate timestamp anchors until a fully
-        // non-invasive strategy is validated.
-        this._clearAbsoluteTimestampLabels();
+        if (this.settings?.uiMode?.fixTimestamps) {
+            this._syncAbsoluteTimestamps();
+        } else {
+            this._clearAbsoluteTimestampLabels();
+        }
     }
 
     _syncAbsoluteTimestamps(nodes = null) {

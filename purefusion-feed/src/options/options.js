@@ -308,6 +308,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_filters_removePYMK': { obj: 'filters', prop: 'removePYMK', type: 'checkbox' },
         'opt_filters_removeGroupSuggestions': { obj: 'filters', prop: 'removeGroupSuggestions', type: 'checkbox' },
         'opt_filters_removePageSuggestions': { obj: 'filters', prop: 'removePageSuggestions', type: 'checkbox' },
+        'opt_filters_removeGameInvites':     { obj: 'filters', prop: 'removeGameInvites', type: 'checkbox' },
         'opt_filters_hideReels': { obj: 'filters', prop: 'hideReels', type: 'checkbox' },
         'opt_filters_hideStories': { obj: 'filters', prop: 'hideStories', type: 'checkbox' },
         'opt_filters_hideMemories': { obj: 'filters', prop: 'hideMemories', type: 'checkbox' },
@@ -320,6 +321,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_filters_hideShareReposts': { obj: 'filters', prop: 'hideShareReposts', type: 'checkbox' },
         'opt_filters_hidePollPosts': { obj: 'filters', prop: 'hidePollPosts', type: 'checkbox' },
         'opt_filters_removeColoredBackgrounds': { obj: 'filters', prop: 'removeColoredBackgrounds', type: 'checkbox' },
+        'opt_filters_removeLargeReactions':     { obj: 'filters', prop: 'removeLargeReactions', type: 'checkbox' },
 
         // Feed Experience Mode
         'opt_experience_mode': { obj: 'experienceMode', prop: 'active', type: 'select' },

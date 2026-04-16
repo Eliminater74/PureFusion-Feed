@@ -189,6 +189,7 @@ class PF_Cleaner {
         
         if (this.settings.filters.removeSuggested) this.removeSuggestedPosts(rootNode);
         if (this.settings.filters.removePageSuggestions) this.removePageSuggestions(rootNode);
+        if (this.settings.filters.removeGameInvites) this.removeGameInvitePosts(rootNode);
 
         if (this._hasPostTypeFiltersEnabled()) {
             this.removePostTypePosts(rootNode);
@@ -2241,6 +2242,60 @@ class PF_Cleaner {
         });
     }
 
+    removeGameInvitePosts(rootNode) {
+        // Pagelet-level signal — FB injects Gaming units with a recognisable data-pagelet value.
+        const pageletGamingPattern = /\bGaming\b|GameUnit/i;
+        // Href signal — links inside game-app posts point to FB Gaming or external game apps.
+        const gameHrefPattern = /\/gaming\/|\/games\/|apps\.facebook\.com\/|\.fbgamingapp\.com/i;
+        // Text-phrase signal — game invite / request copy in 9 locales.
+        const gameTokens = [
+            // EN
+            'invited you to play', 'sent you a game request',
+            // ES
+            'te invitó a jugar', 'te envió una solicitud de juego',
+            // FR
+            'vous a invité à jouer', 'vous a envoyé une demande de jeu',
+            // DE
+            'hat dich zum spielen eingeladen', 'hat dir eine spielanfrage gesendet',
+            // IT
+            'ti ha invitato a giocare', 'ti ha inviato una richiesta di gioco',
+            // NL
+            'heeft je uitgenodigd om te spelen', 'heeft je een spelverzoek gestuurd',
+            // SV
+            'bjöd in dig att spela', 'skickade en spelförfrågan',
+            // DA
+            'inviterede dig til at spille', 'sendte en spilforespørgsel',
+            // NO
+            'inviterte deg til å spille', 'sendte en spillforespørsel'
+        ];
+
+        this._getPostCandidates(rootNode).forEach((post) => {
+            if (post.dataset.pfHidden) return;
+
+            // 1. Pagelet name check (zero-cost, no querySelectorAll needed)
+            if (pageletGamingPattern.test(post.dataset.pagelet || '')) {
+                this._hidePostNode(post, 'Game Invite/Post');
+                return;
+            }
+
+            // 2. Link href check — game app posts contain gaming-specific URLs
+            const links = post.querySelectorAll('a[href]');
+            for (const link of links) {
+                const href = link.getAttribute('href') || '';
+                if (gameHrefPattern.test(href)) {
+                    this._hidePostNode(post, 'Game Invite/Post');
+                    return;
+                }
+            }
+
+            // 3. Text-phrase check — game invite / request copy (9 locales)
+            const text = this._normalizeComparableText(post.textContent || '');
+            if (gameTokens.some((token) => text.includes(token))) {
+                this._hidePostNode(post, 'Game Invite/Post');
+            }
+        });
+    }
+
     removeClickbait(rootNode) {
         // Regex patterns matching traditional high-volume viral clickbait
         const clickbaitRegex = /(you won.?t believe|this one trick|what happens next|will shock you|leave you speechless|reason why|this is why)/i;
@@ -3100,6 +3155,7 @@ class PF_Cleaner {
                 if (reason === 'Page Suggestion'       && !f?.removePageSuggestions)  { _pfUnhide(); return; }
                 if (reason === 'People You May Know'   && !f?.removePYMK)             { _pfUnhide(); return; }
                 if (reason === 'Suggested Groups'      && !f?.removeGroupSuggestions) { _pfUnhide(); return; }
+                if (reason === 'Game Invite/Post'      && !f?.removeGameInvites)      { _pfUnhide(); return; }
                 if (reason === 'Marketplace Unit'      && !f?.hideMarketplace)        { _pfUnhide(); return; }
                 if (reason === 'Fundraiser Module'     && !f?.hideFundraisers)        { _pfUnhide(); return; }
                 if ((reason === 'Reels Target Array' || reason === 'Reels Tray Heuristic')
