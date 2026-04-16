@@ -1,6 +1,6 @@
 # PureFusion Feed — Parity Roadmap
 
-Last updated: 2026-04-16 (Phase 48)
+Last updated: 2026-04-16 (Phase 49)
 
 ---
 
@@ -20,6 +20,7 @@ Always continue from the highest-priority unfinished item. Do not jump ahead.
 
 **Completed phases (most recent first):**
 
+- ✅ Phase 49: Friend Activity Feed Insight (activate `predictions.showFriendActivity`) — Orphaned default-ON setting fully implemented. `PF_Predictor` gains `_sessionFeedAuthors` (Set) and `_friendBadgeDebounce` in constructor. `_processSingleNode`: when `showFriendActivity` is ON, extracts the post author and adds the normalized (lowercase/trimmed) name to `_sessionFeedAuthors` — building a session-level record of which authors appeared in the feed. `sweepDocument()`: after `applyToNodes`, triggers a debounced (800ms) `_applyFriendActivityBadges()` call. New `_applyFriendActivityBadges()` method: locates the contacts panel via locale-aware `aria-label` selectors (EN/ES/DE/IT/NL/SV/NO/DA), queries all `[role="listitem"]` / `[role="row"]` rows, extracts friend name from `[aria-label]` or `span[dir="auto"]`, normalizes to lowercase, checks against `_sessionFeedAuthors` using exact match + first-name prefix match (handles "John" in feed vs "John Smith" in contacts), injects `.pf-friend-unseen` "not in feed" badge (amber pill, `pointer-events:none`, tooltip explaining suppression) when the contact hasn't appeared; only fires when ≥3 authors have been seen in the feed this session (prevents false noise on initial page load); removes existing badges when contact is later seen. CSS: `.pf-friend-unseen` amber pill added to `_injectPredictorStyles`. Options: new `auto-height` toggle row in AI Predictions card (after `trueAffinitySort`) with description explaining algorithmic suppression detection; `opt_pred_showFriendActivity` uiMap entry in `options.js`.
 - ✅ Phase 48: True-Affinity Sort Options UI + Distraction-Free Reading Mode — Two orphaned settings fully activated. (1) **`predictions.trueAffinitySort: false`**: Feature was already fully implemented in `predictor.js` (`_applyNativeAffinitySort` applies CSS `flexbox order` to reorder posts by local engagement score — highest-scored posts float to the top without touching React's virtual DOM) but had no options UI. Added `auto-height` toggle row to the AI Predictions card in `options.html` (after `opt_pred_showTrending`, with description `<p>` explaining the CSS flexbox strategy). Added `opt_pred_trueAffinitySort` uiMap entry in `options.js` (`obj: 'predictions', prop: 'trueAffinitySort', type: 'checkbox'`). (2) **`uiMode.distractionFreeMode: false`**: No implementation existed anywhere. Full implementation in `ui-tweaks.js`: two new instance fields (`_dfmActive`, `_dfmKeyHandler`); `_setupDistractionFreeMode()` called from `init()` — reads initial state from `settings.uiMode.distractionFreeMode`, calls `_applyDfmClass()`, and registers a capture-phase `keydown` listener for `Alt+Shift+F` that toggles `_dfmActive` and calls `_applyDfmClass()`; `_applyDfmClass()` adds/removes `pf-dfm-active` class on `document.documentElement`; CSS in `update()` — `html.pf-dfm-active` rules hide `[data-pagelet="LeftRail"]`, `[data-pagelet="RightRail"]`, `[role="complementary"]`, and non-primary `[role="navigation"]` with `display:none !important`, and constrain `[role="main"]` to `max-width: 680px` centered with `margin: auto`; `updateSettings()` syncs `_dfmActive` from the settings push (so toggling the options checkbox takes effect immediately) then calls `_applyDfmClass()`. Options: new `auto-height` toggle row in the UI Tweaks section of `options.html` (before the Theme `<hr>`, after `commentSortDefault`), with description `<p>` noting the Alt+Shift+F shortcut; `opt_uiMode_distractionFreeMode` uiMap entry in `options.js`.
 - ✅ Phase 47: Link Destination Reveal + Comment Sort Enforcement — Two orphaned `uiMode` settings activated. (1) **`showLinkPreviews: true`** (default ON, previously did nothing): New `_revealLinkDestinations(nodes)` in `ui-tweaks.js`. Selects all `a[href*="l.facebook.com/l.php"]:not([data-pf-revealed])` and `a[href*="lm.facebook.com/l.php"]:not([data-pf-revealed])` in feed nodes. For each, parses the `u=` query parameter from the tracking URL using `new URL(href).searchParams.get('u')`, validates it starts with `https?://`, stores the original href in `data-pf-original-href`, then replaces `href` with the real destination. This makes the browser status bar and copy-link show the real URL instead of FB's redirect wrapper — direct anti-phishing/tracking-reduction benefit. `data-pf-revealed='1'` marker prevents re-processing. New `_restoreWrappedLinks()` method reverses all replacements on toggle-OFF: restores from `data-pf-original-href`, removes both markers. `update()` calls `_restoreWrappedLinks()` when setting is OFF. `applyDocumentLevelTweaks()` calls `_revealLinkDestinations(null)` for initial page sweep. `applyToNodes(nodes)` processes new batches. (2) **`commentSortDefault: 'All Comments'`** (default = no action; only fires when changed): New `_enforceCommentSort(nodes)` and `_findCommentSortButton(article, sortLabels)` in `ui-tweaks.js`. `_findCommentSortButton` finds `[role="button"][aria-haspopup]` whose full text content matches a known sort label (most relevant / all comments / newest / top comments / most recent) — the exact-text requirement distinguishes the sort button from the Like picker and other aria-haspopup menus. `_enforceCommentSort` maps the setting value to target text patterns (`Newest` → `['newest', 'most recent']`, `Top Comments` → `['most relevant', 'top comments']`), marks the article with `data-pf-sort-enforced` before the async operation to prevent re-entry, then uses a 350ms delay before clicking the sort button + 200ms for the menu to open + click of the first matching `[role="menuitem"]`; newly opened menus are marked `data-pf-menu-handled` to prevent double-click. Only fires for articles without the marker — safe with MutationObserver. Called from `applyToNodes` only when preference ≠ `'All Comments'`. Options: new `commentSortDefault` select control added to the UI Tweaks section in `options.html` (with description `<p>` noting it only fires when comments are already loaded); `options.js` uiMap entry added as `type: 'select'`.
 - ✅ Phase 46: Orphaned Settings Activation — Three settings existed in `default-settings.js` as ON-by-default but had zero content-script implementation. (1) **`filters.removeGameInvites: true`**: New `removeGameInvitePosts(rootNode)` method in `cleaner.js`. Three-signal detection: pagelet name check (`/\bGaming\b|GameUnit/i` on `data-pagelet` — zero-cost, no querySelectorAll), link href check (`/\/gaming\/|\/games\/|apps\.facebook\.com\/|\.fbgamingapp\.com/i` on all `a[href]` in the post), and text-phrase check (game invite copy in 9 locales: EN "invited you to play" / "sent you a game request", + ES/FR/DE/IT/NL/SV/DA/NO equivalents — conservative, no false-positive "is playing" tokens). Reason: `'Game Invite/Post'`. Called from `_applyAllFilters` after `removePageSuggestions`. Toggle-OFF restoration guard added to `_restoreCriticalContainers`. Options: new toggle row in Core Filters card (`opt_filters_removeGameInvites`); `options.js` uiMap entry added. (2) **`filters.removeLargeReactions: true`**: CSS injected in `ui-tweaks.js` `update()` when setting is ON — targets `[data-pagelet^="FeedUnit_"] div[dir="auto"] > span[style*="font-size"]` and `[data-pagelet^="FeedUnit_"] [data-ad-comet-preview="message"] > div > span[style*="font-size"]` with `font-size: 1rem !important` — normalizes FB's oversized emoji rendering (where emoji-only posts get rendered at 3× normal size via inline style injection). Scoped to FeedUnit_ pagelets to avoid touching Messenger or other surfaces. Options: new toggle row in Clutter & Injections card (`opt_filters_removeLargeReactions`); `options.js` uiMap entry added. (3) **`uiMode.fixTimestamps: true`**: The implementation already existed in `ui-tweaks.js` (`_syncAbsoluteTimestamps`, `_upsertPostDateChip`, `_isLikelyTimestampAnchor`, `_extractAbsoluteTimestampText`) but was disabled by a "safety rollback" that called `_clearAbsoluteTimestampLabels()` unconditionally in `update()`. Fix: `update()` now calls `_syncAbsoluteTimestamps()` when `fixTimestamps` is ON (or `_clearAbsoluteTimestampLabels()` when OFF). `applyToNodes(nodes)` now calls `_syncAbsoluteTimestamps(nodes)` for new nodes when ON. The chip strategy: reads `aria-label` or `title` from post timestamp anchors (link validated by `_isLikelyTimestampAnchor` — 6 criteria including link href patterns, relative-time text regex, geometry position within 280px of post top, anchor width ≤ 220px), then injects a `.pf-post-date-chip` div immediately after the post heading container reading "Posted: [absolute date]". Toggle-OFF clears all chips via `_clearAbsoluteTimestampLabels`. Options: toggle was already wired in `options.html` and `options.js` — no changes needed.
@@ -68,6 +69,7 @@ Always continue from the highest-priority unfinished item. Do not jump ahead.
 
 ## Last Action Log
 
+- **Last completed (2026-04-16): Phase 49 — Friend Activity Feed Insight.** Orphaned `predictions.showFriendActivity: true` fully activated. (1) `_sessionFeedAuthors` Set and `_friendBadgeDebounce` timer added to `PF_Predictor` constructor. (2) `_processSingleNode`: when setting is ON, adds the normalized post author name to `_sessionFeedAuthors` as each post is processed. (3) `sweepDocument()`: triggers `_applyFriendActivityBadges()` via 800ms debounce after every sweep. (4) New `_applyFriendActivityBadges()`: locates contacts panel by aria-label across 8 locales; iterates `[role="listitem"]` rows; injects/removes `.pf-friend-unseen` amber pill badge on contacts not seen as post authors; guards against false noise by requiring ≥3 seen authors before badging; uses exact + first-name prefix matching to handle full-name vs display-name discrepancies. (5) `.pf-friend-unseen` CSS added to `_injectPredictorStyles`. (6) Options toggle + uiMap wired.
 - **Last completed (2026-04-16): Phase 48 — True-Affinity Sort Options UI + Distraction-Free Reading Mode.** Two orphaned settings activated. (1) `trueAffinitySort`: Options UI added — `auto-height` toggle row in the AI Predictions card (after `opt_pred_showTrending`) with description explaining the CSS flexbox `order` approach. `opt_pred_trueAffinitySort` uiMap entry added to `options.js`. The predictor.js implementation (`_applyNativeAffinitySort`) was already complete — no content-script changes needed. (2) `distractionFreeMode`: Full implementation in `ui-tweaks.js`. `_dfmActive` (bool) and `_dfmKeyHandler` (function ref) added to constructor. `_setupDistractionFreeMode()` called from `init()` — sets `_dfmActive` from settings, calls `_applyDfmClass()`, registers a capture-phase `keydown` listener for Alt+Shift+F that toggles the mode. `_applyDfmClass()` adds/removes `pf-dfm-active` on `document.documentElement`. CSS in `update()` (before `styleTag.textContent`): hides `[data-pagelet="LeftRail"]`, `[data-pagelet="RightRail"]`, `[role="complementary"]`, non-primary `[role="navigation"]`; constrains `[role="main"]` to `max-width: 680px` centered. `updateSettings()` now syncs `_dfmActive` from settings before calling `update()` so the options checkbox controls the initial state and live pushes work correctly. Options: new `auto-height` toggle row in UI Tweaks section (before Theme `<hr>`, after `commentSortDefault`); `opt_uiMode_distractionFreeMode` uiMap entry in `options.js`.
 - **Last completed (2026-04-16): Phase 47 — Link Destination Reveal + Comment Sort Enforcement.** Two orphaned `uiMode` settings activated. (1) `showLinkPreviews`: `_revealLinkDestinations` rewrites `l.facebook.com/l.php` hrefs to the real `u=` destination, storing originals in `data-pf-original-href`; `_restoreWrappedLinks` reverses on toggle-OFF; wired into `applyDocumentLevelTweaks`, `applyToNodes`, and the `update()` toggle-OFF path. (2) `commentSortDefault`: `_enforceCommentSort` + `_findCommentSortButton` enforce a user-selected sort (Newest / Top Comments) via delayed click simulation (350ms + 200ms) on identified sort buttons; per-article `data-pf-sort-enforced` marker prevents re-entry. `commentSortDefault` select control added to options UI.
 - **Last completed (2026-04-15): Phase 46 — Orphaned Settings Activation.** Three on-by-default settings that existed in `default-settings.js` but did nothing were implemented. (1) `filters.removeGameInvites`: New `removeGameInvitePosts(rootNode)` in `cleaner.js` with 3-signal detection (pagelet name → href scan → 9-locale text-phrase check). Called from `_applyAllFilters` after `removePageSuggestions`. Toggle-OFF guard added to `_restoreCriticalContainers`. Two new options rows wired. (2) `filters.removeLargeReactions`: CSS injected in `ui-tweaks.js` `update()` targeting `[data-pagelet^="FeedUnit_"] div[dir="auto"] > span[style*="font-size"]` with `font-size: 1rem !important` to normalize FB's 3× oversized emoji rendering. New option row wired. (3) `uiMode.fixTimestamps`: Existing implementation in `ui-tweaks.js` (`_syncAbsoluteTimestamps` / `_upsertPostDateChip`) was disabled by a hard-coded safety rollback — replaced with conditional call on `fixTimestamps` flag in both `update()` and `applyToNodes()`. Option was already wired in HTML/JS.
@@ -136,87 +138,13 @@ Status key: **DONE** = complete and stable | **DONE+** = complete but intentiona
 | Marketplace local filter | DONE | Phase 44 — client-side distance parsing, max-distance slider, local-first sort, MutationObserver for scroll |
 | True-affinity feed sort | DONE | Phase 48 — CSS flexbox order by local engagement score; options toggle added |
 | Distraction-free reading mode | DONE | Phase 48 — Alt+Shift+F shortcut + options toggle; hides sidebars, centers feed to 680px |
+| Friend activity feed insight | DONE | Phase 49 — badges unseen contacts in right-rail after ≥3 authors seen in session |
 
 ---
 
 ## Remaining Work (Priority Order)
 
-### Phase 43 — Messenger Enhancements
-
-**Approved 2026-04-15. Start after Phase 42 sign-off.**
-
-Facebook hides most Messenger UI convenience features behind interactions. Four improvements are feasible via CSS injection and DOM mutation:
-
-#### 1. Always-Visible Message Timestamps
-
-Facebook only shows per-message timestamps on hover. Fix: inject a scoped CSS rule into Messenger pages that forces `opacity: 1` and `max-height: unset` on the timestamp elements that are normally hidden with `opacity: 0` or `height: 0`. Target selector research needed at implementation time — FB's class names rotate, so the rule must use a structural approach (e.g. `[data-testid*="message-timestamp"]` or an aria-label/role anchor if stable). Gate behind a new `settings.social.alwaysShowMessageTimestamps` (default: false). Wire in options → Messenger section.
-
-#### 2. Mark All Read Button
-
-Inject a "Mark all read" button into the Messenger conversation list header (the bar above the conversation list on `messenger.com`). On click, select each conversation row that has an unread indicator (bold name text or blue dot) and simulate a mouse event to open + immediately close it — or (if FB fires the read-receipt on DOM selection) simply dispatch a click. This is a best-effort DOM simulation; it will not work without opening each conversation briefly. Alternative: hide the unread badge dots (cosmetic only, doesn't mark server-side). Both approaches should be offered. Gate behind `settings.social.messengerMarkAllRead` (default: false). Add toggle to options → Messenger section.
-
-#### 3. Conversation Sort / Filter
-
-Inject a small filter bar at the top of the Messenger conversation list with three quick-filter buttons:
-
-- **All** — default (show everything)
-- **Unread** — show only conversations where the name element has bold weight or a blue unread dot
-- **Groups** — show only group conversations (detected via multiple-avatar presence or `[aria-label*="group"]`)
-
-Implementation: MutationObserver on the conversation list container; on filter change, iterate visible rows and toggle `display: none` on non-matching rows. Sorting (unread first) is a bonus: collect all rows, split into matched/unmatched, reorder via `appendChild` (DOM order = visual order). Gate behind `settings.social.messengerConversationFilter` (default: false). Wire toggle in options → Messenger section.
-
-#### 4. Unsend Detection
-
-When a message disappears from a conversation view (a `MutationObserver` records a node removal where the removed node contained message text), replace the node with a placeholder: `"[Message removed by sender at HH:MM]"`. Store the message text and timestamp in session memory (not persisted across page reloads — privacy-first). The placeholder is styled subtly (italic, muted color) and can be dismissed. This runs only on `messenger.com` conversation pages. Gate behind `settings.social.detectUnsends` (default: false). Wire toggle in options → Messenger section.
-
-#### Implementation Notes
-
-- All four features live in `messenger-ai.js` (or a new dedicated `messenger-tools.js` if the file grows too large — current size is ~556 lines, adding ~150 lines should be fine in the same file).
-- Existing `PF_MessengerAI` class already has an observer loop and lifecycle guard — extend it rather than creating a new class.
-- Each sub-feature should be independently toggleable so users can use timestamps without enabling unsend detection.
-- No server-side interaction, no API calls — pure DOM manipulation and CSS injection.
-
----
-
-### Phase 44 — Marketplace Local Filter
-
-**Approved 2026-04-15. Start after Phase 43 sign-off.**
-
-Facebook Marketplace shows listings from a wide radius even when the user is searching for local items. The server-side search radius cannot be changed by the extension (it controls what the server returns). However, every listing card in the DOM contains a distance string ("47 miles away", "Local pickup", "12 mi", etc.) — the extension can parse these and hide or sort listings entirely client-side.
-
-#### What IS Feasible (client-side only)
-
-1. **Distance parsing** — Extract the distance number from listing card text nodes. Patterns to match:
-   - `(\d+(?:\.\d+)?)\s*(mi|mile|miles|km|kilometer|kilometers)` — numeric distance
-   - `"Local pickup"` / `"local"` — treat as 0 miles (always show)
-   - No distance text found — treat as unknown (configurable: show or hide)
-
-2. **Max-distance filter** — User configures a maximum distance (slider: 5, 10, 15, 25, 50, 100 miles, or "No limit"). Listing cards beyond the threshold get `display: none`. A small counter overlay shows "X listings hidden (beyond Y mi)". Gate behind `settings.marketplace.enabled` (default: false) and `settings.marketplace.maxDistanceMiles` (default: 25).
-
-3. **Local-first sorting** — After parsing distances, reorder the listing grid by distance ascending using `flexbox order` property (`el.style.order = distanceBucketIndex`). This does not move DOM nodes — it only changes visual order. Works as long as the listing container uses flexbox or CSS grid (it does on current FB Marketplace). Falls back gracefully if the container layout cannot be detected.
-
-4. **"Local Only" quick-toggle overlay** — Inject a small floating filter bar at the top of the Marketplace listing grid (`/marketplace/` URL detection) with:
-   - "Local Only" toggle button (hides everything beyond the configured max distance)
-   - Distance slider with live label (updates hiding in real-time without page reload)
-   - Count pill: "Showing X / Y listings"
-
-5. **MutationObserver for infinite scroll** — Marketplace uses infinite scroll / pagination injection. Wrap the filter pass in a `MutationObserver` on the listing grid container so new cards loaded by scrolling are immediately filtered/sorted without requiring a re-trigger.
-
-#### What Is NOT Feasible
-
-- **Changing the server-side search radius** — The extension cannot modify the FB Marketplace search query. It can only filter the listings the server already returned. If FB returns 200 listings within 50 miles, the extension can hide/sort those 200; it cannot force the server to return only 10-mile listings.
-- **Adding a "search local only" button** that changes FB's internal search — FB's search bar is server-controlled; injecting radius parameters into the URL/query is not reliably possible without reverse-engineering internal GraphQL variables that change frequently.
-
-#### Implementation Notes (Marketplace Filter)
-
-- New content script module: `marketplace-filter.js` (new file, ~200 lines). Injected only on `/marketplace/` URL patterns.
-- Register in `manifest.json` `content_scripts` with `"matches": ["*://www.facebook.com/marketplace/*"]`.
-- Options: add a new "Marketplace" section in the options page with enable toggle + max distance slider + "unknown distance" behaviour select (show / hide).
-- Default settings entry: `marketplace: { enabled: false, maxDistanceMiles: 25, hideUnknownDistance: false }` added to `default-settings.js`.
-- The floating filter bar overlay uses a style similar to the existing Insight Chip overlay (same dark glass morphism theme) — reuse the CSS variables already defined.
-- The distance parser must handle both "miles" (US default) and "km" (international) — add a `distanceUnit` setting defaulting to `'mi'` with automatic detection from the first parsed listing if possible.
-
----
+**No phases currently queued.**
 
 ### Deferred — Auto Comment Preview v3.1 — Real Comment Data
 

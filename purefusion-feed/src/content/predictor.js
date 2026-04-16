@@ -29,6 +29,10 @@ class PF_Predictor {
 
         // Persistent author allowlist — "Always show source" entries; exempt from session filters
         this.allowlist = new Set();
+
+        // Friend Activity Feed Insight — authors seen as post authors this session
+        this._sessionFeedAuthors = new Set();
+        this._friendBadgeDebounce = null;
         
         this._injectPredictorStyles();
         this.init();
@@ -145,6 +149,12 @@ class PF_Predictor {
         }
 
         this.applyToNodes(posts);
+
+        // Debounced friend-activity badge pass after main sweep
+        if (this.settings?.predictions?.showFriendActivity) {
+            clearTimeout(this._friendBadgeDebounce);
+            this._friendBadgeDebounce = setTimeout(() => this._applyFriendActivityBadges(), 800);
+        }
 
         if (debugPreview && forceRescore && window.PF_Helpers && typeof window.PF_Helpers.showToast === 'function') {
             const sampleAuthors = posts
@@ -311,6 +321,14 @@ class PF_Predictor {
         }
 
         node.dataset.pfPredictProcessed = predictVersion;
+
+        // Track author for Friend Activity Feed Insight
+        if (this.settings?.predictions?.showFriendActivity) {
+            const seenAuthor = this._extractAuthor(node);
+            if (seenAuthor && seenAuthor !== 'Unknown') {
+                this._sessionFeedAuthors.add(seenAuthor.trim().toLowerCase());
+            }
+        }
 
         // 1. Analyze text for trend mapping
         if (this.settings?.predictions?.enabled) {
@@ -2020,6 +2038,80 @@ class PF_Predictor {
         return normalized.slice(0, 220);
     }
 
+    // ── Friend Activity Feed Insight ──────────────────────────────────────────
+
+    _applyFriendActivityBadges() {
+        if (!this.settings?.predictions?.showFriendActivity) return;
+
+        // Locate the contacts panel — FB uses several possible aria-labels across locales
+        const contactsPanelSelectors = [
+            '[aria-label="Contacts"]',
+            '[aria-label="Contactos"]',
+            '[aria-label="Kontakte"]',
+            '[aria-label="Contacts"]',
+            '[aria-label="Contatti"]',
+            '[aria-label="Contacten"]',
+            '[aria-label="Kontakter"]',
+            '[aria-label="Kontakter"]',
+        ];
+        let panel = null;
+        for (const sel of contactsPanelSelectors) {
+            panel = document.querySelector(sel);
+            if (panel) break;
+        }
+        if (!panel) return;
+
+        // Each visible contact entry — FB renders them as listitem or link rows
+        const rows = panel.querySelectorAll('[role="listitem"], [role="row"]');
+        if (!rows.length) return;
+
+        rows.forEach((row) => {
+            // Extract name from aria-label on a child anchor/button, or from visible text
+            let name = '';
+            const labelEl = row.querySelector('[aria-label]');
+            if (labelEl) {
+                name = (labelEl.getAttribute('aria-label') || '').trim();
+            }
+            if (!name) {
+                const textEl = row.querySelector('span[dir="auto"], span[class]');
+                if (textEl) name = textEl.textContent.trim();
+            }
+            if (!name) return;
+
+            const normalizedName = name.toLowerCase();
+            const existingBadge = row.querySelector('.pf-friend-unseen');
+
+            // Check if this contact's name (or a word from it) appears in session feed authors
+            const seenInFeed = this._sessionFeedAuthors.size > 0 && (
+                this._sessionFeedAuthors.has(normalizedName) ||
+                // Partial match: contacts may show full name while feed shows first name
+                Array.from(this._sessionFeedAuthors).some((a) =>
+                    a.startsWith(normalizedName.split(' ')[0] + ' ') ||
+                    normalizedName.startsWith(a.split(' ')[0] + ' ')
+                )
+            );
+
+            if (!seenInFeed && this._sessionFeedAuthors.size >= 3) {
+                // Only badge after we have enough data (≥3 authors seen in feed this session)
+                if (!existingBadge) {
+                    const badge = document.createElement('span');
+                    badge.className = 'pf-friend-unseen';
+                    badge.textContent = 'not in feed';
+                    badge.title = 'This friend\'s posts haven\'t appeared in your feed this session — Facebook may be suppressing them.';
+                    // Insert inline after the name element
+                    const target = labelEl || row.querySelector('span[dir="auto"]');
+                    if (target && target.parentElement) {
+                        target.parentElement.insertBefore(badge, target.nextSibling);
+                    } else {
+                        row.appendChild(badge);
+                    }
+                }
+            } else if (existingBadge) {
+                existingBadge.remove();
+            }
+        });
+    }
+
     _injectPredictorStyles() {
         if (this._stylesInjected || document.getElementById('pf-predictor-styles')) return;
 
@@ -2521,6 +2613,22 @@ class PF_Predictor {
                 color: #ff8fa1;
                 background: rgba(94, 28, 40, 0.3);
                 border-color: rgba(255, 143, 161, 0.8);
+            }
+
+            /* Friend Activity Feed Insight — right-rail contact badge */
+            .pf-friend-unseen {
+                display: inline-block;
+                margin-left: 4px;
+                padding: 1px 5px;
+                border-radius: 999px;
+                border: 1px solid rgba(255, 185, 55, 0.45);
+                background: rgba(38, 26, 4, 0.72);
+                color: rgba(255, 210, 110, 0.9);
+                font: 600 9px/1.4 "Segoe UI Variable Text", "Segoe UI", sans-serif;
+                white-space: nowrap;
+                vertical-align: middle;
+                pointer-events: none;
+                cursor: default;
             }
         `;
 
