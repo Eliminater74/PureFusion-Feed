@@ -650,7 +650,8 @@ class PureFusionApp {
             customCardBackground: '',
             customBackground: '',
             customCss: '',
-            imageHoverExpand: false
+            imageHoverExpand: false,
+            autoplayVideoAction: 'off'
         };
 
         effective.social = {

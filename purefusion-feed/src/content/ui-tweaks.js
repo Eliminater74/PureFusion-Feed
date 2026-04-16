@@ -24,11 +24,15 @@ class PF_UiTweaks {
         this._panelEnterBound = null;
         this._panelLeaveBound = null;
         this._currentHoveredImg = null;
+        // Video Autoplay Control state
+        this._videoPlayBound = null;
+        this._videoClickBound = null;
         this.init();
     }
 
     updateSettings(settings) {
         const prevHoverExpand = !!(this.settings?.uiMode?.imageHoverExpand);
+        const prevVideoAction = this.settings?.uiMode?.autoplayVideoAction || 'off';
         this.settings = settings;
         // Sync DFM toggle from options page; keyboard-toggled runtime state takes
         // precedence only until the next settings push (by design — options is authoritative).
@@ -37,6 +41,11 @@ class PF_UiTweaks {
         const nextHoverExpand = !!(settings?.uiMode?.imageHoverExpand);
         if (nextHoverExpand && !prevHoverExpand) this._setupImageHover();
         else if (!nextHoverExpand && prevHoverExpand) this._teardownImageHover();
+        const nextVideoAction = settings?.uiMode?.autoplayVideoAction || 'off';
+        if (nextVideoAction !== prevVideoAction) {
+            this._teardownVideoControl();
+            if (nextVideoAction !== 'off') this._setupVideoControl();
+        }
         this.update();
     }
 
@@ -55,6 +64,8 @@ class PF_UiTweaks {
         this._clearAbsoluteTimestampLabels();
         // Tear down image hover expand
         this._teardownImageHover();
+        // Tear down video autoplay control
+        this._teardownVideoControl();
         // Remove injected styles
         if (this.styleTag && this.styleTag.parentElement) {
             this.styleTag.parentElement.removeChild(this.styleTag);
@@ -69,6 +80,8 @@ class PF_UiTweaks {
         this._setupAutofocusGuard();
         this._setupDistractionFreeMode();
         if (this.settings?.uiMode?.imageHoverExpand) this._setupImageHover();
+        const videoAction = this.settings?.uiMode?.autoplayVideoAction || 'off';
+        if (videoAction !== 'off') this._setupVideoControl();
         this.update();
     }
 
@@ -100,6 +113,11 @@ class PF_UiTweaks {
                     img.removeAttribute('data-pf-hover-eligible');
                 });
             });
+        }
+        // Video autoplay: sweep newly injected video elements.
+        const videoAction = this.settings?.uiMode?.autoplayVideoAction || 'off';
+        if (videoAction !== 'off' && Array.isArray(nodes) && nodes.length) {
+            this._sweepFeedVideos(nodes);
         }
     }
 
@@ -828,6 +846,92 @@ class PF_UiTweaks {
         if (hex.test(color) || rgb.test(color) || hsl.test(color)) return color;
 
         return '';
+    }
+
+    // ── Video Autoplay Control ────────────────────────────────────────────────
+
+    _setupVideoControl() {
+        if (this._videoPlayBound) return; // Already wired
+
+        // Track explicit user clicks on video players so we don't re-pause user-initiated plays
+        this._videoClickBound = (e) => {
+            const video = e.target.closest('video');
+            if (video) {
+                video.setAttribute('data-pf-user-play', '1');
+                // Clear the flag after a short window — once play fires we've read it
+                setTimeout(() => video.removeAttribute('data-pf-user-play'), 600);
+            }
+        };
+        document.addEventListener('click', this._videoClickBound, true);
+
+        this._videoPlayBound = (e) => this._onVideoPlay(e);
+        // Capture phase so we intercept the play event before FB's own handlers
+        document.addEventListener('play', this._videoPlayBound, true);
+        // Apply to any videos already playing on the page
+        this._sweepFeedVideos([document]);
+    }
+
+    _teardownVideoControl() {
+        if (this._videoPlayBound) {
+            document.removeEventListener('play', this._videoPlayBound, true);
+            this._videoPlayBound = null;
+        }
+        if (this._videoClickBound) {
+            document.removeEventListener('click', this._videoClickBound, true);
+            this._videoClickBound = null;
+        }
+        // Restore any videos we muted so they behave normally when feature is off
+        document.querySelectorAll('video[data-pf-muted]').forEach((video) => {
+            video.muted = false;
+            video.removeAttribute('data-pf-muted');
+        });
+        // Remove paused markers (clean up; we can't reliably un-pause FB-managed videos)
+        document.querySelectorAll('video[data-pf-paused]').forEach((video) => {
+            video.removeAttribute('data-pf-paused');
+        });
+    }
+
+    _onVideoPlay(e) {
+        const video = e.target;
+        if (!video || video.tagName !== 'VIDEO') return;
+        // Only act on feed/content videos — skip Messenger, header, dialogs
+        if (!video.closest('[role="main"]')) return;
+        if (video.closest('[role="navigation"], [role="banner"], [data-pagelet="LeftRail"], [data-pagelet="RightRail"]')) return;
+        // Skip videos the user explicitly clicked to play
+        if (video.getAttribute('data-pf-user-play') === '1') return;
+        this._applyVideoAction(video);
+    }
+
+    _applyVideoAction(video) {
+        const action = this.settings?.uiMode?.autoplayVideoAction || 'off';
+        if (action === 'mute') {
+            if (!video.muted) {
+                video.muted = true;
+                video.setAttribute('data-pf-muted', '1');
+            }
+        } else if (action === 'pause') {
+            video.setAttribute('data-pf-paused', '1');
+            // requestAnimationFrame defers the pause until after FB's play event handling finishes
+            requestAnimationFrame(() => {
+                if (video.getAttribute('data-pf-paused') === '1' && !video.paused) {
+                    video.pause();
+                }
+            });
+        }
+    }
+
+    _sweepFeedVideos(roots) {
+        const action = this.settings?.uiMode?.autoplayVideoAction || 'off';
+        if (action === 'off') return;
+        const list = Array.isArray(roots) ? roots : [roots];
+        list.forEach((root) => {
+            if (!root || !root.querySelectorAll) return;
+            root.querySelectorAll('video').forEach((video) => {
+                if (!video.closest('[role="main"]')) return;
+                if (video.closest('[role="navigation"], [role="banner"], [data-pagelet="LeftRail"], [data-pagelet="RightRail"]')) return;
+                if (!video.paused) this._applyVideoAction(video);
+            });
+        });
     }
 
     // ── Image Hover Expand ────────────────────────────────────────────────────
