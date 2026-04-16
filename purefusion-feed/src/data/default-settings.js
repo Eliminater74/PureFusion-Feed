@@ -227,6 +227,11 @@ const DEFAULT_SETTINGS = {
         hideMetaAI: true,               // Nuke gradient icons and sparkle buttons
         hideMessengerTyping: true,      // Hide typing indicators (DOM level)
         messengerPrivacyBlur: false,    // Blur chat previews until hover
+        // Messenger Enhancements (Phase 43)
+        alwaysShowMessageTimestamps: false, // Force message timestamps always visible (messenger.com)
+        messengerMarkAllRead: false,        // Inject "Mark all read" button in conversation list
+        messengerConversationFilter: false, // Inject All/Unread/Groups filter bar above chat list
+        detectUnsends: false,               // Flag removed messages with a placeholder
         // Notification filters
         blockNotifGames: true,
         blockNotifBirthdays: false,

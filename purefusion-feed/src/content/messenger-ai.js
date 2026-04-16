@@ -16,9 +16,17 @@ class PF_MessengerAI {
         this.observer = null;
         this.scanDebounced = PF_Helpers.debounce(() => this.scanDocument(), 220);
 
+        // Messenger Enhancements state
+        this.markAllReadBtn = null;
+        this.filterBar = null;
+        this.unsendObserver = null;
+        this._activeConvFilter = 'all';
+        this.enhancementsDebounced = PF_Helpers.debounce(() => this._applyEnhancements(), 600);
+
         this._injectStyles();
         this._startObserver();
         this.scanDocument();
+        this._applyEnhancements();
     }
 
     updateSettings(settings) {
@@ -27,6 +35,7 @@ class PF_MessengerAI {
 
         this._refreshToolbars();
         this.scanDocument();
+        this._applyEnhancements();
     }
 
     applyToNodes(nodes) {
@@ -59,11 +68,10 @@ class PF_MessengerAI {
         if (this.observer || typeof MutationObserver === 'undefined') return;
 
         this.observer = new MutationObserver((mutations) => {
-            if (!this._isEnabled()) return;
-
             for (const mutation of mutations) {
                 if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-                    this.scanDebounced();
+                    if (this._isEnabled()) this.scanDebounced();
+                    if (this._isAnyEnhancementEnabled()) this.enhancementsDebounced();
                     return;
                 }
             }
@@ -534,6 +542,86 @@ class PF_MessengerAI {
                 border-color: rgba(72, 187, 255, 0.8);
                 color: #ffffff;
             }
+
+            /* Mark All Read button */
+            .pf-messenger-mark-read-btn {
+                background: rgba(18, 200, 220, 0.1);
+                border: 1px solid rgba(18, 200, 220, 0.38);
+                color: #a9f1ff;
+                border-radius: 6px;
+                padding: 3px 9px;
+                font: 600 11px/1.5 "Segoe UI Variable Text", "Segoe UI", sans-serif;
+                cursor: pointer;
+                white-space: nowrap;
+                margin-left: 8px;
+                vertical-align: middle;
+            }
+            .pf-messenger-mark-read-btn:hover {
+                background: rgba(18, 200, 220, 0.2);
+                border-color: rgba(18, 200, 220, 0.6);
+                color: #fff;
+            }
+
+            /* Conversation Filter Bar */
+            .pf-messenger-filter-bar {
+                display: flex;
+                gap: 6px;
+                padding: 6px 12px 6px;
+                background: rgba(20, 24, 33, 0.92);
+                border-bottom: 1px solid rgba(122, 132, 156, 0.2);
+                position: sticky;
+                top: 0;
+                z-index: 50;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                scrollbar-width: none;
+            }
+            .pf-msn-filter-btn {
+                background: rgba(44, 49, 63, 0.88);
+                border: 1px solid rgba(140, 152, 173, 0.28);
+                color: #a9b3c8;
+                border-radius: 999px;
+                padding: 4px 12px;
+                font: 600 11px/1.3 "Segoe UI Variable Text", "Segoe UI", sans-serif;
+                cursor: pointer;
+                white-space: nowrap;
+                transition: background 0.15s, border-color 0.15s, color 0.15s;
+            }
+            .pf-msn-filter-btn:hover {
+                background: rgba(60, 68, 85, 0.9);
+                color: #eef2fb;
+            }
+            .pf-msn-filter-btn.pf-msn-filter-active {
+                background: linear-gradient(135deg, #6C3FC5 0%, #4f76cf 100%);
+                border-color: transparent;
+                color: #fff;
+            }
+
+            /* Unsend placeholder */
+            .pf-unsend-placeholder {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 8px;
+                padding: 5px 10px;
+                margin: 2px 4px;
+                background: rgba(239, 68, 68, 0.07);
+                border: 1px solid rgba(239, 68, 68, 0.22);
+                border-radius: 8px;
+                font: italic 600 12px/1.4 "Segoe UI Variable Text", "Segoe UI", sans-serif;
+                color: #a9b3c8;
+            }
+            .pf-unsend-dismiss {
+                background: none;
+                border: none;
+                color: #6b7a99;
+                cursor: pointer;
+                font-size: 15px;
+                line-height: 1;
+                padding: 0 2px;
+                flex-shrink: 0;
+            }
+            .pf-unsend-dismiss:hover { color: #fff; }
         `;
 
         document.head.appendChild(style);
@@ -545,11 +633,282 @@ class PF_MessengerAI {
         this.replyPanels = new WeakMap();
     }
 
+    // -------------------------------------------------------------------------
+    // Messenger Enhancements (Phase 43)
+    // -------------------------------------------------------------------------
+
+    _isAnyEnhancementEnabled() {
+        if (this.settings?.enabled === false) return false;
+        const s = this.settings?.social || {};
+        return !!(
+            s.alwaysShowMessageTimestamps
+            || s.messengerMarkAllRead
+            || s.messengerConversationFilter
+            || s.detectUnsends
+        );
+    }
+
+    _applyEnhancements() {
+        this._applyTimestamps();
+        this._injectMarkAllRead();
+        this._injectConversationFilter();
+        this._startUnsendDetection();
+    }
+
+    // 1. Always-visible timestamps ──────────────────────────────────────────
+
+    _applyTimestamps() {
+        const on = !!(this.settings?.enabled !== false && this.settings?.social?.alwaysShowMessageTimestamps);
+        const existing = document.getElementById('pf-msg-timestamp-style');
+        if (!on) { if (existing) existing.remove(); return; }
+        if (existing) return;
+
+        const style = document.createElement('style');
+        style.id = 'pf-msg-timestamp-style';
+        // Best-effort: target common timestamp patterns across Messenger DOM versions.
+        // FB rotates class names, so we rely on data-testid, time elements, and
+        // aria-label patterns. This may need selector updates after FB deploys.
+        style.textContent = `
+            [data-testid$="timestamp"],
+            [data-testid*="message_timestamp"],
+            time[datetime] {
+                opacity: 1 !important;
+                height: auto !important;
+                max-height: none !important;
+                overflow: visible !important;
+                clip: unset !important;
+                clip-path: unset !important;
+                visibility: visible !important;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    // 2. Mark All Read button ────────────────────────────────────────────────
+
+    _injectMarkAllRead() {
+        const on = !!(this.settings?.enabled !== false && this.settings?.social?.messengerMarkAllRead);
+        if (!on) {
+            if (this.markAllReadBtn) { this.markAllReadBtn.remove(); this.markAllReadBtn = null; }
+            return;
+        }
+        if (this.markAllReadBtn && document.contains(this.markAllReadBtn)) return;
+
+        const header = this._findChatListHeader();
+        if (!header) return;
+
+        const btn = document.createElement('button');
+        btn.className = 'pf-messenger-mark-read-btn';
+        btn.textContent = 'Mark all read';
+        btn.title = 'Hides unread badge dots (cosmetic — does not mark as read on Facebook servers)';
+        btn.addEventListener('click', () => {
+            this._hideUnreadBadges();
+            PF_Helpers.showToast('Unread badges hidden', 'success');
+        });
+        header.appendChild(btn);
+        this.markAllReadBtn = btn;
+    }
+
+    _findChatListHeader() {
+        const candidates = document.querySelectorAll('[role="heading"], h2, h3');
+        const chatTokens = ['chats', 'messages', 'mensajes', 'nachrichten', 'messages', 'berichten'];
+        for (const el of candidates) {
+            const text = (el.textContent || '').trim().toLowerCase();
+            if (chatTokens.includes(text)) return el.parentElement || el;
+        }
+        return null;
+    }
+
+    _hideUnreadBadges() {
+        // Target unread count badges and bold unread indicators in conversation list
+        const badgeSelectors = [
+            '[data-testid="unread-count"]',
+            '[aria-label*="unread"]',
+            '[aria-label*="New message"]',
+            '[aria-label*="nuevo mensaje"]'
+        ];
+        badgeSelectors.forEach((sel) => {
+            document.querySelectorAll(sel).forEach((el) => {
+                el.style.setProperty('display', 'none', 'important');
+            });
+        });
+    }
+
+    // 3. Conversation Filter bar ─────────────────────────────────────────────
+
+    _injectConversationFilter() {
+        const on = !!(this.settings?.enabled !== false && this.settings?.social?.messengerConversationFilter);
+        if (!on) {
+            if (this.filterBar) { this.filterBar.remove(); this.filterBar = null; }
+            if (this._activeConvFilter !== 'all') {
+                this._activeConvFilter = 'all';
+                this._applyConversationFilter('all');
+            }
+            return;
+        }
+        if (this.filterBar && document.contains(this.filterBar)) return;
+
+        const listContainer = this._findConversationListContainer();
+        if (!listContainer) return;
+
+        const bar = document.createElement('div');
+        bar.className = 'pf-messenger-filter-bar';
+        ['All', 'Unread', 'Groups'].forEach((label) => {
+            const btn = document.createElement('button');
+            btn.className = 'pf-msn-filter-btn';
+            btn.dataset.pfFilter = label.toLowerCase();
+            btn.textContent = label;
+            if (label.toLowerCase() === this._activeConvFilter) {
+                btn.classList.add('pf-msn-filter-active');
+            }
+            bar.appendChild(btn);
+        });
+
+        const parent = listContainer.parentElement;
+        if (parent) parent.insertBefore(bar, listContainer);
+        this.filterBar = bar;
+
+        bar.addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-pf-filter]');
+            if (!btn) return;
+            bar.querySelectorAll('.pf-msn-filter-btn').forEach((b) => b.classList.remove('pf-msn-filter-active'));
+            btn.classList.add('pf-msn-filter-active');
+            this._activeConvFilter = btn.dataset.pfFilter;
+            this._applyConversationFilter(this._activeConvFilter);
+        });
+    }
+
+    _findConversationListContainer() {
+        const lists = document.querySelectorAll('[role="list"]');
+        for (const list of lists) {
+            if (list.querySelectorAll('a[href*="/messages/"]').length > 1) return list;
+        }
+        return null;
+    }
+
+    _applyConversationFilter(filter) {
+        const listContainer = this._findConversationListContainer();
+        if (!listContainer) return;
+
+        listContainer.querySelectorAll('[role="listitem"]').forEach((row) => {
+            if (filter === 'all') {
+                row.style.removeProperty('display');
+                return;
+            }
+            const show = filter === 'unread'
+                ? this._isConversationUnread(row)
+                : this._isGroupConversation(row);
+            if (show) {
+                row.style.removeProperty('display');
+            } else {
+                row.style.setProperty('display', 'none', 'important');
+            }
+        });
+    }
+
+    _isConversationUnread(row) {
+        const unreadSelectors = ['[data-testid="unread-count"]', '[aria-label*="unread"]', '[aria-label*="New message"]'];
+        for (const sel of unreadSelectors) {
+            if (row.querySelector(sel)) return true;
+        }
+        // FB also bolds the conversation name when unread
+        const nameEl = row.querySelector('span[dir="auto"]');
+        if (nameEl) {
+            const weight = parseInt(window.getComputedStyle(nameEl).fontWeight, 10);
+            if (!Number.isNaN(weight) && weight >= 600) return true;
+        }
+        return false;
+    }
+
+    _isGroupConversation(row) {
+        // Groups show stacked/multiple avatar images
+        const imgs = row.querySelectorAll('img[alt]');
+        if (imgs.length >= 2) return true;
+        const link = row.querySelector('a');
+        if (link) {
+            const label = (link.getAttribute('aria-label') || '').toLowerCase();
+            if (/group|grupo|groupe|gruppe|groep|grupp/.test(label)) return true;
+        }
+        return false;
+    }
+
+    // 4. Unsend Detection ────────────────────────────────────────────────────
+
+    _startUnsendDetection() {
+        const on = !!(this.settings?.enabled !== false && this.settings?.social?.detectUnsends);
+        if (!on) {
+            if (this.unsendObserver) { this.unsendObserver.disconnect(); this.unsendObserver = null; }
+            return;
+        }
+        if (this.unsendObserver) return;
+
+        const thread = document.querySelector('[role="main"]');
+        if (!thread) return;
+
+        this.unsendObserver = new MutationObserver((mutations) => {
+            for (const mutation of mutations) {
+                if (mutation.type !== 'childList' || !mutation.removedNodes.length) continue;
+                mutation.removedNodes.forEach((node) => this._checkRemovedNode(node, mutation.target));
+            }
+        });
+
+        this.unsendObserver.observe(thread, { childList: true, subtree: true });
+    }
+
+    _checkRemovedNode(node, parent) {
+        if (!node || node.nodeType !== Node.ELEMENT_NODE) return;
+
+        const text = (node.textContent || '').trim();
+        if (!text || text.length < 3 || text.length > 800) return;
+
+        // Skip non-message elements (tooltips, menus, overlays, etc.)
+        const role = (node.getAttribute && node.getAttribute('role')) || '';
+        if (/tooltip|menu|dialog|banner|navigation/.test(role)) return;
+
+        // Must have a dir="auto" child — FB message text nodes always have this
+        if (!node.querySelector || !node.querySelector('[dir="auto"]')) return;
+
+        // Must be within the conversation thread, not a sidebar/nav element
+        const inThread = parent.closest && parent.closest('[role="main"]');
+        if (!inThread) return;
+
+        // Build placeholder
+        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const placeholder = document.createElement('div');
+        placeholder.className = 'pf-unsend-placeholder';
+
+        const label = document.createElement('span');
+        label.textContent = `[Message removed by sender at ${timeStr}]`;
+
+        const dismissBtn = document.createElement('button');
+        dismissBtn.className = 'pf-unsend-dismiss';
+        dismissBtn.textContent = '×';
+        dismissBtn.title = 'Dismiss';
+        dismissBtn.addEventListener('click', () => placeholder.remove());
+
+        placeholder.appendChild(label);
+        placeholder.appendChild(dismissBtn);
+
+        try {
+            parent.appendChild(placeholder);
+        } catch {
+            // parent may no longer be in DOM — silently ignore
+        }
+    }
+
     destroy() {
         if (this.observer) {
             this.observer.disconnect();
             this.observer = null;
         }
+        if (this.unsendObserver) {
+            this.unsendObserver.disconnect();
+            this.unsendObserver = null;
+        }
+        if (this.markAllReadBtn) { this.markAllReadBtn.remove(); this.markAllReadBtn = null; }
+        if (this.filterBar) { this.filterBar.remove(); this.filterBar = null; }
+        const tsStyle = document.getElementById('pf-msg-timestamp-style');
+        if (tsStyle) tsStyle.remove();
     }
 }
 

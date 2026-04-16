@@ -454,6 +454,31 @@
                 </div>
             </div>
 
+            <div class="pf-card mt-4">
+                <h3>Messenger Enhancements</h3>
+                <p class="pf-desc">Quality-of-life tools injected directly into messenger.com. All features are purely client-side — no server-side changes.</p>
+                <div class="pf-setting-row">
+                    <label>Always-visible message timestamps</label>
+                    <input type="checkbox" id="opt_social_alwaysShowMessageTimestamps" class="pf-toggle">
+                </div>
+                <p class="pf-desc" style="margin-top:-6px;margin-bottom:10px">Forces message send-time to remain visible without hovering. Best-effort CSS — may need updates as Messenger changes its DOM.</p>
+                <div class="pf-setting-row">
+                    <label>Mark All Read button (hide unread badges)</label>
+                    <input type="checkbox" id="opt_social_messengerMarkAllRead" class="pf-toggle">
+                </div>
+                <p class="pf-desc" style="margin-top:-6px;margin-bottom:10px">Adds a button to the Chats header that hides all unread badge dots cosmetically. Does not mark conversations as read on Facebook's servers.</p>
+                <div class="pf-setting-row">
+                    <label>Conversation Filter bar (All / Unread / Groups)</label>
+                    <input type="checkbox" id="opt_social_messengerConversationFilter" class="pf-toggle">
+                </div>
+                <p class="pf-desc" style="margin-top:-6px;margin-bottom:10px">Adds a filter bar above the conversation list to show All, Unread-only, or Group chats only.</p>
+                <div class="pf-setting-row">
+                    <label>Unsend Detection (flag removed messages)</label>
+                    <input type="checkbox" id="opt_social_detectUnsends" class="pf-toggle">
+                </div>
+                <p class="pf-desc" style="margin-top:-6px">When a message disappears from view, leaves a "[Message removed at HH:MM]" placeholder. Session-only — cleared on page reload.</p>
+            </div>
+
             <div class="pf-card mt-4 pf-advanced-card">
                 <h3 data-i18n="options_social_meta_title">Meta AI & Algorithmic Clutter</h3>
 
