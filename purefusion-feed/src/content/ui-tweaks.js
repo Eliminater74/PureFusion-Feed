@@ -60,6 +60,8 @@ class PF_UiTweaks {
         document.documentElement.classList.remove('pf-dfm-active');
         // Restore wrapped links so FB redirect URLs work normally
         this._restoreWrappedLinks();
+        // Restore stripped-param links
+        this._restoreStrippedLinks();
         // Clear timestamp chips
         this._clearAbsoluteTimestampLabels();
         // Tear down image hover expand
@@ -90,6 +92,9 @@ class PF_UiTweaks {
         if (this.settings?.uiMode?.showLinkPreviews) {
             this._revealLinkDestinations(null);
         }
+        if (this.settings?.uiMode?.stripTrackingParams) {
+            this._stripFeedLinkParams(null);
+        }
         if (this.settings?.uiMode?.autoExpandSeeMore) {
             this._autoExpandSeeMore(null);
         }
@@ -102,6 +107,9 @@ class PF_UiTweaks {
         }
         if (this.settings?.uiMode?.showLinkPreviews && Array.isArray(nodes) && nodes.length) {
             this._revealLinkDestinations(nodes);
+        }
+        if (this.settings?.uiMode?.stripTrackingParams && Array.isArray(nodes) && nodes.length) {
+            this._stripFeedLinkParams(nodes);
         }
         const sortPref = this.settings?.uiMode?.commentSortDefault;
         if (sortPref && sortPref !== 'All Comments' && Array.isArray(nodes) && nodes.length) {
@@ -359,6 +367,9 @@ class PF_UiTweaks {
         if (!this.settings?.uiMode?.showLinkPreviews) {
             this._restoreWrappedLinks();
         }
+        if (!this.settings?.uiMode?.stripTrackingParams) {
+            this._restoreStrippedLinks();
+        }
     }
 
     // ── Link Destination Reveal ────────────────────────────────────────────────
@@ -394,6 +405,84 @@ class PF_UiTweaks {
             link.removeAttribute('data-pf-original-href');
             link.removeAttribute('data-pf-revealed');
         });
+    }
+
+    // ── Tracking Parameter Cleaner ────────────────────────────────────────────
+
+    _stripFeedLinkParams(nodes) {
+        const roots = (Array.isArray(nodes) && nodes.length) ? nodes : [document];
+        roots.forEach((root) => {
+            if (!root || !root.querySelectorAll) return;
+            root.querySelectorAll('a[href]:not([data-pf-stripped])').forEach((link) => {
+                // Stay within the main content area — do not touch nav, header, or side rails
+                if (!link.closest('[role="main"]')) return;
+                if (link.closest('[role="navigation"], [role="banner"], [data-pagelet="LeftRail"], [data-pagelet="RightRail"]')) return;
+                const href = link.getAttribute('href') || '';
+                const cleaned = this._cleanTrackingParams(href);
+                if (cleaned !== href) {
+                    // Preserve original only if link-reveal hasn't already done so
+                    if (!link.getAttribute('data-pf-original-href')) {
+                        link.setAttribute('data-pf-pre-strip-href', href);
+                    }
+                    link.setAttribute('href', cleaned);
+                }
+                link.setAttribute('data-pf-stripped', '1');
+            });
+        });
+    }
+
+    _restoreStrippedLinks() {
+        document.querySelectorAll('a[data-pf-stripped]').forEach((link) => {
+            const orig = link.getAttribute('data-pf-pre-strip-href');
+            if (orig) {
+                link.setAttribute('href', orig);
+                link.removeAttribute('data-pf-pre-strip-href');
+            }
+            link.removeAttribute('data-pf-stripped');
+        });
+    }
+
+    _cleanTrackingParams(href) {
+        if (!href || href.startsWith('javascript:') || href.startsWith('#')) return href;
+        // Only process absolute URLs or protocol-relative — relative paths like /profile have no tracking params
+        if (!href.includes('?') && !href.includes('#')) return href;
+        try {
+            // Build full URL for parsing; relative paths get resolved against the current origin
+            const base = href.startsWith('http') ? href : `${location.origin}${href.startsWith('/') ? '' : '/'}${href}`;
+            const parsed = new URL(base);
+            const TRACKING_PARAMS = [
+                // Facebook
+                'fbclid', 'fb_source', 'fb_action_ids', 'fb_action_types', 'fref', '_rdr',
+                // Google / Microsoft
+                'gclid', 'gclsrc', 'msclkid', 'dclid',
+                // UTM (universal)
+                'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'utm_id',
+                'utm_reader', 'utm_name', 'utm_pubreferrer', 'utm_swu',
+                // Mailchimp
+                'mc_cid', 'mc_eid',
+                // HubSpot
+                '_hsenc', '_hsmi',
+                // Marketo
+                'mkt_tok',
+                // Yahoo / Oath
+                'yclid',
+                // Other common trackers
+                'zanpid', 'origin', 'igshid', 'ref', 'rdt_cid'
+            ];
+            let stripped = false;
+            TRACKING_PARAMS.forEach((p) => {
+                if (parsed.searchParams.has(p)) {
+                    parsed.searchParams.delete(p);
+                    stripped = true;
+                }
+            });
+            if (!stripped) return href;
+            // Return only the part that was in the original href (don't prepend origin to relative paths)
+            const result = parsed.toString();
+            return href.startsWith('http') ? result : result.slice(location.origin.length);
+        } catch {
+            return href;
+        }
     }
 
     // ── Distraction-Free Mode ─────────────────────────────────────────────────

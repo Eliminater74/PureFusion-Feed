@@ -243,6 +243,8 @@
   "options_ui_image_hover_desc": { "message": "Pasa el cursor sobre imágenes del feed para verlas en tamaño completo. Guárdalas o ábrelas en una nueva pestaña desde el panel. Desactivado por defecto." },
   "options_ui_auto_expand_see_more_label": { "message": "Expandir \"Ver más\" automáticamente" },
   "options_ui_auto_expand_see_more_desc": { "message": "Descarta automáticamente \"Ver más\" en publicaciones truncadas para que siempre leas el texto completo sin clics adicionales." },
+  "options_ui_strip_tracking_params_label": { "message": "Eliminar parámetros de rastreo de los enlaces" },
+  "options_ui_strip_tracking_params_desc": { "message": "Elimina fbclid, utm_*, gclid y otros parámetros espía de los enlaces del feed para que las URLs copiadas o clicadas sean limpias." },
   "options_ui_autoplay_video_label": { "message": "Control de reproducción automática de vídeo" },
   "options_ui_autoplay_video_desc": { "message": "Controla qué sucede cuando los vídeos del feed se reproducen automáticamente." },
   "options_ui_autoplay_off": { "message": "Desactivado (sin acción)" },

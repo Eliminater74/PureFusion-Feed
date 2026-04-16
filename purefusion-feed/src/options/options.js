@@ -386,6 +386,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_uiMode_friendsOnlyMode': { obj: 'uiMode', prop: 'friendsOnlyMode', type: 'checkbox' },
         'opt_uiMode_anonymizerMode': { obj: 'uiMode', prop: 'anonymizerMode', type: 'checkbox' },
         'opt_uiMode_showLinkPreviews':     { obj: 'uiMode', prop: 'showLinkPreviews', type: 'checkbox' },
+        'opt_uiMode_stripTrackingParams':  { obj: 'uiMode', prop: 'stripTrackingParams', type: 'checkbox' },
         'opt_uiMode_fixTimestamps':        { obj: 'uiMode', prop: 'fixTimestamps', type: 'checkbox' },
         'opt_uiMode_commentSortDefault':   { obj: 'uiMode', prop: 'commentSortDefault', type: 'select' },
         'opt_uiMode_distractionFreeMode':  { obj: 'uiMode', prop: 'distractionFreeMode', type: 'checkbox' },

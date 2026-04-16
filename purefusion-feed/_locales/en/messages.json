@@ -243,6 +243,8 @@
   "options_ui_image_hover_desc": { "message": "Hover over feed images to preview them full-size. Save or open in new tab directly from the panel. Off by default." },
   "options_ui_auto_expand_see_more_label": { "message": "Auto-Expand \"See More\"" },
   "options_ui_auto_expand_see_more_desc": { "message": "Automatically dismiss \"See more\" on truncated posts so you always read the full text without extra clicks." },
+  "options_ui_strip_tracking_params_label": { "message": "Strip Tracking Parameters from Links" },
+  "options_ui_strip_tracking_params_desc": { "message": "Removes fbclid, utm_*, gclid and other spy parameters from feed links so copied or clicked URLs are clean." },
   "options_ui_autoplay_video_label": { "message": "Video Autoplay Control" },
   "options_ui_autoplay_video_desc": { "message": "Control what happens when feed videos start playing automatically." },
   "options_ui_autoplay_off": { "message": "Off (no action)" },
