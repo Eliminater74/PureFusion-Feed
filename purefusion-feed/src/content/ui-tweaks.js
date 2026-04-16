@@ -990,35 +990,30 @@ class PF_UiTweaks {
     }
 
     _isEligibleFeedImage(img) {
-        // Use cached result to avoid repeated DOM traversal on every mouseover
-        const cached = img.getAttribute('data-pf-hover-eligible');
-        if (cached !== null) return cached === '1';
+        // Only cache confirmed-eligible results. Negative results are NOT cached because:
+        // (a) offsetWidth may be 0 while the image is still loading/rendering, and
+        // (b) aria-hidden / ancestor state can change as FB mutates the DOM.
+        if (img.getAttribute('data-pf-hover-eligible') === '1') return true;
 
+        // Must have a real src (not empty, not a data URI)
         const src = img.src || img.currentSrc || '';
-        if (!src || src.startsWith('data:') || img.getAttribute('aria-hidden') === 'true') {
-            img.setAttribute('data-pf-hover-eligible', '0');
-            return false;
-        }
-
-        // Must be inside a feed article or feed container — not a nav/sidebar icon
-        if (!img.closest('[role="article"], [role="feed"], [data-pagelet^="FeedUnit_"]')) {
-            img.setAttribute('data-pf-hover-eligible', '0');
-            return false;
-        }
-
-        // Skip tiny icons and avatars (avatars are typically ≤40px)
-        const w = img.offsetWidth || img.naturalWidth || 0;
-        const h = img.offsetHeight || img.naturalHeight || 0;
-        if (w < 80 || h < 60) {
-            img.setAttribute('data-pf-hover-eligible', '0');
-            return false;
-        }
+        if (!src || src.startsWith('data:')) return false;
 
         // Skip the panel's own preview image
-        if (this._imgHoverPanel && this._imgHoverPanel.contains(img)) {
-            img.setAttribute('data-pf-hover-eligible', '0');
-            return false;
-        }
+        if (this._imgHoverPanel && this._imgHoverPanel.contains(img)) return false;
+
+        // Exclude navigation, header, and side-rail elements — not feed content
+        if (img.closest('[role="navigation"], [role="banner"], [data-pagelet="LeftRail"], [data-pagelet="RightRail"]')) return false;
+
+        // Must be somewhere in the main content area (home, profile, group, watch all qualify)
+        if (!img.closest('[role="main"], [role="article"], [role="feed"]')) return false;
+
+        // Reject clearly tiny elements — but only if offsetWidth is actually measured (> 0).
+        // If both are 0 the image may still be loading; allow it through so it isn't permanently skipped.
+        const w = img.offsetWidth || img.naturalWidth || 0;
+        const h = img.offsetHeight || img.naturalHeight || 0;
+        if (w > 0 && w < 80) return false;
+        if (h > 0 && h < 60) return false;
 
         img.setAttribute('data-pf-hover-eligible', '1');
         return true;
