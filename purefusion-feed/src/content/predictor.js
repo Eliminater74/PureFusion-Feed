@@ -2038,6 +2038,36 @@ class PF_Predictor {
         return normalized.slice(0, 220);
     }
 
+    // ── Lifecycle ─────────────────────────────────────────────────────────────
+
+    destroy() {
+        // Stop periodic state sync
+        if (this.syncIntervalId) {
+            clearInterval(this.syncIntervalId);
+            this.syncIntervalId = null;
+        }
+        // Remove event listeners
+        if (this.boundVisibilityHandler) {
+            document.removeEventListener('visibilitychange', this.boundVisibilityHandler);
+            this.boundVisibilityHandler = null;
+        }
+        if (this.boundInsightToggleHandler) {
+            document.removeEventListener('click', this.boundInsightToggleHandler, true);
+            this.boundInsightToggleHandler = null;
+        }
+        // Cancel pending friend badge pass
+        if (this._friendBadgeDebounce) {
+            clearTimeout(this._friendBadgeDebounce);
+            this._friendBadgeDebounce = null;
+        }
+        // Remove any injected friend-unseen badges from the DOM
+        document.querySelectorAll('.pf-friend-unseen').forEach((el) => el.remove());
+        // Remove injected predictor styles
+        const styleEl = document.getElementById('pf-predictor-styles');
+        if (styleEl) styleEl.remove();
+        this._stylesInjected = false;
+    }
+
     // ── Friend Activity Feed Insight ──────────────────────────────────────────
 
     _applyFriendActivityBadges() {

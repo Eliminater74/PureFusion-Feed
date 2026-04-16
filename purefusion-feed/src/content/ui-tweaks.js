@@ -27,6 +27,26 @@ class PF_UiTweaks {
         this.update();
     }
 
+    destroy() {
+        // Remove DFM keyboard shortcut listener
+        if (this._dfmKeyHandler) {
+            document.removeEventListener('keydown', this._dfmKeyHandler, true);
+            this._dfmKeyHandler = null;
+        }
+        // Reset DFM class so Facebook looks normal after disable/reload
+        this._dfmActive = false;
+        document.documentElement.classList.remove('pf-dfm-active');
+        // Restore wrapped links so FB redirect URLs work normally
+        this._restoreWrappedLinks();
+        // Clear timestamp chips
+        this._clearAbsoluteTimestampLabels();
+        // Remove injected styles
+        if (this.styleTag && this.styleTag.parentElement) {
+            this.styleTag.parentElement.removeChild(this.styleTag);
+            this.styleTag = null;
+        }
+    }
+
     init() {
         this.styleTag = document.createElement('style');
         this.styleTag.id = 'purefusion-ui-tweaks';

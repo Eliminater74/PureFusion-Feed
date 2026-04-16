@@ -605,25 +605,42 @@ class PureFusionApp {
         effective.filters = {
             ...effective.filters,
             removeAds: false,
+            removeSponsored: false,
             removeSuggested: false,
             removePYMK: false,
             removeGroupSuggestions: false,
             removePageSuggestions: false,
+            removeGameInvites: false,
             hideReels: false,
             hideMarketplace: false,
             hideStories: false,
+            hideMemories: false,
             hideFundraisers: false,
             hideVideoPosts: false,
             hidePhotoPosts: false,
             hideLinkPosts: false,
             hideTextOnlyPosts: false,
-            removeColoredBackgrounds: false
+            hideLiveVideoPosts: false,
+            hideShareReposts: false,
+            hidePollPosts: false,
+            removeColoredBackgrounds: false,
+            removeLargeReactions: false
         };
 
         effective.uiMode = {
             ...effective.uiMode,
             forceMostRecent: false,
             enforceChronologicalFeed: false,
+            compactMode: false,
+            widescreenMode: false,
+            fontSizeScale: 100,
+            distractionFreeMode: false,
+            friendsOnlyMode: false,
+            anonymizerMode: false,
+            hidePostComposer: false,
+            showLinkPreviews: false,
+            fixTimestamps: false,
+            commentSortDefault: 'All Comments',
             hideMessengerSeen: false,
             notificationJewelStyle: 'classic',
             customStylingEnabled: false,
@@ -653,7 +670,14 @@ class PureFusionApp {
 
         effective.predictions = {
             ...effective.predictions,
-            enabled: false
+            enabled: false,
+            trueAffinitySort: false,
+            showFriendActivity: false,
+            showBadge: false,
+            dimLowInterest: false,
+            collapseLowInterest: false,
+            highlightHighInterest: false,
+            credibilitySignalsEnabled: false
         };
 
         effective.imageFilters = {
@@ -675,6 +699,11 @@ class PureFusionApp {
             applyWatch: true,
             applyMarketplace: true,
             applyOther: true
+        };
+
+        effective.sidebar = {
+            ...effective.sidebar,
+            enableModuleFilters: false
         };
 
         effective.topbarFilters = {
@@ -1108,7 +1137,9 @@ class PureFusionApp {
             this.notifControls,
             this.inpageUI,
             this.messengerAI,
-            this.marketplaceFilter
+            this.marketplaceFilter,
+            this.uiTweaks,
+            this.predictor
         ];
 
         destroyable.forEach((mod) => {
