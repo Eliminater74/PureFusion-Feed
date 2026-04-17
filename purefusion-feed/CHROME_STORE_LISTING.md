@@ -1,4 +1,4 @@
-# Chrome Web Store Listing Package — PureFusion Feed v1.9.0
+# Chrome Web Store Listing Package — PureFusion Feed v2.1.0
 
 Use this file as copy-ready content for your Chrome Web Store submission.
 
@@ -8,86 +8,117 @@ Use this file as copy-ready content for your Chrome Web Store submission.
 
 ### Summary (max 150 chars)
 
-Clean up Facebook with smart feed filters, AI post scoring, source blocklist/allowlist, and optional BYOK AI tools — all local and private.
+Clean up Facebook with smart feed filters, AI post scoring, Read-Later queue, 21-locale support, and optional BYOK AI tools — fully local and private.
 
 ### Description
 
-PureFusion Feed gives you full control over your Facebook feed. It removes clutter, scores posts by relevance using on-device AI, and lets you permanently block or trust sources — all without sending any data outside your browser.
+PureFusion Feed gives you full control over your Facebook feed. It removes clutter, scores posts by relevance using on-device AI, lets you permanently block or trust sources, and now ships with 21-language interface support and a full reading toolset — all without sending any data outside your browser.
 
 ---
 
-### 1. Feed Cleanup
+### 1. Feed Cleanup and Filters
 
-- Removes Suggested Posts, People You May Know, and Group injection modules
-- Removes Reels trays injected into your feed — toggle on by default, accurately reflected in the popup
-- Removes Stories bar, Memories posts, and Page Suggestion modules
+- Removes Suggested Posts, People You May Know, Group injection modules, and Reels trays
+- Removes Stories bar, Memories posts, Fundraisers, and Page Suggestion modules
 - Ad blocker removes feed ads using infrastructure signals (zero false positives)
 - Separate sponsored post detection using label-heuristic scanning
-- Keyword blocklist automatically collapses posts matching words you choose
-- Image subject filters: hide posts by visual content category (sports, food, pets, vehicles, memes, travel) — 9-locale alt-text coverage
+- **Post Age Filter** — hide posts older than 6 h, 12 h, 24 h, 2 d, 3 d, 1 week, 2 weeks, or 1 month
+- **Post Deduplication** — hide posts you have already seen in the current session
+- Keyword blocklist collapses posts; autohide list removes them entirely
+- Image subject filters: hide posts by visual category (sports, food, pets, vehicles, memes, travel) — 21-locale alt-text coverage
+- Game invite and notification post filter
+- Post type filters: hide Video, Photo, Link, Text-only, Live, Reshare, or Poll posts independently
 
-### 2. AI Feed Scoring and Classification
+### 2. Reading and Focus Tools
+
+- **Distraction-Free Mode** (`Alt+Shift+F`) — hides both sidebars, centers feed to 680 px for a clean reading view; also accessible from the popup quick toggle
+- **Reply-Only Mode** — collapses post body text, leaving only comment threads visible; useful for engagement-bait avoidance
+- **Auto-Expand "See More"** — automatically dismisses Facebook's artificial text truncation in all 21 supported languages
+- **Image Hover Expand** — hover over feed images to see a full-size preview with Save and Open actions
+- **Absolute Timestamps** — replaces "3 hours ago" with the exact date and time on every post
+- **Comment Sort Enforcement** — automatically applies your preferred comment sort order (Newest / Top Comments) when sections expand
+- **Tracking Parameter Cleaner** — strips fbclid, utm_*, gclid, msclkid, and 20+ other spy params from every feed link
+- **Video Autoplay Control** — mute audio, pause autoplay, or disable entirely
+
+### 3. Read-Later / Bookmark Queue
+
+- Right-click any post → PureFusion → **Save to Read Later** to bookmark it
+- Popup shows a live count badge and "View Queue" button
+- Full queue management in Settings → Keyword Filters: thumbnail, author, snippet, save date, Open link, and individual Remove buttons
+- Clear All with confirmation; queue persists across sessions in local storage
+
+### 4. AI Feed Scoring and Classification
 
 - On-device AI engine scores every post by predicted relevance based on your own engagement history — no cloud, no API key required
 - Content Classification (Model F): identifies Political, Opinion, News, Commercial, and Emotional content using word-boundary-accurate token matching
+- True-Affinity Sort: reorders feed posts by your local engagement score in real time (CSS flexbox, no React DOM changes)
 - Ragebait and Engagement Bait detection flags manipulation patterns directly on each post
 - Credibility signals with one-click verification search links
-- Insight Chip: a compact per-post panel showing score, content type, tone, and confidence rating
-- Classification row shows content type and tone badges inline on each chip
+- Insight Chip: compact per-post panel showing score, content type, tone, and confidence rating
+- Friend Activity Feed Insight: highlights contacts in the sidebar whose posts haven't appeared in your feed this session
 
-### 3. Source Control
+### 5. Source Control
 
-- Permanent Author Blocklist: block any source to hide all their posts across every page load — stored in local storage, managed from the popup and the full settings Source Manager
-- Trusted Sources Allowlist: mark sources as always-show, making them immune to session content filters
-- Session Content Filters: "Hide similar posts" hides all posts of the same content type for the current session — one click from the Insight Chip
+- Permanent Author Blocklist: block any source to hide all their posts across every page load
+- Trusted Sources Allowlist: mark sources as always-show, immune to session content filters
+- Session Content Filters: "Hide similar posts" hides all posts of the same type for the session — one click from the Insight Chip
 - Quick Actions in every Insight Chip: Hide similar posts · Always show source · Block source
 - AI Source Manager in Settings → Keyword Filters: view, add, and remove all blocked and trusted authors in one place
 
-### 4. Popup Feed Intelligence
+### 6. Popup Feed Intelligence
 
-- AI Scoring toggle directly accessible from the popup — no need to open Full Settings
-- Live session stats: real counts of ads blocked and spam hidden since the page loaded
-- Live counts of blocked and trusted sources shown in the popup
-- "Manage Sources" link opens the Source Manager directly
+- AI Scoring toggle directly in the popup — no need to open Full Settings
+- Live session stats: real counts of ads blocked and spam hidden since page loaded
+- Live blocked/trusted source counts
+- Read-Later count badge with direct queue access
+- "Manage Sources" link opens Source Manager directly
 
-### 5. Settings and Usability
+### 7. Settings and Usability
 
-- Popup quick toggles for common filters
-- Full options dashboard with import/export of your configuration
-- Undo chips for hidden posts (show once or always allow a source)
+- Popup quick toggles for all common filters and reading modes
+- Full options dashboard with tabbed layout (Core Filters / Story Filters / AI / UI Tweaks / Social / Sidebar / Data)
+- Import/Export configuration — enhanced format includes blocklist + allowlist with datestamped filename; legacy flat-format backups also accepted
 - Feed Mode Presets: Clean / Focus / Ultra Fast / Smart / Classic — one-click feed personality
-- Power-User Rule Engine: create your own persistent CSS or text-matching rules
+- Power-User Rule Engine: create persistent CSS or text-matching rules
 - Context Menu "Zap": right-click any element to instantly hide it with one-click undo
 
-### 6. Multilingual and International Support
+### 8. Multilingual and International Support
 
-- 9-locale filtering coverage: English, Spanish, French, German, Italian, Dutch, Swedish, Danish, Norwegian
-- All filter paths, notification controls, and search popup suppression cover all 9 locales
+- **21-locale filtering and UI coverage**: English, Spanish, French, German, Italian, Dutch, Swedish, Danish, Norwegian, Indonesian, Vietnamese, Filipino, Turkish, Arabic, Hindi, Korean, Japanese, Traditional Chinese, Polish, Russian, Brazilian Portuguese
+- All filter paths, notification controls, "See More" auto-expand, and search popup suppression cover all supported locales
 - Intelligent Body Text Guard prevents legitimate posts from being accidentally hidden in any language
 
-### 7. Marketplace Local Filter
+### 9. Marketplace Local Filter
 
 - Distance-based listing filter — set a max distance in miles to hide listings outside your area
-- Works with both "X miles away" and "X km away" listing labels (auto-converts)
-- Local pickup listings are treated as zero distance and always shown
-- Local-first sort reorders matching results to surface nearby deals at the top
-- Hide unknown distance listings option — for a strictly local-only view
-- Compact overlay panel injected directly on the Marketplace page with a live preview of your distance setting
+- Supports both "X miles away" and "X km away" labels (auto-converts)
+- Local pickup listings always shown; local-first sort surfaces nearby deals at the top
+- Hide unknown distance option for strictly local-only view
+- Compact overlay panel injected on the Marketplace page with live distance preview
 
-### 8. Optional AI Features (BYOK — Bring Your Own Key)
+### 10. Optional AI Features (BYOK — Bring Your Own Key)
 
 - TL;DR post summaries and comment-assist tools
-- Messenger composer tools: rewrite draft and generate smart replies
-- AI permissions only requested when a provider is enabled by you
-- Supports Chrome's built-in Gemini Nano (fully offline, no key needed) or free Google Gemini API
+- Messenger composer: message rewrite and smart reply generation
+- Supports Chrome's built-in Gemini Nano (fully offline) or Google Gemini / OpenAI APIs
+- AI permissions only requested when you enable a provider
 
-### 9. Messenger Enhancements
+### 11. Messenger Enhancements
 
-- Always-visible message timestamps — see exact send times without hovering
-- Mark All Read button — clears all unread badges in one click from the chat list
-- Conversation filter bar — instantly filter your inbox to show only Unread, Direct, or Group conversations
-- Unsend detection — notifies you when a message you received is deleted by the sender
+- Always-visible message timestamps — exact send times without hovering
+- Mark All Read button — clears all unread badges in one click
+- Conversation filter bar — filter inbox to All, Unread, or Group conversations
+- Unsend detection — notifies you when a received message is deleted by the sender
 - Hide seen receipts, typing indicators, and privacy blur mode
+
+### 12. Digital Wellbeing
+
+- Grayscale Mode — reduce screen addiction with monochrome rendering
+- Infinite Scroll Stopper — pause feed loading after N posts with a "Take a break" prompt
+- Session Timer — floating clock showing time spent on Facebook this session
+- Reels Limiter — allow only N reels per session, then block further autoplay
+- Clickbait Blocker — auto-collapses known clickbait phrase patterns
+- Ragebait Detector — uses AI Predictor to down-score intentionally inflammatory posts
 
 ---
 
@@ -107,34 +138,41 @@ Facebook and Messenger interfaces change frequently. Filter results may vary by 
 ## Test Instructions for Reviewers
 
 1. Install the extension and open `https://www.facebook.com`.
-2. Open the extension popup. The **Hide Reels** toggle will be ON by default — Reels trays injected into the feed should already be hidden on page load. Toggle it off and on to confirm live effect.
-3. Confirm that recommendation modules (People You May Know, Suggested Groups) are removed from the feed.
+2. Open the extension popup. The **Hide Reels** toggle will be ON by default — Reels trays should already be hidden. Toggle off and on to confirm live effect.
+3. Confirm recommendation modules (People You May Know, Suggested Groups) are removed from the feed.
 4. In the popup **Feed Intelligence** section, confirm the AI Scoring toggle is present and changes the subtitle text when toggled.
-5. Open full settings and apply a preset pack from Core Filters.
-6. Verify feed updates without page reload.
-7. Context Menu "Zap" test:
+5. Open full settings and apply a preset pack from Core Filters. Verify the feed updates without a page reload.
+6. Context Menu "Zap" test:
    - Right-click any non-critical element (e.g., a sidebar link or group badge).
    - Select "Zap (Hide) Element" from the menu.
    - Confirm the element vanishes and a toast appears with an "Undo" button.
    - Refresh the page and confirm the element stays hidden.
+7. Read-Later test:
+   - Right-click any Facebook post and select **Save to Read Later** from the PureFusion submenu.
+   - Open the popup and confirm the Read-Later badge count has incremented.
+   - Click "View Queue" and confirm the saved item appears in Settings → Keyword Filters with thumbnail, author, and snippet.
 8. Keyword filter reproducibility test:
    - In Options → Keyword Filters, add a visible word from a feed post into the Blocklist.
-   - Save settings and confirm matching posts collapse behind the filter overlay.
+   - Save and confirm matching posts collapse behind the filter overlay.
 9. Insight Chip test:
-   - With AI Scoring enabled, scroll the Facebook feed and observe the compact Insight Chip on posts.
+   - With AI Scoring enabled, scroll the feed and observe the compact Insight Chip on posts.
    - Click "Details" on a chip to expand the panel — confirm score, content type, and Quick Actions are visible.
    - Click "Block source" and confirm the post hides immediately.
    - Open Settings → Keyword Filters → AI Source Manager and confirm the blocked author appears in the Blocked Sources list.
-10. Marketplace Local Filter test:
+10. Post Age Filter test:
+    - In Options → Core Filters, set "Hide posts older than" to 24 h.
+    - Refresh Facebook — posts older than 24 hours should be hidden.
+    - Set the filter back to Off and confirm hidden posts are restored.
+11. Marketplace Local Filter test:
     - Open `https://www.facebook.com/marketplace/` — confirm the PureFusion distance filter overlay appears.
     - Set Max Distance to 10 miles — confirm listings beyond that distance are hidden.
     - Enable "Hide unknown distance" and confirm listings with no distance label are hidden.
-11. Open Messenger (`https://messenger.com`) and verify:
-    - Message timestamps are visible on each bubble without hovering (if enabled).
+12. Open Messenger (`https://messenger.com`) and verify:
+    - Message timestamps are visible without hovering (if enabled in Settings → Social).
     - "Mark All Read" button appears in the chat list header (if enabled).
     - The conversation filter bar appears above the inbox (if enabled).
     - Ghost Mode options work: seen receipts hidden, typing indicator hidden, privacy blur.
-12. Optional AI test:
+13. Optional AI test:
     - In Options → AI Engine, choose Gemini or OpenAI and save.
     - Allow the optional host permission prompt.
     - Trigger TL;DR on a feed post or Rewrite / Smart Replies in the Messenger composer.
@@ -144,11 +182,11 @@ Facebook and Messenger interfaces change frequently. Filter results may vary by 
 ## Permission Justifications
 
 - `storage`
-  - Saves user preferences, filter rules, keyword lists, AI engagement history, blocked/trusted source lists, and synced extension settings.
+  - Saves user preferences, filter rules, keyword lists, AI engagement history, blocked/trusted source lists, Read-Later queue, and all extension settings.
 - `declarativeNetRequest`
   - Applies lightweight network-level filtering for known tracker patterns.
 - `contextMenus`
-  - Powers the right-click "Zap (Hide) Element" feature that lets users instantly hide any page element.
+  - Powers the right-click "Zap (Hide) Element" and "Save to Read Later" features that let users instantly act on any page element.
 - Host permission `*://*.facebook.com/*`
   - Required to read and modify Facebook feed DOM for user-selected filters and AI scoring.
 - Host permission `*://*.messenger.com/*`
@@ -175,6 +213,7 @@ PureFusion ships bundled local scripts only. AI requests are direct provider API
 - API keys: stored locally on device only (`chrome.storage.local`), never transmitted.
 - AI engagement history: stored locally in `chrome.storage.local`, never leaves the device.
 - Blocked/trusted source lists: stored locally in `chrome.storage.local`.
+- Read-Later queue: stored locally in `chrome.storage.local`, never transmitted.
 - AI payloads: sent directly from the user's browser to their selected provider endpoint using their own key.
 
 ---
