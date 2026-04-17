@@ -967,7 +967,7 @@ class PF_UiTweaks {
     _autoExpandSeeMore(nodes) {
         // Multi-locale "See more" button text — exact match prevents accidental expansion
         // of "See more comments", "See more reactions", or other multi-word variants.
-        const SEE_MORE_RE = /^(see more|ver m[aá]s|voir plus|voir la suite|mehr anzeigen|meer weergeven|se mer|vis mere|vedi altro|mostra di pi[uù]|ver mais|xem th[eê]m)$/i;
+        const SEE_MORE_RE = /^(see more|ver m[aá]s|voir plus|voir la suite|mehr anzeigen|meer weergeven|se mer|vis mere|vedi altro|mostra di pi[uù]|ver mais|xem th[eê]m|더 보기|もっと見る|查看更多|Zobacz wi[eę]cej|[ЕЁ]щ[ёе]|Показать ещ[её]|عرض المزيد|और देखें|Lihat selengkapnya|Makita pa|Daha fazla g[oö]r)$/i;
 
         const roots = (Array.isArray(nodes) && nodes.length) ? nodes : [document];
         roots.forEach((root) => {

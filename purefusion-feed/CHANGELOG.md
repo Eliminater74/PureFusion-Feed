@@ -2,6 +2,23 @@
 
 All notable changes to PureFusion Feed are documented in this file.
 
+## v2.1.0 - 2026-04-16
+
+### Added
+
+- **Read-Later / Bookmark Queue** — Right-click any post and choose "Save to Read Later" from the PureFusion context menu to bookmark it. The popup shows a live count badge and "View Queue" button; the Options → Keywords tab displays a scrollable list of saved items with thumbnail, author, snippet, date, open link, and individual remove buttons. Items persist in local storage under `pf_readlater`.
+- **Post Age Filter** — New "Hide posts older than…" select (Core Filters) lets you hide posts beyond 6 h / 12 h / 24 h / 48 h / 72 h / 1 week / 2 weeks / 1 month. Timestamp extraction uses a three-strategy cascade: `time[datetime]` ISO → `data-utime` Unix seconds → injected `.pf-post-date-chip` text. Posts with no detectable timestamp are kept visible (safe default). Toggle-OFF restores all age-hidden posts.
+- **Reply-Only Mode** — New checkbox in UI Tweaks collapses post body text (`data-ad-comet-preview="message"`) and attached story previews for every feed unit, leaving only comment threads visible. Implemented as a pure CSS class toggle on `<html>` with zero per-node JS cost. Toggle-OFF instantly restores full post bodies.
+- **"See More" auto-expand for 10 new locales** — Expanded the `SEE_MORE_RE` regex in the auto-expand engine to cover Korean (더 보기), Japanese (もっと見る), Traditional Chinese (查看更多), Polish (Zobacz więcej), Russian (Ещё / Показать ещё), Arabic (عرض المزيد), Hindi (और देखें), Indonesian (Lihat selengkapnya), Filipino (Makita pa), and Turkish (Daha fazla gör). All 21 supported locales are now covered.
+- **21-locale i18n parity** — All 559 settings keys are now present in every locale file (EN through TR). The ES locale gap (9 missing Power-User Rule Engine keys) has been filled with full Spanish translations.
+
+### Changed
+
+- ES locale now at 559 keys — full parity with EN (was 550 after v2.0.0).
+- All other 19 locale files also at 559 keys (English-text placeholders for new keys; Chrome falls back to EN identically).
+
+---
+
 ## v2.0.0 - 2026-04-16
 
 ### Added
