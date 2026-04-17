@@ -2,6 +2,13 @@
 
 All notable changes to PureFusion Feed are documented in this file.
 
+## v2.1.1 - 2026-04-16
+
+- **Plugin SDK Roadmap** — Full 7-phase architectural plan documented in `PLUGIN_SDK_ROADMAP.md`. Covers Plugin Host Foundation (Phase 64), First-Party Bundled Plugins (Phase 65), Settings Auto-UI (Phase 66), Content Pipeline Hooks (Phase 67), Context Menu & SW Relay (Phase 68), Plugin Manager UI (Phase 69), and Companion Extension API (Phase 70). Includes API surface design, two-tier security model (bundled + companion extension), plugin backlog of 12 ideas, and developer quick-start guide.
+- Chrome Store listing (`CHROME_STORE_LISTING.md`) updated to v2.1.0 — 12 feature sections, 13 reviewer test steps, updated permission justifications and privacy disclosure.
+
+---
+
 ## v2.1.0 - 2026-04-16
 
 ### Added
