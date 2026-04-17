@@ -196,6 +196,12 @@ class PureFusionApp {
                         if (sendResponse) sendResponse({ status: "success" });
                         return;
                     }
+
+                    if (request.type === 'PF_SAVE_FOR_LATER') {
+                        this._handleSaveForLater();
+                        if (sendResponse) sendResponse({ status: "success" });
+                        return;
+                    }
                 });
             } catch (e) {
                 PF_Logger.warn("PureFusion: Extension context invalidated. Hot-reloading disabled.");
@@ -299,6 +305,93 @@ class PureFusionApp {
                 'success'
             );
         }
+    }
+
+    async _handleSaveForLater() {
+        const target = this.lastRightClickedElement;
+        const t = (key, fallback) => {
+            try { return (chrome.i18n && chrome.i18n.getMessage(key)) || fallback; } catch (_) { return fallback; }
+        };
+
+        if (!target) {
+            if (window.PF_Helpers) window.PF_Helpers.showToast(
+                t('content_save_later_error', 'Could not identify a post to save. Try right-clicking within a post.'), 'warn'
+            );
+            return;
+        }
+
+        // Walk up to find the containing article/feed unit
+        const article = target.closest?.('[role="article"]')
+            || target.closest?.('[data-pagelet^="FeedUnit_"]')
+            || target.closest?.('[data-pagelet^="AdUnit_"]');
+
+        if (!article) {
+            if (window.PF_Helpers) window.PF_Helpers.showToast(
+                t('content_save_later_error', 'Could not identify a post to save. Try right-clicking within a post.'), 'warn'
+            );
+            return;
+        }
+
+        const saved = this._extractReadLaterData(article);
+
+        // Load existing queue and deduplicate by URL
+        const existing = await PF_Storage.getLocalData('pf_readlater');
+        const queue = Array.isArray(existing) ? existing : [];
+        if (saved.url && queue.some(item => item.url === saved.url)) {
+            if (window.PF_Helpers) window.PF_Helpers.showToast(
+                t('content_save_later_duplicate', 'Already in your Read Later queue.'), 'info'
+            );
+            return;
+        }
+
+        queue.push(saved);
+        await PF_Storage.setLocalData('pf_readlater', queue);
+
+        if (window.PF_Helpers) window.PF_Helpers.showToast(
+            t('content_saved_for_later', 'Post saved to Read Later.'), 'success'
+        );
+    }
+
+    _extractReadLaterData(article) {
+        // Author — try heading link first, then strong link
+        let author = '';
+        const authorEl = article.querySelector('h2 a[href], h3 a[href], strong a[href]');
+        if (authorEl) author = (authorEl.textContent || '').trim();
+
+        // Text snippet — post body, first 200 chars
+        let text = '';
+        const bodyEl = article.querySelector(
+            '[data-ad-comet-preview="message"], [data-ad-preview="message"], [dir="auto"][class]'
+        );
+        if (bodyEl) text = (bodyEl.textContent || '').trim().slice(0, 200);
+
+        // Permalink URL — prefer timestamp/post link, fall back to current page
+        let url = '';
+        const permLink = article.querySelector(
+            'a[href*="/posts/"], a[href*="/permalink/"], a[href*="?story_fbid="]'
+        );
+        if (permLink) url = permLink.href || '';
+        if (!url) url = window.location.href;
+
+        // Thumbnail — first non-icon image in the post
+        let thumbnail = '';
+        const imgs = article.querySelectorAll('img[src]');
+        for (const img of imgs) {
+            const src = img.src || '';
+            if (!src || src.startsWith('data:')) continue;
+            if ((img.offsetWidth || 0) < 40) continue;  // skip icons/avatars
+            thumbnail = src;
+            break;
+        }
+
+        return {
+            id: 'rl_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+            author,
+            text,
+            url,
+            thumbnail,
+            savedAt: new Date().toISOString()
+        };
     }
 
     _captureQuickContextPayload(target) {

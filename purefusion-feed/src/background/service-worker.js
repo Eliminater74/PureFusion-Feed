@@ -33,7 +33,8 @@ const QUICK_MENU_IDS = {
     allowKeyword: 'pf_quick_allow_keyword',
     hideSource: 'pf_quick_hide_source',
     allowSource: 'pf_quick_allow_source',
-    zapElement: 'pf_quick_zap_element'
+    zapElement: 'pf_quick_zap_element',
+    saveForLater: 'pf_quick_save_for_later'
 };
 
 const QUICK_MENU_URL_PATTERNS = [
@@ -573,6 +574,14 @@ async function setupQuickActionMenus() {
             contexts: ['all'],
             documentUrlPatterns: QUICK_MENU_URL_PATTERNS
         });
+
+        chrome.contextMenus.create({
+            id: QUICK_MENU_IDS.saveForLater,
+            parentId: QUICK_MENU_IDS.root,
+            title: t('quick_action_save_later', 'Save to Read Later'),
+            contexts: ['all'],
+            documentUrlPatterns: QUICK_MENU_URL_PATTERNS
+        });
     } catch (err) {
         console.warn('Failed to set up quick action menus:', err);
     }
@@ -587,6 +596,11 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
 
     if (actionId === QUICK_MENU_IDS.zapElement) {
         await notifyTab(tabId, { type: 'PF_ZAP_ELEMENT' });
+        return;
+    }
+
+    if (actionId === QUICK_MENU_IDS.saveForLater) {
+        await notifyTab(tabId, { type: 'PF_SAVE_FOR_LATER' });
         return;
     }
 

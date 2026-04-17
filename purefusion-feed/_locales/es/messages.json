@@ -548,5 +548,16 @@
   "messenger_ai_rewrite_fail": { "message": "No se pudo reescribir. Revisa el proveedor de IA." },
   "messenger_ai_context_missing": { "message": "Se necesita más contexto para sugerir respuestas." },
   "messenger_ai_replies_fail": { "message": "No se pudieron generar respuestas inteligentes." },
-  "messenger_ai_provider_required": { "message": "Configura primero un proveedor de IA en PureFusion." }
+  "messenger_ai_provider_required": { "message": "Configura primero un proveedor de IA en PureFusion." },
+  "quick_action_save_later": { "message": "Guardar para leer después" },
+  "popup_readlater_title": { "message": "Leer después" },
+  "popup_readlater_one": { "message": "1 guardado" },
+  "popup_readlater_many": { "message": "{count} guardados" },
+  "popup_readlater_view": { "message": "Ver cola" },
+  "options_readlater_title": { "message": "Cola de lectura diferida" },
+  "options_readlater_desc": { "message": "Publicaciones guardadas desde el feed de Facebook usando clic derecho → Enseñar a PureFusion → Guardar para leer después." },
+  "options_readlater_clear": { "message": "Borrar todo" },
+  "content_saved_for_later": { "message": "Publicación guardada para leer después." },
+  "content_save_later_duplicate": { "message": "Ya está en tu cola de lectura." },
+  "content_save_later_error": { "message": "No se pudo identificar la publicación. Haz clic derecho dentro de una publicación." }
 }

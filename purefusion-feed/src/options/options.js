@@ -1512,4 +1512,107 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Initial load
     loadSourceManager();
 
+    // =========================================================================
+    // Read Later Queue Manager
+    // Lets users view and remove posts saved via right-click → Save to Read Later
+    // =========================================================================
+
+    async function loadReadLaterManager() {
+        const raw = await PF_Storage.getLocalData('pf_readlater');
+        const items = Array.isArray(raw) ? raw : [];
+
+        const listEl  = document.getElementById('pf-readlater-list');
+        const countEl = document.getElementById('pf-readlater-opt-count');
+        if (!listEl) return;
+
+        if (countEl) countEl.textContent = `${items.length} saved`;
+
+        if (!items.length) {
+            listEl.innerHTML = `<p class="pf-source-empty pf-desc">No posts saved yet. Right-click any post on Facebook and choose "Save to Read Later".</p>`;
+            return;
+        }
+
+        listEl.innerHTML = '';
+        items.forEach((item) => {
+            const row = document.createElement('div');
+            row.className = 'pf-source-row pf-readlater-row';
+
+            // Thumbnail
+            if (item.thumbnail) {
+                const thumb = document.createElement('img');
+                thumb.src = item.thumbnail;
+                thumb.className = 'pf-readlater-thumb';
+                thumb.loading = 'lazy';
+                thumb.onerror = () => thumb.remove();
+                row.appendChild(thumb);
+            }
+
+            // Text block
+            const info = document.createElement('div');
+            info.className = 'pf-readlater-info';
+
+            if (item.author) {
+                const author = document.createElement('span');
+                author.className = 'pf-source-name pf-readlater-author';
+                author.textContent = item.author;
+                info.appendChild(author);
+            }
+
+            if (item.text) {
+                const snippet = document.createElement('span');
+                snippet.className = 'pf-readlater-snippet pf-desc';
+                snippet.textContent = item.text.length > 120 ? item.text.slice(0, 120) + '…' : item.text;
+                info.appendChild(snippet);
+            }
+
+            const savedAt = document.createElement('span');
+            savedAt.className = 'pf-readlater-date pf-desc';
+            savedAt.textContent = item.savedAt ? new Date(item.savedAt).toLocaleDateString() : '';
+            info.appendChild(savedAt);
+
+            row.appendChild(info);
+
+            // Action buttons
+            const actions = document.createElement('div');
+            actions.className = 'pf-readlater-actions';
+
+            if (item.url) {
+                const openBtn = document.createElement('a');
+                openBtn.href = item.url;
+                openBtn.target = '_blank';
+                openBtn.rel = 'noopener noreferrer';
+                openBtn.className = 'pf-btn pf-btn-secondary pf-btn-xs';
+                openBtn.textContent = 'Open';
+                actions.appendChild(openBtn);
+            }
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'pf-btn pf-btn-danger pf-btn-xs';
+            removeBtn.textContent = 'Remove';
+            removeBtn.addEventListener('click', async () => {
+                const updated = items.filter((i) => i.id !== item.id);
+                await PF_Storage.setLocalData('pf_readlater', updated);
+                showSaveToast('Post removed from Read Later queue.');
+                loadReadLaterManager();
+            });
+            actions.appendChild(removeBtn);
+
+            row.appendChild(actions);
+            listEl.appendChild(row);
+        });
+    }
+
+    document.getElementById('btnClearReadLater')?.addEventListener('click', async () => {
+        const raw = await PF_Storage.getLocalData('pf_readlater');
+        const count = Array.isArray(raw) ? raw.length : 0;
+        if (!count) { showSaveToast('Read Later queue is already empty.'); return; }
+        if (!confirm(`Clear all ${count} saved post${count !== 1 ? 's' : ''}?`)) return;
+        await PF_Storage.setLocalData('pf_readlater', []);
+        showSaveToast('Read Later queue cleared.');
+        loadReadLaterManager();
+    });
+
+    loadReadLaterManager();
+
 });

@@ -34,6 +34,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         metaAI: document.getElementById('tgl_hideMetaAI'),
         distractionFree: document.getElementById('tgl_distractionFree'),
 
+        // Read Later
+        readLaterCount: document.getElementById('pf-readlater-count'),
+        readLaterViewBtn: document.getElementById('pf-readlater-view-btn'),
+
         // Feed Intelligence
         aiScoring: document.getElementById('tgl_aiScoring'),
         intelSection: document.getElementById('pf-feed-intel'),
@@ -109,6 +113,29 @@ document.addEventListener('DOMContentLoaded', async () => {
             elements.intelTrusted.textContent = `${trustedCount} trusted`;
         }
     };
+
+    // Read Later — live saved count
+    const loadReadLaterCount = async () => {
+        const queue = await PF_Storage.getLocalData('pf_readlater');
+        const count = Array.isArray(queue) ? queue.length : 0;
+        if (elements.readLaterCount) {
+            elements.readLaterCount.textContent = count === 1
+                ? t('popup_readlater_one', '1 saved')
+                : t('popup_readlater_many', `${count} saved`).replace('{count}', count);
+        }
+    };
+
+    loadReadLaterCount();
+
+    if (elements.readLaterViewBtn) {
+        elements.readLaterViewBtn.addEventListener('click', () => {
+            if (chrome.runtime.openOptionsPage) {
+                chrome.runtime.openOptionsPage();
+            } else {
+                window.open(chrome.runtime.getURL('src/options/options.html'));
+            }
+        });
+    }
 
     updateFeedIntelUI();
     loadIntelCounts();
