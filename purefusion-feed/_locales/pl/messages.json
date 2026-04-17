@@ -568,5 +568,16 @@
   "options_readlater_clear": { "message": "Clear All" },
   "content_saved_for_later": { "message": "Post saved to Read Later." },
   "content_save_later_duplicate": { "message": "Already in your Read Later queue." },
-  "content_save_later_error": { "message": "Could not identify a post to save. Try right-clicking within a post." }
+  "content_save_later_error": { "message": "Could not identify a post to save. Try right-clicking within a post." },
+  "options_filters_post_age_label": { "message": "Hide Posts Older Than" },
+  "options_filters_post_age_desc": { "message": "Hide feed posts older than the chosen threshold. Reads the post timestamp — posts without a detectable date are kept visible." },
+  "options_filters_post_age_off": { "message": "Off" },
+  "options_filters_post_age_6h": { "message": "6 hours" },
+  "options_filters_post_age_12h": { "message": "12 hours" },
+  "options_filters_post_age_24h": { "message": "24 hours (1 day)" },
+  "options_filters_post_age_48h": { "message": "2 days" },
+  "options_filters_post_age_72h": { "message": "3 days" },
+  "options_filters_post_age_7d": { "message": "7 days" },
+  "options_filters_post_age_14d": { "message": "14 days" },
+  "options_filters_post_age_30d": { "message": "30 days" }
 }

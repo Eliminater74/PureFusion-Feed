@@ -203,6 +203,14 @@ class PF_Cleaner {
             }
         }
 
+        // Phase 61 — Post Age Filter
+        if ((this.settings?.filters?.postAgeMaxHours || 0) > 0) {
+            const article = rootNode.matches?.('[role="article"]')
+                ? rootNode
+                : rootNode.querySelector?.('[role="article"]');
+            if (article && this._filterByPostAge(article, rootNode)) return;
+        }
+
         if (this.settings.filters.removeAds) {
             this._removeAdsByHardSignals(rootNode);
             this.removeRightRailAds(rootNode);
@@ -3107,6 +3115,65 @@ class PF_Cleaner {
      *   2. Share button href — contains story_fbid= or id= parameters
      *   3. Permalink/post link in the article — /posts/<id> or /permalink/<id>
      */
+
+    // Phase 61 — Post Age Filter helpers
+
+    /**
+     * Returns true and hides the post if it is older than the configured threshold.
+     */
+    _filterByPostAge(article, rootNode) {
+        const maxMs = (this.settings?.filters?.postAgeMaxHours || 0) * 3600000;
+        if (!maxMs) return false;
+        const postDate = this._extractPostTimestamp(article);
+        if (!postDate) return false;  // No timestamp found — keep the post
+        const ageMs = Date.now() - postDate.getTime();
+        if (ageMs > maxMs) {
+            const wrapper = PF_Helpers.getClosest(article, PF_SELECTOR_MAP.postContainer) || article;
+            this._hidePostNode(wrapper, 'Old Post');
+            this._markNodeAsProcessed(rootNode);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Extracts an absolute Date from a post article using three strategies:
+     *   1. <time datetime="..."> — ISO timestamp, most reliable
+     *   2. [data-utime] — Unix timestamp in seconds (legacy FB)
+     *   3. .pf-post-date-chip text — injected by Phase 46 fixTimestamps
+     */
+    _extractPostTimestamp(article) {
+        if (!article) return null;
+
+        // Strategy 1: <time datetime="..."> (ISO string — locale-independent)
+        const timeEls = article.querySelectorAll('time[datetime]');
+        for (const el of timeEls) {
+            const dt = el.getAttribute('datetime');
+            if (!dt) continue;
+            const d = new Date(dt);
+            if (!isNaN(d.getTime()) && d.getFullYear() > 2000) return d;
+        }
+
+        // Strategy 2: data-utime (unix seconds — older FB rendering)
+        const utimeEl = article.querySelector('[data-utime]');
+        if (utimeEl) {
+            const ts = parseInt(utimeEl.getAttribute('data-utime'), 10);
+            if (ts > 0) return new Date(ts * 1000);
+        }
+
+        // Strategy 3: .pf-post-date-chip injected text "Posted: April 14, 2026 at 3:30 PM"
+        const chip = article.querySelector('.pf-post-date-chip');
+        if (chip) {
+            const text = (chip.textContent || '').replace(/^[^:]+:\s*/i, '').trim();
+            if (text) {
+                const d = new Date(text);
+                if (!isNaN(d.getTime()) && d.getFullYear() > 2000) return d;
+            }
+        }
+
+        return null;
+    }
+
     _extractPostId(articleNode) {
         if (!articleNode) return null;
 
@@ -3218,6 +3285,7 @@ class PF_Cleaner {
 
                 // -- Simple feed-filter toggles --
                 if (reason === 'Duplicate Post'        && !f?.deduplicatePosts)       { _pfUnhide(); this._seenPostIds.clear(); return; }
+                if (reason === 'Old Post'              && !((f?.postAgeMaxHours || 0) > 0)) { _pfUnhide(); return; }
                 if (reason === 'Suggested Posts'       && !f?.removeSuggested)        { _pfUnhide(); return; }
                 if (reason === 'Page Suggestion'       && !f?.removePageSuggestions)  { _pfUnhide(); return; }
                 if (reason === 'People You May Know'   && !f?.removePYMK)             { _pfUnhide(); return; }

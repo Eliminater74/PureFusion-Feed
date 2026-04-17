@@ -255,6 +255,21 @@
                     <input type="checkbox" id="opt_filters_deduplicatePosts" class="pf-toggle">
                     <p class="pf-desc" data-i18n="options_filters_deduplicate_posts_desc">Suppress posts whose ID has already appeared this session — catches FB re-injecting the same story multiple times.</p>
                 </div>
+                <div class="pf-setting-row auto-height">
+                    <label data-i18n="options_filters_post_age_label">Hide Posts Older Than</label>
+                    <select id="opt_filters_postAgeMaxHours" class="pf-input-number">
+                        <option value="0"   data-i18n="options_filters_post_age_off">Off</option>
+                        <option value="6"   data-i18n="options_filters_post_age_6h">6 hours</option>
+                        <option value="12"  data-i18n="options_filters_post_age_12h">12 hours</option>
+                        <option value="24"  data-i18n="options_filters_post_age_24h">24 hours (1 day)</option>
+                        <option value="48"  data-i18n="options_filters_post_age_48h">2 days</option>
+                        <option value="72"  data-i18n="options_filters_post_age_72h">3 days</option>
+                        <option value="168" data-i18n="options_filters_post_age_7d">7 days</option>
+                        <option value="336" data-i18n="options_filters_post_age_14d">14 days</option>
+                        <option value="720" data-i18n="options_filters_post_age_30d">30 days</option>
+                    </select>
+                    <p class="pf-desc" data-i18n="options_filters_post_age_desc">Hide feed posts older than the chosen threshold. Reads the post timestamp — posts without a detectable date are kept visible.</p>
+                </div>
             </div>
 
             <div class="pf-card mt-4 pf-advanced-card">

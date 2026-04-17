@@ -323,6 +323,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_filters_removeColoredBackgrounds': { obj: 'filters', prop: 'removeColoredBackgrounds', type: 'checkbox' },
         'opt_filters_removeLargeReactions':     { obj: 'filters', prop: 'removeLargeReactions', type: 'checkbox' },
         'opt_filters_deduplicatePosts':         { obj: 'filters', prop: 'deduplicatePosts', type: 'checkbox' },
+        'opt_filters_postAgeMaxHours':          { obj: 'filters', prop: 'postAgeMaxHours', type: 'number', fallback: 0 },
 
         // Feed Experience Mode
         'opt_experience_mode': { obj: 'experienceMode', prop: 'active', type: 'select' },

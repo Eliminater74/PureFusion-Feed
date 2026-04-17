@@ -35,6 +35,7 @@ const DEFAULT_SETTINGS = {
         removeColoredBackgrounds: true, // Giant font/colored posts -> standard text
         removeLargeReactions: true,     // Downsize large emoji reactions
         deduplicatePosts: false,        // Hide posts whose ID has already appeared this session
+        postAgeMaxHours: 0,             // Hide posts older than N hours (0 = off)
     },
 
     // ------------------------------------------------------------------------

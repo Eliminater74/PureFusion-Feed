@@ -718,7 +718,8 @@ class PureFusionApp {
             hidePollPosts: false,
             removeColoredBackgrounds: false,
             removeLargeReactions: false,
-            deduplicatePosts: false
+            deduplicatePosts: false,
+            postAgeMaxHours: 0
         };
 
         effective.uiMode = {

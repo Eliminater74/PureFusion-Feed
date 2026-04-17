@@ -559,5 +559,16 @@
   "options_readlater_clear": { "message": "Borrar todo" },
   "content_saved_for_later": { "message": "Publicación guardada para leer después." },
   "content_save_later_duplicate": { "message": "Ya está en tu cola de lectura." },
-  "content_save_later_error": { "message": "No se pudo identificar la publicación. Haz clic derecho dentro de una publicación." }
+  "content_save_later_error": { "message": "No se pudo identificar la publicación. Haz clic derecho dentro de una publicación." },
+  "options_filters_post_age_label": { "message": "Ocultar publicaciones más antiguas que" },
+  "options_filters_post_age_desc": { "message": "Oculta publicaciones del feed más antiguas que el umbral elegido. Lee la marca de tiempo de la publicación — las publicaciones sin fecha detectable se mantienen visibles." },
+  "options_filters_post_age_off": { "message": "Desactivado" },
+  "options_filters_post_age_6h": { "message": "6 horas" },
+  "options_filters_post_age_12h": { "message": "12 horas" },
+  "options_filters_post_age_24h": { "message": "24 horas (1 día)" },
+  "options_filters_post_age_48h": { "message": "2 días" },
+  "options_filters_post_age_72h": { "message": "3 días" },
+  "options_filters_post_age_7d": { "message": "7 días" },
+  "options_filters_post_age_14d": { "message": "14 días" },
+  "options_filters_post_age_30d": { "message": "30 días" }
 }
