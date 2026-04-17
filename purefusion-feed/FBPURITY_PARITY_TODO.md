@@ -75,10 +75,17 @@ Always continue from the highest-priority unfinished item. Do not jump ahead.
 **Do NOT jump ahead to:**
 
 - Auto Comment Preview v3.1 (needs explicit go decision)
-- Plugin SDK (needs explicit go decision)
 - Non-critical UI cleanup
 
-**No phases currently queued.**
+**Queued phases (Plugin SDK — see `PLUGIN_SDK_ROADMAP.md` for full design):**
+
+- 🔲 Phase 64: Plugin Host Foundation — `PF_PluginHost` class, `window.PureFusion` global API, plugin registry, per-plugin API factory object, safety wrapper (try/catch), lifecycle integration in `main.js`, `plugins: {}` in `default-settings.js`. New files: `src/plugins/plugin-host.js`, `src/plugins/index.js`. Fires `pf:sdk_ready` on `window`.
+- 🔲 Phase 65: First-Party Bundled Plugins — Three example plugins demonstrating full SDK surface: (1) `feed-logger` (session post log + FAB panel), (2) `post-tagger` (keyword → colored badge), (3) `session-export` (download feed to JSON). New Options → Plugins tab with enable/disable card per plugin.
+- 🔲 Phase 66: Plugin Settings Auto-UI — `settingsSchema` declaration in plugin manifest; `PF_PluginHost` auto-generates `auto-height` options rows; settings persisted under `settings.plugins.<id>`; schema validation on save.
+- 🔲 Phase 67: Content Pipeline Hooks — `api.getNodeMeta()` returns full PF metadata; `pf:before_hide` cancellable event; `api.setNodeData/getNodeData` WeakMap per plugin; `api.registerUndoChipAction()`; `api.restoreByReason()` for toggle-OFF cleanup.
+- 🔲 Phase 68: Context Menu + SW Plugin Relay — `api.contextMenu.register()` adds sub-items to PF right-click menu; `sw-handlers.js` barrel for SW-side plugin message handlers; `api.sendToServiceWorker()` relay with response.
+- 🔲 Phase 69: Plugin Manager UI + Diagnostics — Per-plugin status cards (Running / Error / Disabled), error recovery "Retry" button, "Reset Plugin Data" (clears storage namespace), per-plugin `applyToNodes` timing in diagnostics overlay. Optional: user plugin file import via `chrome.scripting.executeScript`.
+- 🔲 Phase 70: Companion Extension API — `externally_connectable` manifest update; `companion-bridge.js` in service worker; serialized node-metadata relay to third-party extensions; capability allowlist; rate-limiting; read-only DOM model (companions request actions, PF executes).
 
 ---
 
