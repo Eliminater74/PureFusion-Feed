@@ -570,5 +570,7 @@
   "options_filters_post_age_72h": { "message": "3 días" },
   "options_filters_post_age_7d": { "message": "7 días" },
   "options_filters_post_age_14d": { "message": "14 días" },
-  "options_filters_post_age_30d": { "message": "30 días" }
+  "options_filters_post_age_30d": { "message": "30 días" },
+  "options_ui_reply_only_label": { "message": "Modo solo respuestas" },
+  "options_ui_reply_only_desc": { "message": "Colapsa el cuerpo de las publicaciones en el feed — oculta el texto de la publicación e historias adjuntas, dejando visibles solo los comentarios. Útil para ver el debate sin ver el contenido inflamatorio." }
 }

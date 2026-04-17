@@ -748,6 +748,7 @@ class PureFusionApp {
             imageHoverExpand: false,
             autoplayVideoAction: 'off',
             autoExpandSeeMore: false,
+            replyOnlyMode: false,
             stripTrackingParams: false
         };
 

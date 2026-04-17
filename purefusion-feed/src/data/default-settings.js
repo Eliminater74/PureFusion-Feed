@@ -120,6 +120,7 @@ const DEFAULT_SETTINGS = {
         imageHoverExpand: false,        // Hover over feed images to preview full-size with save option
         autoplayVideoAction: 'mute',    // 'off' | 'mute' (silence autoplay) | 'pause' (stop until clicked)
         autoExpandSeeMore: false,       // Auto-click "See more" on truncated posts so full text is always visible
+        replyOnlyMode: false,           // Collapse post bodies — show only comments/reply threads in feed
         stripTrackingParams: true,      // Strip fbclid, utm_*, gclid and other spy params from feed links
     },
 

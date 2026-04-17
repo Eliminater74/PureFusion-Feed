@@ -58,6 +58,8 @@ class PF_UiTweaks {
         // Reset DFM class so Facebook looks normal after disable/reload
         this._dfmActive = false;
         document.documentElement.classList.remove('pf-dfm-active');
+        // Reset Reply-Only Mode class
+        document.documentElement.classList.remove('pf-reply-only');
         // Restore wrapped links so FB redirect URLs work normally
         this._restoreWrappedLinks();
         // Restore stripped-param links
@@ -300,6 +302,22 @@ class PF_UiTweaks {
                 max-width: 680px !important;
                 margin-left: auto !important;
                 margin-right: auto !important;
+            }
+        \n`;
+
+        // 8a. Reply-Only Mode — collapse post body, show only comment thread
+        if (this.settings?.uiMode?.replyOnlyMode) {
+            document.documentElement.classList.add('pf-reply-only');
+        } else {
+            document.documentElement.classList.remove('pf-reply-only');
+        }
+        css += `
+            html.pf-reply-only [data-pagelet^="FeedUnit_"] [data-ad-comet-preview="message"],
+            html.pf-reply-only [data-pagelet^="FeedUnit_"] [data-ad-preview="message"] {
+                display: none !important;
+            }
+            html.pf-reply-only [data-pagelet^="FeedUnit_"] [data-testid="story-attached-story"] {
+                display: none !important;
             }
         \n`;
 

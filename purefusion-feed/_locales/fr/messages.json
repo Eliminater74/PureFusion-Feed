@@ -555,5 +555,7 @@
   "options_filters_post_age_72h": { "message": "3 days" },
   "options_filters_post_age_7d": { "message": "7 days" },
   "options_filters_post_age_14d": { "message": "14 days" },
-  "options_filters_post_age_30d": { "message": "30 days" }
+  "options_filters_post_age_30d": { "message": "30 days" },
+  "options_ui_reply_only_label": { "message": "Reply-Only Mode" },
+  "options_ui_reply_only_desc": { "message": "Collapse post bodies in the feed — hides post text and attached stories, leaving only the comment threads visible. Useful for cutting through engagement-bait without seeing the inflammatory content." }
 }
