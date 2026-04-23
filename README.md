@@ -2,7 +2,7 @@
 
 <img src="purefusion-feed/icons/icon128.png" alt="PureFusion Feed logo" width="96" height="96"/>
 
-# PureFusion Feed v1.8.1
+# PureFusion Feed v2.1.2
 
 **Your Facebook. Filtered. Predicted. Perfected.**
 

@@ -1,4 +1,4 @@
-# Chrome Web Store Listing Package — PureFusion Feed v2.1.0
+# Chrome Web Store Listing Package — PureFusion Feed v2.1.2
 
 Use this file as copy-ready content for your Chrome Web Store submission.
 

@@ -1,4 +1,4 @@
-# PureFusion Feed v1.8.1
+# PureFusion Feed v2.1.2
 
 > Your Facebook. Filtered. Predicted. Perfected.
 
