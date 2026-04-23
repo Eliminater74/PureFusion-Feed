@@ -1,567 +1,1715 @@
 {
-  "extName": {"message": "PureFusion Feed", "description": "The name of the extension"},
-  "extDesc": {"message": "Manajer Feed Premium dengan Filter Cerdas, Wawasan AI, dan Penjaga Privasi untuk Facebook.", "description": "The extension description"},
-  "common_ads_blocked": {"message": "Iklan Diblokir"},
-  "common_spam_hidden": {"message": "Spam Disembunyikan"},
-  "common_save_settings": {"message": "Simpan Pengaturan"},
-  "common_save_changes": {"message": "Simpan Perubahan"},
-  "common_support_developer": {"message": "Dukung Pengembang"},
-  "common_open_dashboard": {"message": "Buka Pengaturan Lengkap"},
-  "common_open_advanced": {"message": "Buka Dasbor Lanjutan"},
-  "common_logo_alt": {"message": "Logo PureFusion"},
-  "options_page_title": {"message": "PureFusion Feed - Pengaturan"},
-  "popup_quick_filters": {"message": "Filter Cepat"},
-  "popup_hide_sponsored_posts": {"message": "Sembunyikan Postingan Bersponsor"},
-  "popup_hide_sponsored_posts_desc": {"message": "Deteksi berbasis label — nonaktif secara default"},
-  "popup_block_sponsored": {"message": "Blokir Iklan"},
-  "popup_block_sponsored_desc": {"message": "Memblokir iklan melalui sinyal infrastruktur"},
-  "popup_ad_blocker_on": {"message": "✓ Memblokir iklan melalui sinyal infrastruktur"},
-  "popup_ad_blocker_off": {"message": "⚠ Pemblokir iklan nonaktif — klik untuk mengaktifkan"},
-  "options_filters_removeAds": {"message": "Blokir Iklan (sinyal infrastruktur)"},
-  "options_filters_removeSponsored": {"message": "Sembunyikan Postingan Bersponsor (deteksi label)"},
-  "popup_hide_suggested": {"message": "Sembunyikan Saran/PYMK"},
-  "popup_hide_suggested_desc": {"message": "Menghapus saran algoritmik"},
-  "popup_hide_reels": {"message": "Sembunyikan Reels"},
-  "popup_hide_reels_desc": {"message": "Menghapus baki Reels yang disuntikkan ke feed"},
-  "popup_force_recent": {"message": "Paksa Terbaru"},
-  "popup_force_recent_desc": {"message": "Selalu muat feed kronologis"},
-  "popup_distraction_free": {"message": "Mode Bebas Gangguan"},
-  "popup_distraction_free_desc": {"message": "Sembunyikan bilah sisi, pusatkan feed (Alt+Shift+F)"},
-  "popup_fast_keyword": {"message": "Blokir Kata Kunci Cepat"},
-  "popup_keyword_placeholder": {"message": "Masukkan kata kunci untuk disembunyikan..."},
-  "popup_hide_groups": {"message": "Sembunyikan Grup yang Disarankan"},
-  "popup_hide_groups_desc": {"message": "Menghapus rekomendasi grup algoritmik"},
-  "popup_ghost_mode": {"message": "Mode Hantu (Pesan)"},
-  "popup_ghost_mode_desc": {"message": "Sembunyikan indikator Dilihat & Mengetik"},
-  "popup_nuke_meta_ai": {"message": "Hapus Meta AI"},
-  "popup_nuke_meta_ai_desc": {"message": "Hapus tombol AI dan kilauan"},
-  "popup_master_toggle_title": {"message": "Aktifkan atau nonaktifkan PureFusion"},
-  "popup_add_keyword_title": {"message": "Tambah kata kunci"},
-  "popup_keyword_added": {"message": "Menambahkan \"{keyword}\" ke daftar blokir."},
-  "popup_keyword_exists": {"message": "Kata kunci sudah ada."},
-  "quick_action_menu_root": {"message": "Ajari PureFusion"},
-  "quick_action_menu_block_keyword": {"message": "Tambahkan ke daftar blokir"},
-  "quick_action_menu_autohide_keyword": {"message": "Tambahkan ke daftar sembunyikan otomatis"},
-  "quick_action_menu_allow_keyword": {"message": "Tambahkan ke daftar izin"},
-  "quick_action_menu_hide_source": {"message": "Sembunyikan postingan dari sumber ini"},
-  "quick_action_menu_allow_source": {"message": "Jangan pernah sembunyikan sumber ini"},
-  "quick_action_select_text_first": {"message": "Pilih teks terlebih dahulu, lalu gunakan tindakan cepat PureFusion."},
-  "quick_action_source_select_name": {"message": "Klik kanan nama profil/halaman/grup atau sorot nama sumber terlebih dahulu."},
-  "quick_action_selection_too_short": {"message": "Teks yang dipilih terlalu pendek. Pilih kata atau frasa yang lebih jelas."},
-  "quick_action_source_too_broad": {"message": "Sumber tersebut terlihat terlalu luas. Pilih nama halaman/orang/grup yang lengkap."},
-  "quick_action_exists_blocklist": {"message": "Sudah ada di daftar blokir."},
-  "quick_action_exists_autohide": {"message": "Sudah ada di daftar sembunyikan otomatis."},
-  "quick_action_exists_allowlist": {"message": "Sudah ada di daftar izin."},
-  "quick_action_exists_source_hide": {"message": "Sumber sudah disembunyikan."},
-  "quick_action_exists_source_allow": {"message": "Sumber sudah ada di Sumber yang Tidak Pernah Disembunyikan."},
-  "quick_action_added_blocklist": {"message": "Menambahkan \"$1\" ke daftar blokir dan memindai ulang feed."},
-  "quick_action_added_autohide": {"message": "Menambahkan \"$1\" ke sembunyikan otomatis dan memindai ulang feed."},
-  "quick_action_added_allowlist": {"message": "Menambahkan \"$1\" ke daftar izin dan memindai ulang feed."},
-  "quick_action_added_source_hide": {"message": "Sekarang menyembunyikan sumber \"$1\" dan memindai ulang feed."},
-  "quick_action_added_source_allow": {"message": "Menambahkan \"$1\" ke Sumber yang Tidak Pernah Disembunyikan dan memindai ulang feed."},
-  "quick_action_undo_label": {"message": "Batalkan"},
-  "quick_action_undo_success": {"message": "Tindakan cepat dibatalkan."},
-  "quick_action_undo_expired": {"message": "Pembatalan tidak lagi tersedia untuk tindakan tersebut."},
-  "quick_action_undo_failed": {"message": "Pembatalan gagal. Silakan coba lagi."},
-  "quick_action_unknown": {"message": "Tindakan cepat tidak dikenal."},
-  "options_filters_card_title": {"message": "Penghapusan Iklan & Spam"},
-  "options_filters_card_desc": {"message": "Aktifkan target penghapusan DOM utama."},
-  "options_presets_title": {"message": "Paket Prasetel"},
-  "options_presets_desc": {"message": "Terapkan bundel yang telah dikurasi untuk kasus penggunaan umum, lalu sesuaikan secara manual."},
-  "options_presets_label": {"message": "Pilih prasetel"},
-  "options_presets_work_focus": {"message": "Fokus Kerja"},
-  "options_presets_friends_only": {"message": "Hanya Teman"},
-  "options_presets_minimal": {"message": "Minimal"},
-  "options_presets_news_heavy": {"message": "Berita Berat"},
-  "options_presets_messenger_privacy": {"message": "Privasi Messenger"},
-  "options_presets_apply_btn": {"message": "Terapkan Prasetel"},
-  "options_mode_title": {"message": "Mode Pengalaman Feed"},
-  "options_mode_desc": {"message": "Terapkan profil perilaku persisten di atas pengaturan tersimpan Anda."},
-  "options_mode_label": {"message": "Mode aktif"},
-  "options_view_mode_label": {"message": "Tampilan"},
-  "options_view_mode_basic": {"message": "Dasar"},
-  "options_view_mode_advanced": {"message": "Lanjutan"},
-  "options_mode_custom": {"message": "Kustom (Gunakan pengaturan saya)"},
-  "options_mode_clean": {"message": "Mode Bersih"},
-  "options_mode_focus": {"message": "Mode Fokus"},
-  "options_mode_ultrafast": {"message": "Mode Ultra Cepat (teks dahulu, kecepatan maksimal)"},
-  "options_mode_smart": {"message": "Mode Cerdas"},
-  "options_mode_classic": {"message": "Mode Klasik 2012"},
-  "options_mode_profile_custom": {"message": "Menggunakan pengaturan tersimpan Anda yang tepat tanpa penimpaan mode tambahan."},
-  "options_mode_profile_clean": {"message": "Menghapus kekacauan iklan/saran dan kebisingan sosial sambil menjaga visual prediksi tetap nonaktif untuk feed yang lebih tenang."},
-  "options_mode_profile_focus": {"message": "Profil fokus mendalam beranda: pemangkasan kekacauan agresif, kronologi aktif, dan penjaga jeda gulir diaktifkan."},
-  "options_mode_profile_ultrafast": {"message": "Profil kecepatan teks dahulu: menghapus permukaan media berat, menekan jenis postingan gambar/video, dan meminimalkan pemrosesan UI ekstra."},
-  "options_mode_profile_smart": {"message": "Menjaga pembersihan feed inti sambil mengaktifkan penilaian, menciutkan postingan bernilai rendah, dan sinyal verifikasi kredibilitas."},
-  "options_mode_profile_classic": {"message": "Memprioritaskan perilaku feed kronologis klasik dan menekan permukaan algoritmik modern seperti Watch/Marketplace."},
-  "options_quickstart_title": {"message": "PureFusion dalam 5 detik"},
-  "options_quickstart_desc": {"message": "Pilih satu profil cepat sekarang. Anda masih bisa menyesuaikan segalanya di bawah."},
-  "options_promise_clean_title": {"message": "Facebook Bersih"},
-  "options_promise_clean_desc": {"message": "Lebih sedikit kekacauan iklan dan algoritma."},
-  "options_promise_fast_title": {"message": "Facebook Cepat"},
-  "options_promise_fast_desc": {"message": "Mode Ultra Cepat untuk sesi yang lebih ringan."},
-  "options_promise_smart_title": {"message": "Facebook Cerdas"},
-  "options_promise_smart_desc": {"message": "Penilaian + kredibilitas + ketjelasan."},
-  "options_quickstart_btn_clean": {"message": "Gunakan Mode Bersih"},
-  "options_quickstart_btn_fast": {"message": "Gunakan Ultra Cepat"},
-  "options_quickstart_btn_smart": {"message": "Gunakan Mode Cerdas"},
-  "options_quickstart_recommended": {"message": "Terbaik untuk sebagian besar pengguna"},
-  "options_mode_perf_hint_low": {"message": "Perangkat ini mungkin bekerja lebih baik dengan Mode Ultra Cepat (teks dahulu, beban CPU/GPU lebih rendah)."},
-  "options_mode_perf_hint_mid": {"message": "Mode Ultra Cepat dapat mengurangi lag selama sesi berat di perangkat ini."},
-  "options_mode_perf_apply": {"message": "Terapkan Rekomendasi Ultra Cepat"},
-  "options_mode_recommendation_low": {"message": "Direkomendasikan: Ultra Cepat"},
-  "options_mode_recommendation_mid": {"message": "Opsional: Ultra Cepat untuk sesi berat"},
-  "options_mode_recommendation_active": {"message": "Mode yang direkomendasikan aktif"},
-  "options_mode_recommendation_balanced": {"message": "Seimbang: mode saat ini sudah baik"},
-  "options_mode_why_custom": {"message": "Alasan: hanya menggunakan pilihan pengaturan manual Anda."},
-  "options_mode_why_clean": {"message": "Alasan: menghapus kekacauan umum sambil menjaga nuansa feed yang familiar."},
-  "options_mode_why_focus": {"message": "Alasan: disesuaikan untuk fokus mendalam dengan pemangkasan gangguan yang lebih kuat."},
-  "options_mode_why_ultrafast": {"message": "Alasan: memprioritaskan kecepatan dengan mengurangi pemrosesan feed berat."},
-  "options_mode_why_smart": {"message": "Alasan: menyeimbangkan pembersihan dengan penilaian dan sinyal kredibilitas."},
-  "options_mode_why_classic": {"message": "Alasan: menekankan perilaku feed kronologis bergaya lama."},
-  "options_mode_why_device_low": {"message": "Catatan perangkat: Ultra Cepat direkomendasikan pada perangkat keras ini."},
-  "options_mode_why_device_mid": {"message": "Catatan perangkat: Ultra Cepat dapat membantu selama sesi berat."},
-  "options_surface_title": {"message": "Kontrol Cakupan Per-Permukaan"},
-  "options_surface_desc": {"message": "Pilih permukaan Facebook mana yang harus menerima pemfilteran PureFusion. Nonaktifkan permukaan untuk membiarkannya tidak tersentuh."},
-  "options_surface_enable": {"message": "Aktifkan cakupan pemfilteran per-permukaan"},
-  "options_surface_home": {"message": "Terapkan pada feed Beranda"},
-  "options_surface_groups": {"message": "Terapkan pada Grup"},
-  "options_surface_watch": {"message": "Terapkan pada Watch"},
-  "options_surface_marketplace": {"message": "Terapkan pada Marketplace"},
-  "options_surface_other": {"message": "Terapkan pada permukaan Lain (profil/halaman/acara)"},
-  "options_filters_hide_suggested": {"message": "Sembunyikan \"Disarankan untuk Anda\""},
-  "options_filters_hide_pymk": {"message": "Sembunyikan \"Orang yang Mungkin Anda Kenal\""},
-  "options_filters_hide_group_suggestions": {"message": "Sembunyikan Saran Grup"},
-  "options_filters_hide_page_suggestions": {"message": "Sembunyikan Saran Halaman"},
-  "options_filters_hide_fundraisers": {"message": "Sembunyikan Penggalangan Dana"},
-  "options_filters_post_types_title": {"message": "Paket Filter Jenis Postingan v2"},
-  "options_filters_post_types_desc": {"message": "Penargetan pembungkus postingan yang ketat ditambah jangkar frasa. Biarkan nonaktif kecuali Anda menginginkan pembersihan jenis yang agresif."},
-  "options_filters_hide_video_posts": {"message": "Sembunyikan postingan video"},
-  "options_filters_hide_photo_posts": {"message": "Sembunyikan postingan foto/gambar"},
-  "options_filters_hide_link_posts": {"message": "Sembunyikan postingan tautan/berbagi eksternal"},
-  "options_filters_hide_text_posts": {"message": "Sembunyikan postingan status hanya teks"},
-  "options_filters_hide_live_video_posts": {"message": "Sembunyikan postingan video langsung"},
-  "options_filters_hide_share_reposts": {"message": "Sembunyikan postingan berbagi/repost"},
-  "options_filters_hide_poll_posts": {"message": "Sembunyikan postingan polling"},
-  "options_filters_clutter_title": {"message": "Kekacauan & Suntikan"},
-  "options_filters_hide_reels_tray": {"message": "Sembunyikan Baki Reels di Feed"},
-  "options_filters_widescreen_label": {"message": "Mode Layar Lebar"},
-  "options_filters_widescreen_desc": {"message": "Buka batas kolom tengah untuk mengisi monitor ultrawide."},
-  "options_filters_hide_memories": {"message": "Sembunyikan Postingan Kenangan"},
-  "options_filters_hide_stories": {"message": "Sembunyikan Bilah Cerita"},
-  "options_filters_remove_colored_bg": {"message": "Hapus Postingan Berlatar Belakang Berwarna"},
-  "options_filters_remove_game_invites": {"message": "Sembunyikan Undangan Game & Postingan Aktivitas"},
-  "options_filters_remove_large_reactions": {"message": "Normalkan Postingan Emoji Berlebihan"},
-  "options_filters_deduplicate_posts_label": {"message": "Sembunyikan Postingan Duplikat"},
-  "options_filters_deduplicate_posts_desc": {"message": "Sembunyikan postingan yang ID-nya sudah muncul sesi ini — menangkap FB yang menyuntikkan kembali cerita yang sama berkali-kali."},
-  "options_filters_locale_label": {"message": "Bahasa Feed"},
-  "options_filters_locale_desc": {"message": "Cocokkan filter frasa dengan bahasa Facebook Anda. Auto menguji semua bahasa yang didukung (mungkin memfilter berlebihan feed bahasa campuran)."},
-  "options_filters_locale_auto": {"message": "Otomatis (semua bahasa yang didukung)"},
-  "options_story_filters_title": {"message": "Filter Aktivitas Cerita"},
-  "options_story_filters_desc": {"message": "Sembunyikan cerita aktivitas sinyal rendah umum dari feed Anda."},
-  "options_story_filter_became_friends": {"message": "Sembunyikan cerita \"Menjadi Teman\""},
-  "options_story_filter_joined_groups": {"message": "Sembunyikan cerita \"Bergabung dengan Grup\""},
-  "options_story_filter_commented": {"message": "Sembunyikan cerita \"Mengomentari ini\""},
-  "options_story_filter_liked": {"message": "Sembunyikan cerita \"Menyukai ini\""},
-  "options_story_filter_events": {"message": "Sembunyikan cerita kehadiran acara"},
-  "options_story_filter_memories": {"message": "Sembunyikan cerita kenangan bersama"},
-  "options_story_filter_profile_photo": {"message": "Sembunyikan cerita pembaruan foto profil"},
-  "options_story_filter_cover_photo": {"message": "Sembunyikan cerita pembaruan foto sampul"},
-  "options_story_filter_life_events": {"message": "Sembunyikan cerita peristiwa kehidupan"},
-  "options_story_filter_checkins": {"message": "Sembunyikan cerita aktivitas check-in/lokasi"},
-  "options_story_filter_milestones": {"message": "Sembunyikan cerita pencapaian"},
-  "options_story_filter_job_work": {"message": "Sembunyikan cerita pembaruan pekerjaan"},
-  "options_story_filter_relationship": {"message": "Sembunyikan cerita pembaruan hubungan"},
-  "options_story_filter_group_activity": {"message": "Sembunyikan cerita postingan aktivitas grup"},
-  "options_image_filters_title": {"message": "Filter Subjek Gambar"},
-  "options_image_filters_desc": {"message": "Gunakan sinyal deskripsi gambar Facebook untuk menyembunyikan kategori visual yang dipilih."},
-  "options_image_filters_enable": {"message": "Aktifkan filter subjek gambar (Mode Aman)"},
-  "options_image_filter_sports": {"message": "Sembunyikan gambar terkait olahraga"},
-  "options_image_filter_food": {"message": "Sembunyikan gambar makanan dan minuman"},
-  "options_image_filter_pets": {"message": "Sembunyikan gambar hewan peliharaan (anjing/kucing)"},
-  "options_image_filter_vehicles": {"message": "Sembunyikan gambar kendaraan"},
-  "options_image_filter_screenshots": {"message": "Sembunyikan meme dan gambar bergaya tangkapan layar"},
-  "options_image_filter_travel": {"message": "Sembunyikan gambar perjalanan dan pemandangan"},
-  "options_ai_card_title": {"message": "Mesin Prediksi Lokal"},
-  "options_ai_card_desc": {"message": "Menilai item feed secara lokal berdasarkan riwayat interaksi Anda. Data tidak pernah meninggalkan perangkat Anda."},
-  "options_ai_enable_predictions": {"message": "Aktifkan Prediksi AI"},
-  "options_ai_show_pf_badge": {"message": "Tampilkan Lencana \"Skor PF\" pada postingan"},
-  "options_ai_show_reasons": {"message": "Tampilkan petunjuk alasan skor pada lencana PF"},
-  "options_ai_dim_low_interest": {"message": "Redupkan/Ciutkan Postingan Minat Rendah (Skor < 20)"},
-  "options_ai_collapse_low_interest": {"message": "Ciutkan Postingan Minat Rendah dengan chip pengungkapan"},
-  "options_ai_never_empty_guard": {"message": "Penjaga feed tidak pernah kosong (pertahankan minimum postingan yang terlihat)"},
-  "options_ai_never_empty_min": {"message": "Minimum postingan yang terlihat untuk dipertahankan"},
-  "options_ai_highlight_high_interest": {"message": "Sorot Postingan Minat Tinggi (Skor > 80)"},
-  "options_ai_analyze_trends": {"message": "Analisis Tren & Kata Kunci Lokal"},
-  "options_ai_true_affinity_sort": {"message": "Sortir Afinitas Sejati"},
-  "options_ai_true_affinity_sort_desc": {"message": "Susun ulang feed berdasarkan skor keterlibatan lokal Anda secara real time — postingan dengan skor tertinggi naik ke atas menggunakan urutan CSS flexbox, tanpa merusak virtual DOM React."},
-  "options_ai_friend_activity": {"message": "Wawasan Feed Aktivitas Teman"},
-  "options_ai_friend_activity_desc": {"message": "Menandai kontak di bilah sisi kanan yang postingannya belum muncul di feed Anda sesi ini — membantu mengidentifikasi teman yang mungkin diam-diam disembunyikan Facebook dari linimasa Anda."},
-  "options_ai_low_threshold": {"message": "Ambang skor rendah"},
-  "options_ai_high_threshold": {"message": "Ambang skor tinggi"},
-  "options_ai_cred_title": {"message": "Sinyal Kredibilitas (Beta)"},
-  "options_ai_cred_desc": {"message": "Pemeriksaan lokal heuristik untuk pola klaim mencurigakan. Ini tidak membuktikan kebenaran; ini menandai postingan yang perlu diverifikasi."},
-  "options_ai_cred_enabled": {"message": "Aktifkan deteksi klaim mencurigakan"},
-  "options_ai_cred_badge": {"message": "Tampilkan lencana peringatan \"verifikasi\" pada postingan yang ditandai"},
-  "options_ai_cred_strict": {"message": "Mode ketat (penalti skor lebih kuat untuk klaim mencurigakan)"},
-  "options_ai_cred_debug": {"message": "Tampilkan pratinjau debug kredibilitas pada semua postingan yang dipindai"},
-  "options_ai_llm_title": {"message": "Server Kecerdasan Mendalam (API BYOK)"},
-  "options_ai_llm_desc": {"message": "Bawa Kunci Anda Sendiri. Buka kemampuan LLM seperti TL;DR dan Komentar AI. Kunci Anda disimpan secara eksklusif memanfaatkan penyimpanan mesin lokal."},
-  "options_ai_provider_label": {"message": "Penyedia Aktif"},
-  "options_ai_provider_none": {"message": "Dinonaktifkan"},
-  "options_ai_provider_openai": {"message": "OpenAI (ChatGPT)"},
-  "options_ai_provider_gemini": {"message": "Google Gemini"},
-  "options_ai_provider_windowai": {"message": "Chrome Native (window.ai)"},
-  "options_ai_openai_key_label": {"message": "Kunci API OpenAI"},
-  "options_ai_gemini_key_label": {"message": "Kunci API Google Gemini"},
-  "options_ai_tldr_toggle": {"message": "Suntikkan tombol Ringkasan \"TL;DR\" pada postingan panjang"},
-  "options_ai_smart_comment_toggle": {"message": "Ko-Pilot Komentar Cerdas (ikon Tongkat)"},
-  "options_ai_clickbait_decode_toggle": {"message": "Dekoder Clickbait (Tulis ulang judul sensasional dengan fakta)"},
-  "options_ai_messenger_tools_title": {"message": "Alat AI Messenger"},
-  "options_ai_messenger_rewrite_toggle": {"message": "Tulis ulang draf pesan di komposer"},
-  "options_ai_messenger_replies_toggle": {"message": "Hasilkan 3 saran balasan cerdas"},
-  "options_ui_card_title": {"message": "Restrukturisasi Antarmuka"},
-  "options_ui_friends_only": {"message": "Mode Hanya Teman (Hapus semua Grup/Halaman dari Feed)"},
-  "options_ui_anonymizer": {"message": "Anonimisasi Tangkapan Layar (Buram Foto Profil/Nama)"},
-  "options_ui_compact_mode": {"message": "Mode Ringkas (Kurangi Margin/Padding)"},
-  "options_ui_disable_comment_autofocus": {"message": "Nonaktifkan Pencurian Fokus Otomatis Kotak Komentar"},
-  "options_ui_enforce_chrono": {"message": "Terapkan Feed Kronologis (Terbaru)"},
-  "options_ui_show_link_previews": {"message": "Tampilkan Tautan Keluar Tujuan Sebenarnya"},
-  "options_ui_absolute_timestamps": {"message": "Ubah Cap Waktu menjadi Tanggal Mutlak"},
-  "options_ui_hide_composer": {"message": "Sembunyikan kotak \"Apa yang Anda pikirkan?\""},
-  "options_ui_comment_sort_label": {"message": "Urutan Komentar Default"},
-  "options_ui_comment_sort_desc": {"message": "Terapkan preferensi urutan secara otomatis saat komentar diperluas pada postingan. Hanya aktif ketika komentar sudah dimuat — tidak memaksa perluasan bagian komentar yang diciutkan."},
-  "options_ui_comment_sort_all": {"message": "Semua Komentar (default FB)"},
-  "options_ui_comment_sort_newest": {"message": "Terbaru Dahulu"},
-  "options_ui_comment_sort_top": {"message": "Paling Relevan"},
-  "options_ui_distraction_free_label": {"message": "Mode Baca Bebas Gangguan (Alt+Shift+F)"},
-  "options_ui_distraction_free_desc": {"message": "Menyembunyikan bilah sisi kiri/kanan dan memusatkan feed untuk pengalaman membaca yang bersih. Aktifkan/nonaktifkan dengan Alt+Shift+F kapan saja."},
-  "options_ui_image_hover_label": {"message": "Perluas Gambar Saat Hover"},
-  "options_ui_image_hover_desc": {"message": "Arahkan kursor ke gambar feed untuk pratinjau ukuran penuh. Simpan atau buka di tab baru langsung dari panel. Nonaktif secara default."},
-  "options_ui_auto_expand_see_more_label": {"message": "Perluas Otomatis \"Lihat Selengkapnya\""},
-  "options_ui_auto_expand_see_more_desc": {"message": "Otomatis menutup \"Lihat selengkapnya\" pada postingan yang dipotong sehingga Anda selalu membaca teks lengkap tanpa klik tambahan."},
-  "options_ui_strip_tracking_params_label": {"message": "Hapus Parameter Pelacakan dari Tautan"},
-  "options_ui_strip_tracking_params_desc": {"message": "Menghapus fbclid, utm_*, gclid dan parameter mata-mata lainnya dari tautan feed sehingga URL yang disalin atau diklik bersih."},
-  "options_ui_autoplay_video_label": {"message": "Kontrol Putar Otomatis Video"},
-  "options_ui_autoplay_video_desc": {"message": "Kontrol apa yang terjadi saat video feed mulai diputar secara otomatis."},
-  "options_ui_autoplay_off": {"message": "Nonaktif (tidak ada tindakan)"},
-  "options_ui_autoplay_mute": {"message": "Bisukan audio (putar tanpa suara)"},
-  "options_ui_autoplay_pause": {"message": "Jeda (klik untuk memutar)"},
-  "options_nav_filters_title": {"message": "Modul Navigasi & Bilah Sisi"},
-  "options_nav_filters_desc": {"message": "Sembunyikan modul navigasi kiri dan bilah sisi kanan tertentu."},
-  "options_nav_master_enable": {"message": "Aktifkan pemfilteran nav tingkat modul (Mode Aman)"},
-  "options_nav_left_marketplace": {"message": "Sembunyikan nav kiri: Marketplace"},
-  "options_nav_left_watch": {"message": "Sembunyikan nav kiri: Watch"},
-  "options_nav_left_gaming": {"message": "Sembunyikan nav kiri: Gaming"},
-  "options_nav_left_memories": {"message": "Sembunyikan nav kiri: Kenangan"},
-  "options_nav_left_meta_ai": {"message": "Sembunyikan nav kiri: Meta AI"},
-  "options_nav_left_manus_ai": {"message": "Sembunyikan nav kiri: Manus AI"},
-  "options_nav_right_trending": {"message": "Sembunyikan bilah sisi kanan: Trending"},
-  "options_nav_right_contacts": {"message": "Sembunyikan bilah sisi kanan: Kontak"},
-  "options_nav_right_meta_ai_contact": {"message": "Sembunyikan bilah sisi kanan: Kontak Meta AI"},
-  "options_nav_right_manus_ai_contact": {"message": "Sembunyikan bilah sisi kanan: Kontak Manus AI"},
-  "options_nav_right_events": {"message": "Sembunyikan bilah sisi kanan: Acara"},
-  "options_nav_right_birthdays": {"message": "Sembunyikan bilah sisi kanan: Ulang Tahun"},
-  "options_topbar_filters_title": {"message": "Kontrol Header Atas"},
-  "options_topbar_filters_desc": {"message": "Sembunyikan ikon header tertentu tanpa menghapus kontainer header penuh."},
-  "options_topbar_master_enable": {"message": "Aktifkan pemfilteran header atas (Mode Aman)"},
-  "options_topbar_hide_home": {"message": "Sembunyikan ikon atas: Beranda"},
-  "options_topbar_hide_friends": {"message": "Sembunyikan ikon atas: Teman"},
-  "options_topbar_hide_watch": {"message": "Sembunyikan ikon atas: Watch"},
-  "options_topbar_hide_marketplace": {"message": "Sembunyikan ikon atas: Marketplace"},
-  "options_topbar_hide_groups": {"message": "Sembunyikan ikon atas: Grup"},
-  "options_topbar_hide_gaming": {"message": "Sembunyikan ikon atas: Gaming"},
-  "options_topbar_hide_messenger": {"message": "Sembunyikan ikon atas: Messenger"},
-  "options_topbar_hide_notifications": {"message": "Sembunyikan ikon atas: Notifikasi"},
-  "options_topbar_hide_menu": {"message": "Sembunyikan ikon atas: Menu"},
-  "options_topbar_hide_create": {"message": "Sembunyikan ikon atas: Buat"},
-  "options_ui_theme_label": {"message": "Tema Aplikasi"},
-  "options_ui_theme_reload_desc": {"message": "Memerlukan muat ulang halaman."},
-  "options_ui_theme_default": {"message": "Default Facebook"},
-  "options_ui_theme_darkpro": {"message": "Dark Pro"},
-  "options_ui_theme_amoled": {"message": "AMOLED Hitam Pekat"},
-  "options_ui_theme_classic": {"message": "Biru Klasik"},
-  "options_ui_theme_zen": {"message": "Mode Zen (Minimalis)"},
-  "options_ui_theme_pastel": {"message": "Pastel Hangat"},
-  "options_ui_font_scale_label": {"message": "Skala Ukuran Font (%)"},
-  "options_ui_custom_style_title": {"message": "Gaya Kustom Lanjutan"},
-  "options_ui_custom_style_desc": {"message": "Penimpaan opsional untuk font, warna aksen, latar belakang, dan CSS kustom."},
-  "options_ui_custom_style_warn": {"message": "Gunakan CSS yang valid saja. Aturan yang buruk dapat merusak tata letak halaman."},
-  "options_ui_custom_style_enable": {"message": "Aktifkan gaya kustom lanjutan"},
-  "options_ui_custom_font": {"message": "Keluarga font kustom"},
-  "options_ui_custom_accent": {"message": "Warna aksen kustom"},
-  "options_ui_custom_text_color": {"message": "Warna teks kustom"},
-  "options_ui_custom_card_background": {"message": "Latar belakang kartu postingan kustom"},
-  "options_ui_custom_background": {"message": "Latar belakang halaman kustom"},
-  "options_ui_custom_css": {"message": "CSS Kustom"},
-  "options_ui_custom_accent_placeholder": {"message": "#22c1ff"},
-  "options_ui_custom_text_color_placeholder": {"message": "#f2f5ff"},
-  "options_ui_custom_card_background_placeholder": {"message": "rgba(24, 31, 42, 0.92)"},
-  "options_ui_custom_background_placeholder": {"message": "linear-gradient(...) or #111111"},
-  "options_ui_custom_css_placeholder": {"message": ".selector { display: none !important; }"},
-  "options_ui_custom_css_preset_label": {"message": "Prasetel cuplikan CSS kustom"},
-  "options_ui_custom_css_preset_desc": {"message": "Muat cuplikan awal ke kotak CSS kustom, lalu tinjau dan simpan."},
-  "options_ui_custom_css_preset_none": {"message": "Pilih cuplikan"},
-  "options_ui_custom_css_preset_subtle_cards": {"message": "Poles kartu halus"},
-  "options_ui_custom_css_preset_calmer_motion": {"message": "Gerakan lebih tenang"},
-  "options_ui_custom_css_preset_readability_boost": {"message": "Peningkatan keterbacaan"},
-  "options_ui_custom_css_preset_apply": {"message": "Muat Cuplikan"},
-  "options_theme_preview_title": {"message": "Pratinjau Langsung"},
-  "options_theme_preview_post_title": {"message": "Judul Postingan Pratinjau"},
-  "options_theme_preview_desc": {"message": "Pratinjau mini ini diperbarui saat Anda mengubah tema dan skala font."},
-  "options_theme_preview_chip_filtered": {"message": "Sponsor Disembunyikan"},
-  "options_theme_preview_chip_score": {"message": "Skor PF 88"},
-  "options_wellbeing_grayscale": {"message": "Mode Skala Abu-abu (Desaturasi semua warna)"},
-  "options_wellbeing_scroll_stopper": {"message": "Penghenti Gulir Tak Terbatas"},
-  "options_wellbeing_break_wall": {"message": "Postingan hingga Dinding Jeda"},
-  "options_wellbeing_session_timer": {"message": "Jam Timer Sesi yang Terlihat"},
-  "options_wellbeing_session_awareness_enable": {"message": "Prompt jeda lunak kesadaran sesi"},
-  "options_wellbeing_session_awareness_threshold": {"message": "Pulsa gulir per menit sebelum prompt"},
-  "options_wellbeing_session_awareness_cooldown": {"message": "Jeda prompt (menit)"},
-  "options_wellbeing_daily_report_enable": {"message": "Aktifkan Laporan Feed Harian"},
-  "options_wellbeing_daily_report_minutes": {"message": "Interval laporan otomatis (menit)"},
-  "options_wellbeing_reels_limit_title": {"message": "Pembatas Sesi Reels"},
-  "options_wellbeing_reels_limit_desc": {"message": "Izinkan hanya jumlah Reels terbatas per sesi, lalu blokir Reels tambahan."},
-  "options_wellbeing_reels_limit_enable": {"message": "Aktifkan pembatas sesi Reels"},
-  "options_wellbeing_reels_limit_count": {"message": "Reels yang diizinkan per sesi"},
-  "options_wellbeing_reels_limit_hardlock": {"message": "Kunci keras Reels setelah batas tercapai"},
-  "options_wellbeing_ai_blockers_title": {"message": "Pemblokir AI Lanjutan (Edisi Wellbeing)"},
-  "options_wellbeing_ragebait": {"message": "Detektor Rage-Bait (Buram postingan kemarahan yang memicu emosi)"},
-  "options_wellbeing_clickbait": {"message": "Penghapus Clickbait (Hapus judul manipulatif viral)"},
-  "wellbeing_break_title": {"message": "Tarik Napas"},
-  "wellbeing_break_body_template": {"message": "Anda baru saja menggulir melewati $1 postingan. PureFusion telah sementara menjeda feed untuk membantu Anda menghindari doom-scrolling. Sudah waktunya melakukan hal lain?"},
-  "wellbeing_break_resume_btn": {"message": "Lanjutkan Menggulir Anyway"},
-  "wellbeing_session_timer_prefix": {"message": "Sesi"},
-  "wellbeing_report_button": {"message": "Laporan"},
-  "wellbeing_weekly_report_button": {"message": "Minggu"},
-  "wellbeing_report_disabled": {"message": "Laporan Feed Harian dinonaktifkan. Aktifkan di Kesehatan Digital."},
-  "wellbeing_report_label_auto": {"message": "Laporan Feed Harian"},
-  "wellbeing_report_label_session": {"message": "Laporan Feed Sesi"},
-  "wellbeing_weekly_report_label": {"message": "Laporan Feed Mingguan"},
-  "wellbeing_report_no_filters": {"message": "Belum ada filter yang dipicu"},
-  "wellbeing_weekly_report_no_data": {"message": "Laporan mingguan memerlukan lebih banyak data aktivitas terlebih dahulu."},
-  "wellbeing_session_awareness_toast_template": {"message": "Kecepatan gulir tinggi terdeteksi: $1 guliran dalam menit terakhir (sesi $2 menit). Pertimbangkan istirahat singkat."},
-  "wellbeing_report_panel_title": {"message": "Laporan Feed PureFusion"},
-  "wellbeing_report_panel_close": {"message": "Tutup"},
-  "wellbeing_report_panel_session_tab": {"message": "Sesi"},
-  "wellbeing_report_panel_weekly_tab": {"message": "Mingguan"},
-  "wellbeing_report_panel_hidden": {"message": "Item tersembunyi"},
-  "wellbeing_report_panel_reels": {"message": "Reels diblokir"},
-  "wellbeing_report_panel_top_reason": {"message": "Gangguan teratas"},
-  "wellbeing_report_panel_minutes_saved": {"message": "Menit tersimpan (est.)"},
-  "wellbeing_report_panel_elapsed": {"message": "Sesi berjalan"},
-  "wellbeing_report_panel_refresh": {"message": "Segarkan"},
-  "wellbeing_report_panel_reset_session": {"message": "Atur Ulang Sesi"},
-  "wellbeing_report_panel_reset_done": {"message": "Penghitung sesi direset."},
-  "wellbeing_report_panel_note": {"message": "Tips: Nilai harian direset dengan reset sesi; rollup mingguan dihitung dari bucket harian yang tersimpan."},
-  "wellbeing_report_panel_weekly_window": {"message": "Jendela bergulir 7 hari"},
-  "wellbeing_report_panel_weekly_trend_title": {"message": "Tren 7 hari"},
-  "wellbeing_report_panel_weekly_top_reasons_title": {"message": "Alasan gangguan teratas"},
-  "wellbeing_report_panel_weekly_no_reasons": {"message": "Belum ada data alasan gangguan."},
-  "wellbeing_report_panel_weekly_reason_explain": {"message": "Jelaskan"},
-  "wellbeing_report_reason_explain_ads": {"message": "Konten bersponsor atau seperti iklan difilter untuk mengurangi kekacauan promosi."},
-  "wellbeing_report_reason_explain_story": {"message": "Pola aktivitas cerita (suka/komentar/bergabung teman/check-in) difilter sebagai kebisingan feed sinyal rendah."},
-  "wellbeing_report_reason_explain_post_type": {"message": "Filter format postingan menghapus jenis konten yang Anda pilih untuk disembunyikan (video/foto/tautan/hanya teks)."},
-  "wellbeing_report_reason_explain_bait": {"message": "Filter keamanan perilaku menandai pola manipulatif atau kemarahan tinggi yang dirancang untuk membuat Anda terus menggulir."},
-  "wellbeing_report_reason_explain_nav": {"message": "Kontrol kekacauan navigasi dan modul menghapus elemen UI non-feed yang mengganggu."},
-  "wellbeing_report_reason_explain_keyword": {"message": "Aturan kata kunci cocok dengan item ini dan memfilternya berdasarkan daftar blokir kustom Anda."},
-  "wellbeing_report_reason_explain_generic": {"message": "Kategori ini difilter oleh aturan PureFusion aktif Anda untuk menjaga feed Anda lebih bersih dan lebih fokus."},
-  "wellbeing_report_reason_open_settings": {"message": "Buka pengaturan terkait"},
+  "extName": {
+    "message": "PureFusion Feed",
+    "description": "The name of the extension"
+  },
+  "extDesc": {
+    "message": "Manajer Feed Premium dengan Filter Cerdas, Wawasan AI, dan Penjaga Privasi untuk Facebook.",
+    "description": "The extension description"
+  },
+  "common_ads_blocked": {
+    "message": "Iklan Diblokir"
+  },
+  "common_spam_hidden": {
+    "message": "Spam Disembunyikan"
+  },
+  "common_save_settings": {
+    "message": "Simpan Pengaturan"
+  },
+  "common_save_changes": {
+    "message": "Simpan Perubahan"
+  },
+  "common_support_developer": {
+    "message": "Dukung Pengembang"
+  },
+  "common_open_dashboard": {
+    "message": "Buka Pengaturan Lengkap"
+  },
+  "common_open_advanced": {
+    "message": "Buka Dasbor Lanjutan"
+  },
+  "common_logo_alt": {
+    "message": "Logo PureFusion"
+  },
+  "options_page_title": {
+    "message": "PureFusion Feed - Pengaturan"
+  },
+  "popup_quick_filters": {
+    "message": "Filter Cepat"
+  },
+  "popup_hide_sponsored_posts": {
+    "message": "Enhanced Ad Filter"
+  },
+  "popup_hide_sponsored_posts_desc": {
+    "message": "Deteksi berbasis label — nonaktif secara default"
+  },
+  "popup_block_sponsored": {
+    "message": "Blokir Iklan"
+  },
+  "popup_block_sponsored_desc": {
+    "message": "Memblokir iklan melalui sinyal infrastruktur"
+  },
+  "popup_ad_blocker_on": {
+    "message": "✓ Memblokir iklan melalui sinyal infrastruktur"
+  },
+  "popup_ad_blocker_off": {
+    "message": "⚠ Pemblokir iklan nonaktif — klik untuk mengaktifkan"
+  },
+  "options_filters_removeAds": {
+    "message": "Blokir Iklan (sinyal infrastruktur)"
+  },
+  "options_filters_removeSponsored": {
+    "message": "Enhanced Ad Filter (label detection)"
+  },
+  "popup_hide_suggested": {
+    "message": "Sembunyikan Saran/PYMK"
+  },
+  "popup_hide_suggested_desc": {
+    "message": "Menghapus saran algoritmik"
+  },
+  "popup_hide_reels": {
+    "message": "Sembunyikan Reels"
+  },
+  "popup_hide_reels_desc": {
+    "message": "Menghapus baki Reels yang disuntikkan ke feed"
+  },
+  "popup_force_recent": {
+    "message": "Paksa Terbaru"
+  },
+  "popup_force_recent_desc": {
+    "message": "Selalu muat feed kronologis"
+  },
+  "popup_distraction_free": {
+    "message": "Mode Bebas Gangguan"
+  },
+  "popup_distraction_free_desc": {
+    "message": "Sembunyikan bilah sisi, pusatkan feed (Alt+Shift+F)"
+  },
+  "popup_fast_keyword": {
+    "message": "Blokir Kata Kunci Cepat"
+  },
+  "popup_keyword_placeholder": {
+    "message": "Masukkan kata kunci untuk disembunyikan..."
+  },
+  "popup_hide_groups": {
+    "message": "Sembunyikan Grup yang Disarankan"
+  },
+  "popup_hide_groups_desc": {
+    "message": "Menghapus rekomendasi grup algoritmik"
+  },
+  "popup_ghost_mode": {
+    "message": "Mode Hantu (Pesan)"
+  },
+  "popup_ghost_mode_desc": {
+    "message": "Sembunyikan indikator Dilihat & Mengetik"
+  },
+  "popup_nuke_meta_ai": {
+    "message": "Hapus Meta AI"
+  },
+  "popup_nuke_meta_ai_desc": {
+    "message": "Hapus tombol AI dan kilauan"
+  },
+  "popup_master_toggle_title": {
+    "message": "Aktifkan atau nonaktifkan PureFusion"
+  },
+  "popup_add_keyword_title": {
+    "message": "Tambah kata kunci"
+  },
+  "popup_keyword_added": {
+    "message": "Menambahkan \"{keyword}\" ke daftar blokir."
+  },
+  "popup_keyword_exists": {
+    "message": "Kata kunci sudah ada."
+  },
+  "quick_action_menu_root": {
+    "message": "Ajari PureFusion"
+  },
+  "quick_action_menu_block_keyword": {
+    "message": "Tambahkan ke daftar blokir"
+  },
+  "quick_action_menu_autohide_keyword": {
+    "message": "Tambahkan ke daftar sembunyikan otomatis"
+  },
+  "quick_action_menu_allow_keyword": {
+    "message": "Tambahkan ke daftar izin"
+  },
+  "quick_action_menu_hide_source": {
+    "message": "Sembunyikan postingan dari sumber ini"
+  },
+  "quick_action_menu_allow_source": {
+    "message": "Jangan pernah sembunyikan sumber ini"
+  },
+  "quick_action_select_text_first": {
+    "message": "Pilih teks terlebih dahulu, lalu gunakan tindakan cepat PureFusion."
+  },
+  "quick_action_source_select_name": {
+    "message": "Klik kanan nama profil/halaman/grup atau sorot nama sumber terlebih dahulu."
+  },
+  "quick_action_selection_too_short": {
+    "message": "Teks yang dipilih terlalu pendek. Pilih kata atau frasa yang lebih jelas."
+  },
+  "quick_action_source_too_broad": {
+    "message": "Sumber tersebut terlihat terlalu luas. Pilih nama halaman/orang/grup yang lengkap."
+  },
+  "quick_action_exists_blocklist": {
+    "message": "Sudah ada di daftar blokir."
+  },
+  "quick_action_exists_autohide": {
+    "message": "Sudah ada di daftar sembunyikan otomatis."
+  },
+  "quick_action_exists_allowlist": {
+    "message": "Sudah ada di daftar izin."
+  },
+  "quick_action_exists_source_hide": {
+    "message": "Sumber sudah disembunyikan."
+  },
+  "quick_action_exists_source_allow": {
+    "message": "Sumber sudah ada di Sumber yang Tidak Pernah Disembunyikan."
+  },
+  "quick_action_added_blocklist": {
+    "message": "Menambahkan \"$1\" ke daftar blokir dan memindai ulang feed."
+  },
+  "quick_action_added_autohide": {
+    "message": "Menambahkan \"$1\" ke sembunyikan otomatis dan memindai ulang feed."
+  },
+  "quick_action_added_allowlist": {
+    "message": "Menambahkan \"$1\" ke daftar izin dan memindai ulang feed."
+  },
+  "quick_action_added_source_hide": {
+    "message": "Sekarang menyembunyikan sumber \"$1\" dan memindai ulang feed."
+  },
+  "quick_action_added_source_allow": {
+    "message": "Menambahkan \"$1\" ke Sumber yang Tidak Pernah Disembunyikan dan memindai ulang feed."
+  },
+  "quick_action_undo_label": {
+    "message": "Batalkan"
+  },
+  "quick_action_undo_success": {
+    "message": "Tindakan cepat dibatalkan."
+  },
+  "quick_action_undo_expired": {
+    "message": "Pembatalan tidak lagi tersedia untuk tindakan tersebut."
+  },
+  "quick_action_undo_failed": {
+    "message": "Pembatalan gagal. Silakan coba lagi."
+  },
+  "quick_action_unknown": {
+    "message": "Tindakan cepat tidak dikenal."
+  },
+  "options_filters_card_title": {
+    "message": "Penghapusan Iklan & Spam"
+  },
+  "options_filters_card_desc": {
+    "message": "Aktifkan target penghapusan DOM utama."
+  },
+  "options_presets_title": {
+    "message": "Paket Prasetel"
+  },
+  "options_presets_desc": {
+    "message": "Terapkan bundel yang telah dikurasi untuk kasus penggunaan umum, lalu sesuaikan secara manual."
+  },
+  "options_presets_label": {
+    "message": "Pilih prasetel"
+  },
+  "options_presets_work_focus": {
+    "message": "Fokus Kerja"
+  },
+  "options_presets_friends_only": {
+    "message": "Hanya Teman"
+  },
+  "options_presets_minimal": {
+    "message": "Minimal"
+  },
+  "options_presets_news_heavy": {
+    "message": "Berita Berat"
+  },
+  "options_presets_messenger_privacy": {
+    "message": "Privasi Messenger"
+  },
+  "options_presets_apply_btn": {
+    "message": "Terapkan Prasetel"
+  },
+  "options_mode_title": {
+    "message": "Mode Pengalaman Feed"
+  },
+  "options_mode_desc": {
+    "message": "Terapkan profil perilaku persisten di atas pengaturan tersimpan Anda."
+  },
+  "options_mode_label": {
+    "message": "Mode aktif"
+  },
+  "options_view_mode_label": {
+    "message": "Tampilan"
+  },
+  "options_view_mode_basic": {
+    "message": "Dasar"
+  },
+  "options_view_mode_advanced": {
+    "message": "Lanjutan"
+  },
+  "options_mode_custom": {
+    "message": "Kustom (Gunakan pengaturan saya)"
+  },
+  "options_mode_clean": {
+    "message": "Mode Bersih"
+  },
+  "options_mode_focus": {
+    "message": "Mode Fokus"
+  },
+  "options_mode_ultrafast": {
+    "message": "Mode Ultra Cepat (teks dahulu, kecepatan maksimal)"
+  },
+  "options_mode_smart": {
+    "message": "Mode Cerdas"
+  },
+  "options_mode_classic": {
+    "message": "Mode Klasik 2012"
+  },
+  "options_mode_profile_custom": {
+    "message": "Menggunakan pengaturan tersimpan Anda yang tepat tanpa penimpaan mode tambahan."
+  },
+  "options_mode_profile_clean": {
+    "message": "Menghapus kekacauan iklan/saran dan kebisingan sosial sambil menjaga visual prediksi tetap nonaktif untuk feed yang lebih tenang."
+  },
+  "options_mode_profile_focus": {
+    "message": "Profil fokus mendalam beranda: pemangkasan kekacauan agresif, kronologi aktif, dan penjaga jeda gulir diaktifkan."
+  },
+  "options_mode_profile_ultrafast": {
+    "message": "Profil kecepatan teks dahulu: menghapus permukaan media berat, menekan jenis postingan gambar/video, dan meminimalkan pemrosesan UI ekstra."
+  },
+  "options_mode_profile_smart": {
+    "message": "Menjaga pembersihan feed inti sambil mengaktifkan penilaian, menciutkan postingan bernilai rendah, dan sinyal verifikasi kredibilitas."
+  },
+  "options_mode_profile_classic": {
+    "message": "Memprioritaskan perilaku feed kronologis klasik dan menekan permukaan algoritmik modern seperti Watch/Marketplace."
+  },
+  "options_quickstart_title": {
+    "message": "PureFusion dalam 5 detik"
+  },
+  "options_quickstart_desc": {
+    "message": "Pilih satu profil cepat sekarang. Anda masih bisa menyesuaikan segalanya di bawah."
+  },
+  "options_promise_clean_title": {
+    "message": "Facebook Bersih"
+  },
+  "options_promise_clean_desc": {
+    "message": "Lebih sedikit kekacauan iklan dan algoritma."
+  },
+  "options_promise_fast_title": {
+    "message": "Facebook Cepat"
+  },
+  "options_promise_fast_desc": {
+    "message": "Mode Ultra Cepat untuk sesi yang lebih ringan."
+  },
+  "options_promise_smart_title": {
+    "message": "Facebook Cerdas"
+  },
+  "options_promise_smart_desc": {
+    "message": "Penilaian + kredibilitas + ketjelasan."
+  },
+  "options_quickstart_btn_clean": {
+    "message": "Gunakan Mode Bersih"
+  },
+  "options_quickstart_btn_fast": {
+    "message": "Gunakan Ultra Cepat"
+  },
+  "options_quickstart_btn_smart": {
+    "message": "Gunakan Mode Cerdas"
+  },
+  "options_quickstart_recommended": {
+    "message": "Terbaik untuk sebagian besar pengguna"
+  },
+  "options_mode_perf_hint_low": {
+    "message": "Perangkat ini mungkin bekerja lebih baik dengan Mode Ultra Cepat (teks dahulu, beban CPU/GPU lebih rendah)."
+  },
+  "options_mode_perf_hint_mid": {
+    "message": "Mode Ultra Cepat dapat mengurangi lag selama sesi berat di perangkat ini."
+  },
+  "options_mode_perf_apply": {
+    "message": "Terapkan Rekomendasi Ultra Cepat"
+  },
+  "options_mode_recommendation_low": {
+    "message": "Direkomendasikan: Ultra Cepat"
+  },
+  "options_mode_recommendation_mid": {
+    "message": "Opsional: Ultra Cepat untuk sesi berat"
+  },
+  "options_mode_recommendation_active": {
+    "message": "Mode yang direkomendasikan aktif"
+  },
+  "options_mode_recommendation_balanced": {
+    "message": "Seimbang: mode saat ini sudah baik"
+  },
+  "options_mode_why_custom": {
+    "message": "Alasan: hanya menggunakan pilihan pengaturan manual Anda."
+  },
+  "options_mode_why_clean": {
+    "message": "Alasan: menghapus kekacauan umum sambil menjaga nuansa feed yang familiar."
+  },
+  "options_mode_why_focus": {
+    "message": "Alasan: disesuaikan untuk fokus mendalam dengan pemangkasan gangguan yang lebih kuat."
+  },
+  "options_mode_why_ultrafast": {
+    "message": "Alasan: memprioritaskan kecepatan dengan mengurangi pemrosesan feed berat."
+  },
+  "options_mode_why_smart": {
+    "message": "Alasan: menyeimbangkan pembersihan dengan penilaian dan sinyal kredibilitas."
+  },
+  "options_mode_why_classic": {
+    "message": "Alasan: menekankan perilaku feed kronologis bergaya lama."
+  },
+  "options_mode_why_device_low": {
+    "message": "Catatan perangkat: Ultra Cepat direkomendasikan pada perangkat keras ini."
+  },
+  "options_mode_why_device_mid": {
+    "message": "Catatan perangkat: Ultra Cepat dapat membantu selama sesi berat."
+  },
+  "options_surface_title": {
+    "message": "Kontrol Cakupan Per-Permukaan"
+  },
+  "options_surface_desc": {
+    "message": "Pilih permukaan Facebook mana yang harus menerima pemfilteran PureFusion. Nonaktifkan permukaan untuk membiarkannya tidak tersentuh."
+  },
+  "options_surface_enable": {
+    "message": "Aktifkan cakupan pemfilteran per-permukaan"
+  },
+  "options_surface_home": {
+    "message": "Terapkan pada feed Beranda"
+  },
+  "options_surface_groups": {
+    "message": "Terapkan pada Grup"
+  },
+  "options_surface_watch": {
+    "message": "Terapkan pada Watch"
+  },
+  "options_surface_marketplace": {
+    "message": "Terapkan pada Marketplace"
+  },
+  "options_surface_other": {
+    "message": "Terapkan pada permukaan Lain (profil/halaman/acara)"
+  },
+  "options_filters_hide_suggested": {
+    "message": "Sembunyikan \"Disarankan untuk Anda\""
+  },
+  "options_filters_hide_pymk": {
+    "message": "Sembunyikan \"Orang yang Mungkin Anda Kenal\""
+  },
+  "options_filters_hide_group_suggestions": {
+    "message": "Sembunyikan Saran Grup"
+  },
+  "options_filters_hide_page_suggestions": {
+    "message": "Sembunyikan Saran Halaman"
+  },
+  "options_filters_hide_fundraisers": {
+    "message": "Sembunyikan Penggalangan Dana"
+  },
+  "options_filters_post_types_title": {
+    "message": "Paket Filter Jenis Postingan v2"
+  },
+  "options_filters_post_types_desc": {
+    "message": "Penargetan pembungkus postingan yang ketat ditambah jangkar frasa. Biarkan nonaktif kecuali Anda menginginkan pembersihan jenis yang agresif."
+  },
+  "options_filters_hide_video_posts": {
+    "message": "Sembunyikan postingan video"
+  },
+  "options_filters_hide_photo_posts": {
+    "message": "Sembunyikan postingan foto/gambar"
+  },
+  "options_filters_hide_link_posts": {
+    "message": "Sembunyikan postingan tautan/berbagi eksternal"
+  },
+  "options_filters_hide_text_posts": {
+    "message": "Sembunyikan postingan status hanya teks"
+  },
+  "options_filters_hide_live_video_posts": {
+    "message": "Sembunyikan postingan video langsung"
+  },
+  "options_filters_hide_share_reposts": {
+    "message": "Sembunyikan postingan berbagi/repost"
+  },
+  "options_filters_hide_poll_posts": {
+    "message": "Sembunyikan postingan polling"
+  },
+  "options_filters_clutter_title": {
+    "message": "Kekacauan & Suntikan"
+  },
+  "options_filters_hide_reels_tray": {
+    "message": "Sembunyikan Baki Reels di Feed"
+  },
+  "options_filters_widescreen_label": {
+    "message": "Mode Layar Lebar"
+  },
+  "options_filters_widescreen_desc": {
+    "message": "Buka batas kolom tengah untuk mengisi monitor ultrawide."
+  },
+  "options_filters_hide_memories": {
+    "message": "Sembunyikan Postingan Kenangan"
+  },
+  "options_filters_hide_stories": {
+    "message": "Sembunyikan Bilah Cerita"
+  },
+  "options_filters_remove_colored_bg": {
+    "message": "Hapus Postingan Berlatar Belakang Berwarna"
+  },
+  "options_filters_remove_game_invites": {
+    "message": "Sembunyikan Undangan Game & Postingan Aktivitas"
+  },
+  "options_filters_remove_large_reactions": {
+    "message": "Normalkan Postingan Emoji Berlebihan"
+  },
+  "options_filters_deduplicate_posts_label": {
+    "message": "Sembunyikan Postingan Duplikat"
+  },
+  "options_filters_deduplicate_posts_desc": {
+    "message": "Sembunyikan postingan yang ID-nya sudah muncul sesi ini — menangkap FB yang menyuntikkan kembali cerita yang sama berkali-kali."
+  },
+  "options_filters_locale_label": {
+    "message": "Bahasa Feed"
+  },
+  "options_filters_locale_desc": {
+    "message": "Cocokkan filter frasa dengan bahasa Facebook Anda. Auto menguji semua bahasa yang didukung (mungkin memfilter berlebihan feed bahasa campuran)."
+  },
+  "options_filters_locale_auto": {
+    "message": "Otomatis (semua bahasa yang didukung)"
+  },
+  "options_story_filters_title": {
+    "message": "Filter Aktivitas Cerita"
+  },
+  "options_story_filters_desc": {
+    "message": "Sembunyikan cerita aktivitas sinyal rendah umum dari feed Anda."
+  },
+  "options_story_filter_became_friends": {
+    "message": "Sembunyikan cerita \"Menjadi Teman\""
+  },
+  "options_story_filter_joined_groups": {
+    "message": "Sembunyikan cerita \"Bergabung dengan Grup\""
+  },
+  "options_story_filter_commented": {
+    "message": "Sembunyikan cerita \"Mengomentari ini\""
+  },
+  "options_story_filter_liked": {
+    "message": "Sembunyikan cerita \"Menyukai ini\""
+  },
+  "options_story_filter_events": {
+    "message": "Sembunyikan cerita kehadiran acara"
+  },
+  "options_story_filter_memories": {
+    "message": "Sembunyikan cerita kenangan bersama"
+  },
+  "options_story_filter_profile_photo": {
+    "message": "Sembunyikan cerita pembaruan foto profil"
+  },
+  "options_story_filter_cover_photo": {
+    "message": "Sembunyikan cerita pembaruan foto sampul"
+  },
+  "options_story_filter_life_events": {
+    "message": "Sembunyikan cerita peristiwa kehidupan"
+  },
+  "options_story_filter_checkins": {
+    "message": "Sembunyikan cerita aktivitas check-in/lokasi"
+  },
+  "options_story_filter_milestones": {
+    "message": "Sembunyikan cerita pencapaian"
+  },
+  "options_story_filter_job_work": {
+    "message": "Sembunyikan cerita pembaruan pekerjaan"
+  },
+  "options_story_filter_relationship": {
+    "message": "Sembunyikan cerita pembaruan hubungan"
+  },
+  "options_story_filter_group_activity": {
+    "message": "Sembunyikan cerita postingan aktivitas grup"
+  },
+  "options_image_filters_title": {
+    "message": "Filter Subjek Gambar"
+  },
+  "options_image_filters_desc": {
+    "message": "Gunakan sinyal deskripsi gambar Facebook untuk menyembunyikan kategori visual yang dipilih."
+  },
+  "options_image_filters_enable": {
+    "message": "Aktifkan filter subjek gambar (Mode Aman)"
+  },
+  "options_image_filter_sports": {
+    "message": "Sembunyikan gambar terkait olahraga"
+  },
+  "options_image_filter_food": {
+    "message": "Sembunyikan gambar makanan dan minuman"
+  },
+  "options_image_filter_pets": {
+    "message": "Sembunyikan gambar hewan peliharaan (anjing/kucing)"
+  },
+  "options_image_filter_vehicles": {
+    "message": "Sembunyikan gambar kendaraan"
+  },
+  "options_image_filter_screenshots": {
+    "message": "Sembunyikan meme dan gambar bergaya tangkapan layar"
+  },
+  "options_image_filter_travel": {
+    "message": "Sembunyikan gambar perjalanan dan pemandangan"
+  },
+  "options_ai_card_title": {
+    "message": "Mesin Prediksi Lokal"
+  },
+  "options_ai_card_desc": {
+    "message": "Menilai item feed secara lokal berdasarkan riwayat interaksi Anda. Data tidak pernah meninggalkan perangkat Anda."
+  },
+  "options_ai_enable_predictions": {
+    "message": "Aktifkan Prediksi AI"
+  },
+  "options_ai_show_pf_badge": {
+    "message": "Tampilkan Lencana \"Skor PF\" pada postingan"
+  },
+  "options_ai_show_reasons": {
+    "message": "Tampilkan petunjuk alasan skor pada lencana PF"
+  },
+  "options_ai_dim_low_interest": {
+    "message": "Redupkan/Ciutkan Postingan Minat Rendah (Skor < 20)"
+  },
+  "options_ai_collapse_low_interest": {
+    "message": "Ciutkan Postingan Minat Rendah dengan chip pengungkapan"
+  },
+  "options_ai_never_empty_guard": {
+    "message": "Penjaga feed tidak pernah kosong (pertahankan minimum postingan yang terlihat)"
+  },
+  "options_ai_never_empty_min": {
+    "message": "Minimum postingan yang terlihat untuk dipertahankan"
+  },
+  "options_ai_highlight_high_interest": {
+    "message": "Sorot Postingan Minat Tinggi (Skor > 80)"
+  },
+  "options_ai_analyze_trends": {
+    "message": "Analisis Tren & Kata Kunci Lokal"
+  },
+  "options_ai_true_affinity_sort": {
+    "message": "Sortir Afinitas Sejati"
+  },
+  "options_ai_true_affinity_sort_desc": {
+    "message": "Susun ulang feed berdasarkan skor keterlibatan lokal Anda secara real time — postingan dengan skor tertinggi naik ke atas menggunakan urutan CSS flexbox, tanpa merusak virtual DOM React."
+  },
+  "options_ai_friend_activity": {
+    "message": "Wawasan Feed Aktivitas Teman"
+  },
+  "options_ai_friend_activity_desc": {
+    "message": "Menandai kontak di bilah sisi kanan yang postingannya belum muncul di feed Anda sesi ini — membantu mengidentifikasi teman yang mungkin diam-diam disembunyikan Facebook dari linimasa Anda."
+  },
+  "options_ai_low_threshold": {
+    "message": "Ambang skor rendah"
+  },
+  "options_ai_high_threshold": {
+    "message": "Ambang skor tinggi"
+  },
+  "options_ai_cred_title": {
+    "message": "Sinyal Kredibilitas (Beta)"
+  },
+  "options_ai_cred_desc": {
+    "message": "Pemeriksaan lokal heuristik untuk pola klaim mencurigakan. Ini tidak membuktikan kebenaran; ini menandai postingan yang perlu diverifikasi."
+  },
+  "options_ai_cred_enabled": {
+    "message": "Aktifkan deteksi klaim mencurigakan"
+  },
+  "options_ai_cred_badge": {
+    "message": "Tampilkan lencana peringatan \"verifikasi\" pada postingan yang ditandai"
+  },
+  "options_ai_cred_strict": {
+    "message": "Mode ketat (penalti skor lebih kuat untuk klaim mencurigakan)"
+  },
+  "options_ai_cred_debug": {
+    "message": "Tampilkan pratinjau debug kredibilitas pada semua postingan yang dipindai"
+  },
+  "options_ai_llm_title": {
+    "message": "Server Kecerdasan Mendalam (API BYOK)"
+  },
+  "options_ai_llm_desc": {
+    "message": "Bawa Kunci Anda Sendiri. Buka kemampuan LLM seperti TL;DR dan Komentar AI. Kunci Anda disimpan secara eksklusif memanfaatkan penyimpanan mesin lokal."
+  },
+  "options_ai_provider_label": {
+    "message": "Penyedia Aktif"
+  },
+  "options_ai_provider_none": {
+    "message": "Dinonaktifkan"
+  },
+  "options_ai_provider_openai": {
+    "message": "OpenAI (ChatGPT)"
+  },
+  "options_ai_provider_gemini": {
+    "message": "Google Gemini"
+  },
+  "options_ai_provider_windowai": {
+    "message": "Chrome Native (window.ai)"
+  },
+  "options_ai_openai_key_label": {
+    "message": "Kunci API OpenAI"
+  },
+  "options_ai_gemini_key_label": {
+    "message": "Kunci API Google Gemini"
+  },
+  "options_ai_tldr_toggle": {
+    "message": "Suntikkan tombol Ringkasan \"TL;DR\" pada postingan panjang"
+  },
+  "options_ai_smart_comment_toggle": {
+    "message": "Ko-Pilot Komentar Cerdas (ikon Tongkat)"
+  },
+  "options_ai_clickbait_decode_toggle": {
+    "message": "Dekoder Clickbait (Tulis ulang judul sensasional dengan fakta)"
+  },
+  "options_ai_messenger_tools_title": {
+    "message": "Alat AI Messenger"
+  },
+  "options_ai_messenger_rewrite_toggle": {
+    "message": "Tulis ulang draf pesan di komposer"
+  },
+  "options_ai_messenger_replies_toggle": {
+    "message": "Hasilkan 3 saran balasan cerdas"
+  },
+  "options_ui_card_title": {
+    "message": "Restrukturisasi Antarmuka"
+  },
+  "options_ui_friends_only": {
+    "message": "Mode Hanya Teman (Hapus semua Grup/Halaman dari Feed)"
+  },
+  "options_ui_anonymizer": {
+    "message": "Anonimisasi Tangkapan Layar (Buram Foto Profil/Nama)"
+  },
+  "options_ui_compact_mode": {
+    "message": "Mode Ringkas (Kurangi Margin/Padding)"
+  },
+  "options_ui_disable_comment_autofocus": {
+    "message": "Nonaktifkan Pencurian Fokus Otomatis Kotak Komentar"
+  },
+  "options_ui_enforce_chrono": {
+    "message": "Terapkan Feed Kronologis (Terbaru)"
+  },
+  "options_ui_show_link_previews": {
+    "message": "Tampilkan Tautan Keluar Tujuan Sebenarnya"
+  },
+  "options_ui_absolute_timestamps": {
+    "message": "Ubah Cap Waktu menjadi Tanggal Mutlak"
+  },
+  "options_ui_hide_composer": {
+    "message": "Sembunyikan kotak \"Apa yang Anda pikirkan?\""
+  },
+  "options_ui_comment_sort_label": {
+    "message": "Urutan Komentar Default"
+  },
+  "options_ui_comment_sort_desc": {
+    "message": "Terapkan preferensi urutan secara otomatis saat komentar diperluas pada postingan. Hanya aktif ketika komentar sudah dimuat — tidak memaksa perluasan bagian komentar yang diciutkan."
+  },
+  "options_ui_comment_sort_all": {
+    "message": "Semua Komentar (default FB)"
+  },
+  "options_ui_comment_sort_newest": {
+    "message": "Terbaru Dahulu"
+  },
+  "options_ui_comment_sort_top": {
+    "message": "Paling Relevan"
+  },
+  "options_ui_distraction_free_label": {
+    "message": "Mode Baca Bebas Gangguan (Alt+Shift+F)"
+  },
+  "options_ui_distraction_free_desc": {
+    "message": "Menyembunyikan bilah sisi kiri/kanan dan memusatkan feed untuk pengalaman membaca yang bersih. Aktifkan/nonaktifkan dengan Alt+Shift+F kapan saja."
+  },
+  "options_ui_image_hover_label": {
+    "message": "Perluas Gambar Saat Hover"
+  },
+  "options_ui_image_hover_desc": {
+    "message": "Arahkan kursor ke gambar feed untuk pratinjau ukuran penuh. Simpan atau buka di tab baru langsung dari panel. Nonaktif secara default."
+  },
+  "options_ui_auto_expand_see_more_label": {
+    "message": "Perluas Otomatis \"Lihat Selengkapnya\""
+  },
+  "options_ui_auto_expand_see_more_desc": {
+    "message": "Otomatis menutup \"Lihat selengkapnya\" pada postingan yang dipotong sehingga Anda selalu membaca teks lengkap tanpa klik tambahan."
+  },
+  "options_ui_strip_tracking_params_label": {
+    "message": "Hapus Parameter Pelacakan dari Tautan"
+  },
+  "options_ui_strip_tracking_params_desc": {
+    "message": "Menghapus fbclid, utm_*, gclid dan parameter mata-mata lainnya dari tautan feed sehingga URL yang disalin atau diklik bersih."
+  },
+  "options_ui_autoplay_video_label": {
+    "message": "Kontrol Putar Otomatis Video"
+  },
+  "options_ui_autoplay_video_desc": {
+    "message": "Kontrol apa yang terjadi saat video feed mulai diputar secara otomatis."
+  },
+  "options_ui_autoplay_off": {
+    "message": "Nonaktif (tidak ada tindakan)"
+  },
+  "options_ui_autoplay_mute": {
+    "message": "Bisukan audio (putar tanpa suara)"
+  },
+  "options_ui_autoplay_pause": {
+    "message": "Jeda (klik untuk memutar)"
+  },
+  "options_nav_filters_title": {
+    "message": "Modul Navigasi & Bilah Sisi"
+  },
+  "options_nav_filters_desc": {
+    "message": "Sembunyikan modul navigasi kiri dan bilah sisi kanan tertentu."
+  },
+  "options_nav_master_enable": {
+    "message": "Aktifkan pemfilteran nav tingkat modul (Mode Aman)"
+  },
+  "options_nav_left_marketplace": {
+    "message": "Sembunyikan nav kiri: Marketplace"
+  },
+  "options_nav_left_watch": {
+    "message": "Sembunyikan nav kiri: Watch"
+  },
+  "options_nav_left_gaming": {
+    "message": "Sembunyikan nav kiri: Gaming"
+  },
+  "options_nav_left_memories": {
+    "message": "Sembunyikan nav kiri: Kenangan"
+  },
+  "options_nav_left_meta_ai": {
+    "message": "Sembunyikan nav kiri: Meta AI"
+  },
+  "options_nav_left_manus_ai": {
+    "message": "Sembunyikan nav kiri: Manus AI"
+  },
+  "options_nav_right_trending": {
+    "message": "Sembunyikan bilah sisi kanan: Trending"
+  },
+  "options_nav_right_contacts": {
+    "message": "Sembunyikan bilah sisi kanan: Kontak"
+  },
+  "options_nav_right_meta_ai_contact": {
+    "message": "Sembunyikan bilah sisi kanan: Kontak Meta AI"
+  },
+  "options_nav_right_manus_ai_contact": {
+    "message": "Sembunyikan bilah sisi kanan: Kontak Manus AI"
+  },
+  "options_nav_right_events": {
+    "message": "Sembunyikan bilah sisi kanan: Acara"
+  },
+  "options_nav_right_birthdays": {
+    "message": "Sembunyikan bilah sisi kanan: Ulang Tahun"
+  },
+  "options_topbar_filters_title": {
+    "message": "Kontrol Header Atas"
+  },
+  "options_topbar_filters_desc": {
+    "message": "Sembunyikan ikon header tertentu tanpa menghapus kontainer header penuh."
+  },
+  "options_topbar_master_enable": {
+    "message": "Aktifkan pemfilteran header atas (Mode Aman)"
+  },
+  "options_topbar_hide_home": {
+    "message": "Sembunyikan ikon atas: Beranda"
+  },
+  "options_topbar_hide_friends": {
+    "message": "Sembunyikan ikon atas: Teman"
+  },
+  "options_topbar_hide_watch": {
+    "message": "Sembunyikan ikon atas: Watch"
+  },
+  "options_topbar_hide_marketplace": {
+    "message": "Sembunyikan ikon atas: Marketplace"
+  },
+  "options_topbar_hide_groups": {
+    "message": "Sembunyikan ikon atas: Grup"
+  },
+  "options_topbar_hide_gaming": {
+    "message": "Sembunyikan ikon atas: Gaming"
+  },
+  "options_topbar_hide_messenger": {
+    "message": "Sembunyikan ikon atas: Messenger"
+  },
+  "options_topbar_hide_notifications": {
+    "message": "Sembunyikan ikon atas: Notifikasi"
+  },
+  "options_topbar_hide_menu": {
+    "message": "Sembunyikan ikon atas: Menu"
+  },
+  "options_topbar_hide_create": {
+    "message": "Sembunyikan ikon atas: Buat"
+  },
+  "options_ui_theme_label": {
+    "message": "Tema Aplikasi"
+  },
+  "options_ui_theme_reload_desc": {
+    "message": "Memerlukan muat ulang halaman."
+  },
+  "options_ui_theme_default": {
+    "message": "Default Facebook"
+  },
+  "options_ui_theme_darkpro": {
+    "message": "Dark Pro"
+  },
+  "options_ui_theme_amoled": {
+    "message": "AMOLED Hitam Pekat"
+  },
+  "options_ui_theme_classic": {
+    "message": "Biru Klasik"
+  },
+  "options_ui_theme_zen": {
+    "message": "Mode Zen (Minimalis)"
+  },
+  "options_ui_theme_pastel": {
+    "message": "Pastel Hangat"
+  },
+  "options_ui_font_scale_label": {
+    "message": "Skala Ukuran Font (%)"
+  },
+  "options_ui_custom_style_title": {
+    "message": "Gaya Kustom Lanjutan"
+  },
+  "options_ui_custom_style_desc": {
+    "message": "Penimpaan opsional untuk font, warna aksen, latar belakang, dan CSS kustom."
+  },
+  "options_ui_custom_style_warn": {
+    "message": "Gunakan CSS yang valid saja. Aturan yang buruk dapat merusak tata letak halaman."
+  },
+  "options_ui_custom_style_enable": {
+    "message": "Aktifkan gaya kustom lanjutan"
+  },
+  "options_ui_custom_font": {
+    "message": "Keluarga font kustom"
+  },
+  "options_ui_custom_accent": {
+    "message": "Warna aksen kustom"
+  },
+  "options_ui_custom_text_color": {
+    "message": "Warna teks kustom"
+  },
+  "options_ui_custom_card_background": {
+    "message": "Latar belakang kartu postingan kustom"
+  },
+  "options_ui_custom_background": {
+    "message": "Latar belakang halaman kustom"
+  },
+  "options_ui_custom_css": {
+    "message": "CSS Kustom"
+  },
+  "options_ui_custom_accent_placeholder": {
+    "message": "#22c1ff"
+  },
+  "options_ui_custom_text_color_placeholder": {
+    "message": "#f2f5ff"
+  },
+  "options_ui_custom_card_background_placeholder": {
+    "message": "rgba(24, 31, 42, 0.92)"
+  },
+  "options_ui_custom_background_placeholder": {
+    "message": "linear-gradient(...) or #111111"
+  },
+  "options_ui_custom_css_placeholder": {
+    "message": ".selector { display: none !important; }"
+  },
+  "options_ui_custom_css_preset_label": {
+    "message": "Prasetel cuplikan CSS kustom"
+  },
+  "options_ui_custom_css_preset_desc": {
+    "message": "Muat cuplikan awal ke kotak CSS kustom, lalu tinjau dan simpan."
+  },
+  "options_ui_custom_css_preset_none": {
+    "message": "Pilih cuplikan"
+  },
+  "options_ui_custom_css_preset_subtle_cards": {
+    "message": "Poles kartu halus"
+  },
+  "options_ui_custom_css_preset_calmer_motion": {
+    "message": "Gerakan lebih tenang"
+  },
+  "options_ui_custom_css_preset_readability_boost": {
+    "message": "Peningkatan keterbacaan"
+  },
+  "options_ui_custom_css_preset_apply": {
+    "message": "Muat Cuplikan"
+  },
+  "options_theme_preview_title": {
+    "message": "Pratinjau Langsung"
+  },
+  "options_theme_preview_post_title": {
+    "message": "Judul Postingan Pratinjau"
+  },
+  "options_theme_preview_desc": {
+    "message": "Pratinjau mini ini diperbarui saat Anda mengubah tema dan skala font."
+  },
+  "options_theme_preview_chip_filtered": {
+    "message": "Ads Filtered"
+  },
+  "options_theme_preview_chip_score": {
+    "message": "Skor PF 88"
+  },
+  "options_wellbeing_grayscale": {
+    "message": "Mode Skala Abu-abu (Desaturasi semua warna)"
+  },
+  "options_wellbeing_scroll_stopper": {
+    "message": "Penghenti Gulir Tak Terbatas"
+  },
+  "options_wellbeing_break_wall": {
+    "message": "Postingan hingga Dinding Jeda"
+  },
+  "options_wellbeing_session_timer": {
+    "message": "Jam Timer Sesi yang Terlihat"
+  },
+  "options_wellbeing_session_awareness_enable": {
+    "message": "Prompt jeda lunak kesadaran sesi"
+  },
+  "options_wellbeing_session_awareness_threshold": {
+    "message": "Pulsa gulir per menit sebelum prompt"
+  },
+  "options_wellbeing_session_awareness_cooldown": {
+    "message": "Jeda prompt (menit)"
+  },
+  "options_wellbeing_daily_report_enable": {
+    "message": "Aktifkan Laporan Feed Harian"
+  },
+  "options_wellbeing_daily_report_minutes": {
+    "message": "Interval laporan otomatis (menit)"
+  },
+  "options_wellbeing_reels_limit_title": {
+    "message": "Pembatas Sesi Reels"
+  },
+  "options_wellbeing_reels_limit_desc": {
+    "message": "Izinkan hanya jumlah Reels terbatas per sesi, lalu blokir Reels tambahan."
+  },
+  "options_wellbeing_reels_limit_enable": {
+    "message": "Aktifkan pembatas sesi Reels"
+  },
+  "options_wellbeing_reels_limit_count": {
+    "message": "Reels yang diizinkan per sesi"
+  },
+  "options_wellbeing_reels_limit_hardlock": {
+    "message": "Kunci keras Reels setelah batas tercapai"
+  },
+  "options_wellbeing_ai_blockers_title": {
+    "message": "Pemblokir AI Lanjutan (Edisi Wellbeing)"
+  },
+  "options_wellbeing_ragebait": {
+    "message": "Detektor Rage-Bait (Buram postingan kemarahan yang memicu emosi)"
+  },
+  "options_wellbeing_clickbait": {
+    "message": "Penghapus Clickbait (Hapus judul manipulatif viral)"
+  },
+  "wellbeing_break_title": {
+    "message": "Tarik Napas"
+  },
+  "wellbeing_break_body_template": {
+    "message": "Anda baru saja menggulir melewati $1 postingan. PureFusion telah sementara menjeda feed untuk membantu Anda menghindari doom-scrolling. Sudah waktunya melakukan hal lain?"
+  },
+  "wellbeing_break_resume_btn": {
+    "message": "Lanjutkan Menggulir Anyway"
+  },
+  "wellbeing_session_timer_prefix": {
+    "message": "Sesi"
+  },
+  "wellbeing_report_button": {
+    "message": "Laporan"
+  },
+  "wellbeing_weekly_report_button": {
+    "message": "Minggu"
+  },
+  "wellbeing_report_disabled": {
+    "message": "Laporan Feed Harian dinonaktifkan. Aktifkan di Kesehatan Digital."
+  },
+  "wellbeing_report_label_auto": {
+    "message": "Laporan Feed Harian"
+  },
+  "wellbeing_report_label_session": {
+    "message": "Laporan Feed Sesi"
+  },
+  "wellbeing_weekly_report_label": {
+    "message": "Laporan Feed Mingguan"
+  },
+  "wellbeing_report_no_filters": {
+    "message": "Belum ada filter yang dipicu"
+  },
+  "wellbeing_weekly_report_no_data": {
+    "message": "Laporan mingguan memerlukan lebih banyak data aktivitas terlebih dahulu."
+  },
+  "wellbeing_session_awareness_toast_template": {
+    "message": "Kecepatan gulir tinggi terdeteksi: $1 guliran dalam menit terakhir (sesi $2 menit). Pertimbangkan istirahat singkat."
+  },
+  "wellbeing_report_panel_title": {
+    "message": "Laporan Feed PureFusion"
+  },
+  "wellbeing_report_panel_close": {
+    "message": "Tutup"
+  },
+  "wellbeing_report_panel_session_tab": {
+    "message": "Sesi"
+  },
+  "wellbeing_report_panel_weekly_tab": {
+    "message": "Mingguan"
+  },
+  "wellbeing_report_panel_hidden": {
+    "message": "Item tersembunyi"
+  },
+  "wellbeing_report_panel_reels": {
+    "message": "Reels diblokir"
+  },
+  "wellbeing_report_panel_top_reason": {
+    "message": "Gangguan teratas"
+  },
+  "wellbeing_report_panel_minutes_saved": {
+    "message": "Menit tersimpan (est.)"
+  },
+  "wellbeing_report_panel_elapsed": {
+    "message": "Sesi berjalan"
+  },
+  "wellbeing_report_panel_refresh": {
+    "message": "Segarkan"
+  },
+  "wellbeing_report_panel_reset_session": {
+    "message": "Atur Ulang Sesi"
+  },
+  "wellbeing_report_panel_reset_done": {
+    "message": "Penghitung sesi direset."
+  },
+  "wellbeing_report_panel_note": {
+    "message": "Tips: Nilai harian direset dengan reset sesi; rollup mingguan dihitung dari bucket harian yang tersimpan."
+  },
+  "wellbeing_report_panel_weekly_window": {
+    "message": "Jendela bergulir 7 hari"
+  },
+  "wellbeing_report_panel_weekly_trend_title": {
+    "message": "Tren 7 hari"
+  },
+  "wellbeing_report_panel_weekly_top_reasons_title": {
+    "message": "Alasan gangguan teratas"
+  },
+  "wellbeing_report_panel_weekly_no_reasons": {
+    "message": "Belum ada data alasan gangguan."
+  },
+  "wellbeing_report_panel_weekly_reason_explain": {
+    "message": "Jelaskan"
+  },
+  "wellbeing_report_reason_explain_ads": {
+    "message": "Konten bersponsor atau seperti iklan difilter untuk mengurangi kekacauan promosi."
+  },
+  "wellbeing_report_reason_explain_story": {
+    "message": "Pola aktivitas cerita (suka/komentar/bergabung teman/check-in) difilter sebagai kebisingan feed sinyal rendah."
+  },
+  "wellbeing_report_reason_explain_post_type": {
+    "message": "Filter format postingan menghapus jenis konten yang Anda pilih untuk disembunyikan (video/foto/tautan/hanya teks)."
+  },
+  "wellbeing_report_reason_explain_bait": {
+    "message": "Filter keamanan perilaku menandai pola manipulatif atau kemarahan tinggi yang dirancang untuk membuat Anda terus menggulir."
+  },
+  "wellbeing_report_reason_explain_nav": {
+    "message": "Kontrol kekacauan navigasi dan modul menghapus elemen UI non-feed yang mengganggu."
+  },
+  "wellbeing_report_reason_explain_keyword": {
+    "message": "Aturan kata kunci cocok dengan item ini dan memfilternya berdasarkan daftar blokir kustom Anda."
+  },
+  "wellbeing_report_reason_explain_generic": {
+    "message": "Kategori ini difilter oleh aturan PureFusion aktif Anda untuk menjaga feed Anda lebih bersih dan lebih fokus."
+  },
+  "wellbeing_report_reason_open_settings": {
+    "message": "Buka pengaturan terkait"
+  },
   "wellbeing_weekly_report_toast_template": {
     "message": "$LABEL$: tersembunyi $HIDDEN$ item, reels diblokir $REELS$, gangguan teratas $REASON$, est. $MINUTES$ menit tersimpan selama 7 hari.",
-    "placeholders": {"label": {"content": "$1"}, "hidden": {"content": "$2"}, "reels": {"content": "$3"}, "reason": {"content": "$4"}, "minutes": {"content": "$5"}}
+    "placeholders": {
+      "label": {
+        "content": "$1"
+      },
+      "hidden": {
+        "content": "$2"
+      },
+      "reels": {
+        "content": "$3"
+      },
+      "reason": {
+        "content": "$4"
+      },
+      "minutes": {
+        "content": "$5"
+      }
+    }
   },
   "wellbeing_report_toast_template": {
     "message": "$LABEL$: tersembunyi $HIDDEN$ item, reels diblokir $REELS$, alasan teratas $REASON$, est. $MINUTES$ menit tersimpan.",
-    "placeholders": {"label": {"content": "$1"}, "hidden": {"content": "$2"}, "reels": {"content": "$3"}, "reason": {"content": "$4"}, "minutes": {"content": "$5"}}
+    "placeholders": {
+      "label": {
+        "content": "$1"
+      },
+      "hidden": {
+        "content": "$2"
+      },
+      "reels": {
+        "content": "$3"
+      },
+      "reason": {
+        "content": "$4"
+      },
+      "minutes": {
+        "content": "$5"
+      }
+    }
   },
-  "options_social_ghost_title": {"message": "Mode Hantu (Messenger)"},
-  "options_social_ghost_desc": {"message": "Interaksi pribadi. Sembunyikan jejak Anda saat berkirim pesan."},
-  "options_social_hide_seen": {"message": "Sembunyikan Tanda Terima \"Dilihat\" (Baca tanpa sepengetahuan mereka)"},
-  "options_social_hide_typing": {"message": "Sembunyikan Indikator \"Sedang Mengetik...\""},
-  "options_social_privacy_blur": {"message": "Blur Privasi (Buram badan obrolan hingga hover)"},
-  "options_social_meta_title": {"message": "Meta AI & Kekacauan Algoritmik"},
-  "options_social_auto_comment_preview": {"message": "Pratinjau Komentar Otomatis"},
-  "options_social_auto_comment_preview_toggle": {"message": "Aktifkan Pratinjau Komentar Otomatis"},
-  "options_beta_badge": {"message": "BETA"},
-  "options_comment_preview_warning_text": {"message": "Fitur ini mensimulasikan klik tombol untuk memperluas bagian komentar saat Anda menggulir. Ini bersifat eksperimental dan mungkin tidak berfungsi pada semua postingan, mungkin berhenti bekerja setelah Facebook memperbarui tata letaknya, atau mungkin memicu pembatasan kecepatan jika jumlah sweep diatur terlalu tinggi. Pertahankan cooldown di atas 1200 ms dan maksimum postingan per sweep di bawah 20 saat pertama kali menguji."},
-  "options_comment_preview_risk_text": {"message": "Aktifkan dengan risiko Anda sendiri. Prompt konfirmasi akan muncul pertama kali Anda mengaktifkan ini."},
-  "options_social_comment_preview_desc": {"message": "Sesuaikan cooldown dan cakupan di bawah. Cooldown yang lebih tinggi dan batas sweep yang lebih rendah mengurangi kemungkinan memicu batas kecepatan FB."},
-  "options_social_comment_preview_cooldown": {"message": "Cooldown pratinjau komentar (ms)"},
-  "options_social_comment_preview_retry_cap": {"message": "Batas percobaan ulang per postingan"},
-  "options_social_comment_preview_sweep_cap": {"message": "Maksimum postingan per sweep"},
-  "options_social_comment_preview_home": {"message": "Izinkan di feed Beranda"},
-  "options_social_comment_preview_groups": {"message": "Izinkan di Grup"},
-  "options_social_comment_preview_watch": {"message": "Izinkan di Watch"},
-  "options_social_comment_preview_marketplace": {"message": "Izinkan di Marketplace"},
-  "options_social_comment_preview_notifications": {"message": "Izinkan di Notifikasi"},
-  "options_social_comment_preview_other": {"message": "Izinkan di permukaan Lain"},
-  "options_social_comment_preview_strategy": {"message": "Strategi Pratinjau"},
-  "options_social_comment_preview_strategy_inject": {"message": "Smart Inject (Stabil, v3)"},
-  "options_social_comment_preview_strategy_click": {"message": "Legacy Click (v2)"},
-  "options_social_nuke_meta": {"message": "Hapus Meta AI (Hapus semua ikon gradien & tombol kilauan)"},
-  "options_social_track_unfriends": {"message": "Lacak Penghapusan Teman & Penonaktifan"},
-  "options_social_notif_title": {"message": "Penenang Jiwa Notifikasi"},
-  "options_social_notif_style": {"message": "Gaya Permata Peringatan (Titik merah)"},
-  "options_social_notif_style_classic": {"message": "Merah Klasik (Default)"},
-  "options_social_notif_style_blue": {"message": "Biru Murni (Halus)"},
-  "options_social_notif_style_purple": {"message": "Fusion Ungu (Bermerek)"},
-  "options_social_notif_style_grey": {"message": "Abu-abu Hantu (Minimal)"},
-  "options_social_notif_style_hidden": {"message": "Tersembunyi sepenuhnya"},
-  "options_social_notif_digest": {"message": "Mode Digest Notifikasi (Kumpulkan peringatan setiap jam)"},
-  "options_social_notif_games": {"message": "Sembunyikan notifikasi game"},
-  "options_social_notif_birthdays": {"message": "Sembunyikan notifikasi ulang tahun"},
-  "options_social_notif_marketplace": {"message": "Sembunyikan notifikasi Marketplace"},
-  "options_social_notif_engagement": {"message": "Sembunyikan dorongan keterlibatan algoritmik"},
-  "options_social_search_title": {"message": "Kontrol Popup Pencarian"},
-  "options_social_search_desc": {"message": "Sembunyikan saran dropdown pencarian yang mengganggu."},
-  "options_social_search_hide_all": {"message": "Sembunyikan semua saran popup pencarian"},
-  "options_social_search_hide_trending": {"message": "Sembunyikan saran pencarian trending"},
-  "options_social_search_hide_recent": {"message": "Sembunyikan bagian pencarian terbaru"},
-  "options_keywords_card_desc": {"message": "Pisahkan kata kunci dengan koma."},
-  "options_keywords_blocklist_label": {"message": "Daftar Blokir (Menciutkan postingan dengan tombol \"Tampilkan anyway\")"},
-  "options_keywords_autohide_label": {"message": "Sembunyikan otomatis (Menghapus postingan yang mengandung string ini secara diam-diam)"},
-  "options_keywords_source_blocklist_label": {"message": "Sumber Tersembunyi (Selalu sembunyikan nama sumber yang cocok)"},
-  "options_keywords_allowlist_label": {"message": "Kata Kunci Daftar Izin (Jangan pernah blokir jika postingan mengandung ini)"},
-  "options_keywords_allowlist_friends_label": {"message": "Jangan Pernah Sembunyikan Sumber (Teman/Halaman)"},
-  "options_keywords_blocklist_placeholder": {"message": "politik, spoiler, dll..."},
-  "options_keywords_autohide_placeholder": {"message": "kata buzzword spam..."},
-  "options_keywords_source_blocklist_placeholder": {"message": "Budi Santoso, Halaman Berita Keras..."},
-  "options_keywords_allowlist_placeholder": {"message": "pembaruan keluarga, peluncuran proyek..."},
-  "options_keywords_allowlist_friends_placeholder": {"message": "Siti Rahma, Halaman Favorit Saya..."},
-  "options_data_backup_title": {"message": "Cadangan Konfigurasi"},
-  "options_data_backup_desc": {"message": "Ekspor pengaturan & daftar blokir Anda sebagai JSON untuk disinkronkan ke mesin lain."},
-  "options_data_export_btn": {"message": "Ekspor ke File"},
-  "options_data_import_btn": {"message": "Impor dari File"},
-  "options_data_about_title": {"message": "Tentang & Dukungan"},
-  "options_data_about_desc": {"message": "Butuh bantuan, ingin melaporkan masalah, atau mendukung pengembangan? Hubungi saya langsung menggunakan tautan di bawah."},
-  "options_data_about_discord": {"message": "Discord (Purefusion-Feeds)"},
-  "options_data_about_github": {"message": "Repositori GitHub"},
-  "options_data_about_issues": {"message": "Laporkan Masalah"},
-  "options_data_about_donate": {"message": "Donasi / Dukung"},
-  "options_data_diag_title": {"message": "Mode Diagnostik"},
-  "options_data_diag_desc": {"message": "Overlay debug lokal opsional untuk memeriksa alasan penyembunyian dan aktivitas filter."},
-  "options_data_diag_enable": {"message": "Aktifkan mode diagnostik"},
-  "options_data_diag_overlay": {"message": "Tampilkan overlay diagnostik dalam halaman"},
-  "options_data_diag_compact": {"message": "Gunakan overlay diagnostik ringkas"},
-  "options_data_diag_console": {"message": "Diagnostik verbose di konsol"},
-  "options_data_diag_max_reasons": {"message": "Baris alasan maksimum overlay"},
-  "options_data_diag_thresholds_title": {"message": "Ambang Lonjakan Observer"},
-  "options_data_diag_thresholds_desc": {"message": "Sesuaikan ambang peringatan dan parah yang digunakan oleh peringatan beban kerja diagnostik."},
-  "options_data_diag_warn_duration": {"message": "Durasi peringatan (ms)"},
-  "options_data_diag_severe_duration": {"message": "Durasi parah (ms)"},
-  "options_data_diag_warn_nodes": {"message": "Jumlah node peringatan"},
-  "options_data_diag_severe_nodes": {"message": "Jumlah node parah"},
-  "options_data_diag_warn_records": {"message": "Rekaman mutasi peringatan"},
-  "options_data_diag_severe_records": {"message": "Rekaman mutasi parah"},
-  "options_data_reset_title": {"message": "Reset Pabrik"},
-  "options_data_reset_desc": {"message": "Ini akan menghapus semua preferensi dan data pembelajaran AI lokal."},
-  "options_data_reset_btn": {"message": "Hapus Semua"},
-  "options_toast_saved": {"message": "Pengaturan berhasil disimpan."},
-  "options_toast_imported": {"message": "Pengaturan berhasil diimpor."},
-  "options_toast_invalid_backup": {"message": "File cadangan PureFusion tidak valid."},
-  "options_toast_import_error": {"message": "Kesalahan mengimpor file. Mungkin rusak."},
-  "options_toast_provider_permission_denied": {"message": "Izin penyedia AI ditolak. Penyedia dinonaktifkan."},
-  "options_toast_preset_applied": {"message": "Prasetel berhasil diterapkan."},
-  "options_toast_custom_css_snippet_loaded": {"message": "Cuplikan CSS kustom dimuat. Klik Simpan untuk menerapkan."},
-  "options_toast_ultrafast_applied": {"message": "Mode Ultra Cepat diterapkan untuk perangkat ini."},
-  "options_toast_mode_clean_applied": {"message": "Mode Bersih diterapkan."},
-  "options_toast_mode_smart_applied": {"message": "Mode Cerdas diterapkan."},
-  "options_reset_confirm": {"message": "Anda yakin? Ini akan menghapus preferensi Anda dan semua data pelacakan AI lokal."},
-  "options_sidebar_filters": {"message": "🚫 Filter Inti"},
-  "options_sidebar_wellbeing": {"message": "🧘 Kesehatan Digital"},
-  "options_sidebar_ai": {"message": "🤖 Mesin AI"},
-  "options_sidebar_ui": {"message": "🎨 Tweak UI"},
-  "options_sidebar_keywords": {"message": "🔤 Filter Kata Kunci"},
-  "options_sidebar_social": {"message": "🤝 Sosial & Privasi"},
-  "options_sidebar_data": {"message": "💾 Data & Cadangan"},
-  "welcome_title": {"message": "Selamat Datang di PureFusion Feed"},
-  "welcome_subtitle": {"message": "Masuki pengalaman Sosial yang lebih bersih, lebih cepat, dan lebih privat."},
-  "welcome_god_mode": {"message": "Inti Mode Dewa"},
-  "welcome_god_mode_desc": {"message": "Pemberantasan total konten bersponsor, reels yang disarankan, dan sampah algoritmik."},
-  "welcome_privacy_ai": {"message": "AI Privasi"},
-  "welcome_privacy_ai_desc": {"message": "Ringkas postingan panjang dan blokir clickbait menggunakan teknologi AI lokal offline."},
-  "welcome_dopamine": {"message": "Pemutus Dopamin"},
-  "welcome_dopamine_desc": {"message": "Lawan doom-scrolling dengan timer sesi, mode skala abu-abu, dan batas gulir."},
-  "welcome_ready": {"message": "Siap mengambil kendali?"},
-  "welcome_ready_desc": {"message": "Feed Anda sekarang berada di bawah kendali Anda. Anda dapat mengakses **Dasbor Lanjutan** kapan saja."},
-  "welcome_help_title": {"message": "Butuh Bantuan atau Ingin Melaporkan Bug?"},
-  "welcome_help_desc": {"message": "Hubungi saya langsung di Discord, buka isu GitHub, atau dukung pengembangan PureFusion."},
-  "welcome_help_discord": {"message": "Discord: Purefusion-Feeds"},
-  "welcome_help_github": {"message": "Repositori GitHub"},
-  "welcome_help_issues": {"message": "Isu GitHub"},
-  "welcome_help_donate": {"message": "Donasi / Dukung"},
-  "welcome_support_development": {"message": "❤️ Dukung Pengembangan"},
-  "welcome_footer_built": {"message": "Dibangun dengan ❤️ oleh Michael Harrell & Didukung oleh PureFusion 2024"},
-  "inpage_fab_title": {"message": "Buka Dasbor PureFusion"},
-  "inpage_modal_title": {"message": "Panel PureFusion"},
-  "inpage_modal_ads": {"message": "Blokir Iklan"},
-  "inpage_modal_sponsored": {"message": "Sembunyikan Postingan Bersponsor"},
-  "inpage_modal_sugg": {"message": "Sembunyikan Saran & Reels"},
-  "inpage_modal_stories": {"message": "Sembunyikan Bilah Cerita"},
-  "inpage_modal_ai": {"message": "Filter AI Rage/Clickbait"},
-  "inpage_modal_gray": {"message": "Mode Skala Abu-abu"},
-  "content_hidden_chip_label": {"message": "Disembunyikan oleh PureFusion"},
-  "content_hidden_chip_show_once": {"message": "Tampilkan sekali"},
-  "content_hidden_chip_allow_source": {"message": "Selalu izinkan sumber"},
-  "content_allow_source_exists": {"message": "sudah ada di Sumber yang Tidak Pernah Disembunyikan."},
-  "content_allow_source_added": {"message": "Ditambahkan"},
-  "content_allow_source_added_suffix": {"message": "ke Sumber yang Tidak Pernah Disembunyikan."},
-  "messenger_ai_rewrite_btn": {"message": "Tulis Ulang"},
-  "messenger_ai_replies_btn": {"message": "Balasan Cerdas"},
-  "messenger_ai_rewriting_btn": {"message": "Menulis ulang..."},
-  "messenger_ai_generating_btn": {"message": "Menghasilkan..."},
-  "messenger_ai_empty_input": {"message": "Ketik pesan terlebih dahulu."},
-  "messenger_ai_rewrite_success": {"message": "Pesan ditulis ulang."},
-  "messenger_ai_rewrite_fail": {"message": "Penulisan ulang gagal. Periksa pengaturan penyedia AI."},
-  "messenger_ai_context_missing": {"message": "Butuh lebih banyak konteks obrolan untuk balasan cerdas."},
-  "messenger_ai_replies_fail": {"message": "Tidak dapat menghasilkan balasan cerdas."},
-  "messenger_ai_provider_required": {"message": "Konfigurasikan penyedia AI di pengaturan PureFusion terlebih dahulu."},
-  "options_sidebar_poweruser": {"message": "⚡ Aturan Power-User"},
-  "options_poweruser_title": {"message": "Mesin Aturan Power-User"},
-  "options_poweruser_desc": {"message": "Targetkan dan sembunyikan elemen apa pun di halaman menggunakan selektor kustom atau pencocokan teks. Jadilah tepat untuk menghindari menyembunyikan konten yang ingin Anda lihat."},
-  "options_poweruser_add_rule": {"message": "Tambah Aturan Sembunyikan Baru"},
-  "options_poweruser_rule_list": {"message": "Aturan Aktif"},
-  "options_poweruser_no_rules": {"message": "Belum ada aturan kustom yang ditentukan. Gunakan tombol '+' atau klik kanan elemen di Facebook untuk 'Zap' mereka."},
-  "options_poweruser_type_label": {"message": "Jenis Aturan"},
-  "options_poweruser_type_selector": {"message": "Selektor CSS"},
-  "options_poweruser_type_text": {"message": "Pencocokan Teks"},
-  "options_poweruser_rule_label": {"message": "Label Aturan (Nama internal)"},
-  "options_poweruser_rule_value": {"message": "Selektor atau Frasa"},
-  "options_poweruser_rule_wrapper_label": {"message": "Cakupan (Selektor Pembungkus)"},
-  "options_poweruser_rule_wrapper_placeholder": {"message": "mis. [role='article'] (Opsional)"},
-  "options_poweruser_save_rule": {"message": "Simpan Aturan"},
-  "options_poweruser_cancel": {"message": "Batal"},
-  "options_poweruser_rule_enabled": {"message": "Diaktifkan"},
-  "options_poweruser_delete_rule": {"message": "Hapus"},
-  "options_poweruser_edit_rule": {"message": "Edit"},
-  "quick_action_menu_zap_element": {"message": "Zap (Sembunyikan) Elemen"},
-  "options_poweruser_delete_confirm": {"message": "Anda yakin ingin menghapus aturan ini?"},
-  "options_toast_rule_updated": {"message": "Aturan diperbarui."},
-  "options_toast_rule_deleted": {"message": "Aturan dihapus."},
-  "options_toast_rules_saved": {"message": "Aturan kustom berhasil disimpan."},
-  "options_toast_rule_value_required": {"message": "Nilai aturan (selektor/teks) diperlukan."},
-  "quick_action_save_later": { "message": "Save to Read Later" },
-  "popup_readlater_title": { "message": "Read Later" },
-  "popup_readlater_one": { "message": "1 saved" },
-  "popup_readlater_many": { "message": "{count} saved" },
-  "popup_readlater_view": { "message": "View Queue" },
-  "options_readlater_title": { "message": "Read Later Queue" },
-  "options_readlater_desc": { "message": "Posts saved from the Facebook feed using right-click → Teach PureFusion → Save to Read Later." },
-  "options_readlater_clear": { "message": "Clear All" },
-  "content_saved_for_later": { "message": "Post saved to Read Later." },
-  "content_save_later_duplicate": { "message": "Already in your Read Later queue." },
-  "content_save_later_error": { "message": "Could not identify a post to save. Try right-clicking within a post." },
-  "options_filters_post_age_label": { "message": "Hide Posts Older Than" },
-  "options_filters_post_age_desc": { "message": "Hide feed posts older than the chosen threshold. Reads the post timestamp — posts without a detectable date are kept visible." },
-  "options_filters_post_age_off": { "message": "Off" },
-  "options_filters_post_age_6h": { "message": "6 hours" },
-  "options_filters_post_age_12h": { "message": "12 hours" },
-  "options_filters_post_age_24h": { "message": "24 hours (1 day)" },
-  "options_filters_post_age_48h": { "message": "2 days" },
-  "options_filters_post_age_72h": { "message": "3 days" },
-  "options_filters_post_age_7d": { "message": "7 days" },
-  "options_filters_post_age_14d": { "message": "14 days" },
-  "options_filters_post_age_30d": { "message": "30 days" },
-  "options_ui_reply_only_label": { "message": "Reply-Only Mode" },
-  "options_ui_reply_only_desc": { "message": "Collapse post bodies in the feed — hides post text and attached stories, leaving only the comment threads visible. Useful for cutting through engagement-bait without seeing the inflammatory content." }
+  "options_social_ghost_title": {
+    "message": "Mode Hantu (Messenger)"
+  },
+  "options_social_ghost_desc": {
+    "message": "Interaksi pribadi. Sembunyikan jejak Anda saat berkirim pesan."
+  },
+  "options_social_hide_seen": {
+    "message": "Sembunyikan Tanda Terima \"Dilihat\" (Baca tanpa sepengetahuan mereka)"
+  },
+  "options_social_hide_typing": {
+    "message": "Sembunyikan Indikator \"Sedang Mengetik...\""
+  },
+  "options_social_privacy_blur": {
+    "message": "Blur Privasi (Buram badan obrolan hingga hover)"
+  },
+  "options_social_meta_title": {
+    "message": "Meta AI & Kekacauan Algoritmik"
+  },
+  "options_social_auto_comment_preview": {
+    "message": "Pratinjau Komentar Otomatis"
+  },
+  "options_social_auto_comment_preview_toggle": {
+    "message": "Aktifkan Pratinjau Komentar Otomatis"
+  },
+  "options_beta_badge": {
+    "message": "BETA"
+  },
+  "options_comment_preview_warning_text": {
+    "message": "Fitur ini mensimulasikan klik tombol untuk memperluas bagian komentar saat Anda menggulir. Ini bersifat eksperimental dan mungkin tidak berfungsi pada semua postingan, mungkin berhenti bekerja setelah Facebook memperbarui tata letaknya, atau mungkin memicu pembatasan kecepatan jika jumlah sweep diatur terlalu tinggi. Pertahankan cooldown di atas 1200 ms dan maksimum postingan per sweep di bawah 20 saat pertama kali menguji."
+  },
+  "options_comment_preview_risk_text": {
+    "message": "Aktifkan dengan risiko Anda sendiri. Prompt konfirmasi akan muncul pertama kali Anda mengaktifkan ini."
+  },
+  "options_social_comment_preview_desc": {
+    "message": "Sesuaikan cooldown dan cakupan di bawah. Cooldown yang lebih tinggi dan batas sweep yang lebih rendah mengurangi kemungkinan memicu batas kecepatan FB."
+  },
+  "options_social_comment_preview_cooldown": {
+    "message": "Cooldown pratinjau komentar (ms)"
+  },
+  "options_social_comment_preview_retry_cap": {
+    "message": "Batas percobaan ulang per postingan"
+  },
+  "options_social_comment_preview_sweep_cap": {
+    "message": "Maksimum postingan per sweep"
+  },
+  "options_social_comment_preview_home": {
+    "message": "Izinkan di feed Beranda"
+  },
+  "options_social_comment_preview_groups": {
+    "message": "Izinkan di Grup"
+  },
+  "options_social_comment_preview_watch": {
+    "message": "Izinkan di Watch"
+  },
+  "options_social_comment_preview_marketplace": {
+    "message": "Izinkan di Marketplace"
+  },
+  "options_social_comment_preview_notifications": {
+    "message": "Izinkan di Notifikasi"
+  },
+  "options_social_comment_preview_other": {
+    "message": "Izinkan di permukaan Lain"
+  },
+  "options_social_comment_preview_strategy": {
+    "message": "Strategi Pratinjau"
+  },
+  "options_social_comment_preview_strategy_inject": {
+    "message": "Smart Inject (Stabil, v3)"
+  },
+  "options_social_comment_preview_strategy_click": {
+    "message": "Legacy Click (v2)"
+  },
+  "options_social_nuke_meta": {
+    "message": "Hapus Meta AI (Hapus semua ikon gradien & tombol kilauan)"
+  },
+  "options_social_track_unfriends": {
+    "message": "Lacak Penghapusan Teman & Penonaktifan"
+  },
+  "options_social_notif_title": {
+    "message": "Penenang Jiwa Notifikasi"
+  },
+  "options_social_notif_style": {
+    "message": "Gaya Permata Peringatan (Titik merah)"
+  },
+  "options_social_notif_style_classic": {
+    "message": "Merah Klasik (Default)"
+  },
+  "options_social_notif_style_blue": {
+    "message": "Biru Murni (Halus)"
+  },
+  "options_social_notif_style_purple": {
+    "message": "Fusion Ungu (Bermerek)"
+  },
+  "options_social_notif_style_grey": {
+    "message": "Abu-abu Hantu (Minimal)"
+  },
+  "options_social_notif_style_hidden": {
+    "message": "Tersembunyi sepenuhnya"
+  },
+  "options_social_notif_digest": {
+    "message": "Mode Digest Notifikasi (Kumpulkan peringatan setiap jam)"
+  },
+  "options_social_notif_games": {
+    "message": "Sembunyikan notifikasi game"
+  },
+  "options_social_notif_birthdays": {
+    "message": "Sembunyikan notifikasi ulang tahun"
+  },
+  "options_social_notif_marketplace": {
+    "message": "Sembunyikan notifikasi Marketplace"
+  },
+  "options_social_notif_engagement": {
+    "message": "Sembunyikan dorongan keterlibatan algoritmik"
+  },
+  "options_social_search_title": {
+    "message": "Kontrol Popup Pencarian"
+  },
+  "options_social_search_desc": {
+    "message": "Sembunyikan saran dropdown pencarian yang mengganggu."
+  },
+  "options_social_search_hide_all": {
+    "message": "Sembunyikan semua saran popup pencarian"
+  },
+  "options_social_search_hide_trending": {
+    "message": "Sembunyikan saran pencarian trending"
+  },
+  "options_social_search_hide_recent": {
+    "message": "Sembunyikan bagian pencarian terbaru"
+  },
+  "options_keywords_card_desc": {
+    "message": "Pisahkan kata kunci dengan koma."
+  },
+  "options_keywords_blocklist_label": {
+    "message": "Daftar Blokir (Menciutkan postingan dengan tombol \"Tampilkan anyway\")"
+  },
+  "options_keywords_autohide_label": {
+    "message": "Sembunyikan otomatis (Menghapus postingan yang mengandung string ini secara diam-diam)"
+  },
+  "options_keywords_source_blocklist_label": {
+    "message": "Sumber Tersembunyi (Selalu sembunyikan nama sumber yang cocok)"
+  },
+  "options_keywords_allowlist_label": {
+    "message": "Kata Kunci Daftar Izin (Jangan pernah blokir jika postingan mengandung ini)"
+  },
+  "options_keywords_allowlist_friends_label": {
+    "message": "Jangan Pernah Sembunyikan Sumber (Teman/Halaman)"
+  },
+  "options_keywords_blocklist_placeholder": {
+    "message": "politik, spoiler, dll..."
+  },
+  "options_keywords_autohide_placeholder": {
+    "message": "kata buzzword spam..."
+  },
+  "options_keywords_source_blocklist_placeholder": {
+    "message": "Budi Santoso, Halaman Berita Keras..."
+  },
+  "options_keywords_allowlist_placeholder": {
+    "message": "pembaruan keluarga, peluncuran proyek..."
+  },
+  "options_keywords_allowlist_friends_placeholder": {
+    "message": "Siti Rahma, Halaman Favorit Saya..."
+  },
+  "options_data_backup_title": {
+    "message": "Cadangan Konfigurasi"
+  },
+  "options_data_backup_desc": {
+    "message": "Ekspor pengaturan & daftar blokir Anda sebagai JSON untuk disinkronkan ke mesin lain."
+  },
+  "options_data_export_btn": {
+    "message": "Ekspor ke File"
+  },
+  "options_data_import_btn": {
+    "message": "Impor dari File"
+  },
+  "options_data_about_title": {
+    "message": "Tentang & Dukungan"
+  },
+  "options_data_about_desc": {
+    "message": "Butuh bantuan, ingin melaporkan masalah, atau mendukung pengembangan? Hubungi saya langsung menggunakan tautan di bawah."
+  },
+  "options_data_about_discord": {
+    "message": "Discord (Purefusion-Feeds)"
+  },
+  "options_data_about_github": {
+    "message": "Repositori GitHub"
+  },
+  "options_data_about_issues": {
+    "message": "Laporkan Masalah"
+  },
+  "options_data_about_donate": {
+    "message": "Donasi / Dukung"
+  },
+  "options_data_diag_title": {
+    "message": "Mode Diagnostik"
+  },
+  "options_data_diag_desc": {
+    "message": "Overlay debug lokal opsional untuk memeriksa alasan penyembunyian dan aktivitas filter."
+  },
+  "options_data_diag_enable": {
+    "message": "Aktifkan mode diagnostik"
+  },
+  "options_data_diag_overlay": {
+    "message": "Tampilkan overlay diagnostik dalam halaman"
+  },
+  "options_data_diag_compact": {
+    "message": "Gunakan overlay diagnostik ringkas"
+  },
+  "options_data_diag_console": {
+    "message": "Diagnostik verbose di konsol"
+  },
+  "options_data_diag_max_reasons": {
+    "message": "Baris alasan maksimum overlay"
+  },
+  "options_data_diag_thresholds_title": {
+    "message": "Ambang Lonjakan Observer"
+  },
+  "options_data_diag_thresholds_desc": {
+    "message": "Sesuaikan ambang peringatan dan parah yang digunakan oleh peringatan beban kerja diagnostik."
+  },
+  "options_data_diag_warn_duration": {
+    "message": "Durasi peringatan (ms)"
+  },
+  "options_data_diag_severe_duration": {
+    "message": "Durasi parah (ms)"
+  },
+  "options_data_diag_warn_nodes": {
+    "message": "Jumlah node peringatan"
+  },
+  "options_data_diag_severe_nodes": {
+    "message": "Jumlah node parah"
+  },
+  "options_data_diag_warn_records": {
+    "message": "Rekaman mutasi peringatan"
+  },
+  "options_data_diag_severe_records": {
+    "message": "Rekaman mutasi parah"
+  },
+  "options_data_reset_title": {
+    "message": "Reset Pabrik"
+  },
+  "options_data_reset_desc": {
+    "message": "Ini akan menghapus semua preferensi dan data pembelajaran AI lokal."
+  },
+  "options_data_reset_btn": {
+    "message": "Hapus Semua"
+  },
+  "options_toast_saved": {
+    "message": "Pengaturan berhasil disimpan."
+  },
+  "options_toast_imported": {
+    "message": "Pengaturan berhasil diimpor."
+  },
+  "options_toast_invalid_backup": {
+    "message": "File cadangan PureFusion tidak valid."
+  },
+  "options_toast_import_error": {
+    "message": "Kesalahan mengimpor file. Mungkin rusak."
+  },
+  "options_toast_provider_permission_denied": {
+    "message": "Izin penyedia AI ditolak. Penyedia dinonaktifkan."
+  },
+  "options_toast_preset_applied": {
+    "message": "Prasetel berhasil diterapkan."
+  },
+  "options_toast_custom_css_snippet_loaded": {
+    "message": "Cuplikan CSS kustom dimuat. Klik Simpan untuk menerapkan."
+  },
+  "options_toast_ultrafast_applied": {
+    "message": "Mode Ultra Cepat diterapkan untuk perangkat ini."
+  },
+  "options_toast_mode_clean_applied": {
+    "message": "Mode Bersih diterapkan."
+  },
+  "options_toast_mode_smart_applied": {
+    "message": "Mode Cerdas diterapkan."
+  },
+  "options_reset_confirm": {
+    "message": "Anda yakin? Ini akan menghapus preferensi Anda dan semua data pelacakan AI lokal."
+  },
+  "options_sidebar_filters": {
+    "message": "🚫 Filter Inti"
+  },
+  "options_sidebar_wellbeing": {
+    "message": "🧘 Kesehatan Digital"
+  },
+  "options_sidebar_ai": {
+    "message": "🤖 Mesin AI"
+  },
+  "options_sidebar_ui": {
+    "message": "🎨 Tweak UI"
+  },
+  "options_sidebar_keywords": {
+    "message": "🔤 Filter Kata Kunci"
+  },
+  "options_sidebar_social": {
+    "message": "🤝 Sosial & Privasi"
+  },
+  "options_sidebar_data": {
+    "message": "💾 Data & Cadangan"
+  },
+  "welcome_title": {
+    "message": "Selamat Datang di PureFusion Feed"
+  },
+  "welcome_subtitle": {
+    "message": "Masuki pengalaman Sosial yang lebih bersih, lebih cepat, dan lebih privat."
+  },
+  "welcome_god_mode": {
+    "message": "Inti Mode Dewa"
+  },
+  "welcome_god_mode_desc": {
+    "message": "Pemberantasan total konten bersponsor, reels yang disarankan, dan sampah algoritmik."
+  },
+  "welcome_privacy_ai": {
+    "message": "AI Privasi"
+  },
+  "welcome_privacy_ai_desc": {
+    "message": "Ringkas postingan panjang dan blokir clickbait menggunakan teknologi AI lokal offline."
+  },
+  "welcome_dopamine": {
+    "message": "Pemutus Dopamin"
+  },
+  "welcome_dopamine_desc": {
+    "message": "Lawan doom-scrolling dengan timer sesi, mode skala abu-abu, dan batas gulir."
+  },
+  "welcome_ready": {
+    "message": "Siap mengambil kendali?"
+  },
+  "welcome_ready_desc": {
+    "message": "Feed Anda sekarang berada di bawah kendali Anda. Anda dapat mengakses **Dasbor Lanjutan** kapan saja."
+  },
+  "welcome_help_title": {
+    "message": "Butuh Bantuan atau Ingin Melaporkan Bug?"
+  },
+  "welcome_help_desc": {
+    "message": "Hubungi saya langsung di Discord, buka isu GitHub, atau dukung pengembangan PureFusion."
+  },
+  "welcome_help_discord": {
+    "message": "Discord: Purefusion-Feeds"
+  },
+  "welcome_help_github": {
+    "message": "Repositori GitHub"
+  },
+  "welcome_help_issues": {
+    "message": "Isu GitHub"
+  },
+  "welcome_help_donate": {
+    "message": "Donasi / Dukung"
+  },
+  "welcome_support_development": {
+    "message": "❤️ Dukung Pengembangan"
+  },
+  "welcome_footer_built": {
+    "message": "Dibangun dengan ❤️ oleh Michael Harrell & Didukung oleh PureFusion 2024"
+  },
+  "inpage_fab_title": {
+    "message": "Buka Dasbor PureFusion"
+  },
+  "inpage_modal_title": {
+    "message": "Panel PureFusion"
+  },
+  "inpage_modal_ads": {
+    "message": "Blokir Iklan"
+  },
+  "inpage_modal_sponsored": {
+    "message": "Enhanced Ad Filter"
+  },
+  "inpage_modal_sugg": {
+    "message": "Sembunyikan Saran & Reels"
+  },
+  "inpage_modal_stories": {
+    "message": "Sembunyikan Bilah Cerita"
+  },
+  "inpage_modal_ai": {
+    "message": "Filter AI Rage/Clickbait"
+  },
+  "inpage_modal_gray": {
+    "message": "Mode Skala Abu-abu"
+  },
+  "content_hidden_chip_label": {
+    "message": "Disembunyikan oleh PureFusion"
+  },
+  "content_hidden_chip_show_once": {
+    "message": "Tampilkan sekali"
+  },
+  "content_hidden_chip_allow_source": {
+    "message": "Selalu izinkan sumber"
+  },
+  "content_allow_source_exists": {
+    "message": "sudah ada di Sumber yang Tidak Pernah Disembunyikan."
+  },
+  "content_allow_source_added": {
+    "message": "Ditambahkan"
+  },
+  "content_allow_source_added_suffix": {
+    "message": "ke Sumber yang Tidak Pernah Disembunyikan."
+  },
+  "messenger_ai_rewrite_btn": {
+    "message": "Tulis Ulang"
+  },
+  "messenger_ai_replies_btn": {
+    "message": "Balasan Cerdas"
+  },
+  "messenger_ai_rewriting_btn": {
+    "message": "Menulis ulang..."
+  },
+  "messenger_ai_generating_btn": {
+    "message": "Menghasilkan..."
+  },
+  "messenger_ai_empty_input": {
+    "message": "Ketik pesan terlebih dahulu."
+  },
+  "messenger_ai_rewrite_success": {
+    "message": "Pesan ditulis ulang."
+  },
+  "messenger_ai_rewrite_fail": {
+    "message": "Penulisan ulang gagal. Periksa pengaturan penyedia AI."
+  },
+  "messenger_ai_context_missing": {
+    "message": "Butuh lebih banyak konteks obrolan untuk balasan cerdas."
+  },
+  "messenger_ai_replies_fail": {
+    "message": "Tidak dapat menghasilkan balasan cerdas."
+  },
+  "messenger_ai_provider_required": {
+    "message": "Konfigurasikan penyedia AI di pengaturan PureFusion terlebih dahulu."
+  },
+  "options_sidebar_poweruser": {
+    "message": "⚡ Aturan Power-User"
+  },
+  "options_poweruser_title": {
+    "message": "Mesin Aturan Power-User"
+  },
+  "options_poweruser_desc": {
+    "message": "Targetkan dan sembunyikan elemen apa pun di halaman menggunakan selektor kustom atau pencocokan teks. Jadilah tepat untuk menghindari menyembunyikan konten yang ingin Anda lihat."
+  },
+  "options_poweruser_add_rule": {
+    "message": "Tambah Aturan Sembunyikan Baru"
+  },
+  "options_poweruser_rule_list": {
+    "message": "Aturan Aktif"
+  },
+  "options_poweruser_no_rules": {
+    "message": "Belum ada aturan kustom yang ditentukan. Gunakan tombol '+' atau klik kanan elemen di Facebook untuk 'Zap' mereka."
+  },
+  "options_poweruser_type_label": {
+    "message": "Jenis Aturan"
+  },
+  "options_poweruser_type_selector": {
+    "message": "Selektor CSS"
+  },
+  "options_poweruser_type_text": {
+    "message": "Pencocokan Teks"
+  },
+  "options_poweruser_rule_label": {
+    "message": "Label Aturan (Nama internal)"
+  },
+  "options_poweruser_rule_value": {
+    "message": "Selektor atau Frasa"
+  },
+  "options_poweruser_rule_wrapper_label": {
+    "message": "Cakupan (Selektor Pembungkus)"
+  },
+  "options_poweruser_rule_wrapper_placeholder": {
+    "message": "mis. [role='article'] (Opsional)"
+  },
+  "options_poweruser_save_rule": {
+    "message": "Simpan Aturan"
+  },
+  "options_poweruser_cancel": {
+    "message": "Batal"
+  },
+  "options_poweruser_rule_enabled": {
+    "message": "Diaktifkan"
+  },
+  "options_poweruser_delete_rule": {
+    "message": "Hapus"
+  },
+  "options_poweruser_edit_rule": {
+    "message": "Edit"
+  },
+  "quick_action_menu_zap_element": {
+    "message": "Zap (Sembunyikan) Elemen"
+  },
+  "options_poweruser_delete_confirm": {
+    "message": "Anda yakin ingin menghapus aturan ini?"
+  },
+  "options_toast_rule_updated": {
+    "message": "Aturan diperbarui."
+  },
+  "options_toast_rule_deleted": {
+    "message": "Aturan dihapus."
+  },
+  "options_toast_rules_saved": {
+    "message": "Aturan kustom berhasil disimpan."
+  },
+  "options_toast_rule_value_required": {
+    "message": "Nilai aturan (selektor/teks) diperlukan."
+  },
+  "quick_action_save_later": {
+    "message": "Save to Read Later"
+  },
+  "popup_readlater_title": {
+    "message": "Read Later"
+  },
+  "popup_readlater_one": {
+    "message": "1 saved"
+  },
+  "popup_readlater_many": {
+    "message": "{count} saved"
+  },
+  "popup_readlater_view": {
+    "message": "View Queue"
+  },
+  "options_readlater_title": {
+    "message": "Read Later Queue"
+  },
+  "options_readlater_desc": {
+    "message": "Posts saved from the Facebook feed using right-click → Teach PureFusion → Save to Read Later."
+  },
+  "options_readlater_clear": {
+    "message": "Clear All"
+  },
+  "content_saved_for_later": {
+    "message": "Post saved to Read Later."
+  },
+  "content_save_later_duplicate": {
+    "message": "Already in your Read Later queue."
+  },
+  "content_save_later_error": {
+    "message": "Could not identify a post to save. Try right-clicking within a post."
+  },
+  "options_filters_post_age_label": {
+    "message": "Hide Posts Older Than"
+  },
+  "options_filters_post_age_desc": {
+    "message": "Hide feed posts older than the chosen threshold. Reads the post timestamp — posts without a detectable date are kept visible."
+  },
+  "options_filters_post_age_off": {
+    "message": "Off"
+  },
+  "options_filters_post_age_6h": {
+    "message": "6 hours"
+  },
+  "options_filters_post_age_12h": {
+    "message": "12 hours"
+  },
+  "options_filters_post_age_24h": {
+    "message": "24 hours (1 day)"
+  },
+  "options_filters_post_age_48h": {
+    "message": "2 days"
+  },
+  "options_filters_post_age_72h": {
+    "message": "3 days"
+  },
+  "options_filters_post_age_7d": {
+    "message": "7 days"
+  },
+  "options_filters_post_age_14d": {
+    "message": "14 days"
+  },
+  "options_filters_post_age_30d": {
+    "message": "30 days"
+  },
+  "options_ui_reply_only_label": {
+    "message": "Reply-Only Mode"
+  },
+  "options_ui_reply_only_desc": {
+    "message": "Collapse post bodies in the feed — hides post text and attached stories, leaving only the comment threads visible. Useful for cutting through engagement-bait without seeing the inflammatory content."
+  }
 }

@@ -7,579 +7,1709 @@
     "message": "Премиум-менеджер ленты с умными фильтрами, аналитикой ИИ и защитой конфиденциальности для Facebook.",
     "description": "The extension description"
   },
-  "common_ads_blocked": { "message": "Реклама заблокирована" },
-  "common_spam_hidden": { "message": "Спам скрыт" },
-  "common_save_settings": { "message": "Сохранить настройки" },
-  "common_save_changes": { "message": "Сохранить изменения" },
-  "common_support_developer": { "message": "Поддержать разработчика" },
-  "common_open_dashboard": { "message": "Открыть полные настройки" },
-  "common_open_advanced": { "message": "Открыть расширенную панель" },
-  "common_logo_alt": { "message": "Логотип PureFusion" },
-  "options_page_title": { "message": "PureFusion Feed - Настройки" },
-  "popup_quick_filters": { "message": "Быстрые фильтры" },
-  "popup_hide_sponsored_posts": { "message": "Скрыть рекламные публикации" },
-  "popup_hide_sponsored_posts_desc": { "message": "Обнаружение по метке — отключено по умолчанию" },
-  "popup_block_sponsored": { "message": "Блокировать рекламу" },
-  "popup_block_sponsored_desc": { "message": "Блокирует рекламу через инфраструктурные сигналы" },
-  "popup_ad_blocker_on": { "message": "✓ Блокирую рекламу через инфраструктурные сигналы" },
-  "popup_ad_blocker_off": { "message": "⚠ Блокировщик рекламы отключён — нажмите для включения" },
-  "options_filters_removeAds": { "message": "Блокировать рекламу (инфраструктурные сигналы)" },
-  "options_filters_removeSponsored": { "message": "Скрыть рекламные публикации (обнаружение по метке)" },
-  "popup_hide_suggested": { "message": "Скрыть предложения/PYMK" },
-  "popup_hide_suggested_desc": { "message": "Удаляет алгоритмические предложения" },
-  "popup_hide_reels": { "message": "Скрыть Reels" },
-  "popup_hide_reels_desc": { "message": "Удаляет блоки Reels, встроенные в ленту" },
-  "popup_force_recent": { "message": "Принудительно: Самые новые" },
-  "popup_force_recent_desc": { "message": "Всегда загружать хронологическую ленту" },
-  "popup_distraction_free": { "message": "Режим без отвлечений" },
-  "popup_distraction_free_desc": { "message": "Скрыть боковые панели, центрировать ленту (Alt+Shift+F)" },
-  "popup_fast_keyword": { "message": "Быстрая блокировка по ключевым словам" },
-  "popup_keyword_placeholder": { "message": "Введите ключевое слово для свёртки..." },
-  "popup_hide_groups": { "message": "Скрыть предлагаемые группы" },
-  "popup_hide_groups_desc": { "message": "Удаляет алгоритмические рекомендации групп" },
-  "popup_ghost_mode": { "message": "Режим призрака (Сообщения)" },
-  "popup_ghost_mode_desc": { "message": "Скрыть индикаторы прочтения и набора текста" },
-  "popup_nuke_meta_ai": { "message": "Удалить Meta AI" },
-  "popup_nuke_meta_ai_desc": { "message": "Удалить кнопки ИИ и блёстки" },
-  "popup_master_toggle_title": { "message": "Включить или отключить PureFusion" },
-  "popup_add_keyword_title": { "message": "Добавить ключевое слово" },
-  "popup_keyword_added": { "message": "Добавлено \"{keyword}\" в список блокировки." },
-  "popup_keyword_exists": { "message": "Ключевое слово уже существует." },
-  "quick_action_menu_root": { "message": "Обучить PureFusion" },
-  "quick_action_menu_block_keyword": { "message": "Добавить в список блокировки" },
-  "quick_action_menu_autohide_keyword": { "message": "Добавить в список автоскрытия" },
-  "quick_action_menu_allow_keyword": { "message": "Добавить в белый список" },
-  "quick_action_menu_hide_source": { "message": "Скрыть публикации из этого источника" },
-  "quick_action_menu_allow_source": { "message": "Никогда не скрывать этот источник" },
-  "quick_action_select_text_first": { "message": "Сначала выделите текст, затем используйте быстрое действие PureFusion." },
-  "quick_action_source_select_name": { "message": "Нажмите правой кнопкой мыши на профиль/страницу/группу или выделите имя источника." },
-  "quick_action_selection_too_short": { "message": "Выделенный текст слишком короткий. Выберите более чёткое слово или фразу." },
-  "quick_action_source_too_broad": { "message": "Этот источник выглядит слишком широко. Выберите полное имя страницы/человека/группы." },
-  "quick_action_exists_blocklist": { "message": "Уже в списке блокировки." },
-  "quick_action_exists_autohide": { "message": "Уже в списке автоскрытия." },
-  "quick_action_exists_allowlist": { "message": "Уже в белом списке." },
-  "quick_action_exists_source_hide": { "message": "Источник уже скрыт." },
-  "quick_action_exists_source_allow": { "message": "Источник уже в списке «Никогда не скрывать источники»." },
-  "quick_action_added_blocklist": { "message": "Добавлено \"$1\" в список блокировки и повторно просканирована лента." },
-  "quick_action_added_autohide": { "message": "Добавлено \"$1\" в автоскрытие и повторно просканирована лента." },
-  "quick_action_added_allowlist": { "message": "Добавлено \"$1\" в белый список и повторно просканирована лента." },
-  "quick_action_added_source_hide": { "message": "Теперь скрываю источник \"$1\" и повторно просканирована лента." },
-  "quick_action_added_source_allow": { "message": "Добавлено \"$1\" в «Никогда не скрывать источники» и повторно просканирована лента." },
-  "quick_action_undo_label": { "message": "Отменить" },
-  "quick_action_undo_success": { "message": "Быстрое действие отменено." },
-  "quick_action_undo_expired": { "message": "Отмена больше недоступна для этого действия." },
-  "quick_action_undo_failed": { "message": "Отмена не удалась. Попробуйте снова." },
-  "quick_action_unknown": { "message": "Неизвестное быстрое действие." },
-  "options_filters_card_title": { "message": "Удаление рекламы и спама" },
-  "options_filters_card_desc": { "message": "Переключить основные цели удаления DOM." },
-  "options_presets_title": { "message": "Наборы пресетов" },
-  "options_presets_desc": { "message": "Применяйте готовые пакеты для распространённых случаев использования, затем настраивайте вручную." },
-  "options_presets_label": { "message": "Выберите пресет" },
-  "options_presets_work_focus": { "message": "Рабочий фокус" },
-  "options_presets_friends_only": { "message": "Только друзья" },
-  "options_presets_minimal": { "message": "Минимальный" },
-  "options_presets_news_heavy": { "message": "Много новостей" },
-  "options_presets_messenger_privacy": { "message": "Приватность Messenger" },
-  "options_presets_apply_btn": { "message": "Применить пресет" },
-  "options_mode_title": { "message": "Режим ленты" },
-  "options_mode_desc": { "message": "Применить постоянный профиль поведения поверх сохранённых переключателей." },
-  "options_mode_label": { "message": "Активный режим" },
-  "options_view_mode_label": { "message": "Вид" },
-  "options_view_mode_basic": { "message": "Базовый" },
-  "options_view_mode_advanced": { "message": "Расширенный" },
-  "options_mode_custom": { "message": "Пользовательский (использовать мои переключатели)" },
-  "options_mode_clean": { "message": "Чистый режим" },
-  "options_mode_focus": { "message": "Режим фокуса" },
-  "options_mode_ultrafast": { "message": "Ультрабыстрый режим (текст первым, максимальная скорость)" },
-  "options_mode_smart": { "message": "Умный режим" },
-  "options_mode_classic": { "message": "Классический режим 2012" },
-  "options_mode_profile_custom": { "message": "Использует ваши точные сохранённые переключатели без дополнительных переопределений режима." },
-  "options_mode_profile_clean": { "message": "Убирает рекламный/рекомендательный беспорядок и социальный шум, отключая визуализации прогнозов для более спокойной ленты." },
-  "options_mode_profile_focus": { "message": "Профиль глубокого фокуса на главной странице: агрессивное сокращение беспорядка, включена хронология и защита от бесконечной прокрутки." },
-  "options_mode_profile_ultrafast": { "message": "Скоростной профиль с приоритетом текста: убирает тяжёлые медиаповерхности, подавляет типы постов с изображениями/видео и минимизирует дополнительную обработку UI." },
-  "options_mode_profile_smart": { "message": "Сохраняет основную очистку ленты, включая оценку, свёртку малоценных постов и сигналы проверки достоверности." },
-  "options_mode_profile_classic": { "message": "Приоритизирует хронологическое классическое поведение ленты и подавляет современные алгоритмические поверхности типа Watch/Marketplace." },
-  "options_quickstart_title": { "message": "PureFusion за 5 секунд" },
-  "options_quickstart_desc": { "message": "Выберите один быстрый профиль сейчас. Вы всё равно можете настроить всё ниже." },
-  "options_promise_clean_title": { "message": "Чистый Facebook" },
-  "options_promise_clean_desc": { "message": "Меньше рекламы и алгоритмического беспорядка." },
-  "options_promise_fast_title": { "message": "Быстрый Facebook" },
-  "options_promise_fast_desc": { "message": "Ультрабыстрый режим для лёгких сессий." },
-  "options_promise_smart_title": { "message": "Умный Facebook" },
-  "options_promise_smart_desc": { "message": "Оценка + достоверность + объяснимость." },
-  "options_quickstart_btn_clean": { "message": "Использовать чистый" },
-  "options_quickstart_btn_fast": { "message": "Использовать ультрабыстрый" },
-  "options_quickstart_btn_smart": { "message": "Использовать умный" },
-  "options_quickstart_recommended": { "message": "Лучше всего для большинства пользователей" },
-  "options_mode_perf_hint_low": { "message": "На этом устройстве может работать лучше ультрабыстрый режим (текст первым, меньшая нагрузка на CPU/GPU)." },
-  "options_mode_perf_hint_mid": { "message": "Ультрабыстрый режим может уменьшить задержки во время интенсивных сессий на этом устройстве." },
-  "options_mode_perf_apply": { "message": "Применить рекомендацию Ultra Fast" },
-  "options_mode_recommendation_low": { "message": "Рекомендуется: Ultra Fast" },
-  "options_mode_recommendation_mid": { "message": "Опционально: Ultra Fast для интенсивных сессий" },
-  "options_mode_recommendation_active": { "message": "Рекомендуемый режим активен" },
-  "options_mode_recommendation_balanced": { "message": "Сбалансировано: текущий режим подходит" },
-  "options_mode_why_custom": { "message": "Почему: использует только ваши ручные выборы переключателей." },
-  "options_mode_why_clean": { "message": "Почему: убирает типичный беспорядок, сохраняя привычное ощущение ленты." },
-  "options_mode_why_focus": { "message": "Почему: настроен на глубокий фокус с более сильным сокращением отвлечений." },
-  "options_mode_why_ultrafast": { "message": "Почему: приоритизирует скорость за счёт снижения интенсивной обработки ленты." },
-  "options_mode_why_smart": { "message": "Почему: балансирует очистку с оценкой и сигналами достоверности." },
-  "options_mode_why_classic": { "message": "Почему: акцентирует хронологическое поведение ленты в старом стиле." },
-  "options_mode_why_device_low": { "message": "Замечание об устройстве: Ultra Fast рекомендуется на этом оборудовании." },
-  "options_mode_why_device_mid": { "message": "Замечание об устройстве: Ultra Fast может помочь во время интенсивных сессий." },
-  "options_surface_title": { "message": "Управление областью действия по поверхностям" },
-  "options_surface_desc": { "message": "Выберите, на каких поверхностях Facebook применять фильтрацию PureFusion. Отключите поверхность, чтобы оставить её без изменений." },
-  "options_surface_enable": { "message": "Включить область фильтрации по поверхностям" },
-  "options_surface_home": { "message": "Применить на главной ленте" },
-  "options_surface_groups": { "message": "Применить в группах" },
-  "options_surface_watch": { "message": "Применить на Watch" },
-  "options_surface_marketplace": { "message": "Применить на Marketplace" },
-  "options_surface_other": { "message": "Применить на других поверхностях (профиль/страницы/события)" },
-  "options_filters_hide_suggested": { "message": "Скрыть «Рекомендации для вас»" },
-  "options_filters_hide_pymk": { "message": "Скрыть «Люди, которых вы можете знать»" },
-  "options_filters_hide_group_suggestions": { "message": "Скрыть предложения групп" },
-  "options_filters_hide_page_suggestions": { "message": "Скрыть предложения страниц" },
-  "options_filters_hide_fundraisers": { "message": "Скрыть сборы средств" },
-  "options_filters_post_types_title": { "message": "Пакет фильтров типов постов v2" },
-  "options_filters_post_types_desc": { "message": "Строгое нацеливание на обёртки постов плюс якоря фраз. Оставляйте выключенным, если не хотите агрессивной очистки типов." },
-  "options_filters_hide_video_posts": { "message": "Скрыть видеопосты" },
-  "options_filters_hide_photo_posts": { "message": "Скрыть посты с фото/изображениями" },
-  "options_filters_hide_link_posts": { "message": "Скрыть посты с внешними ссылками/репостами" },
-  "options_filters_hide_text_posts": { "message": "Скрыть текстовые посты" },
-  "options_filters_hide_live_video_posts": { "message": "Скрыть посты с прямыми трансляциями" },
-  "options_filters_hide_share_reposts": { "message": "Скрыть репосты" },
-  "options_filters_hide_poll_posts": { "message": "Скрыть посты с опросами" },
-  "options_filters_clutter_title": { "message": "Беспорядок и инъекции" },
-  "options_filters_hide_reels_tray": { "message": "Скрыть блок Reels в ленте" },
-  "options_filters_widescreen_label": { "message": "Широкоэкранный режим" },
-  "options_filters_widescreen_desc": { "message": "Разблокируйте границы центральной колонки для заполнения ультраширокого монитора." },
-  "options_filters_hide_memories": { "message": "Скрыть посты «Воспоминания»" },
-  "options_filters_hide_stories": { "message": "Скрыть панель историй" },
-  "options_filters_remove_colored_bg": { "message": "Удалить посты с цветным фоном" },
-  "options_filters_remove_game_invites": { "message": "Скрыть приглашения в игры и посты с активностью" },
-  "options_filters_remove_large_reactions": { "message": "Нормализовать посты с увеличенными эмодзи" },
-  "options_filters_deduplicate_posts_label": { "message": "Скрыть дублирующиеся посты" },
-  "options_filters_deduplicate_posts_desc": { "message": "Подавляет посты, чей ID уже появлялся в этой сессии — выявляет повторные инъекции одной истории от FB." },
-  "options_filters_locale_label": { "message": "Язык ленты" },
-  "options_filters_locale_desc": { "message": "Сопоставьте фразовые фильтры с вашим языком Facebook. Авто тестирует все поддерживаемые языки (может излишне фильтровать ленты на нескольких языках)." },
-  "options_filters_locale_auto": { "message": "Авто (все поддерживаемые языки)" },
-  "options_story_filters_title": { "message": "Фильтры активности историй" },
-  "options_story_filters_desc": { "message": "Скрыть распространённые истории с низким сигналом из ленты." },
-  "options_story_filter_became_friends": { "message": "Скрыть истории «Стали друзьями»" },
-  "options_story_filter_joined_groups": { "message": "Скрыть истории «Вступил в группу»" },
-  "options_story_filter_commented": { "message": "Скрыть истории «Прокомментировал»" },
-  "options_story_filter_liked": { "message": "Скрыть истории «Поставил лайк»" },
-  "options_story_filter_events": { "message": "Скрыть истории с посещением мероприятий" },
-  "options_story_filter_memories": { "message": "Скрыть истории с воспоминаниями" },
-  "options_story_filter_profile_photo": { "message": "Скрыть истории об обновлении фото профиля" },
-  "options_story_filter_cover_photo": { "message": "Скрыть истории об обновлении обложки" },
-  "options_story_filter_life_events": { "message": "Скрыть истории о жизненных событиях" },
-  "options_story_filter_checkins": { "message": "Скрыть истории о регистрациях/геолокации" },
-  "options_story_filter_milestones": { "message": "Скрыть истории о вехах" },
-  "options_story_filter_job_work": { "message": "Скрыть истории об обновлении работы/профессии" },
-  "options_story_filter_relationship": { "message": "Скрыть истории об обновлении статуса отношений" },
-  "options_story_filter_group_activity": { "message": "Скрыть истории об активности в группах" },
-  "options_image_filters_title": { "message": "Тематические фильтры изображений" },
-  "options_image_filters_desc": { "message": "Используйте сигналы описания изображений Facebook для скрытия выбранных визуальных категорий." },
-  "options_image_filters_enable": { "message": "Включить тематические фильтры изображений (безопасный режим)" },
-  "options_image_filter_sports": { "message": "Скрыть спортивные изображения" },
-  "options_image_filter_food": { "message": "Скрыть изображения еды и напитков" },
-  "options_image_filter_pets": { "message": "Скрыть изображения домашних животных (собаки/кошки)" },
-  "options_image_filter_vehicles": { "message": "Скрыть изображения транспортных средств" },
-  "options_image_filter_screenshots": { "message": "Скрыть мемы и изображения в стиле скриншотов" },
-  "options_image_filter_travel": { "message": "Скрыть изображения путешествий и пейзажей" },
-  "options_ai_card_title": { "message": "Локальный движок предсказаний" },
-  "options_ai_card_desc": { "message": "Оценивает элементы ленты локально на основе истории взаимодействий. Данные никогда не покидают устройство." },
-  "options_ai_enable_predictions": { "message": "Включить прогнозы ИИ" },
-  "options_ai_show_pf_badge": { "message": "Показывать значок «Оценка PF» на постах" },
-  "options_ai_show_reasons": { "message": "Показывать подсказки причин оценки на значках PF" },
-  "options_ai_dim_low_interest": { "message": "Приглушить/свернуть посты с низким интересом (оценка < 20)" },
-  "options_ai_collapse_low_interest": { "message": "Свернуть посты с низким интересом с чипом раскрытия" },
-  "options_ai_never_empty_guard": { "message": "Защита от пустой ленты (сохранять минимальное количество видимых постов)" },
-  "options_ai_never_empty_min": { "message": "Минимальное количество видимых постов для сохранения" },
-  "options_ai_highlight_high_interest": { "message": "Выделить посты с высоким интересом (оценка > 80)" },
-  "options_ai_analyze_trends": { "message": "Анализировать локальные тренды и ключевые слова" },
-  "options_ai_true_affinity_sort": { "message": "Сортировка по истинному сродству" },
-  "options_ai_true_affinity_sort_desc": { "message": "Переупорядочивает ленту по локальной оценке вовлечённости в реальном времени — посты с наивысшей оценкой всплывают наверх с использованием порядка CSS flexbox без нарушения виртуального DOM React." },
-  "options_ai_friend_activity": { "message": "Аналитика активности друзей" },
-  "options_ai_friend_activity_desc": { "message": "Отмечает контакты в правой боковой панели, чьи посты не появлялись в ленте в этой сессии — помогает выявить друзей, которых Facebook может тихо подавлять в хронике." },
-  "options_ai_low_threshold": { "message": "Нижний порог оценки" },
-  "options_ai_high_threshold": { "message": "Верхний порог оценки" },
-  "options_ai_cred_title": { "message": "Сигналы достоверности (Бета)" },
-  "options_ai_cred_desc": { "message": "Эвристические локальные проверки подозрительных шаблонов утверждений. Не доказывает истину; помечает посты, заслуживающие проверки." },
-  "options_ai_cred_enabled": { "message": "Включить обнаружение подозрительных утверждений" },
-  "options_ai_cred_badge": { "message": "Показывать предупреждающий значок «проверить» на отмеченных постах" },
-  "options_ai_cred_strict": { "message": "Строгий режим (более сильный штраф оценки за подозрительные утверждения)" },
-  "options_ai_cred_debug": { "message": "Показывать отладочный предварительный просмотр достоверности на всех сканируемых постах" },
-  "options_ai_llm_title": { "message": "Сервер глубокого интеллекта (BYOK API)" },
-  "options_ai_llm_desc": { "message": "Принесите свой ключ. Разблокируйте возможности LLM, такие как TL;DR и ИИ комментариев. Ваши ключи сохраняются исключительно в локальном хранилище устройства." },
-  "options_ai_provider_label": { "message": "Активный провайдер" },
-  "options_ai_provider_none": { "message": "Отключено" },
-  "options_ai_provider_openai": { "message": "OpenAI (ChatGPT)" },
-  "options_ai_provider_gemini": { "message": "Google Gemini" },
-  "options_ai_provider_windowai": { "message": "Chrome Native (window.ai)" },
-  "options_ai_openai_key_label": { "message": "Ключ API OpenAI" },
-  "options_ai_gemini_key_label": { "message": "Ключ API Google Gemini" },
-  "options_ai_tldr_toggle": { "message": "Вставлять кнопки «TL;DR» для суммаризации на длинных постах" },
-  "options_ai_smart_comment_toggle": { "message": "Умный помощник комментариев (иконка волшебной палочки)" },
-  "options_ai_clickbait_decode_toggle": { "message": "Декодер кликбейта (перепишите сенсационные заголовки фактами)" },
-  "options_ai_messenger_tools_title": { "message": "Инструменты ИИ Messenger" },
-  "options_ai_messenger_rewrite_toggle": { "message": "Переписывать черновики сообщений в редакторе" },
-  "options_ai_messenger_replies_toggle": { "message": "Генерировать 3 умных предложения ответов" },
-  "options_ui_card_title": { "message": "Реструктуризация интерфейса" },
-  "options_ui_friends_only": { "message": "Режим только друзья (убрать все Группы/Страницы из ленты)" },
-  "options_ui_anonymizer": { "message": "Анонимизатор скриншотов (размыть аватары/имена)" },
-  "options_ui_compact_mode": { "message": "Компактный режим (уменьшить отступы/поля)" },
-  "options_ui_disable_comment_autofocus": { "message": "Отключить автофокус поля комментариев" },
-  "options_ui_enforce_chrono": { "message": "Принудительная хронологическая лента (Самые новые)" },
-  "options_ui_show_link_previews": { "message": "Показывать настоящие конечные исходящие ссылки" },
-  "options_ui_absolute_timestamps": { "message": "Конвертировать временные метки в абсолютные даты" },
-  "options_ui_hide_composer": { "message": "Скрыть поле «Что у вас нового?»" },
-  "options_ui_comment_sort_label": { "message": "Сортировка комментариев по умолчанию" },
-  "options_ui_comment_sort_desc": { "message": "Автоматически применять предпочтение сортировки при раскрытии комментариев к посту. Срабатывает только когда комментарии уже загружены — не принудительно раскрывает свёрнутые секции комментариев." },
-  "options_ui_comment_sort_all": { "message": "Все комментарии (по умолчанию FB)" },
-  "options_ui_comment_sort_newest": { "message": "Сначала новые" },
-  "options_ui_comment_sort_top": { "message": "Наиболее релевантные" },
-  "options_ui_distraction_free_label": { "message": "Режим чтения без отвлечений (Alt+Shift+F)" },
-  "options_ui_distraction_free_desc": { "message": "Скрывает левую/правую боковые панели и центрирует ленту для чистого опыта чтения. Переключите с помощью Alt+Shift+F в любое время." },
-  "options_ui_image_hover_label": { "message": "Увеличение изображения при наведении" },
-  "options_ui_image_hover_desc": { "message": "Наведите на изображения в ленте для предварительного просмотра в полном размере. Сохраняйте или открывайте в новой вкладке прямо из панели. По умолчанию выключено." },
-  "options_ui_auto_expand_see_more_label": { "message": "Автоматическое раскрытие «Ещё»" },
-  "options_ui_auto_expand_see_more_desc": { "message": "Автоматически убирает «Ещё» на усечённых постах, чтобы всегда читать полный текст без лишних кликов." },
-  "options_ui_strip_tracking_params_label": { "message": "Удалить параметры отслеживания из ссылок" },
-  "options_ui_strip_tracking_params_desc": { "message": "Удаляет fbclid, utm_*, gclid и другие шпионские параметры из ссылок в ленте, чтобы скопированные или нажатые URL были чистыми." },
-  "options_ui_autoplay_video_label": { "message": "Управление автовоспроизведением видео" },
-  "options_ui_autoplay_video_desc": { "message": "Управляйте тем, что происходит, когда видео в ленте начинает автоматически воспроизводиться." },
-  "options_ui_autoplay_off": { "message": "Выкл (нет действия)" },
-  "options_ui_autoplay_mute": { "message": "Отключить звук (воспроизводить беззвучно)" },
-  "options_ui_autoplay_pause": { "message": "Пауза (нажмите для воспроизведения)" },
-  "options_nav_filters_title": { "message": "Навигация и модули боковой панели" },
-  "options_nav_filters_desc": { "message": "Скрыть определённые модули левой навигации и правой боковой панели." },
-  "options_nav_master_enable": { "message": "Включить фильтрацию навигации на уровне модулей (безопасный режим)" },
-  "options_nav_left_marketplace": { "message": "Скрыть левый нав: Marketplace" },
-  "options_nav_left_watch": { "message": "Скрыть левый нав: Watch" },
-  "options_nav_left_gaming": { "message": "Скрыть левый нав: Gaming" },
-  "options_nav_left_memories": { "message": "Скрыть левый нав: Воспоминания" },
-  "options_nav_left_meta_ai": { "message": "Скрыть левый нав: Meta AI" },
-  "options_nav_left_manus_ai": { "message": "Скрыть левый нав: Manus AI" },
-  "options_nav_right_trending": { "message": "Скрыть правую боковую панель: Тренды" },
-  "options_nav_right_contacts": { "message": "Скрыть правую боковую панель: Контакты" },
-  "options_nav_right_meta_ai_contact": { "message": "Скрыть правую боковую панель: контакт Meta AI" },
-  "options_nav_right_manus_ai_contact": { "message": "Скрыть правую боковую панель: контакт Manus AI" },
-  "options_nav_right_events": { "message": "Скрыть правую боковую панель: События" },
-  "options_nav_right_birthdays": { "message": "Скрыть правую боковую панель: Дни рождения" },
-  "options_topbar_filters_title": { "message": "Управление верхней панелью" },
-  "options_topbar_filters_desc": { "message": "Скрыть определённые иконки заголовка без удаления всего контейнера заголовка." },
-  "options_topbar_master_enable": { "message": "Включить фильтрацию верхней панели (безопасный режим)" },
-  "options_topbar_hide_home": { "message": "Скрыть верхнюю иконку: Главная" },
-  "options_topbar_hide_friends": { "message": "Скрыть верхнюю иконку: Друзья" },
-  "options_topbar_hide_watch": { "message": "Скрыть верхнюю иконку: Watch" },
-  "options_topbar_hide_marketplace": { "message": "Скрыть верхнюю иконку: Marketplace" },
-  "options_topbar_hide_groups": { "message": "Скрыть верхнюю иконку: Группы" },
-  "options_topbar_hide_gaming": { "message": "Скрыть верхнюю иконку: Gaming" },
-  "options_topbar_hide_messenger": { "message": "Скрыть верхнюю иконку: Messenger" },
-  "options_topbar_hide_notifications": { "message": "Скрыть верхнюю иконку: Уведомления" },
-  "options_topbar_hide_menu": { "message": "Скрыть верхнюю иконку: Меню" },
-  "options_topbar_hide_create": { "message": "Скрыть верхнюю иконку: Создать" },
-  "options_ui_theme_label": { "message": "Тема приложения" },
-  "options_ui_theme_reload_desc": { "message": "Требует перезагрузки страницы." },
-  "options_ui_theme_default": { "message": "Facebook по умолчанию" },
-  "options_ui_theme_darkpro": { "message": "Dark Pro" },
-  "options_ui_theme_amoled": { "message": "AMOLED глубокий чёрный" },
-  "options_ui_theme_classic": { "message": "Классический синий" },
-  "options_ui_theme_zen": { "message": "Режим Дзен (минималистичный)" },
-  "options_ui_theme_pastel": { "message": "Пастельный тёплый" },
-  "options_ui_font_scale_label": { "message": "Масштабирование размера шрифта (%)" },
-  "options_ui_custom_style_title": { "message": "Расширенная пользовательская стилизация" },
-  "options_ui_custom_style_desc": { "message": "Необязательные переопределения для шрифта, цвета акцента, фона и пользовательского CSS." },
-  "options_ui_custom_style_warn": { "message": "Используйте только правильный CSS. Неверные правила могут нарушить макет страницы." },
-  "options_ui_custom_style_enable": { "message": "Включить расширенную пользовательскую стилизацию" },
-  "options_ui_custom_font": { "message": "Пользовательское семейство шрифтов" },
-  "options_ui_custom_accent": { "message": "Пользовательский цвет акцента" },
-  "options_ui_custom_text_color": { "message": "Пользовательский цвет текста" },
-  "options_ui_custom_card_background": { "message": "Пользовательский фон карточки поста" },
-  "options_ui_custom_background": { "message": "Пользовательский фон страницы" },
-  "options_ui_custom_css": { "message": "Пользовательский CSS" },
-  "options_ui_custom_accent_placeholder": { "message": "#22c1ff" },
-  "options_ui_custom_text_color_placeholder": { "message": "#f2f5ff" },
-  "options_ui_custom_card_background_placeholder": { "message": "rgba(24, 31, 42, 0.92)" },
-  "options_ui_custom_background_placeholder": { "message": "linear-gradient(...) or #111111" },
-  "options_ui_custom_css_placeholder": { "message": ".selector { display: none !important; }" },
-  "options_ui_custom_css_preset_label": { "message": "Пресеты фрагментов пользовательского CSS" },
-  "options_ui_custom_css_preset_desc": { "message": "Загрузите стартовый фрагмент в поле пользовательского CSS, затем просмотрите и сохраните." },
-  "options_ui_custom_css_preset_none": { "message": "Выберите фрагмент" },
-  "options_ui_custom_css_preset_subtle_cards": { "message": "Тонкая полировка карточек" },
-  "options_ui_custom_css_preset_calmer_motion": { "message": "Более спокойная анимация" },
-  "options_ui_custom_css_preset_readability_boost": { "message": "Улучшение читаемости" },
-  "options_ui_custom_css_preset_apply": { "message": "Загрузить фрагмент" },
-  "options_theme_preview_title": { "message": "Живой предпросмотр" },
-  "options_theme_preview_post_title": { "message": "Заголовок предпросмотра поста" },
-  "options_theme_preview_desc": { "message": "Этот мини-предпросмотр обновляется при изменении темы и масштабирования шрифта." },
-  "options_theme_preview_chip_filtered": { "message": "Реклама скрыта" },
-  "options_theme_preview_chip_score": { "message": "Оценка PF 88" },
-  "options_wellbeing_grayscale": { "message": "Режим оттенков серого (обесцветить все цвета)" },
-  "options_wellbeing_scroll_stopper": { "message": "Остановитель бесконечной прокрутки" },
-  "options_wellbeing_break_wall": { "message": "Посты до стены перерыва" },
-  "options_wellbeing_session_timer": { "message": "Видимый таймер сессии" },
-  "options_wellbeing_session_awareness_enable": { "message": "Мягкое напоминание о сессии" },
-  "options_wellbeing_session_awareness_threshold": { "message": "Импульсы прокрутки в минуту перед напоминанием" },
-  "options_wellbeing_session_awareness_cooldown": { "message": "Время перезарядки напоминания (минуты)" },
-  "options_wellbeing_daily_report_enable": { "message": "Включить ежедневный отчёт ленты" },
-  "options_wellbeing_daily_report_minutes": { "message": "Автоматический интервал отчёта (минуты)" },
-  "options_wellbeing_reels_limit_title": { "message": "Ограничитель сессии Reels" },
-  "options_wellbeing_reels_limit_desc": { "message": "Разрешить только ограниченное количество Reels за сессию, затем блокировать дополнительные Reels." },
-  "options_wellbeing_reels_limit_enable": { "message": "Включить ограничитель сессии Reels" },
-  "options_wellbeing_reels_limit_count": { "message": "Разрешённые Reels за сессию" },
-  "options_wellbeing_reels_limit_hardlock": { "message": "Жёсткая блокировка Reels после достижения лимита" },
-  "options_wellbeing_ai_blockers_title": { "message": "Расширенные блокировщики ИИ (Издание цифрового благополучия)" },
-  "options_wellbeing_ragebait": { "message": "Детектор провокационного контента (размыть воспалительные посты)" },
-  "options_wellbeing_clickbait": { "message": "Уничтожитель кликбейта (удалить манипулятивные вирусные заголовки)" },
-  "wellbeing_break_title": { "message": "Сделайте вдох" },
-  "wellbeing_break_body_template": { "message": "Вы только что прокрутили $1 постов. PureFusion временно остановил ленту, чтобы помочь вам избежать бесконечной прокрутки. Может, пора заняться чем-то другим?" },
-  "wellbeing_break_resume_btn": { "message": "Продолжить прокрутку всё равно" },
-  "wellbeing_session_timer_prefix": { "message": "Сессия" },
-  "wellbeing_report_button": { "message": "Отчёт" },
-  "wellbeing_weekly_report_button": { "message": "Неделя" },
-  "wellbeing_report_disabled": { "message": "Ежедневный отчёт ленты отключён. Включите его в разделе Цифровое благополучие." },
-  "wellbeing_report_label_auto": { "message": "Ежедневный отчёт ленты" },
-  "wellbeing_report_label_session": { "message": "Отчёт сессии ленты" },
-  "wellbeing_weekly_report_label": { "message": "Еженедельный отчёт ленты" },
-  "wellbeing_report_no_filters": { "message": "Фильтры ещё не срабатывали" },
-  "wellbeing_weekly_report_no_data": { "message": "Для еженедельного отчёта нужно больше данных об активности." },
-  "wellbeing_session_awareness_toast_template": { "message": "Обнаружен высокий темп прокрутки: $1 прокруток за последнюю минуту (сессия $2 мин). Рассмотрите короткий перерыв." },
-  "wellbeing_report_panel_title": { "message": "Отчёты PureFusion Feed" },
-  "wellbeing_report_panel_close": { "message": "Закрыть" },
-  "wellbeing_report_panel_session_tab": { "message": "Сессия" },
-  "wellbeing_report_panel_weekly_tab": { "message": "Еженедельный" },
-  "wellbeing_report_panel_hidden": { "message": "Скрытые элементы" },
-  "wellbeing_report_panel_reels": { "message": "Заблокированные Reels" },
-  "wellbeing_report_panel_top_reason": { "message": "Главное отвлечение" },
-  "wellbeing_report_panel_minutes_saved": { "message": "Сэкономленные минуты (оценка)" },
-  "wellbeing_report_panel_elapsed": { "message": "Прошло сессии" },
-  "wellbeing_report_panel_refresh": { "message": "Обновить" },
-  "wellbeing_report_panel_reset_session": { "message": "Сбросить сессию" },
-  "wellbeing_report_panel_reset_done": { "message": "Счётчики сессии сброшены." },
-  "wellbeing_report_panel_note": { "message": "Совет: дневные значения сбрасываются при сбросе сессии; еженедельный свод рассчитывается из сохранённых дневных сегментов." },
-  "wellbeing_report_panel_weekly_window": { "message": "Скользящее 7-дневное окно" },
-  "wellbeing_report_panel_weekly_trend_title": { "message": "Тренд за 7 дней" },
-  "wellbeing_report_panel_weekly_top_reasons_title": { "message": "Главные причины отвлечений" },
-  "wellbeing_report_panel_weekly_no_reasons": { "message": "Пока нет данных о причинах отвлечений." },
-  "wellbeing_report_panel_weekly_reason_explain": { "message": "Объяснить" },
-  "wellbeing_report_reason_explain_ads": { "message": "Спонсорский или рекламный контент был отфильтрован для уменьшения рекламного беспорядка." },
-  "wellbeing_report_reason_explain_story": { "message": "Шаблоны активности историй (лайки/комментарии/добавления в друзья/регистрации) были отфильтрованы как малосигнальный шум ленты." },
-  "wellbeing_report_reason_explain_post_type": { "message": "Фильтр формата поста удалил типы контента, которые вы выбрали для подавления (видео/фото/ссылка/только текст)." },
-  "wellbeing_report_reason_explain_bait": { "message": "Поведенческие фильтры безопасности выявили манипулятивные или высоковозмутительные шаблоны, созданные для удержания вас в прокрутке." },
-  "wellbeing_report_reason_explain_nav": { "message": "Средства управления беспорядком навигации и модулей удалили отвлекающие элементы UI, не связанные с лентой." },
-  "wellbeing_report_reason_explain_keyword": { "message": "Правила ключевых слов совпали с этим элементом и отфильтровали его на основе вашего пользовательского списка блокировки." },
-  "wellbeing_report_reason_explain_generic": { "message": "Эта категория была отфильтрована активными правилами PureFusion, чтобы сделать ленту чище и более сфокусированной." },
-  "wellbeing_report_reason_open_settings": { "message": "Открыть связанные настройки" },
+  "common_ads_blocked": {
+    "message": "Реклама заблокирована"
+  },
+  "common_spam_hidden": {
+    "message": "Спам скрыт"
+  },
+  "common_save_settings": {
+    "message": "Сохранить настройки"
+  },
+  "common_save_changes": {
+    "message": "Сохранить изменения"
+  },
+  "common_support_developer": {
+    "message": "Поддержать разработчика"
+  },
+  "common_open_dashboard": {
+    "message": "Открыть полные настройки"
+  },
+  "common_open_advanced": {
+    "message": "Открыть расширенную панель"
+  },
+  "common_logo_alt": {
+    "message": "Логотип PureFusion"
+  },
+  "options_page_title": {
+    "message": "PureFusion Feed - Настройки"
+  },
+  "popup_quick_filters": {
+    "message": "Быстрые фильтры"
+  },
+  "popup_hide_sponsored_posts": {
+    "message": "Enhanced Ad Filter"
+  },
+  "popup_hide_sponsored_posts_desc": {
+    "message": "Обнаружение по метке — отключено по умолчанию"
+  },
+  "popup_block_sponsored": {
+    "message": "Блокировать рекламу"
+  },
+  "popup_block_sponsored_desc": {
+    "message": "Блокирует рекламу через инфраструктурные сигналы"
+  },
+  "popup_ad_blocker_on": {
+    "message": "✓ Блокирую рекламу через инфраструктурные сигналы"
+  },
+  "popup_ad_blocker_off": {
+    "message": "⚠ Блокировщик рекламы отключён — нажмите для включения"
+  },
+  "options_filters_removeAds": {
+    "message": "Блокировать рекламу (инфраструктурные сигналы)"
+  },
+  "options_filters_removeSponsored": {
+    "message": "Enhanced Ad Filter (label detection)"
+  },
+  "popup_hide_suggested": {
+    "message": "Скрыть предложения/PYMK"
+  },
+  "popup_hide_suggested_desc": {
+    "message": "Удаляет алгоритмические предложения"
+  },
+  "popup_hide_reels": {
+    "message": "Скрыть Reels"
+  },
+  "popup_hide_reels_desc": {
+    "message": "Удаляет блоки Reels, встроенные в ленту"
+  },
+  "popup_force_recent": {
+    "message": "Принудительно: Самые новые"
+  },
+  "popup_force_recent_desc": {
+    "message": "Всегда загружать хронологическую ленту"
+  },
+  "popup_distraction_free": {
+    "message": "Режим без отвлечений"
+  },
+  "popup_distraction_free_desc": {
+    "message": "Скрыть боковые панели, центрировать ленту (Alt+Shift+F)"
+  },
+  "popup_fast_keyword": {
+    "message": "Быстрая блокировка по ключевым словам"
+  },
+  "popup_keyword_placeholder": {
+    "message": "Введите ключевое слово для свёртки..."
+  },
+  "popup_hide_groups": {
+    "message": "Скрыть предлагаемые группы"
+  },
+  "popup_hide_groups_desc": {
+    "message": "Удаляет алгоритмические рекомендации групп"
+  },
+  "popup_ghost_mode": {
+    "message": "Режим призрака (Сообщения)"
+  },
+  "popup_ghost_mode_desc": {
+    "message": "Скрыть индикаторы прочтения и набора текста"
+  },
+  "popup_nuke_meta_ai": {
+    "message": "Удалить Meta AI"
+  },
+  "popup_nuke_meta_ai_desc": {
+    "message": "Удалить кнопки ИИ и блёстки"
+  },
+  "popup_master_toggle_title": {
+    "message": "Включить или отключить PureFusion"
+  },
+  "popup_add_keyword_title": {
+    "message": "Добавить ключевое слово"
+  },
+  "popup_keyword_added": {
+    "message": "Добавлено \"{keyword}\" в список блокировки."
+  },
+  "popup_keyword_exists": {
+    "message": "Ключевое слово уже существует."
+  },
+  "quick_action_menu_root": {
+    "message": "Обучить PureFusion"
+  },
+  "quick_action_menu_block_keyword": {
+    "message": "Добавить в список блокировки"
+  },
+  "quick_action_menu_autohide_keyword": {
+    "message": "Добавить в список автоскрытия"
+  },
+  "quick_action_menu_allow_keyword": {
+    "message": "Добавить в белый список"
+  },
+  "quick_action_menu_hide_source": {
+    "message": "Скрыть публикации из этого источника"
+  },
+  "quick_action_menu_allow_source": {
+    "message": "Никогда не скрывать этот источник"
+  },
+  "quick_action_select_text_first": {
+    "message": "Сначала выделите текст, затем используйте быстрое действие PureFusion."
+  },
+  "quick_action_source_select_name": {
+    "message": "Нажмите правой кнопкой мыши на профиль/страницу/группу или выделите имя источника."
+  },
+  "quick_action_selection_too_short": {
+    "message": "Выделенный текст слишком короткий. Выберите более чёткое слово или фразу."
+  },
+  "quick_action_source_too_broad": {
+    "message": "Этот источник выглядит слишком широко. Выберите полное имя страницы/человека/группы."
+  },
+  "quick_action_exists_blocklist": {
+    "message": "Уже в списке блокировки."
+  },
+  "quick_action_exists_autohide": {
+    "message": "Уже в списке автоскрытия."
+  },
+  "quick_action_exists_allowlist": {
+    "message": "Уже в белом списке."
+  },
+  "quick_action_exists_source_hide": {
+    "message": "Источник уже скрыт."
+  },
+  "quick_action_exists_source_allow": {
+    "message": "Источник уже в списке «Никогда не скрывать источники»."
+  },
+  "quick_action_added_blocklist": {
+    "message": "Добавлено \"$1\" в список блокировки и повторно просканирована лента."
+  },
+  "quick_action_added_autohide": {
+    "message": "Добавлено \"$1\" в автоскрытие и повторно просканирована лента."
+  },
+  "quick_action_added_allowlist": {
+    "message": "Добавлено \"$1\" в белый список и повторно просканирована лента."
+  },
+  "quick_action_added_source_hide": {
+    "message": "Теперь скрываю источник \"$1\" и повторно просканирована лента."
+  },
+  "quick_action_added_source_allow": {
+    "message": "Добавлено \"$1\" в «Никогда не скрывать источники» и повторно просканирована лента."
+  },
+  "quick_action_undo_label": {
+    "message": "Отменить"
+  },
+  "quick_action_undo_success": {
+    "message": "Быстрое действие отменено."
+  },
+  "quick_action_undo_expired": {
+    "message": "Отмена больше недоступна для этого действия."
+  },
+  "quick_action_undo_failed": {
+    "message": "Отмена не удалась. Попробуйте снова."
+  },
+  "quick_action_unknown": {
+    "message": "Неизвестное быстрое действие."
+  },
+  "options_filters_card_title": {
+    "message": "Удаление рекламы и спама"
+  },
+  "options_filters_card_desc": {
+    "message": "Переключить основные цели удаления DOM."
+  },
+  "options_presets_title": {
+    "message": "Наборы пресетов"
+  },
+  "options_presets_desc": {
+    "message": "Применяйте готовые пакеты для распространённых случаев использования, затем настраивайте вручную."
+  },
+  "options_presets_label": {
+    "message": "Выберите пресет"
+  },
+  "options_presets_work_focus": {
+    "message": "Рабочий фокус"
+  },
+  "options_presets_friends_only": {
+    "message": "Только друзья"
+  },
+  "options_presets_minimal": {
+    "message": "Минимальный"
+  },
+  "options_presets_news_heavy": {
+    "message": "Много новостей"
+  },
+  "options_presets_messenger_privacy": {
+    "message": "Приватность Messenger"
+  },
+  "options_presets_apply_btn": {
+    "message": "Применить пресет"
+  },
+  "options_mode_title": {
+    "message": "Режим ленты"
+  },
+  "options_mode_desc": {
+    "message": "Применить постоянный профиль поведения поверх сохранённых переключателей."
+  },
+  "options_mode_label": {
+    "message": "Активный режим"
+  },
+  "options_view_mode_label": {
+    "message": "Вид"
+  },
+  "options_view_mode_basic": {
+    "message": "Базовый"
+  },
+  "options_view_mode_advanced": {
+    "message": "Расширенный"
+  },
+  "options_mode_custom": {
+    "message": "Пользовательский (использовать мои переключатели)"
+  },
+  "options_mode_clean": {
+    "message": "Чистый режим"
+  },
+  "options_mode_focus": {
+    "message": "Режим фокуса"
+  },
+  "options_mode_ultrafast": {
+    "message": "Ультрабыстрый режим (текст первым, максимальная скорость)"
+  },
+  "options_mode_smart": {
+    "message": "Умный режим"
+  },
+  "options_mode_classic": {
+    "message": "Классический режим 2012"
+  },
+  "options_mode_profile_custom": {
+    "message": "Использует ваши точные сохранённые переключатели без дополнительных переопределений режима."
+  },
+  "options_mode_profile_clean": {
+    "message": "Убирает рекламный/рекомендательный беспорядок и социальный шум, отключая визуализации прогнозов для более спокойной ленты."
+  },
+  "options_mode_profile_focus": {
+    "message": "Профиль глубокого фокуса на главной странице: агрессивное сокращение беспорядка, включена хронология и защита от бесконечной прокрутки."
+  },
+  "options_mode_profile_ultrafast": {
+    "message": "Скоростной профиль с приоритетом текста: убирает тяжёлые медиаповерхности, подавляет типы постов с изображениями/видео и минимизирует дополнительную обработку UI."
+  },
+  "options_mode_profile_smart": {
+    "message": "Сохраняет основную очистку ленты, включая оценку, свёртку малоценных постов и сигналы проверки достоверности."
+  },
+  "options_mode_profile_classic": {
+    "message": "Приоритизирует хронологическое классическое поведение ленты и подавляет современные алгоритмические поверхности типа Watch/Marketplace."
+  },
+  "options_quickstart_title": {
+    "message": "PureFusion за 5 секунд"
+  },
+  "options_quickstart_desc": {
+    "message": "Выберите один быстрый профиль сейчас. Вы всё равно можете настроить всё ниже."
+  },
+  "options_promise_clean_title": {
+    "message": "Чистый Facebook"
+  },
+  "options_promise_clean_desc": {
+    "message": "Меньше рекламы и алгоритмического беспорядка."
+  },
+  "options_promise_fast_title": {
+    "message": "Быстрый Facebook"
+  },
+  "options_promise_fast_desc": {
+    "message": "Ультрабыстрый режим для лёгких сессий."
+  },
+  "options_promise_smart_title": {
+    "message": "Умный Facebook"
+  },
+  "options_promise_smart_desc": {
+    "message": "Оценка + достоверность + объяснимость."
+  },
+  "options_quickstart_btn_clean": {
+    "message": "Использовать чистый"
+  },
+  "options_quickstart_btn_fast": {
+    "message": "Использовать ультрабыстрый"
+  },
+  "options_quickstart_btn_smart": {
+    "message": "Использовать умный"
+  },
+  "options_quickstart_recommended": {
+    "message": "Лучше всего для большинства пользователей"
+  },
+  "options_mode_perf_hint_low": {
+    "message": "На этом устройстве может работать лучше ультрабыстрый режим (текст первым, меньшая нагрузка на CPU/GPU)."
+  },
+  "options_mode_perf_hint_mid": {
+    "message": "Ультрабыстрый режим может уменьшить задержки во время интенсивных сессий на этом устройстве."
+  },
+  "options_mode_perf_apply": {
+    "message": "Применить рекомендацию Ultra Fast"
+  },
+  "options_mode_recommendation_low": {
+    "message": "Рекомендуется: Ultra Fast"
+  },
+  "options_mode_recommendation_mid": {
+    "message": "Опционально: Ultra Fast для интенсивных сессий"
+  },
+  "options_mode_recommendation_active": {
+    "message": "Рекомендуемый режим активен"
+  },
+  "options_mode_recommendation_balanced": {
+    "message": "Сбалансировано: текущий режим подходит"
+  },
+  "options_mode_why_custom": {
+    "message": "Почему: использует только ваши ручные выборы переключателей."
+  },
+  "options_mode_why_clean": {
+    "message": "Почему: убирает типичный беспорядок, сохраняя привычное ощущение ленты."
+  },
+  "options_mode_why_focus": {
+    "message": "Почему: настроен на глубокий фокус с более сильным сокращением отвлечений."
+  },
+  "options_mode_why_ultrafast": {
+    "message": "Почему: приоритизирует скорость за счёт снижения интенсивной обработки ленты."
+  },
+  "options_mode_why_smart": {
+    "message": "Почему: балансирует очистку с оценкой и сигналами достоверности."
+  },
+  "options_mode_why_classic": {
+    "message": "Почему: акцентирует хронологическое поведение ленты в старом стиле."
+  },
+  "options_mode_why_device_low": {
+    "message": "Замечание об устройстве: Ultra Fast рекомендуется на этом оборудовании."
+  },
+  "options_mode_why_device_mid": {
+    "message": "Замечание об устройстве: Ultra Fast может помочь во время интенсивных сессий."
+  },
+  "options_surface_title": {
+    "message": "Управление областью действия по поверхностям"
+  },
+  "options_surface_desc": {
+    "message": "Выберите, на каких поверхностях Facebook применять фильтрацию PureFusion. Отключите поверхность, чтобы оставить её без изменений."
+  },
+  "options_surface_enable": {
+    "message": "Включить область фильтрации по поверхностям"
+  },
+  "options_surface_home": {
+    "message": "Применить на главной ленте"
+  },
+  "options_surface_groups": {
+    "message": "Применить в группах"
+  },
+  "options_surface_watch": {
+    "message": "Применить на Watch"
+  },
+  "options_surface_marketplace": {
+    "message": "Применить на Marketplace"
+  },
+  "options_surface_other": {
+    "message": "Применить на других поверхностях (профиль/страницы/события)"
+  },
+  "options_filters_hide_suggested": {
+    "message": "Скрыть «Рекомендации для вас»"
+  },
+  "options_filters_hide_pymk": {
+    "message": "Скрыть «Люди, которых вы можете знать»"
+  },
+  "options_filters_hide_group_suggestions": {
+    "message": "Скрыть предложения групп"
+  },
+  "options_filters_hide_page_suggestions": {
+    "message": "Скрыть предложения страниц"
+  },
+  "options_filters_hide_fundraisers": {
+    "message": "Скрыть сборы средств"
+  },
+  "options_filters_post_types_title": {
+    "message": "Пакет фильтров типов постов v2"
+  },
+  "options_filters_post_types_desc": {
+    "message": "Строгое нацеливание на обёртки постов плюс якоря фраз. Оставляйте выключенным, если не хотите агрессивной очистки типов."
+  },
+  "options_filters_hide_video_posts": {
+    "message": "Скрыть видеопосты"
+  },
+  "options_filters_hide_photo_posts": {
+    "message": "Скрыть посты с фото/изображениями"
+  },
+  "options_filters_hide_link_posts": {
+    "message": "Скрыть посты с внешними ссылками/репостами"
+  },
+  "options_filters_hide_text_posts": {
+    "message": "Скрыть текстовые посты"
+  },
+  "options_filters_hide_live_video_posts": {
+    "message": "Скрыть посты с прямыми трансляциями"
+  },
+  "options_filters_hide_share_reposts": {
+    "message": "Скрыть репосты"
+  },
+  "options_filters_hide_poll_posts": {
+    "message": "Скрыть посты с опросами"
+  },
+  "options_filters_clutter_title": {
+    "message": "Беспорядок и инъекции"
+  },
+  "options_filters_hide_reels_tray": {
+    "message": "Скрыть блок Reels в ленте"
+  },
+  "options_filters_widescreen_label": {
+    "message": "Широкоэкранный режим"
+  },
+  "options_filters_widescreen_desc": {
+    "message": "Разблокируйте границы центральной колонки для заполнения ультраширокого монитора."
+  },
+  "options_filters_hide_memories": {
+    "message": "Скрыть посты «Воспоминания»"
+  },
+  "options_filters_hide_stories": {
+    "message": "Скрыть панель историй"
+  },
+  "options_filters_remove_colored_bg": {
+    "message": "Удалить посты с цветным фоном"
+  },
+  "options_filters_remove_game_invites": {
+    "message": "Скрыть приглашения в игры и посты с активностью"
+  },
+  "options_filters_remove_large_reactions": {
+    "message": "Нормализовать посты с увеличенными эмодзи"
+  },
+  "options_filters_deduplicate_posts_label": {
+    "message": "Скрыть дублирующиеся посты"
+  },
+  "options_filters_deduplicate_posts_desc": {
+    "message": "Подавляет посты, чей ID уже появлялся в этой сессии — выявляет повторные инъекции одной истории от FB."
+  },
+  "options_filters_locale_label": {
+    "message": "Язык ленты"
+  },
+  "options_filters_locale_desc": {
+    "message": "Сопоставьте фразовые фильтры с вашим языком Facebook. Авто тестирует все поддерживаемые языки (может излишне фильтровать ленты на нескольких языках)."
+  },
+  "options_filters_locale_auto": {
+    "message": "Авто (все поддерживаемые языки)"
+  },
+  "options_story_filters_title": {
+    "message": "Фильтры активности историй"
+  },
+  "options_story_filters_desc": {
+    "message": "Скрыть распространённые истории с низким сигналом из ленты."
+  },
+  "options_story_filter_became_friends": {
+    "message": "Скрыть истории «Стали друзьями»"
+  },
+  "options_story_filter_joined_groups": {
+    "message": "Скрыть истории «Вступил в группу»"
+  },
+  "options_story_filter_commented": {
+    "message": "Скрыть истории «Прокомментировал»"
+  },
+  "options_story_filter_liked": {
+    "message": "Скрыть истории «Поставил лайк»"
+  },
+  "options_story_filter_events": {
+    "message": "Скрыть истории с посещением мероприятий"
+  },
+  "options_story_filter_memories": {
+    "message": "Скрыть истории с воспоминаниями"
+  },
+  "options_story_filter_profile_photo": {
+    "message": "Скрыть истории об обновлении фото профиля"
+  },
+  "options_story_filter_cover_photo": {
+    "message": "Скрыть истории об обновлении обложки"
+  },
+  "options_story_filter_life_events": {
+    "message": "Скрыть истории о жизненных событиях"
+  },
+  "options_story_filter_checkins": {
+    "message": "Скрыть истории о регистрациях/геолокации"
+  },
+  "options_story_filter_milestones": {
+    "message": "Скрыть истории о вехах"
+  },
+  "options_story_filter_job_work": {
+    "message": "Скрыть истории об обновлении работы/профессии"
+  },
+  "options_story_filter_relationship": {
+    "message": "Скрыть истории об обновлении статуса отношений"
+  },
+  "options_story_filter_group_activity": {
+    "message": "Скрыть истории об активности в группах"
+  },
+  "options_image_filters_title": {
+    "message": "Тематические фильтры изображений"
+  },
+  "options_image_filters_desc": {
+    "message": "Используйте сигналы описания изображений Facebook для скрытия выбранных визуальных категорий."
+  },
+  "options_image_filters_enable": {
+    "message": "Включить тематические фильтры изображений (безопасный режим)"
+  },
+  "options_image_filter_sports": {
+    "message": "Скрыть спортивные изображения"
+  },
+  "options_image_filter_food": {
+    "message": "Скрыть изображения еды и напитков"
+  },
+  "options_image_filter_pets": {
+    "message": "Скрыть изображения домашних животных (собаки/кошки)"
+  },
+  "options_image_filter_vehicles": {
+    "message": "Скрыть изображения транспортных средств"
+  },
+  "options_image_filter_screenshots": {
+    "message": "Скрыть мемы и изображения в стиле скриншотов"
+  },
+  "options_image_filter_travel": {
+    "message": "Скрыть изображения путешествий и пейзажей"
+  },
+  "options_ai_card_title": {
+    "message": "Локальный движок предсказаний"
+  },
+  "options_ai_card_desc": {
+    "message": "Оценивает элементы ленты локально на основе истории взаимодействий. Данные никогда не покидают устройство."
+  },
+  "options_ai_enable_predictions": {
+    "message": "Включить прогнозы ИИ"
+  },
+  "options_ai_show_pf_badge": {
+    "message": "Показывать значок «Оценка PF» на постах"
+  },
+  "options_ai_show_reasons": {
+    "message": "Показывать подсказки причин оценки на значках PF"
+  },
+  "options_ai_dim_low_interest": {
+    "message": "Приглушить/свернуть посты с низким интересом (оценка < 20)"
+  },
+  "options_ai_collapse_low_interest": {
+    "message": "Свернуть посты с низким интересом с чипом раскрытия"
+  },
+  "options_ai_never_empty_guard": {
+    "message": "Защита от пустой ленты (сохранять минимальное количество видимых постов)"
+  },
+  "options_ai_never_empty_min": {
+    "message": "Минимальное количество видимых постов для сохранения"
+  },
+  "options_ai_highlight_high_interest": {
+    "message": "Выделить посты с высоким интересом (оценка > 80)"
+  },
+  "options_ai_analyze_trends": {
+    "message": "Анализировать локальные тренды и ключевые слова"
+  },
+  "options_ai_true_affinity_sort": {
+    "message": "Сортировка по истинному сродству"
+  },
+  "options_ai_true_affinity_sort_desc": {
+    "message": "Переупорядочивает ленту по локальной оценке вовлечённости в реальном времени — посты с наивысшей оценкой всплывают наверх с использованием порядка CSS flexbox без нарушения виртуального DOM React."
+  },
+  "options_ai_friend_activity": {
+    "message": "Аналитика активности друзей"
+  },
+  "options_ai_friend_activity_desc": {
+    "message": "Отмечает контакты в правой боковой панели, чьи посты не появлялись в ленте в этой сессии — помогает выявить друзей, которых Facebook может тихо подавлять в хронике."
+  },
+  "options_ai_low_threshold": {
+    "message": "Нижний порог оценки"
+  },
+  "options_ai_high_threshold": {
+    "message": "Верхний порог оценки"
+  },
+  "options_ai_cred_title": {
+    "message": "Сигналы достоверности (Бета)"
+  },
+  "options_ai_cred_desc": {
+    "message": "Эвристические локальные проверки подозрительных шаблонов утверждений. Не доказывает истину; помечает посты, заслуживающие проверки."
+  },
+  "options_ai_cred_enabled": {
+    "message": "Включить обнаружение подозрительных утверждений"
+  },
+  "options_ai_cred_badge": {
+    "message": "Показывать предупреждающий значок «проверить» на отмеченных постах"
+  },
+  "options_ai_cred_strict": {
+    "message": "Строгий режим (более сильный штраф оценки за подозрительные утверждения)"
+  },
+  "options_ai_cred_debug": {
+    "message": "Показывать отладочный предварительный просмотр достоверности на всех сканируемых постах"
+  },
+  "options_ai_llm_title": {
+    "message": "Сервер глубокого интеллекта (BYOK API)"
+  },
+  "options_ai_llm_desc": {
+    "message": "Принесите свой ключ. Разблокируйте возможности LLM, такие как TL;DR и ИИ комментариев. Ваши ключи сохраняются исключительно в локальном хранилище устройства."
+  },
+  "options_ai_provider_label": {
+    "message": "Активный провайдер"
+  },
+  "options_ai_provider_none": {
+    "message": "Отключено"
+  },
+  "options_ai_provider_openai": {
+    "message": "OpenAI (ChatGPT)"
+  },
+  "options_ai_provider_gemini": {
+    "message": "Google Gemini"
+  },
+  "options_ai_provider_windowai": {
+    "message": "Chrome Native (window.ai)"
+  },
+  "options_ai_openai_key_label": {
+    "message": "Ключ API OpenAI"
+  },
+  "options_ai_gemini_key_label": {
+    "message": "Ключ API Google Gemini"
+  },
+  "options_ai_tldr_toggle": {
+    "message": "Вставлять кнопки «TL;DR» для суммаризации на длинных постах"
+  },
+  "options_ai_smart_comment_toggle": {
+    "message": "Умный помощник комментариев (иконка волшебной палочки)"
+  },
+  "options_ai_clickbait_decode_toggle": {
+    "message": "Декодер кликбейта (перепишите сенсационные заголовки фактами)"
+  },
+  "options_ai_messenger_tools_title": {
+    "message": "Инструменты ИИ Messenger"
+  },
+  "options_ai_messenger_rewrite_toggle": {
+    "message": "Переписывать черновики сообщений в редакторе"
+  },
+  "options_ai_messenger_replies_toggle": {
+    "message": "Генерировать 3 умных предложения ответов"
+  },
+  "options_ui_card_title": {
+    "message": "Реструктуризация интерфейса"
+  },
+  "options_ui_friends_only": {
+    "message": "Режим только друзья (убрать все Группы/Страницы из ленты)"
+  },
+  "options_ui_anonymizer": {
+    "message": "Анонимизатор скриншотов (размыть аватары/имена)"
+  },
+  "options_ui_compact_mode": {
+    "message": "Компактный режим (уменьшить отступы/поля)"
+  },
+  "options_ui_disable_comment_autofocus": {
+    "message": "Отключить автофокус поля комментариев"
+  },
+  "options_ui_enforce_chrono": {
+    "message": "Принудительная хронологическая лента (Самые новые)"
+  },
+  "options_ui_show_link_previews": {
+    "message": "Показывать настоящие конечные исходящие ссылки"
+  },
+  "options_ui_absolute_timestamps": {
+    "message": "Конвертировать временные метки в абсолютные даты"
+  },
+  "options_ui_hide_composer": {
+    "message": "Скрыть поле «Что у вас нового?»"
+  },
+  "options_ui_comment_sort_label": {
+    "message": "Сортировка комментариев по умолчанию"
+  },
+  "options_ui_comment_sort_desc": {
+    "message": "Автоматически применять предпочтение сортировки при раскрытии комментариев к посту. Срабатывает только когда комментарии уже загружены — не принудительно раскрывает свёрнутые секции комментариев."
+  },
+  "options_ui_comment_sort_all": {
+    "message": "Все комментарии (по умолчанию FB)"
+  },
+  "options_ui_comment_sort_newest": {
+    "message": "Сначала новые"
+  },
+  "options_ui_comment_sort_top": {
+    "message": "Наиболее релевантные"
+  },
+  "options_ui_distraction_free_label": {
+    "message": "Режим чтения без отвлечений (Alt+Shift+F)"
+  },
+  "options_ui_distraction_free_desc": {
+    "message": "Скрывает левую/правую боковые панели и центрирует ленту для чистого опыта чтения. Переключите с помощью Alt+Shift+F в любое время."
+  },
+  "options_ui_image_hover_label": {
+    "message": "Увеличение изображения при наведении"
+  },
+  "options_ui_image_hover_desc": {
+    "message": "Наведите на изображения в ленте для предварительного просмотра в полном размере. Сохраняйте или открывайте в новой вкладке прямо из панели. По умолчанию выключено."
+  },
+  "options_ui_auto_expand_see_more_label": {
+    "message": "Автоматическое раскрытие «Ещё»"
+  },
+  "options_ui_auto_expand_see_more_desc": {
+    "message": "Автоматически убирает «Ещё» на усечённых постах, чтобы всегда читать полный текст без лишних кликов."
+  },
+  "options_ui_strip_tracking_params_label": {
+    "message": "Удалить параметры отслеживания из ссылок"
+  },
+  "options_ui_strip_tracking_params_desc": {
+    "message": "Удаляет fbclid, utm_*, gclid и другие шпионские параметры из ссылок в ленте, чтобы скопированные или нажатые URL были чистыми."
+  },
+  "options_ui_autoplay_video_label": {
+    "message": "Управление автовоспроизведением видео"
+  },
+  "options_ui_autoplay_video_desc": {
+    "message": "Управляйте тем, что происходит, когда видео в ленте начинает автоматически воспроизводиться."
+  },
+  "options_ui_autoplay_off": {
+    "message": "Выкл (нет действия)"
+  },
+  "options_ui_autoplay_mute": {
+    "message": "Отключить звук (воспроизводить беззвучно)"
+  },
+  "options_ui_autoplay_pause": {
+    "message": "Пауза (нажмите для воспроизведения)"
+  },
+  "options_nav_filters_title": {
+    "message": "Навигация и модули боковой панели"
+  },
+  "options_nav_filters_desc": {
+    "message": "Скрыть определённые модули левой навигации и правой боковой панели."
+  },
+  "options_nav_master_enable": {
+    "message": "Включить фильтрацию навигации на уровне модулей (безопасный режим)"
+  },
+  "options_nav_left_marketplace": {
+    "message": "Скрыть левый нав: Marketplace"
+  },
+  "options_nav_left_watch": {
+    "message": "Скрыть левый нав: Watch"
+  },
+  "options_nav_left_gaming": {
+    "message": "Скрыть левый нав: Gaming"
+  },
+  "options_nav_left_memories": {
+    "message": "Скрыть левый нав: Воспоминания"
+  },
+  "options_nav_left_meta_ai": {
+    "message": "Скрыть левый нав: Meta AI"
+  },
+  "options_nav_left_manus_ai": {
+    "message": "Скрыть левый нав: Manus AI"
+  },
+  "options_nav_right_trending": {
+    "message": "Скрыть правую боковую панель: Тренды"
+  },
+  "options_nav_right_contacts": {
+    "message": "Скрыть правую боковую панель: Контакты"
+  },
+  "options_nav_right_meta_ai_contact": {
+    "message": "Скрыть правую боковую панель: контакт Meta AI"
+  },
+  "options_nav_right_manus_ai_contact": {
+    "message": "Скрыть правую боковую панель: контакт Manus AI"
+  },
+  "options_nav_right_events": {
+    "message": "Скрыть правую боковую панель: События"
+  },
+  "options_nav_right_birthdays": {
+    "message": "Скрыть правую боковую панель: Дни рождения"
+  },
+  "options_topbar_filters_title": {
+    "message": "Управление верхней панелью"
+  },
+  "options_topbar_filters_desc": {
+    "message": "Скрыть определённые иконки заголовка без удаления всего контейнера заголовка."
+  },
+  "options_topbar_master_enable": {
+    "message": "Включить фильтрацию верхней панели (безопасный режим)"
+  },
+  "options_topbar_hide_home": {
+    "message": "Скрыть верхнюю иконку: Главная"
+  },
+  "options_topbar_hide_friends": {
+    "message": "Скрыть верхнюю иконку: Друзья"
+  },
+  "options_topbar_hide_watch": {
+    "message": "Скрыть верхнюю иконку: Watch"
+  },
+  "options_topbar_hide_marketplace": {
+    "message": "Скрыть верхнюю иконку: Marketplace"
+  },
+  "options_topbar_hide_groups": {
+    "message": "Скрыть верхнюю иконку: Группы"
+  },
+  "options_topbar_hide_gaming": {
+    "message": "Скрыть верхнюю иконку: Gaming"
+  },
+  "options_topbar_hide_messenger": {
+    "message": "Скрыть верхнюю иконку: Messenger"
+  },
+  "options_topbar_hide_notifications": {
+    "message": "Скрыть верхнюю иконку: Уведомления"
+  },
+  "options_topbar_hide_menu": {
+    "message": "Скрыть верхнюю иконку: Меню"
+  },
+  "options_topbar_hide_create": {
+    "message": "Скрыть верхнюю иконку: Создать"
+  },
+  "options_ui_theme_label": {
+    "message": "Тема приложения"
+  },
+  "options_ui_theme_reload_desc": {
+    "message": "Требует перезагрузки страницы."
+  },
+  "options_ui_theme_default": {
+    "message": "Facebook по умолчанию"
+  },
+  "options_ui_theme_darkpro": {
+    "message": "Dark Pro"
+  },
+  "options_ui_theme_amoled": {
+    "message": "AMOLED глубокий чёрный"
+  },
+  "options_ui_theme_classic": {
+    "message": "Классический синий"
+  },
+  "options_ui_theme_zen": {
+    "message": "Режим Дзен (минималистичный)"
+  },
+  "options_ui_theme_pastel": {
+    "message": "Пастельный тёплый"
+  },
+  "options_ui_font_scale_label": {
+    "message": "Масштабирование размера шрифта (%)"
+  },
+  "options_ui_custom_style_title": {
+    "message": "Расширенная пользовательская стилизация"
+  },
+  "options_ui_custom_style_desc": {
+    "message": "Необязательные переопределения для шрифта, цвета акцента, фона и пользовательского CSS."
+  },
+  "options_ui_custom_style_warn": {
+    "message": "Используйте только правильный CSS. Неверные правила могут нарушить макет страницы."
+  },
+  "options_ui_custom_style_enable": {
+    "message": "Включить расширенную пользовательскую стилизацию"
+  },
+  "options_ui_custom_font": {
+    "message": "Пользовательское семейство шрифтов"
+  },
+  "options_ui_custom_accent": {
+    "message": "Пользовательский цвет акцента"
+  },
+  "options_ui_custom_text_color": {
+    "message": "Пользовательский цвет текста"
+  },
+  "options_ui_custom_card_background": {
+    "message": "Пользовательский фон карточки поста"
+  },
+  "options_ui_custom_background": {
+    "message": "Пользовательский фон страницы"
+  },
+  "options_ui_custom_css": {
+    "message": "Пользовательский CSS"
+  },
+  "options_ui_custom_accent_placeholder": {
+    "message": "#22c1ff"
+  },
+  "options_ui_custom_text_color_placeholder": {
+    "message": "#f2f5ff"
+  },
+  "options_ui_custom_card_background_placeholder": {
+    "message": "rgba(24, 31, 42, 0.92)"
+  },
+  "options_ui_custom_background_placeholder": {
+    "message": "linear-gradient(...) or #111111"
+  },
+  "options_ui_custom_css_placeholder": {
+    "message": ".selector { display: none !important; }"
+  },
+  "options_ui_custom_css_preset_label": {
+    "message": "Пресеты фрагментов пользовательского CSS"
+  },
+  "options_ui_custom_css_preset_desc": {
+    "message": "Загрузите стартовый фрагмент в поле пользовательского CSS, затем просмотрите и сохраните."
+  },
+  "options_ui_custom_css_preset_none": {
+    "message": "Выберите фрагмент"
+  },
+  "options_ui_custom_css_preset_subtle_cards": {
+    "message": "Тонкая полировка карточек"
+  },
+  "options_ui_custom_css_preset_calmer_motion": {
+    "message": "Более спокойная анимация"
+  },
+  "options_ui_custom_css_preset_readability_boost": {
+    "message": "Улучшение читаемости"
+  },
+  "options_ui_custom_css_preset_apply": {
+    "message": "Загрузить фрагмент"
+  },
+  "options_theme_preview_title": {
+    "message": "Живой предпросмотр"
+  },
+  "options_theme_preview_post_title": {
+    "message": "Заголовок предпросмотра поста"
+  },
+  "options_theme_preview_desc": {
+    "message": "Этот мини-предпросмотр обновляется при изменении темы и масштабирования шрифта."
+  },
+  "options_theme_preview_chip_filtered": {
+    "message": "Ads Filtered"
+  },
+  "options_theme_preview_chip_score": {
+    "message": "Оценка PF 88"
+  },
+  "options_wellbeing_grayscale": {
+    "message": "Режим оттенков серого (обесцветить все цвета)"
+  },
+  "options_wellbeing_scroll_stopper": {
+    "message": "Остановитель бесконечной прокрутки"
+  },
+  "options_wellbeing_break_wall": {
+    "message": "Посты до стены перерыва"
+  },
+  "options_wellbeing_session_timer": {
+    "message": "Видимый таймер сессии"
+  },
+  "options_wellbeing_session_awareness_enable": {
+    "message": "Мягкое напоминание о сессии"
+  },
+  "options_wellbeing_session_awareness_threshold": {
+    "message": "Импульсы прокрутки в минуту перед напоминанием"
+  },
+  "options_wellbeing_session_awareness_cooldown": {
+    "message": "Время перезарядки напоминания (минуты)"
+  },
+  "options_wellbeing_daily_report_enable": {
+    "message": "Включить ежедневный отчёт ленты"
+  },
+  "options_wellbeing_daily_report_minutes": {
+    "message": "Автоматический интервал отчёта (минуты)"
+  },
+  "options_wellbeing_reels_limit_title": {
+    "message": "Ограничитель сессии Reels"
+  },
+  "options_wellbeing_reels_limit_desc": {
+    "message": "Разрешить только ограниченное количество Reels за сессию, затем блокировать дополнительные Reels."
+  },
+  "options_wellbeing_reels_limit_enable": {
+    "message": "Включить ограничитель сессии Reels"
+  },
+  "options_wellbeing_reels_limit_count": {
+    "message": "Разрешённые Reels за сессию"
+  },
+  "options_wellbeing_reels_limit_hardlock": {
+    "message": "Жёсткая блокировка Reels после достижения лимита"
+  },
+  "options_wellbeing_ai_blockers_title": {
+    "message": "Расширенные блокировщики ИИ (Издание цифрового благополучия)"
+  },
+  "options_wellbeing_ragebait": {
+    "message": "Детектор провокационного контента (размыть воспалительные посты)"
+  },
+  "options_wellbeing_clickbait": {
+    "message": "Уничтожитель кликбейта (удалить манипулятивные вирусные заголовки)"
+  },
+  "wellbeing_break_title": {
+    "message": "Сделайте вдох"
+  },
+  "wellbeing_break_body_template": {
+    "message": "Вы только что прокрутили $1 постов. PureFusion временно остановил ленту, чтобы помочь вам избежать бесконечной прокрутки. Может, пора заняться чем-то другим?"
+  },
+  "wellbeing_break_resume_btn": {
+    "message": "Продолжить прокрутку всё равно"
+  },
+  "wellbeing_session_timer_prefix": {
+    "message": "Сессия"
+  },
+  "wellbeing_report_button": {
+    "message": "Отчёт"
+  },
+  "wellbeing_weekly_report_button": {
+    "message": "Неделя"
+  },
+  "wellbeing_report_disabled": {
+    "message": "Ежедневный отчёт ленты отключён. Включите его в разделе Цифровое благополучие."
+  },
+  "wellbeing_report_label_auto": {
+    "message": "Ежедневный отчёт ленты"
+  },
+  "wellbeing_report_label_session": {
+    "message": "Отчёт сессии ленты"
+  },
+  "wellbeing_weekly_report_label": {
+    "message": "Еженедельный отчёт ленты"
+  },
+  "wellbeing_report_no_filters": {
+    "message": "Фильтры ещё не срабатывали"
+  },
+  "wellbeing_weekly_report_no_data": {
+    "message": "Для еженедельного отчёта нужно больше данных об активности."
+  },
+  "wellbeing_session_awareness_toast_template": {
+    "message": "Обнаружен высокий темп прокрутки: $1 прокруток за последнюю минуту (сессия $2 мин). Рассмотрите короткий перерыв."
+  },
+  "wellbeing_report_panel_title": {
+    "message": "Отчёты PureFusion Feed"
+  },
+  "wellbeing_report_panel_close": {
+    "message": "Закрыть"
+  },
+  "wellbeing_report_panel_session_tab": {
+    "message": "Сессия"
+  },
+  "wellbeing_report_panel_weekly_tab": {
+    "message": "Еженедельный"
+  },
+  "wellbeing_report_panel_hidden": {
+    "message": "Скрытые элементы"
+  },
+  "wellbeing_report_panel_reels": {
+    "message": "Заблокированные Reels"
+  },
+  "wellbeing_report_panel_top_reason": {
+    "message": "Главное отвлечение"
+  },
+  "wellbeing_report_panel_minutes_saved": {
+    "message": "Сэкономленные минуты (оценка)"
+  },
+  "wellbeing_report_panel_elapsed": {
+    "message": "Прошло сессии"
+  },
+  "wellbeing_report_panel_refresh": {
+    "message": "Обновить"
+  },
+  "wellbeing_report_panel_reset_session": {
+    "message": "Сбросить сессию"
+  },
+  "wellbeing_report_panel_reset_done": {
+    "message": "Счётчики сессии сброшены."
+  },
+  "wellbeing_report_panel_note": {
+    "message": "Совет: дневные значения сбрасываются при сбросе сессии; еженедельный свод рассчитывается из сохранённых дневных сегментов."
+  },
+  "wellbeing_report_panel_weekly_window": {
+    "message": "Скользящее 7-дневное окно"
+  },
+  "wellbeing_report_panel_weekly_trend_title": {
+    "message": "Тренд за 7 дней"
+  },
+  "wellbeing_report_panel_weekly_top_reasons_title": {
+    "message": "Главные причины отвлечений"
+  },
+  "wellbeing_report_panel_weekly_no_reasons": {
+    "message": "Пока нет данных о причинах отвлечений."
+  },
+  "wellbeing_report_panel_weekly_reason_explain": {
+    "message": "Объяснить"
+  },
+  "wellbeing_report_reason_explain_ads": {
+    "message": "Спонсорский или рекламный контент был отфильтрован для уменьшения рекламного беспорядка."
+  },
+  "wellbeing_report_reason_explain_story": {
+    "message": "Шаблоны активности историй (лайки/комментарии/добавления в друзья/регистрации) были отфильтрованы как малосигнальный шум ленты."
+  },
+  "wellbeing_report_reason_explain_post_type": {
+    "message": "Фильтр формата поста удалил типы контента, которые вы выбрали для подавления (видео/фото/ссылка/только текст)."
+  },
+  "wellbeing_report_reason_explain_bait": {
+    "message": "Поведенческие фильтры безопасности выявили манипулятивные или высоковозмутительные шаблоны, созданные для удержания вас в прокрутке."
+  },
+  "wellbeing_report_reason_explain_nav": {
+    "message": "Средства управления беспорядком навигации и модулей удалили отвлекающие элементы UI, не связанные с лентой."
+  },
+  "wellbeing_report_reason_explain_keyword": {
+    "message": "Правила ключевых слов совпали с этим элементом и отфильтровали его на основе вашего пользовательского списка блокировки."
+  },
+  "wellbeing_report_reason_explain_generic": {
+    "message": "Эта категория была отфильтрована активными правилами PureFusion, чтобы сделать ленту чище и более сфокусированной."
+  },
+  "wellbeing_report_reason_open_settings": {
+    "message": "Открыть связанные настройки"
+  },
   "wellbeing_weekly_report_toast_template": {
     "message": "$LABEL$: скрыто $HIDDEN$ элементов, заблокировано $REELS$ Reels, главное отвлечение $REASON$, est. $MINUTES$ мин сэкономлено за 7 дней.",
     "placeholders": {
-      "label": { "content": "$1" },
-      "hidden": { "content": "$2" },
-      "reels": { "content": "$3" },
-      "reason": { "content": "$4" },
-      "minutes": { "content": "$5" }
+      "label": {
+        "content": "$1"
+      },
+      "hidden": {
+        "content": "$2"
+      },
+      "reels": {
+        "content": "$3"
+      },
+      "reason": {
+        "content": "$4"
+      },
+      "minutes": {
+        "content": "$5"
+      }
     }
   },
   "wellbeing_report_toast_template": {
     "message": "$LABEL$: скрыто $HIDDEN$ элементов, заблокировано $REELS$ Reels, главная причина $REASON$, est. $MINUTES$ мин сэкономлено.",
     "placeholders": {
-      "label": { "content": "$1" },
-      "hidden": { "content": "$2" },
-      "reels": { "content": "$3" },
-      "reason": { "content": "$4" },
-      "minutes": { "content": "$5" }
+      "label": {
+        "content": "$1"
+      },
+      "hidden": {
+        "content": "$2"
+      },
+      "reels": {
+        "content": "$3"
+      },
+      "reason": {
+        "content": "$4"
+      },
+      "minutes": {
+        "content": "$5"
+      }
     }
   },
-  "options_social_ghost_title": { "message": "Режим призрака (Messenger)" },
-  "options_social_ghost_desc": { "message": "Приватные взаимодействия. Скрывайте следы во время переписки." },
-  "options_social_hide_seen": { "message": "Скрыть уведомления «Прочитано» (читать, не давая им знать)" },
-  "options_social_hide_typing": { "message": "Скрыть индикатор «Печатает...»" },
-  "options_social_privacy_blur": { "message": "Размытие конфиденциальности (размыть тело чата до наведения)" },
-  "options_social_meta_title": { "message": "Meta AI и алгоритмический беспорядок" },
-  "options_social_auto_comment_preview": { "message": "Автопредпросмотр комментариев" },
-  "options_social_auto_comment_preview_toggle": { "message": "Включить автопредпросмотр комментариев" },
-  "options_beta_badge": { "message": "БЕТА" },
-  "options_comment_preview_warning_text": { "message": "Эта функция имитирует нажатия кнопок для раскрытия разделов комментариев во время прокрутки. Она экспериментальна и может не работать на всех постах, может перестать работать после обновлений макета Facebook, или может вызвать ограничение скорости при слишком высоком числе просмотров. Поддерживайте задержку выше 1200 мс и максимум постов за просмотр ниже 20 при первом тестировании." },
-  "options_comment_preview_risk_text": { "message": "Включите на свой страх и риск. При первом включении появится запрос подтверждения." },
-  "options_social_comment_preview_desc": { "message": "Настройте задержку и область ниже. Более высокая задержка и меньшие лимиты просмотра снижают риск срабатывания ограничений скорости FB." },
-  "options_social_comment_preview_cooldown": { "message": "Задержка предпросмотра комментариев (мс)" },
-  "options_social_comment_preview_retry_cap": { "message": "Лимит повторных попыток на пост" },
-  "options_social_comment_preview_sweep_cap": { "message": "Макс. постов за просмотр" },
-  "options_social_comment_preview_home": { "message": "Разрешить на главной ленте" },
-  "options_social_comment_preview_groups": { "message": "Разрешить в группах" },
-  "options_social_comment_preview_watch": { "message": "Разрешить на Watch" },
-  "options_social_comment_preview_marketplace": { "message": "Разрешить на Marketplace" },
-  "options_social_comment_preview_notifications": { "message": "Разрешить в уведомлениях" },
-  "options_social_comment_preview_other": { "message": "Разрешить на других поверхностях" },
-  "options_social_comment_preview_strategy": { "message": "Стратегия предпросмотра" },
-  "options_social_comment_preview_strategy_inject": { "message": "Smart Inject (Стабильный, v3)" },
-  "options_social_comment_preview_strategy_click": { "message": "Legacy Click (v2)" },
-  "options_social_nuke_meta": { "message": "Удалить Meta AI (убрать все градиентные иконки и кнопки со sparkle)" },
-  "options_social_track_unfriends": { "message": "Отслеживать удаления из друзей и деактивации" },
-  "options_social_notif_title": { "message": "Успокаивающий фильтр уведомлений" },
-  "options_social_notif_style": { "message": "Стиль значка оповещения (красная точка)" },
-  "options_social_notif_style_classic": { "message": "Классический красный (по умолчанию)" },
-  "options_social_notif_style_blue": { "message": "Чистый синий (ненавязчивый)" },
-  "options_social_notif_style_purple": { "message": "Fusion фиолетовый (фирменный)" },
-  "options_social_notif_style_grey": { "message": "Серый призрак (минимальный)" },
-  "options_social_notif_style_hidden": { "message": "Полностью скрытый" },
-  "options_social_notif_digest": { "message": "Режим дайджеста уведомлений (группировать оповещения каждый час)" },
-  "options_social_notif_games": { "message": "Скрыть игровые уведомления" },
-  "options_social_notif_birthdays": { "message": "Скрыть уведомления о днях рождения" },
-  "options_social_notif_marketplace": { "message": "Скрыть уведомления Marketplace" },
-  "options_social_notif_engagement": { "message": "Скрыть алгоритмические подстрекательства к взаимодействию" },
-  "options_social_search_title": { "message": "Управление всплывающим окном поиска" },
-  "options_social_search_desc": { "message": "Подавлять отвлекающие предложения выпадающего поиска." },
-  "options_social_search_hide_all": { "message": "Скрыть все предложения всплывающего поиска" },
-  "options_social_search_hide_trending": { "message": "Скрыть популярные поисковые предложения" },
-  "options_social_search_hide_recent": { "message": "Скрыть раздел недавних поисков" },
-  "options_keywords_card_desc": { "message": "Разделяйте ключевые слова запятыми." },
-  "options_keywords_blocklist_label": { "message": "Список блокировки (сворачивает посты с кнопкой «Показать всё равно»)" },
-  "options_keywords_autohide_label": { "message": "Автоскрытие (тихо удаляет посты, содержащие эти строки)" },
-  "options_keywords_source_blocklist_label": { "message": "Скрытые источники (всегда скрывать совпадающие имена источников)" },
-  "options_keywords_allowlist_label": { "message": "Ключевые слова белого списка (никогда не блокировать, если пост содержит их)" },
-  "options_keywords_allowlist_friends_label": { "message": "Никогда не скрывать источники (Друзья/Страницы)" },
-  "options_keywords_blocklist_placeholder": { "message": "политика, спойлеры, и т.д..." },
-  "options_keywords_autohide_placeholder": { "message": "ключевое слово спама..." },
-  "options_keywords_source_blocklist_placeholder": { "message": "Иван Иванов, Шумная Новостная Страница..." },
-  "options_keywords_allowlist_placeholder": { "message": "обновление семьи, запуск проекта..." },
-  "options_keywords_allowlist_friends_placeholder": { "message": "Мария Иванова, Моя любимая страница..." },
-  "options_data_backup_title": { "message": "Резервная копия конфигурации" },
-  "options_data_backup_desc": { "message": "Экспортируйте настройки и списки блокировки в JSON для синхронизации с другим устройством." },
-  "options_data_export_btn": { "message": "Экспортировать в файл" },
-  "options_data_import_btn": { "message": "Импортировать из файла" },
-  "options_data_about_title": { "message": "О расширении и поддержка" },
-  "options_data_about_desc": { "message": "Нужна помощь, хотите сообщить о проблеме или поддержать разработку? Свяжитесь со мной напрямую по ссылкам ниже." },
-  "options_data_about_discord": { "message": "Discord (Purefusion-Feeds)" },
-  "options_data_about_github": { "message": "Репозиторий GitHub" },
-  "options_data_about_issues": { "message": "Сообщить о проблемах" },
-  "options_data_about_donate": { "message": "Пожертвовать / Поддержать" },
-  "options_data_diag_title": { "message": "Режим диагностики" },
-  "options_data_diag_desc": { "message": "Необязательный локальный отладочный оверлей для проверки причин скрытия и активности фильтров." },
-  "options_data_diag_enable": { "message": "Включить режим диагностики" },
-  "options_data_diag_overlay": { "message": "Показать оверлей диагностики на странице" },
-  "options_data_diag_compact": { "message": "Использовать компактный оверлей диагностики" },
-  "options_data_diag_console": { "message": "Подробная диагностика в консоли" },
-  "options_data_diag_max_reasons": { "message": "Макс. строк причин в оверлее" },
-  "options_data_diag_thresholds_title": { "message": "Пороги всплесков наблюдателя" },
-  "options_data_diag_thresholds_desc": { "message": "Настройте предупреждающие и критические пороги, используемые оповещениями рабочей нагрузки диагностики." },
-  "options_data_diag_warn_duration": { "message": "Продолжительность предупреждения (мс)" },
-  "options_data_diag_severe_duration": { "message": "Продолжительность критическая (мс)" },
-  "options_data_diag_warn_nodes": { "message": "Количество узлов предупреждения" },
-  "options_data_diag_severe_nodes": { "message": "Количество узлов критическое" },
-  "options_data_diag_warn_records": { "message": "Записи мутаций предупреждения" },
-  "options_data_diag_severe_records": { "message": "Записи мутаций критические" },
-  "options_data_reset_title": { "message": "Сброс до заводских настроек" },
-  "options_data_reset_desc": { "message": "Это удалит все настройки и локальные данные обучения ИИ." },
-  "options_data_reset_btn": { "message": "Стереть всё" },
-  "options_toast_saved": { "message": "Настройки успешно сохранены." },
-  "options_toast_imported": { "message": "Настройки успешно импортированы." },
-  "options_toast_invalid_backup": { "message": "Недопустимый файл резервной копии PureFusion." },
-  "options_toast_import_error": { "message": "Ошибка импорта файла. Возможно, он повреждён." },
-  "options_toast_provider_permission_denied": { "message": "Отказ в разрешении провайдера ИИ. Провайдер отключён." },
-  "options_toast_preset_applied": { "message": "Пресет успешно применён." },
-  "options_toast_custom_css_snippet_loaded": { "message": "Фрагмент пользовательского CSS загружен. Нажмите «Сохранить» для применения." },
-  "options_toast_ultrafast_applied": { "message": "Ультрабыстрый режим применён для этого устройства." },
-  "options_toast_mode_clean_applied": { "message": "Чистый режим применён." },
-  "options_toast_mode_smart_applied": { "message": "Умный режим применён." },
-  "options_reset_confirm": { "message": "Вы уверены? Это удалит ваши настройки и все локальные данные отслеживания ИИ." },
-  "options_sidebar_filters": { "message": "🚫 Основные фильтры" },
-  "options_sidebar_wellbeing": { "message": "🧘 Цифровое благополучие" },
-  "options_sidebar_ai": { "message": "🤖 Движок ИИ" },
-  "options_sidebar_ui": { "message": "🎨 Настройки UI" },
-  "options_sidebar_keywords": { "message": "🔤 Фильтры ключевых слов" },
-  "options_sidebar_social": { "message": "🤝 Социальное и конфиденциальность" },
-  "options_sidebar_data": { "message": "💾 Данные и резервная копия" },
-  "welcome_title": { "message": "Добро пожаловать в PureFusion Feed" },
-  "welcome_subtitle": { "message": "Войдите в более чистый, быстрый и приватный социальный опыт." },
-  "welcome_god_mode": { "message": "Режим бога" },
-  "welcome_god_mode_desc": { "message": "Полное уничтожение рекламного контента, предлагаемых Reels и алгоритмического мусора." },
-  "welcome_privacy_ai": { "message": "ИИ конфиденциальности" },
-  "welcome_privacy_ai_desc": { "message": "Суммаризируйте длинные посты и блокируйте кликбейт, используя оффлайн, локальную технологию ИИ." },
-  "welcome_dopamine": { "message": "Прерыватели дофамина" },
-  "welcome_dopamine_desc": { "message": "Боритесь с бесконечной прокруткой с помощью таймеров сессии, режима оттенков серого и ограничений прокрутки." },
-  "welcome_ready": { "message": "Готовы взять управление?" },
-  "welcome_ready_desc": { "message": "Ваша лента теперь под вашим контролем. Вы можете получить доступ к **Расширенной панели** в любое время." },
-  "welcome_help_title": { "message": "Нужна помощь или хотите сообщить об ошибке?" },
-  "welcome_help_desc": { "message": "Свяжитесь со мной напрямую в Discord, откройте проблемы на GitHub или поддержите разработку PureFusion." },
-  "welcome_help_discord": { "message": "Discord: Purefusion-Feeds" },
-  "welcome_help_github": { "message": "Репозиторий GitHub" },
-  "welcome_help_issues": { "message": "Проблемы GitHub" },
-  "welcome_help_donate": { "message": "Пожертвовать / Поддержать" },
-  "welcome_support_development": { "message": "❤️ Поддержать разработку" },
-  "welcome_footer_built": { "message": "Создано с ❤️ Майклом Харреллом и работает на PureFusion 2024" },
-  "inpage_fab_title": { "message": "Открыть панель PureFusion" },
-  "inpage_modal_title": { "message": "Панель PureFusion" },
-  "inpage_modal_ads": { "message": "Блокировать рекламу" },
-  "inpage_modal_sponsored": { "message": "Скрыть рекламные публикации" },
-  "inpage_modal_sugg": { "message": "Скрыть предложения и Reels" },
-  "inpage_modal_stories": { "message": "Скрыть панель историй" },
-  "inpage_modal_ai": { "message": "ИИ-фильтр злости/кликбейта" },
-  "inpage_modal_gray": { "message": "Режим оттенков серого" },
-  "content_hidden_chip_label": { "message": "Скрыто PureFusion" },
-  "content_hidden_chip_show_once": { "message": "Показать один раз" },
-  "content_hidden_chip_allow_source": { "message": "Всегда разрешить источник" },
-  "content_allow_source_exists": { "message": "уже в списке «Никогда не скрывать источники»." },
-  "content_allow_source_added": { "message": "Добавлено" },
-  "content_allow_source_added_suffix": { "message": "в «Никогда не скрывать источники»." },
-  "messenger_ai_rewrite_btn": { "message": "Переписать" },
-  "messenger_ai_replies_btn": { "message": "Умные ответы" },
-  "messenger_ai_rewriting_btn": { "message": "Переписываю..." },
-  "messenger_ai_generating_btn": { "message": "Генерирую..." },
-  "messenger_ai_empty_input": { "message": "Сначала введите сообщение." },
-  "messenger_ai_rewrite_success": { "message": "Сообщение переписано." },
-  "messenger_ai_rewrite_fail": { "message": "Переписывание не удалось. Проверьте настройки провайдера ИИ." },
-  "messenger_ai_context_missing": { "message": "Нужно больше контекста чата для умных ответов." },
-  "messenger_ai_replies_fail": { "message": "Не удалось сгенерировать умные ответы." },
-  "messenger_ai_provider_required": { "message": "Сначала настройте провайдера ИИ в настройках PureFusion." },
-  "options_sidebar_poweruser": { "message": "⚡ Правила для опытных пользователей" },
-  "options_poweruser_title": { "message": "Движок правил для опытных пользователей" },
-  "options_poweruser_desc": { "message": "Нацельтесь на любой элемент страницы и скройте его, используя пользовательские селекторы или сопоставление текста. Будьте точны, чтобы не скрыть контент, который хотите видеть." },
-  "options_poweruser_add_rule": { "message": "Добавить новое правило скрытия" },
-  "options_poweruser_rule_list": { "message": "Активные правила" },
-  "options_poweruser_no_rules": { "message": "Пользовательские правила ещё не определены. Используйте кнопку '+' или щёлкните правой кнопкой мыши на элементах Facebook, чтобы «Удалить» их." },
-  "options_poweruser_type_label": { "message": "Тип правила" },
-  "options_poweruser_type_selector": { "message": "CSS-селектор" },
-  "options_poweruser_type_text": { "message": "Совпадение текста" },
-  "options_poweruser_rule_label": { "message": "Метка правила (внутреннее имя)" },
-  "options_poweruser_rule_value": { "message": "Селектор или фраза" },
-  "options_poweruser_rule_wrapper_label": { "message": "Область (Оборачивающий селектор)" },
-  "options_poweruser_rule_wrapper_placeholder": { "message": "например [role='article'] (Необязательно)" },
-  "options_poweruser_save_rule": { "message": "Сохранить правило" },
-  "options_poweruser_cancel": { "message": "Отмена" },
-  "options_poweruser_rule_enabled": { "message": "Включено" },
-  "options_poweruser_delete_rule": { "message": "Удалить" },
-  "options_poweruser_edit_rule": { "message": "Редактировать" },
-  "quick_action_menu_zap_element": { "message": "Zap (Скрыть) элемент" },
-  "options_poweruser_delete_confirm": { "message": "Вы уверены, что хотите удалить это правило?" },
-  "options_toast_rule_updated": { "message": "Правило обновлено." },
-  "options_toast_rule_deleted": { "message": "Правило удалено." },
-  "options_toast_rules_saved": { "message": "Пользовательские правила успешно сохранены." },
-  "options_toast_rule_value_required": { "message": "Значение правила (селектор/текст) обязательно." },
-  "quick_action_save_later": { "message": "Save to Read Later" },
-  "popup_readlater_title": { "message": "Read Later" },
-  "popup_readlater_one": { "message": "1 saved" },
-  "popup_readlater_many": { "message": "{count} saved" },
-  "popup_readlater_view": { "message": "View Queue" },
-  "options_readlater_title": { "message": "Read Later Queue" },
-  "options_readlater_desc": { "message": "Posts saved from the Facebook feed using right-click → Teach PureFusion → Save to Read Later." },
-  "options_readlater_clear": { "message": "Clear All" },
-  "content_saved_for_later": { "message": "Post saved to Read Later." },
-  "content_save_later_duplicate": { "message": "Already in your Read Later queue." },
-  "content_save_later_error": { "message": "Could not identify a post to save. Try right-clicking within a post." },
-  "options_filters_post_age_label": { "message": "Hide Posts Older Than" },
-  "options_filters_post_age_desc": { "message": "Hide feed posts older than the chosen threshold. Reads the post timestamp — posts without a detectable date are kept visible." },
-  "options_filters_post_age_off": { "message": "Off" },
-  "options_filters_post_age_6h": { "message": "6 hours" },
-  "options_filters_post_age_12h": { "message": "12 hours" },
-  "options_filters_post_age_24h": { "message": "24 hours (1 day)" },
-  "options_filters_post_age_48h": { "message": "2 days" },
-  "options_filters_post_age_72h": { "message": "3 days" },
-  "options_filters_post_age_7d": { "message": "7 days" },
-  "options_filters_post_age_14d": { "message": "14 days" },
-  "options_filters_post_age_30d": { "message": "30 days" },
-  "options_ui_reply_only_label": { "message": "Reply-Only Mode" },
-  "options_ui_reply_only_desc": { "message": "Collapse post bodies in the feed — hides post text and attached stories, leaving only the comment threads visible. Useful for cutting through engagement-bait without seeing the inflammatory content." }
+  "options_social_ghost_title": {
+    "message": "Режим призрака (Messenger)"
+  },
+  "options_social_ghost_desc": {
+    "message": "Приватные взаимодействия. Скрывайте следы во время переписки."
+  },
+  "options_social_hide_seen": {
+    "message": "Скрыть уведомления «Прочитано» (читать, не давая им знать)"
+  },
+  "options_social_hide_typing": {
+    "message": "Скрыть индикатор «Печатает...»"
+  },
+  "options_social_privacy_blur": {
+    "message": "Размытие конфиденциальности (размыть тело чата до наведения)"
+  },
+  "options_social_meta_title": {
+    "message": "Meta AI и алгоритмический беспорядок"
+  },
+  "options_social_auto_comment_preview": {
+    "message": "Автопредпросмотр комментариев"
+  },
+  "options_social_auto_comment_preview_toggle": {
+    "message": "Включить автопредпросмотр комментариев"
+  },
+  "options_beta_badge": {
+    "message": "БЕТА"
+  },
+  "options_comment_preview_warning_text": {
+    "message": "Эта функция имитирует нажатия кнопок для раскрытия разделов комментариев во время прокрутки. Она экспериментальна и может не работать на всех постах, может перестать работать после обновлений макета Facebook, или может вызвать ограничение скорости при слишком высоком числе просмотров. Поддерживайте задержку выше 1200 мс и максимум постов за просмотр ниже 20 при первом тестировании."
+  },
+  "options_comment_preview_risk_text": {
+    "message": "Включите на свой страх и риск. При первом включении появится запрос подтверждения."
+  },
+  "options_social_comment_preview_desc": {
+    "message": "Настройте задержку и область ниже. Более высокая задержка и меньшие лимиты просмотра снижают риск срабатывания ограничений скорости FB."
+  },
+  "options_social_comment_preview_cooldown": {
+    "message": "Задержка предпросмотра комментариев (мс)"
+  },
+  "options_social_comment_preview_retry_cap": {
+    "message": "Лимит повторных попыток на пост"
+  },
+  "options_social_comment_preview_sweep_cap": {
+    "message": "Макс. постов за просмотр"
+  },
+  "options_social_comment_preview_home": {
+    "message": "Разрешить на главной ленте"
+  },
+  "options_social_comment_preview_groups": {
+    "message": "Разрешить в группах"
+  },
+  "options_social_comment_preview_watch": {
+    "message": "Разрешить на Watch"
+  },
+  "options_social_comment_preview_marketplace": {
+    "message": "Разрешить на Marketplace"
+  },
+  "options_social_comment_preview_notifications": {
+    "message": "Разрешить в уведомлениях"
+  },
+  "options_social_comment_preview_other": {
+    "message": "Разрешить на других поверхностях"
+  },
+  "options_social_comment_preview_strategy": {
+    "message": "Стратегия предпросмотра"
+  },
+  "options_social_comment_preview_strategy_inject": {
+    "message": "Smart Inject (Стабильный, v3)"
+  },
+  "options_social_comment_preview_strategy_click": {
+    "message": "Legacy Click (v2)"
+  },
+  "options_social_nuke_meta": {
+    "message": "Удалить Meta AI (убрать все градиентные иконки и кнопки со sparkle)"
+  },
+  "options_social_track_unfriends": {
+    "message": "Отслеживать удаления из друзей и деактивации"
+  },
+  "options_social_notif_title": {
+    "message": "Успокаивающий фильтр уведомлений"
+  },
+  "options_social_notif_style": {
+    "message": "Стиль значка оповещения (красная точка)"
+  },
+  "options_social_notif_style_classic": {
+    "message": "Классический красный (по умолчанию)"
+  },
+  "options_social_notif_style_blue": {
+    "message": "Чистый синий (ненавязчивый)"
+  },
+  "options_social_notif_style_purple": {
+    "message": "Fusion фиолетовый (фирменный)"
+  },
+  "options_social_notif_style_grey": {
+    "message": "Серый призрак (минимальный)"
+  },
+  "options_social_notif_style_hidden": {
+    "message": "Полностью скрытый"
+  },
+  "options_social_notif_digest": {
+    "message": "Режим дайджеста уведомлений (группировать оповещения каждый час)"
+  },
+  "options_social_notif_games": {
+    "message": "Скрыть игровые уведомления"
+  },
+  "options_social_notif_birthdays": {
+    "message": "Скрыть уведомления о днях рождения"
+  },
+  "options_social_notif_marketplace": {
+    "message": "Скрыть уведомления Marketplace"
+  },
+  "options_social_notif_engagement": {
+    "message": "Скрыть алгоритмические подстрекательства к взаимодействию"
+  },
+  "options_social_search_title": {
+    "message": "Управление всплывающим окном поиска"
+  },
+  "options_social_search_desc": {
+    "message": "Подавлять отвлекающие предложения выпадающего поиска."
+  },
+  "options_social_search_hide_all": {
+    "message": "Скрыть все предложения всплывающего поиска"
+  },
+  "options_social_search_hide_trending": {
+    "message": "Скрыть популярные поисковые предложения"
+  },
+  "options_social_search_hide_recent": {
+    "message": "Скрыть раздел недавних поисков"
+  },
+  "options_keywords_card_desc": {
+    "message": "Разделяйте ключевые слова запятыми."
+  },
+  "options_keywords_blocklist_label": {
+    "message": "Список блокировки (сворачивает посты с кнопкой «Показать всё равно»)"
+  },
+  "options_keywords_autohide_label": {
+    "message": "Автоскрытие (тихо удаляет посты, содержащие эти строки)"
+  },
+  "options_keywords_source_blocklist_label": {
+    "message": "Скрытые источники (всегда скрывать совпадающие имена источников)"
+  },
+  "options_keywords_allowlist_label": {
+    "message": "Ключевые слова белого списка (никогда не блокировать, если пост содержит их)"
+  },
+  "options_keywords_allowlist_friends_label": {
+    "message": "Никогда не скрывать источники (Друзья/Страницы)"
+  },
+  "options_keywords_blocklist_placeholder": {
+    "message": "политика, спойлеры, и т.д..."
+  },
+  "options_keywords_autohide_placeholder": {
+    "message": "ключевое слово спама..."
+  },
+  "options_keywords_source_blocklist_placeholder": {
+    "message": "Иван Иванов, Шумная Новостная Страница..."
+  },
+  "options_keywords_allowlist_placeholder": {
+    "message": "обновление семьи, запуск проекта..."
+  },
+  "options_keywords_allowlist_friends_placeholder": {
+    "message": "Мария Иванова, Моя любимая страница..."
+  },
+  "options_data_backup_title": {
+    "message": "Резервная копия конфигурации"
+  },
+  "options_data_backup_desc": {
+    "message": "Экспортируйте настройки и списки блокировки в JSON для синхронизации с другим устройством."
+  },
+  "options_data_export_btn": {
+    "message": "Экспортировать в файл"
+  },
+  "options_data_import_btn": {
+    "message": "Импортировать из файла"
+  },
+  "options_data_about_title": {
+    "message": "О расширении и поддержка"
+  },
+  "options_data_about_desc": {
+    "message": "Нужна помощь, хотите сообщить о проблеме или поддержать разработку? Свяжитесь со мной напрямую по ссылкам ниже."
+  },
+  "options_data_about_discord": {
+    "message": "Discord (Purefusion-Feeds)"
+  },
+  "options_data_about_github": {
+    "message": "Репозиторий GitHub"
+  },
+  "options_data_about_issues": {
+    "message": "Сообщить о проблемах"
+  },
+  "options_data_about_donate": {
+    "message": "Пожертвовать / Поддержать"
+  },
+  "options_data_diag_title": {
+    "message": "Режим диагностики"
+  },
+  "options_data_diag_desc": {
+    "message": "Необязательный локальный отладочный оверлей для проверки причин скрытия и активности фильтров."
+  },
+  "options_data_diag_enable": {
+    "message": "Включить режим диагностики"
+  },
+  "options_data_diag_overlay": {
+    "message": "Показать оверлей диагностики на странице"
+  },
+  "options_data_diag_compact": {
+    "message": "Использовать компактный оверлей диагностики"
+  },
+  "options_data_diag_console": {
+    "message": "Подробная диагностика в консоли"
+  },
+  "options_data_diag_max_reasons": {
+    "message": "Макс. строк причин в оверлее"
+  },
+  "options_data_diag_thresholds_title": {
+    "message": "Пороги всплесков наблюдателя"
+  },
+  "options_data_diag_thresholds_desc": {
+    "message": "Настройте предупреждающие и критические пороги, используемые оповещениями рабочей нагрузки диагностики."
+  },
+  "options_data_diag_warn_duration": {
+    "message": "Продолжительность предупреждения (мс)"
+  },
+  "options_data_diag_severe_duration": {
+    "message": "Продолжительность критическая (мс)"
+  },
+  "options_data_diag_warn_nodes": {
+    "message": "Количество узлов предупреждения"
+  },
+  "options_data_diag_severe_nodes": {
+    "message": "Количество узлов критическое"
+  },
+  "options_data_diag_warn_records": {
+    "message": "Записи мутаций предупреждения"
+  },
+  "options_data_diag_severe_records": {
+    "message": "Записи мутаций критические"
+  },
+  "options_data_reset_title": {
+    "message": "Сброс до заводских настроек"
+  },
+  "options_data_reset_desc": {
+    "message": "Это удалит все настройки и локальные данные обучения ИИ."
+  },
+  "options_data_reset_btn": {
+    "message": "Стереть всё"
+  },
+  "options_toast_saved": {
+    "message": "Настройки успешно сохранены."
+  },
+  "options_toast_imported": {
+    "message": "Настройки успешно импортированы."
+  },
+  "options_toast_invalid_backup": {
+    "message": "Недопустимый файл резервной копии PureFusion."
+  },
+  "options_toast_import_error": {
+    "message": "Ошибка импорта файла. Возможно, он повреждён."
+  },
+  "options_toast_provider_permission_denied": {
+    "message": "Отказ в разрешении провайдера ИИ. Провайдер отключён."
+  },
+  "options_toast_preset_applied": {
+    "message": "Пресет успешно применён."
+  },
+  "options_toast_custom_css_snippet_loaded": {
+    "message": "Фрагмент пользовательского CSS загружен. Нажмите «Сохранить» для применения."
+  },
+  "options_toast_ultrafast_applied": {
+    "message": "Ультрабыстрый режим применён для этого устройства."
+  },
+  "options_toast_mode_clean_applied": {
+    "message": "Чистый режим применён."
+  },
+  "options_toast_mode_smart_applied": {
+    "message": "Умный режим применён."
+  },
+  "options_reset_confirm": {
+    "message": "Вы уверены? Это удалит ваши настройки и все локальные данные отслеживания ИИ."
+  },
+  "options_sidebar_filters": {
+    "message": "🚫 Основные фильтры"
+  },
+  "options_sidebar_wellbeing": {
+    "message": "🧘 Цифровое благополучие"
+  },
+  "options_sidebar_ai": {
+    "message": "🤖 Движок ИИ"
+  },
+  "options_sidebar_ui": {
+    "message": "🎨 Настройки UI"
+  },
+  "options_sidebar_keywords": {
+    "message": "🔤 Фильтры ключевых слов"
+  },
+  "options_sidebar_social": {
+    "message": "🤝 Социальное и конфиденциальность"
+  },
+  "options_sidebar_data": {
+    "message": "💾 Данные и резервная копия"
+  },
+  "welcome_title": {
+    "message": "Добро пожаловать в PureFusion Feed"
+  },
+  "welcome_subtitle": {
+    "message": "Войдите в более чистый, быстрый и приватный социальный опыт."
+  },
+  "welcome_god_mode": {
+    "message": "Режим бога"
+  },
+  "welcome_god_mode_desc": {
+    "message": "Полное уничтожение рекламного контента, предлагаемых Reels и алгоритмического мусора."
+  },
+  "welcome_privacy_ai": {
+    "message": "ИИ конфиденциальности"
+  },
+  "welcome_privacy_ai_desc": {
+    "message": "Суммаризируйте длинные посты и блокируйте кликбейт, используя оффлайн, локальную технологию ИИ."
+  },
+  "welcome_dopamine": {
+    "message": "Прерыватели дофамина"
+  },
+  "welcome_dopamine_desc": {
+    "message": "Боритесь с бесконечной прокруткой с помощью таймеров сессии, режима оттенков серого и ограничений прокрутки."
+  },
+  "welcome_ready": {
+    "message": "Готовы взять управление?"
+  },
+  "welcome_ready_desc": {
+    "message": "Ваша лента теперь под вашим контролем. Вы можете получить доступ к **Расширенной панели** в любое время."
+  },
+  "welcome_help_title": {
+    "message": "Нужна помощь или хотите сообщить об ошибке?"
+  },
+  "welcome_help_desc": {
+    "message": "Свяжитесь со мной напрямую в Discord, откройте проблемы на GitHub или поддержите разработку PureFusion."
+  },
+  "welcome_help_discord": {
+    "message": "Discord: Purefusion-Feeds"
+  },
+  "welcome_help_github": {
+    "message": "Репозиторий GitHub"
+  },
+  "welcome_help_issues": {
+    "message": "Проблемы GitHub"
+  },
+  "welcome_help_donate": {
+    "message": "Пожертвовать / Поддержать"
+  },
+  "welcome_support_development": {
+    "message": "❤️ Поддержать разработку"
+  },
+  "welcome_footer_built": {
+    "message": "Создано с ❤️ Майклом Харреллом и работает на PureFusion 2024"
+  },
+  "inpage_fab_title": {
+    "message": "Открыть панель PureFusion"
+  },
+  "inpage_modal_title": {
+    "message": "Панель PureFusion"
+  },
+  "inpage_modal_ads": {
+    "message": "Блокировать рекламу"
+  },
+  "inpage_modal_sponsored": {
+    "message": "Enhanced Ad Filter"
+  },
+  "inpage_modal_sugg": {
+    "message": "Скрыть предложения и Reels"
+  },
+  "inpage_modal_stories": {
+    "message": "Скрыть панель историй"
+  },
+  "inpage_modal_ai": {
+    "message": "ИИ-фильтр злости/кликбейта"
+  },
+  "inpage_modal_gray": {
+    "message": "Режим оттенков серого"
+  },
+  "content_hidden_chip_label": {
+    "message": "Скрыто PureFusion"
+  },
+  "content_hidden_chip_show_once": {
+    "message": "Показать один раз"
+  },
+  "content_hidden_chip_allow_source": {
+    "message": "Всегда разрешить источник"
+  },
+  "content_allow_source_exists": {
+    "message": "уже в списке «Никогда не скрывать источники»."
+  },
+  "content_allow_source_added": {
+    "message": "Добавлено"
+  },
+  "content_allow_source_added_suffix": {
+    "message": "в «Никогда не скрывать источники»."
+  },
+  "messenger_ai_rewrite_btn": {
+    "message": "Переписать"
+  },
+  "messenger_ai_replies_btn": {
+    "message": "Умные ответы"
+  },
+  "messenger_ai_rewriting_btn": {
+    "message": "Переписываю..."
+  },
+  "messenger_ai_generating_btn": {
+    "message": "Генерирую..."
+  },
+  "messenger_ai_empty_input": {
+    "message": "Сначала введите сообщение."
+  },
+  "messenger_ai_rewrite_success": {
+    "message": "Сообщение переписано."
+  },
+  "messenger_ai_rewrite_fail": {
+    "message": "Переписывание не удалось. Проверьте настройки провайдера ИИ."
+  },
+  "messenger_ai_context_missing": {
+    "message": "Нужно больше контекста чата для умных ответов."
+  },
+  "messenger_ai_replies_fail": {
+    "message": "Не удалось сгенерировать умные ответы."
+  },
+  "messenger_ai_provider_required": {
+    "message": "Сначала настройте провайдера ИИ в настройках PureFusion."
+  },
+  "options_sidebar_poweruser": {
+    "message": "⚡ Правила для опытных пользователей"
+  },
+  "options_poweruser_title": {
+    "message": "Движок правил для опытных пользователей"
+  },
+  "options_poweruser_desc": {
+    "message": "Нацельтесь на любой элемент страницы и скройте его, используя пользовательские селекторы или сопоставление текста. Будьте точны, чтобы не скрыть контент, который хотите видеть."
+  },
+  "options_poweruser_add_rule": {
+    "message": "Добавить новое правило скрытия"
+  },
+  "options_poweruser_rule_list": {
+    "message": "Активные правила"
+  },
+  "options_poweruser_no_rules": {
+    "message": "Пользовательские правила ещё не определены. Используйте кнопку '+' или щёлкните правой кнопкой мыши на элементах Facebook, чтобы «Удалить» их."
+  },
+  "options_poweruser_type_label": {
+    "message": "Тип правила"
+  },
+  "options_poweruser_type_selector": {
+    "message": "CSS-селектор"
+  },
+  "options_poweruser_type_text": {
+    "message": "Совпадение текста"
+  },
+  "options_poweruser_rule_label": {
+    "message": "Метка правила (внутреннее имя)"
+  },
+  "options_poweruser_rule_value": {
+    "message": "Селектор или фраза"
+  },
+  "options_poweruser_rule_wrapper_label": {
+    "message": "Область (Оборачивающий селектор)"
+  },
+  "options_poweruser_rule_wrapper_placeholder": {
+    "message": "например [role='article'] (Необязательно)"
+  },
+  "options_poweruser_save_rule": {
+    "message": "Сохранить правило"
+  },
+  "options_poweruser_cancel": {
+    "message": "Отмена"
+  },
+  "options_poweruser_rule_enabled": {
+    "message": "Включено"
+  },
+  "options_poweruser_delete_rule": {
+    "message": "Удалить"
+  },
+  "options_poweruser_edit_rule": {
+    "message": "Редактировать"
+  },
+  "quick_action_menu_zap_element": {
+    "message": "Zap (Скрыть) элемент"
+  },
+  "options_poweruser_delete_confirm": {
+    "message": "Вы уверены, что хотите удалить это правило?"
+  },
+  "options_toast_rule_updated": {
+    "message": "Правило обновлено."
+  },
+  "options_toast_rule_deleted": {
+    "message": "Правило удалено."
+  },
+  "options_toast_rules_saved": {
+    "message": "Пользовательские правила успешно сохранены."
+  },
+  "options_toast_rule_value_required": {
+    "message": "Значение правила (селектор/текст) обязательно."
+  },
+  "quick_action_save_later": {
+    "message": "Save to Read Later"
+  },
+  "popup_readlater_title": {
+    "message": "Read Later"
+  },
+  "popup_readlater_one": {
+    "message": "1 saved"
+  },
+  "popup_readlater_many": {
+    "message": "{count} saved"
+  },
+  "popup_readlater_view": {
+    "message": "View Queue"
+  },
+  "options_readlater_title": {
+    "message": "Read Later Queue"
+  },
+  "options_readlater_desc": {
+    "message": "Posts saved from the Facebook feed using right-click → Teach PureFusion → Save to Read Later."
+  },
+  "options_readlater_clear": {
+    "message": "Clear All"
+  },
+  "content_saved_for_later": {
+    "message": "Post saved to Read Later."
+  },
+  "content_save_later_duplicate": {
+    "message": "Already in your Read Later queue."
+  },
+  "content_save_later_error": {
+    "message": "Could not identify a post to save. Try right-clicking within a post."
+  },
+  "options_filters_post_age_label": {
+    "message": "Hide Posts Older Than"
+  },
+  "options_filters_post_age_desc": {
+    "message": "Hide feed posts older than the chosen threshold. Reads the post timestamp — posts without a detectable date are kept visible."
+  },
+  "options_filters_post_age_off": {
+    "message": "Off"
+  },
+  "options_filters_post_age_6h": {
+    "message": "6 hours"
+  },
+  "options_filters_post_age_12h": {
+    "message": "12 hours"
+  },
+  "options_filters_post_age_24h": {
+    "message": "24 hours (1 day)"
+  },
+  "options_filters_post_age_48h": {
+    "message": "2 days"
+  },
+  "options_filters_post_age_72h": {
+    "message": "3 days"
+  },
+  "options_filters_post_age_7d": {
+    "message": "7 days"
+  },
+  "options_filters_post_age_14d": {
+    "message": "14 days"
+  },
+  "options_filters_post_age_30d": {
+    "message": "30 days"
+  },
+  "options_ui_reply_only_label": {
+    "message": "Reply-Only Mode"
+  },
+  "options_ui_reply_only_desc": {
+    "message": "Collapse post bodies in the feed — hides post text and attached stories, leaving only the comment threads visible. Useful for cutting through engagement-bait without seeing the inflammatory content."
+  }
 }

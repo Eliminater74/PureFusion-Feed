@@ -1,567 +1,1715 @@
 {
-  "extName": {"message": "PureFusion Feed", "description": "The name of the extension"},
-  "extDesc": {"message": "Premium Feed Manager met slimme filters, AI-inzichten en privacybescherming voor Facebook.", "description": "The extension description"},
-  "common_ads_blocked": {"message": "Advertenties geblokkeerd"},
-  "common_spam_hidden": {"message": "Spam verborgen"},
-  "common_save_settings": {"message": "Instellingen opslaan"},
-  "common_save_changes": {"message": "Wijzigingen opslaan"},
-  "common_support_developer": {"message": "Ontwikkelaar steunen"},
-  "common_open_dashboard": {"message": "Volledige instellingen openen"},
-  "common_open_advanced": {"message": "Geavanceerd dashboard openen"},
-  "common_logo_alt": {"message": "PureFusion-logo"},
-  "options_page_title": {"message": "PureFusion Feed - Instellingen"},
-  "popup_quick_filters": {"message": "Snelle filters"},
-  "popup_hide_sponsored_posts": {"message": "Gesponsorde berichten verbergen"},
-  "popup_hide_sponsored_posts_desc": {"message": "Detectie op basis van labels — standaard uitgeschakeld"},
-  "popup_block_sponsored": {"message": "Advertenties blokkeren"},
-  "popup_block_sponsored_desc": {"message": "Blokkeert advertenties via infrastructuursignalen"},
-  "popup_ad_blocker_on": {"message": "✓ Advertenties geblokkeerd via infrastructuursignalen"},
-  "popup_ad_blocker_off": {"message": "⚠ Advertentieblokker is uit — klik om in te schakelen"},
-  "options_filters_removeAds": {"message": "Advertenties blokkeren (infrastructuursignalen)"},
-  "options_filters_removeSponsored": {"message": "Gesponsorde berichten verbergen (labeldetectie)"},
-  "popup_hide_suggested": {"message": "Suggesties/PYMK verbergen"},
-  "popup_hide_suggested_desc": {"message": "Verwijdert algoritmische suggesties"},
-  "popup_hide_reels": {"message": "Reels verbergen"},
-  "popup_hide_reels_desc": {"message": "Verwijdert Reels-laden die in de feed worden ingevoegd"},
-  "popup_force_recent": {"message": "Meest recente afdwingen"},
-  "popup_force_recent_desc": {"message": "Laad altijd de chronologische feed"},
-  "popup_distraction_free": {"message": "Afleidingsvrije modus"},
-  "popup_distraction_free_desc": {"message": "Zijbalken verbergen, feed centreren (Alt+Shift+F)"},
-  "popup_fast_keyword": {"message": "Snel trefwoord blokkeren"},
-  "popup_keyword_placeholder": {"message": "Voer trefwoord in om samen te vouwen..."},
-  "popup_hide_groups": {"message": "Voorgestelde groepen verbergen"},
-  "popup_hide_groups_desc": {"message": "Verwijdert algoritmische groepsaanbevelingen"},
-  "popup_ghost_mode": {"message": "Spookmodus (Berichten)"},
-  "popup_ghost_mode_desc": {"message": "Gezien- en typ-indicatoren verbergen"},
-  "popup_nuke_meta_ai": {"message": "Meta AI verwijderen"},
-  "popup_nuke_meta_ai_desc": {"message": "AI-knoppen en glitters verwijderen"},
-  "popup_master_toggle_title": {"message": "PureFusion in- of uitschakelen"},
-  "popup_add_keyword_title": {"message": "Trefwoord toevoegen"},
-  "popup_keyword_added": {"message": "„{keyword}“ aan de blokkeringslijst toegevoegd."},
-  "popup_keyword_exists": {"message": "Trefwoord bestaat al."},
-  "quick_action_menu_root": {"message": "PureFusion leren"},
-  "quick_action_menu_block_keyword": {"message": "Aan blokkeringslijst toevoegen"},
-  "quick_action_menu_autohide_keyword": {"message": "Aan automatisch verbergen-lijst toevoegen"},
-  "quick_action_menu_allow_keyword": {"message": "Aan toegestane lijst toevoegen"},
-  "quick_action_menu_hide_source": {"message": "Berichten van deze bron verbergen"},
-  "quick_action_menu_allow_source": {"message": "Deze bron nooit verbergen"},
-  "quick_action_select_text_first": {"message": "Selecteer eerst tekst en gebruik daarna een PureFusion snelle actie."},
-  "quick_action_source_select_name": {"message": "Klik met de rechtermuisknop op een profiel-/pagina-/groepsnaam of markeer eerst een bronnaam."},
-  "quick_action_selection_too_short": {"message": "Geselecteerde tekst is te kort. Kies een duidelijker woord of zin."},
-  "quick_action_source_too_broad": {"message": "Die bron ziet er te breed uit. Selecteer een volledige pagina-/persoon-/groepsnaam."},
-  "quick_action_exists_blocklist": {"message": "Staat al op de blokkeringslijst."},
-  "quick_action_exists_autohide": {"message": "Staat al op de automatisch verbergen-lijst."},
-  "quick_action_exists_allowlist": {"message": "Staat al op de toegestane lijst."},
-  "quick_action_exists_source_hide": {"message": "Bron is al verborgen."},
-  "quick_action_exists_source_allow": {"message": "Bron staat al in Nooit verbergen-bronnen."},
-  "quick_action_added_blocklist": {"message": "\"$1\" aan blokkeringslijst toegevoegd en feed opnieuw gescand."},
-  "quick_action_added_autohide": {"message": "\"$1\" aan automatisch verbergen toegevoegd en feed opnieuw gescand."},
-  "quick_action_added_allowlist": {"message": "\"$1\" aan toegestane lijst toegevoegd en feed opnieuw gescand."},
-  "quick_action_added_source_hide": {"message": "Bron \"$1\" wordt nu verborgen en feed is opnieuw gescand."},
-  "quick_action_added_source_allow": {"message": "\"$1\" aan Nooit verbergen-bronnen toegevoegd en feed opnieuw gescand."},
-  "quick_action_undo_label": {"message": "Ongedaan maken"},
-  "quick_action_undo_success": {"message": "Snelle actie ongedaan gemaakt."},
-  "quick_action_undo_expired": {"message": "Ongedaan maken is niet meer beschikbaar voor die actie."},
-  "quick_action_undo_failed": {"message": "Ongedaan maken mislukt. Probeer het opnieuw."},
-  "quick_action_unknown": {"message": "Onbekende snelle actie."},
-  "options_filters_card_title": {"message": "Advertentie- en spamverwijdering"},
-  "options_filters_card_desc": {"message": "Schakel de primaire DOM-verwijderingsdoelen in of uit."},
-  "options_presets_title": {"message": "Voorinstellingspakketten"},
-  "options_presets_desc": {"message": "Pas samengestelde bundels toe voor veelgebruikte scenario's en pas daarna alles handmatig aan."},
-  "options_presets_label": {"message": "Kies een voorinstelling"},
-  "options_presets_work_focus": {"message": "Werkfocus"},
-  "options_presets_friends_only": {"message": "Alleen vrienden"},
-  "options_presets_minimal": {"message": "Minimaal"},
-  "options_presets_news_heavy": {"message": "Nieuwsintensief"},
-  "options_presets_messenger_privacy": {"message": "Messenger-privacy"},
-  "options_presets_apply_btn": {"message": "Voorinstelling toepassen"},
-  "options_mode_title": {"message": "Feed-ervaringsmodus"},
-  "options_mode_desc": {"message": "Pas een blijvend gedragsprofiel toe bovenop je opgeslagen schakelaars."},
-  "options_mode_label": {"message": "Actieve modus"},
-  "options_view_mode_label": {"message": "Weergave"},
-  "options_view_mode_basic": {"message": "Basis"},
-  "options_view_mode_advanced": {"message": "Geavanceerd"},
-  "options_mode_custom": {"message": "Aangepast (gebruik mijn schakelaars)"},
-  "options_mode_clean": {"message": "Schone modus"},
-  "options_mode_focus": {"message": "Focusmodus"},
-  "options_mode_ultrafast": {"message": "Ultra snel modus (tekst eerst, maximale snelheid)"},
-  "options_mode_smart": {"message": "Slimme modus"},
-  "options_mode_classic": {"message": "Klassieke 2012-modus"},
-  "options_mode_profile_custom": {"message": "Gebruikt je exacte opgeslagen schakelaars zonder extra modusoverstyringen."},
-  "options_mode_profile_clean": {"message": "Verwijdert advertentie-/voorgestelde rommel en sociale ruis terwijl voorspellingsvisuals uitgeschakeld blijven voor een rustiger feed."},
-  "options_mode_profile_focus": {"message": "Diepfocusprofiel met startpagina als basis: agressieve rommelverwijdering, chronologie aan en scrollonderbreekbeveiliging ingeschakeld."},
-  "options_mode_profile_ultrafast": {"message": "Tekst-eerst snelheidsprofiel: verwijdert zware mediaoppervlakken, onderdrukt afbeelding-/videoberichttypen en minimaliseert extra UI-verwerking."},
-  "options_mode_profile_smart": {"message": "Houdt de kern-feed-opschoning aan terwijl scoren, samenvouwen van berichten met lage waarde en geloofwaardigheidsverificatiesignalen worden ingeschakeld."},
-  "options_mode_profile_classic": {"message": "Geeft prioriteit aan chronologisch klassiek feedgedrag en onderdrukt moderne algoritmische oppervlakken zoals Watch/Marketplace."},
-  "options_quickstart_title": {"message": "PureFusion in 5 seconden"},
-  "options_quickstart_desc": {"message": "Kies nu één snel profiel. Je kunt alles hieronder nog steeds fijnafstemmen."},
-  "options_promise_clean_title": {"message": "Schoon Facebook"},
-  "options_promise_clean_desc": {"message": "Minder advertentie- en algoritmerommel."},
-  "options_promise_fast_title": {"message": "Snel Facebook"},
-  "options_promise_fast_desc": {"message": "Ultra snel modus voor lichtere sessies."},
-  "options_promise_smart_title": {"message": "Slim Facebook"},
-  "options_promise_smart_desc": {"message": "Scoren + geloofwaardigheid + uitlegbaarheid."},
-  "options_quickstart_btn_clean": {"message": "Schoon gebruiken"},
-  "options_quickstart_btn_fast": {"message": "Ultra snel gebruiken"},
-  "options_quickstart_btn_smart": {"message": "Slim gebruiken"},
-  "options_quickstart_recommended": {"message": "Beste voor de meeste gebruikers"},
-  "options_mode_perf_hint_low": {"message": "Dit apparaat presteert mogelijk beter met Ultra snel modus (tekst eerst, lager CPU/GPU-gebruik)."},
-  "options_mode_perf_hint_mid": {"message": "Ultra snel modus kan vertraging verminderen tijdens zware sessies op dit apparaat."},
-  "options_mode_perf_apply": {"message": "Ultra snel aanbeveling toepassen"},
-  "options_mode_recommendation_low": {"message": "Aanbevolen: Ultra snel"},
-  "options_mode_recommendation_mid": {"message": "Optioneel: Ultra snel voor zware sessies"},
-  "options_mode_recommendation_active": {"message": "Aanbevolen modus actief"},
-  "options_mode_recommendation_balanced": {"message": "Gebalanceerd: huidige modus is prima"},
-  "options_mode_why_custom": {"message": "Reden: gebruikt alleen je handmatige schakelaarkeuzes."},
-  "options_mode_why_clean": {"message": "Reden: verwijdert veel voorkomende rommel terwijl de vertrouwde feed-uitstraling behouden blijft."},
-  "options_mode_why_focus": {"message": "Reden: afgestemd op diepe focus met sterkere afleidingsverwijdering."},
-  "options_mode_why_ultrafast": {"message": "Reden: geeft prioriteit aan snelheid door zware feedverwerking te verminderen."},
-  "options_mode_why_smart": {"message": "Reden: balanceert opschoning met scoren en geloofwaardigheidssignalen."},
-  "options_mode_why_classic": {"message": "Reden: benadrukt chronologisch, ouderwets feedgedrag."},
-  "options_mode_why_device_low": {"message": "Apparaatopmerking: Ultra snel wordt aanbevolen op deze hardware."},
-  "options_mode_why_device_mid": {"message": "Apparaatopmerking: Ultra snel kan helpen tijdens zware sessies."},
-  "options_surface_title": {"message": "Bereikbeheer per oppervlak"},
-  "options_surface_desc": {"message": "Kies op welke Facebook-oppervlakken PureFusion-filtering van toepassing moet zijn. Schakel een oppervlak uit om het ongemoeid te laten."},
-  "options_surface_enable": {"message": "Filterbereik per oppervlak inschakelen"},
-  "options_surface_home": {"message": "Toepassen op startpagina-feed"},
-  "options_surface_groups": {"message": "Toepassen op groepen"},
-  "options_surface_watch": {"message": "Toepassen op Watch"},
-  "options_surface_marketplace": {"message": "Toepassen op Marketplace"},
-  "options_surface_other": {"message": "Toepassen op andere oppervlakken (profiel/pagina's/evenementen)"},
-  "options_filters_hide_suggested": {"message": "\"Voorgesteld voor jou\" verbergen"},
-  "options_filters_hide_pymk": {"message": "\"Mensen die je misschien kent\" verbergen"},
-  "options_filters_hide_group_suggestions": {"message": "Groepssuggesties verbergen"},
-  "options_filters_hide_page_suggestions": {"message": "Paginasuggesties verbergen"},
-  "options_filters_hide_fundraisers": {"message": "Inzamelingsacties verbergen"},
-  "options_filters_post_types_title": {"message": "Berichttype-filterpakket v2"},
-  "options_filters_post_types_desc": {"message": "Strikte berichtomhulsel-targeting plus zinkernankers. Laat uit tenzij je agressieve type-opschoning wilt."},
-  "options_filters_hide_video_posts": {"message": "Videoberichten verbergen"},
-  "options_filters_hide_photo_posts": {"message": "Foto-/afbeeldingsberichten verbergen"},
-  "options_filters_hide_link_posts": {"message": "Externe link-/deelberichten verbergen"},
-  "options_filters_hide_text_posts": {"message": "Alleen-tekst statusberichten verbergen"},
-  "options_filters_hide_live_video_posts": {"message": "Live-videoberichten verbergen"},
-  "options_filters_hide_share_reposts": {"message": "Deel-/herplaatsingsberichten verbergen"},
-  "options_filters_hide_poll_posts": {"message": "Peiling-berichten verbergen"},
-  "options_filters_clutter_title": {"message": "Rommel & injecties"},
-  "options_filters_hide_reels_tray": {"message": "Reels-lade in feed verbergen"},
-  "options_filters_widescreen_label": {"message": "Breedbeeldmodus"},
-  "options_filters_widescreen_desc": {"message": "Middelste kolom grenzen opheffen om ultrabreed schermen te vullen."},
-  "options_filters_hide_memories": {"message": "Herinneringsberichten verbergen"},
-  "options_filters_hide_stories": {"message": "Verhalen-balk verbergen"},
-  "options_filters_remove_colored_bg": {"message": "Gekleurde achtergrondberichten verwijderen"},
-  "options_filters_remove_game_invites": {"message": "Speluitnodigings- en activiteitsberichten verbergen"},
-  "options_filters_remove_large_reactions": {"message": "Overdimensioneerde emoji-berichten normaliseren"},
-  "options_filters_deduplicate_posts_label": {"message": "Dubbele berichten verbergen"},
-  "options_filters_deduplicate_posts_desc": {"message": "Onderdruk berichten waarvan het ID al in deze sessie is verschenen — detecteert wanneer FB hetzelfde bericht meerdere keren opnieuw injecteert."},
-  "options_filters_locale_label": {"message": "Feed-taal"},
-  "options_filters_locale_desc": {"message": "Stem zinsfilters af op je Facebook-taal. Auto test alle ondersteunde talen (kan gemengdtalige feeds overfilteren)."},
-  "options_filters_locale_auto": {"message": "Auto (alle ondersteunde talen)"},
-  "options_story_filters_title": {"message": "Verhaalactiviteitsfilters"},
-  "options_story_filters_desc": {"message": "Verberg veelgebruikte activiteitsverhalen met weinig signaal uit je feed."},
-  "options_story_filter_became_friends": {"message": "\"Vrienden geworden\" verhalen verbergen"},
-  "options_story_filter_joined_groups": {"message": "\"Lid geworden van groep\" verhalen verbergen"},
-  "options_story_filter_commented": {"message": "\"Heeft hierop gereageerd\" verhalen verbergen"},
-  "options_story_filter_liked": {"message": "\"Heeft dit leuk gevonden\" verhalen verbergen"},
-  "options_story_filter_events": {"message": "Evenement-deelnamesverhalen verbergen"},
-  "options_story_filter_memories": {"message": "Gedeelde herinneringsverhalen verbergen"},
-  "options_story_filter_profile_photo": {"message": "Verhalen over profielfoto-updates verbergen"},
-  "options_story_filter_cover_photo": {"message": "Verhalen over omslagfoto-updates verbergen"},
-  "options_story_filter_life_events": {"message": "Levengebeurtenis-verhalen verbergen"},
-  "options_story_filter_checkins": {"message": "Inchecken-/locatieactiviteitsverhalen verbergen"},
-  "options_story_filter_milestones": {"message": "Mijlpaalbericht-verhalen verbergen"},
-  "options_story_filter_job_work": {"message": "Baan-/werk-updateverhalen verbergen"},
-  "options_story_filter_relationship": {"message": "Relatiestatusupdateverhalen verbergen"},
-  "options_story_filter_group_activity": {"message": "Groepsactiviteitsberichtverhalen verbergen"},
-  "options_image_filters_title": {"message": "Afbeeldingsonderwerp-filters"},
-  "options_image_filters_desc": {"message": "Gebruik Facebook-afbeeldingsbeschrijvingssignalen om geselecteerde visuele categorieën te verbergen."},
-  "options_image_filters_enable": {"message": "Afbeeldingsonderwerp-filters inschakelen (veilige modus)"},
-  "options_image_filter_sports": {"message": "Sportgerelateerde afbeeldingen verbergen"},
-  "options_image_filter_food": {"message": "Afbeeldingen van eten en drinken verbergen"},
-  "options_image_filter_pets": {"message": "Huisdierafbeeldingen verbergen (honden/katten)"},
-  "options_image_filter_vehicles": {"message": "Voertuigafbeeldingen verbergen"},
-  "options_image_filter_screenshots": {"message": "Memes en screenshot-achtige afbeeldingen verbergen"},
-  "options_image_filter_travel": {"message": "Reis- en landschapsafbeeldingen verbergen"},
-  "options_ai_card_title": {"message": "Lokale voorspellingsmotor"},
-  "options_ai_card_desc": {"message": "Beoordeelt feed-items lokaal op basis van je interactiegeschiedenis. Gegevens verlaten je apparaat nooit."},
-  "options_ai_enable_predictions": {"message": "AI-voorspellingen inschakelen"},
-  "options_ai_show_pf_badge": {"message": "\"PF Score\"-badge op berichten tonen"},
-  "options_ai_show_reasons": {"message": "Score-redenhinten op PF-badges tonen"},
-  "options_ai_dim_low_interest": {"message": "Berichten met lage interesse dimmen/samenvouwen (Score < 20)"},
-  "options_ai_collapse_low_interest": {"message": "Berichten met lage interesse samenvouwen met toon-chip"},
-  "options_ai_never_empty_guard": {"message": "Nooit-lege feed-beveiliging (houd minimum zichtbare berichten)"},
-  "options_ai_never_empty_min": {"message": "Minimum aantal zichtbare berichten"},
-  "options_ai_highlight_high_interest": {"message": "Berichten met hoge interesse markeren (Score > 80)"},
-  "options_ai_analyze_trends": {"message": "Lokale trends en trefwoorden analyseren"},
-  "options_ai_true_affinity_sort": {"message": "Ware-affiniteit sorteren"},
-  "options_ai_true_affinity_sort_desc": {"message": "Herordent de feed op basis van je lokale betrokkenheidsscore in realtime — berichten met de hoogste score komen bovenaan via CSS flexbox-volgorde, zonder de virtuele DOM van React te verbreken."},
-  "options_ai_friend_activity": {"message": "Vriendactiviteit feed-inzicht"},
-  "options_ai_friend_activity_desc": {"message": "Markeert contacten in de rechter zijbalk waarvan de berichten deze sessie niet in je feed zijn verschenen — helpt vrienden te identificeren die Facebook mogelijk stilzwijgend onderdrukt van je tijdlijn."},
-  "options_ai_low_threshold": {"message": "Lage scoredrempel"},
-  "options_ai_high_threshold": {"message": "Hoge scoredrempel"},
-  "options_ai_cred_title": {"message": "Geloofwaardigheidssignalen (Beta)"},
-  "options_ai_cred_desc": {"message": "Heuristische lokale controles op verdachte claimpatronen. Dit bewijst geen waarheid; het markeert berichten die verifiëren waard zijn."},
-  "options_ai_cred_enabled": {"message": "Verdachte-claimdetectie inschakelen"},
-  "options_ai_cred_badge": {"message": "\"Verifieer\" waarschuwingsbadge op gemarkeerde berichten tonen"},
-  "options_ai_cred_strict": {"message": "Strenge modus (sterkere scorestraf voor verdachte claims)"},
-  "options_ai_cred_debug": {"message": "Geloofwaardigheidsdebugoverzicht tonen op alle gescande berichten"},
-  "options_ai_llm_title": {"message": "Diepe intelligentieserver (BYOK API)"},
-  "options_ai_llm_desc": {"message": "Bring-Your-Own-Key. Ontgrendel LLM-mogelijkheden zoals TL;DRs en Comment AI. Je sleutels worden uitsluitend opgeslagen in de lokale machineopslagruimte."},
-  "options_ai_provider_label": {"message": "Actieve provider"},
-  "options_ai_provider_none": {"message": "Uitgeschakeld"},
-  "options_ai_provider_openai": {"message": "OpenAI (ChatGPT)"},
-  "options_ai_provider_gemini": {"message": "Google Gemini"},
-  "options_ai_provider_windowai": {"message": "Chrome Native (window.ai)"},
-  "options_ai_openai_key_label": {"message": "OpenAI API-sleutel"},
-  "options_ai_gemini_key_label": {"message": "Google Gemini API-sleutel"},
-  "options_ai_tldr_toggle": {"message": "\"TL;DR\" samenvattingsknoppen injecteren op lange berichten"},
-  "options_ai_smart_comment_toggle": {"message": "Slimme commentaar co-piloot (toverstafpictogram)"},
-  "options_ai_clickbait_decode_toggle": {"message": "Clickbait-decoder (sensationele koppen herschrijven met feiten)"},
-  "options_ai_messenger_tools_title": {"message": "Messenger AI-hulpmiddelen"},
-  "options_ai_messenger_rewrite_toggle": {"message": "Berichtconcepten herschrijven in de editor"},
-  "options_ai_messenger_replies_toggle": {"message": "3 slimme antwoordsuggesties genereren"},
-  "options_ui_card_title": {"message": "Interface-herstructurering"},
-  "options_ui_friends_only": {"message": "Alleen vrienden-modus (verwijder alle groepen/pagina's uit feed)"},
-  "options_ui_anonymizer": {"message": "Screenshot-anonimiseerder (profielfoto's/namen vervagen)"},
-  "options_ui_compact_mode": {"message": "Compacte modus (marges/opvulling verminderen)"},
-  "options_ui_disable_comment_autofocus": {"message": "Autofocus-stelen van commentaarinvoervak uitschakelen"},
-  "options_ui_enforce_chrono": {"message": "Chronologische feed afdwingen (meest recent)"},
-  "options_ui_show_link_previews": {"message": "Echte bestemming van uitgaande links tonen"},
-  "options_ui_absolute_timestamps": {"message": "Tijdstempels omzetten in absolute datums"},
-  "options_ui_hide_composer": {"message": "\"Wat heb je op je gedachten?\"-vak verbergen"},
-  "options_ui_comment_sort_label": {"message": "Standaard commentaarsortering"},
-  "options_ui_comment_sort_desc": {"message": "Pas automatisch een sorteervoorkeur toe wanneer commentaar op een bericht wordt uitgebreid. Werkt alleen wanneer commentaar al geladen is — dwingt samengevouwen commentaarsecties niet open."},
-  "options_ui_comment_sort_all": {"message": "Alle commentaren (FB standaard)"},
-  "options_ui_comment_sort_newest": {"message": "Nieuwste eerst"},
-  "options_ui_comment_sort_top": {"message": "Meest relevant"},
-  "options_ui_distraction_free_label": {"message": "Afleidingsvrije leezmodus (Alt+Shift+F)"},
-  "options_ui_distraction_free_desc": {"message": "Verbergt linker-/rechter zijbalken en centreert de feed voor een schone leeservaring. Schakel op elk moment in met Alt+Shift+F."},
-  "options_ui_image_hover_label": {"message": "Afbeelding hover-uitbreiding"},
-  "options_ui_image_hover_desc": {"message": "Beweeg over feed-afbeeldingen om ze op volledige grootte te bekijken. Sla op of open in nieuw tabblad vanuit het venster. Standaard uitgeschakeld."},
-  "options_ui_auto_expand_see_more_label": {"message": "\"Meer weergeven\" automatisch uitvouwen"},
-  "options_ui_auto_expand_see_more_desc": {"message": "\"Meer weergeven\" op afgeknotte berichten automatisch sluiten zodat je altijd de volledige tekst leest zonder extra klikken."},
-  "options_ui_strip_tracking_params_label": {"message": "Trackingparameters uit links verwijderen"},
-  "options_ui_strip_tracking_params_desc": {"message": "Verwijdert fbclid, utm_*, gclid en andere spionageparameters uit feed-links zodat gekopieerde of aangeklikte URL's schoon zijn."},
-  "options_ui_autoplay_video_label": {"message": "Video-autoplay beheer"},
-  "options_ui_autoplay_video_desc": {"message": "Beheer wat er gebeurt wanneer feed-video's automatisch beginnen te spelen."},
-  "options_ui_autoplay_off": {"message": "Uit (geen actie)"},
-  "options_ui_autoplay_mute": {"message": "Audio dempen (stil afspelen)"},
-  "options_ui_autoplay_pause": {"message": "Pauzeren (klik om af te spelen)"},
-  "options_nav_filters_title": {"message": "Navigatie- en zijbalkmodules"},
-  "options_nav_filters_desc": {"message": "Verberg specifieke linkernavigatie- en rechter zijbalkmodules."},
-  "options_nav_master_enable": {"message": "Module-niveau nav-filtering inschakelen (veilige modus)"},
-  "options_nav_left_marketplace": {"message": "Linkernavigatie verbergen: Marketplace"},
-  "options_nav_left_watch": {"message": "Linkernavigatie verbergen: Watch"},
-  "options_nav_left_gaming": {"message": "Linkernavigatie verbergen: Gaming"},
-  "options_nav_left_memories": {"message": "Linkernavigatie verbergen: Herinneringen"},
-  "options_nav_left_meta_ai": {"message": "Linkernavigatie verbergen: Meta AI"},
-  "options_nav_left_manus_ai": {"message": "Linkernavigatie verbergen: Manus AI"},
-  "options_nav_right_trending": {"message": "Rechter zijbalk verbergen: Trending"},
-  "options_nav_right_contacts": {"message": "Rechter zijbalk verbergen: Contacten"},
-  "options_nav_right_meta_ai_contact": {"message": "Rechter zijbalk verbergen: Meta AI-contact"},
-  "options_nav_right_manus_ai_contact": {"message": "Rechter zijbalk verbergen: Manus AI-contact"},
-  "options_nav_right_events": {"message": "Rechter zijbalk verbergen: Evenementen"},
-  "options_nav_right_birthdays": {"message": "Rechter zijbalk verbergen: Verjaardagen"},
-  "options_topbar_filters_title": {"message": "Bovenste headerbeheer"},
-  "options_topbar_filters_desc": {"message": "Verberg specifieke headerpictogrammen zonder de volledige headercontainer te verwijderen."},
-  "options_topbar_master_enable": {"message": "Bovenste headerfiltering inschakelen (veilige modus)"},
-  "options_topbar_hide_home": {"message": "Bovenste pictogram verbergen: Startpagina"},
-  "options_topbar_hide_friends": {"message": "Bovenste pictogram verbergen: Vrienden"},
-  "options_topbar_hide_watch": {"message": "Bovenste pictogram verbergen: Watch"},
-  "options_topbar_hide_marketplace": {"message": "Bovenste pictogram verbergen: Marketplace"},
-  "options_topbar_hide_groups": {"message": "Bovenste pictogram verbergen: Groepen"},
-  "options_topbar_hide_gaming": {"message": "Bovenste pictogram verbergen: Gaming"},
-  "options_topbar_hide_messenger": {"message": "Bovenste pictogram verbergen: Messenger"},
-  "options_topbar_hide_notifications": {"message": "Bovenste pictogram verbergen: Meldingen"},
-  "options_topbar_hide_menu": {"message": "Bovenste pictogram verbergen: Menu"},
-  "options_topbar_hide_create": {"message": "Bovenste pictogram verbergen: Maken"},
-  "options_ui_theme_label": {"message": "Applicatiethema"},
-  "options_ui_theme_reload_desc": {"message": "Pagina opnieuw laden vereist."},
-  "options_ui_theme_default": {"message": "Facebook standaard"},
-  "options_ui_theme_darkpro": {"message": "Dark Pro"},
-  "options_ui_theme_amoled": {"message": "AMOLED diepzwart"},
-  "options_ui_theme_classic": {"message": "Klassiek blauw"},
-  "options_ui_theme_zen": {"message": "Zen-modus (minimalistisch)"},
-  "options_ui_theme_pastel": {"message": "Pastel warm"},
-  "options_ui_font_scale_label": {"message": "Lettergrootte-schaling (%)"},
-  "options_ui_custom_style_title": {"message": "Geavanceerde aangepaste opmaak"},
-  "options_ui_custom_style_desc": {"message": "Optionele overschrijvingen voor lettertype, accentkleur, achtergrond en aangepaste CSS."},
-  "options_ui_custom_style_warn": {"message": "Gebruik alleen geldige CSS. Slechte regels kunnen de paginalay-out verbreken."},
-  "options_ui_custom_style_enable": {"message": "Geavanceerde aangepaste opmaak inschakelen"},
-  "options_ui_custom_font": {"message": "Aangepaste lettertypefamilie"},
-  "options_ui_custom_accent": {"message": "Aangepaste accentkleur"},
-  "options_ui_custom_text_color": {"message": "Aangepaste tekstkleur"},
-  "options_ui_custom_card_background": {"message": "Aangepaste berichtkaartachtergrond"},
-  "options_ui_custom_background": {"message": "Aangepaste paginaachtergrond"},
-  "options_ui_custom_css": {"message": "Aangepaste CSS"},
-  "options_ui_custom_accent_placeholder": {"message": "#22c1ff"},
-  "options_ui_custom_text_color_placeholder": {"message": "#f2f5ff"},
-  "options_ui_custom_card_background_placeholder": {"message": "rgba(24, 31, 42, 0.92)"},
-  "options_ui_custom_background_placeholder": {"message": "linear-gradient(...) or #111111"},
-  "options_ui_custom_css_placeholder": {"message": ".selector { display: none !important; }"},
-  "options_ui_custom_css_preset_label": {"message": "Aangepaste CSS-snippet-voorinstellingen"},
-  "options_ui_custom_css_preset_desc": {"message": "Laad een startsnippet in het aangepaste CSS-vak, controleer dan en sla op."},
-  "options_ui_custom_css_preset_none": {"message": "Selecteer een snippet"},
-  "options_ui_custom_css_preset_subtle_cards": {"message": "Subtiele kaartopmaak"},
-  "options_ui_custom_css_preset_calmer_motion": {"message": "Rustiger beweging"},
-  "options_ui_custom_css_preset_readability_boost": {"message": "Leesbaarheidsverbetering"},
-  "options_ui_custom_css_preset_apply": {"message": "Snippet laden"},
-  "options_theme_preview_title": {"message": "Live voorbeeld"},
-  "options_theme_preview_post_title": {"message": "Voorbeeldbericht-titel"},
-  "options_theme_preview_desc": {"message": "Dit minivoorbeeld wordt bijgewerkt terwijl je het thema en de lettergrootte-schaling wijzigt."},
-  "options_theme_preview_chip_filtered": {"message": "Gesponsord verborgen"},
-  "options_theme_preview_chip_score": {"message": "PF Score 88"},
-  "options_wellbeing_grayscale": {"message": "Grijswaardenmodus (alle kleuren desatureren)"},
-  "options_wellbeing_scroll_stopper": {"message": "Eindeloos-scrollen-stopper"},
-  "options_wellbeing_break_wall": {"message": "Berichten tot pauzewall"},
-  "options_wellbeing_session_timer": {"message": "Zichtbare sessietimeyklok"},
-  "options_wellbeing_session_awareness_enable": {"message": "Sessie-bewustzijn zachte pauze-prompt"},
-  "options_wellbeing_session_awareness_threshold": {"message": "Scrol-pulsen per minuut voor prompt"},
-  "options_wellbeing_session_awareness_cooldown": {"message": "Prompt-afkoelingstijd (minuten)"},
-  "options_wellbeing_daily_report_enable": {"message": "Dagelijks feedrapport inschakelen"},
-  "options_wellbeing_daily_report_minutes": {"message": "Automatisch rapportinterval (minuten)"},
-  "options_wellbeing_reels_limit_title": {"message": "Reels-sessiebegrenzer"},
-  "options_wellbeing_reels_limit_desc": {"message": "Sta slechts een beperkt aantal Reels per sessie toe en blokkeer daarna extra Reels."},
-  "options_wellbeing_reels_limit_enable": {"message": "Reels-sessiebegrenzer inschakelen"},
-  "options_wellbeing_reels_limit_count": {"message": "Toegestane Reels per sessie"},
-  "options_wellbeing_reels_limit_hardlock": {"message": "Hard vergrendelen van Reels na bereiken van limiet"},
-  "options_wellbeing_ai_blockers_title": {"message": "Geavanceerde AI-blokkers (Welzijnsedity)"},
-  "options_wellbeing_ragebait": {"message": "Rage-bait-detector (vervag inflammatoire verontwaardigingsberichten)"},
-  "options_wellbeing_clickbait": {"message": "Clickbait-eliminator (verwijder virale manipulatieve koppen)"},
-  "wellbeing_break_title": {"message": "Adem even uit"},
-  "wellbeing_break_body_template": {"message": "Je hebt zojuist $1 berichten doorgescrold. PureFusion heeft de feed tijdelijk gepauzeerd om eindeloos scrollen te voorkomen. Is het tijd om iets anders te doen?"},
-  "wellbeing_break_resume_btn": {"message": "Toch doorgaan met scrollen"},
-  "wellbeing_session_timer_prefix": {"message": "Sessie"},
-  "wellbeing_report_button": {"message": "Rapport"},
-  "wellbeing_weekly_report_button": {"message": "Week"},
-  "wellbeing_report_disabled": {"message": "Dagelijks feedrapport is uitgeschakeld. Schakel het in bij Digitaal welzijn."},
-  "wellbeing_report_label_auto": {"message": "Dagelijks feedrapport"},
-  "wellbeing_report_label_session": {"message": "Sessie-feedrapport"},
-  "wellbeing_weekly_report_label": {"message": "Wekelijks feedrapport"},
-  "wellbeing_report_no_filters": {"message": "Nog geen filters geactiveerd"},
-  "wellbeing_weekly_report_no_data": {"message": "Wekelijks rapport heeft eerst meer activiteitsgegevens nodig."},
-  "wellbeing_session_awareness_toast_template": {"message": "Hoog scrolritme gedetecteerd: $1 scrolls in de afgelopen minuut ($2 min sessie). Overweeg een korte pauze."},
-  "wellbeing_report_panel_title": {"message": "PureFusion Feed-rapporten"},
-  "wellbeing_report_panel_close": {"message": "Sluiten"},
-  "wellbeing_report_panel_session_tab": {"message": "Sessie"},
-  "wellbeing_report_panel_weekly_tab": {"message": "Wekelijks"},
-  "wellbeing_report_panel_hidden": {"message": "Verborgen items"},
-  "wellbeing_report_panel_reels": {"message": "Reels geblokkeerd"},
-  "wellbeing_report_panel_top_reason": {"message": "Grootste afleiding"},
-  "wellbeing_report_panel_minutes_saved": {"message": "Minuten bespaard (schatting)"},
-  "wellbeing_report_panel_elapsed": {"message": "Sessieduur"},
-  "wellbeing_report_panel_refresh": {"message": "Vernieuwen"},
-  "wellbeing_report_panel_reset_session": {"message": "Sessie opnieuw instellen"},
-  "wellbeing_report_panel_reset_done": {"message": "Sessietellers opnieuw ingesteld."},
-  "wellbeing_report_panel_note": {"message": "Tip: Dagelijkse waarden worden opnieuw ingesteld bij sessiereset; wekelijkse rollup wordt berekend uit opgeslagen dagelijkse buckets."},
-  "wellbeing_report_panel_weekly_window": {"message": "Voortschrijdend 7-daags venster"},
-  "wellbeing_report_panel_weekly_trend_title": {"message": "7-daagse trend"},
-  "wellbeing_report_panel_weekly_top_reasons_title": {"message": "Belangrijkste afleidingsredenen"},
-  "wellbeing_report_panel_weekly_no_reasons": {"message": "Nog geen gegevens over afleidingsredenen."},
-  "wellbeing_report_panel_weekly_reason_explain": {"message": "Uitleggen"},
-  "wellbeing_report_reason_explain_ads": {"message": "Gesponsorde of advertentie-achtige inhoud werd gefilterd om promotionele rommel te verminderen."},
-  "wellbeing_report_reason_explain_story": {"message": "Verhaalactiviteitspatronen (likes/commentaren/vriendschappen/incheckingen) werden gefilterd als feed-ruis met weinig signaal."},
-  "wellbeing_report_reason_explain_post_type": {"message": "Een berichtformaatfilter verwijderde inhoudstypen die je hebt gekozen te onderdrukken (video/foto/link/alleen-tekst)."},
-  "wellbeing_report_reason_explain_bait": {"message": "Gedragsmatige veiligheidsfilters markeerden manipulatieve of hoge-verontwaardigingspatronen die je aan het scrollen houden."},
-  "wellbeing_report_reason_explain_nav": {"message": "Navigatie- en module-rommelbesturingen verwijderden afleidende niet-feed UI-elementen."},
-  "wellbeing_report_reason_explain_keyword": {"message": "Trefwoordregels kwamen overeen met dit item en filterden het op basis van je aangepaste blokkeringslijst."},
-  "wellbeing_report_reason_explain_generic": {"message": "Deze categorie werd gefilterd door je actieve PureFusion-regels om je feed schoner en meer gefocust te houden."},
-  "wellbeing_report_reason_open_settings": {"message": "Gerelateerde instellingen openen"},
+  "extName": {
+    "message": "PureFusion Feed",
+    "description": "The name of the extension"
+  },
+  "extDesc": {
+    "message": "Premium Feed Manager met slimme filters, AI-inzichten en privacybescherming voor Facebook.",
+    "description": "The extension description"
+  },
+  "common_ads_blocked": {
+    "message": "Advertenties geblokkeerd"
+  },
+  "common_spam_hidden": {
+    "message": "Spam verborgen"
+  },
+  "common_save_settings": {
+    "message": "Instellingen opslaan"
+  },
+  "common_save_changes": {
+    "message": "Wijzigingen opslaan"
+  },
+  "common_support_developer": {
+    "message": "Ontwikkelaar steunen"
+  },
+  "common_open_dashboard": {
+    "message": "Volledige instellingen openen"
+  },
+  "common_open_advanced": {
+    "message": "Geavanceerd dashboard openen"
+  },
+  "common_logo_alt": {
+    "message": "PureFusion-logo"
+  },
+  "options_page_title": {
+    "message": "PureFusion Feed - Instellingen"
+  },
+  "popup_quick_filters": {
+    "message": "Snelle filters"
+  },
+  "popup_hide_sponsored_posts": {
+    "message": "Enhanced Ad Filter"
+  },
+  "popup_hide_sponsored_posts_desc": {
+    "message": "Detectie op basis van labels — standaard uitgeschakeld"
+  },
+  "popup_block_sponsored": {
+    "message": "Advertenties blokkeren"
+  },
+  "popup_block_sponsored_desc": {
+    "message": "Blokkeert advertenties via infrastructuursignalen"
+  },
+  "popup_ad_blocker_on": {
+    "message": "✓ Advertenties geblokkeerd via infrastructuursignalen"
+  },
+  "popup_ad_blocker_off": {
+    "message": "⚠ Advertentieblokker is uit — klik om in te schakelen"
+  },
+  "options_filters_removeAds": {
+    "message": "Advertenties blokkeren (infrastructuursignalen)"
+  },
+  "options_filters_removeSponsored": {
+    "message": "Enhanced Ad Filter (label detection)"
+  },
+  "popup_hide_suggested": {
+    "message": "Suggesties/PYMK verbergen"
+  },
+  "popup_hide_suggested_desc": {
+    "message": "Verwijdert algoritmische suggesties"
+  },
+  "popup_hide_reels": {
+    "message": "Reels verbergen"
+  },
+  "popup_hide_reels_desc": {
+    "message": "Verwijdert Reels-laden die in de feed worden ingevoegd"
+  },
+  "popup_force_recent": {
+    "message": "Meest recente afdwingen"
+  },
+  "popup_force_recent_desc": {
+    "message": "Laad altijd de chronologische feed"
+  },
+  "popup_distraction_free": {
+    "message": "Afleidingsvrije modus"
+  },
+  "popup_distraction_free_desc": {
+    "message": "Zijbalken verbergen, feed centreren (Alt+Shift+F)"
+  },
+  "popup_fast_keyword": {
+    "message": "Snel trefwoord blokkeren"
+  },
+  "popup_keyword_placeholder": {
+    "message": "Voer trefwoord in om samen te vouwen..."
+  },
+  "popup_hide_groups": {
+    "message": "Voorgestelde groepen verbergen"
+  },
+  "popup_hide_groups_desc": {
+    "message": "Verwijdert algoritmische groepsaanbevelingen"
+  },
+  "popup_ghost_mode": {
+    "message": "Spookmodus (Berichten)"
+  },
+  "popup_ghost_mode_desc": {
+    "message": "Gezien- en typ-indicatoren verbergen"
+  },
+  "popup_nuke_meta_ai": {
+    "message": "Meta AI verwijderen"
+  },
+  "popup_nuke_meta_ai_desc": {
+    "message": "AI-knoppen en glitters verwijderen"
+  },
+  "popup_master_toggle_title": {
+    "message": "PureFusion in- of uitschakelen"
+  },
+  "popup_add_keyword_title": {
+    "message": "Trefwoord toevoegen"
+  },
+  "popup_keyword_added": {
+    "message": "„{keyword}“ aan de blokkeringslijst toegevoegd."
+  },
+  "popup_keyword_exists": {
+    "message": "Trefwoord bestaat al."
+  },
+  "quick_action_menu_root": {
+    "message": "PureFusion leren"
+  },
+  "quick_action_menu_block_keyword": {
+    "message": "Aan blokkeringslijst toevoegen"
+  },
+  "quick_action_menu_autohide_keyword": {
+    "message": "Aan automatisch verbergen-lijst toevoegen"
+  },
+  "quick_action_menu_allow_keyword": {
+    "message": "Aan toegestane lijst toevoegen"
+  },
+  "quick_action_menu_hide_source": {
+    "message": "Berichten van deze bron verbergen"
+  },
+  "quick_action_menu_allow_source": {
+    "message": "Deze bron nooit verbergen"
+  },
+  "quick_action_select_text_first": {
+    "message": "Selecteer eerst tekst en gebruik daarna een PureFusion snelle actie."
+  },
+  "quick_action_source_select_name": {
+    "message": "Klik met de rechtermuisknop op een profiel-/pagina-/groepsnaam of markeer eerst een bronnaam."
+  },
+  "quick_action_selection_too_short": {
+    "message": "Geselecteerde tekst is te kort. Kies een duidelijker woord of zin."
+  },
+  "quick_action_source_too_broad": {
+    "message": "Die bron ziet er te breed uit. Selecteer een volledige pagina-/persoon-/groepsnaam."
+  },
+  "quick_action_exists_blocklist": {
+    "message": "Staat al op de blokkeringslijst."
+  },
+  "quick_action_exists_autohide": {
+    "message": "Staat al op de automatisch verbergen-lijst."
+  },
+  "quick_action_exists_allowlist": {
+    "message": "Staat al op de toegestane lijst."
+  },
+  "quick_action_exists_source_hide": {
+    "message": "Bron is al verborgen."
+  },
+  "quick_action_exists_source_allow": {
+    "message": "Bron staat al in Nooit verbergen-bronnen."
+  },
+  "quick_action_added_blocklist": {
+    "message": "\"$1\" aan blokkeringslijst toegevoegd en feed opnieuw gescand."
+  },
+  "quick_action_added_autohide": {
+    "message": "\"$1\" aan automatisch verbergen toegevoegd en feed opnieuw gescand."
+  },
+  "quick_action_added_allowlist": {
+    "message": "\"$1\" aan toegestane lijst toegevoegd en feed opnieuw gescand."
+  },
+  "quick_action_added_source_hide": {
+    "message": "Bron \"$1\" wordt nu verborgen en feed is opnieuw gescand."
+  },
+  "quick_action_added_source_allow": {
+    "message": "\"$1\" aan Nooit verbergen-bronnen toegevoegd en feed opnieuw gescand."
+  },
+  "quick_action_undo_label": {
+    "message": "Ongedaan maken"
+  },
+  "quick_action_undo_success": {
+    "message": "Snelle actie ongedaan gemaakt."
+  },
+  "quick_action_undo_expired": {
+    "message": "Ongedaan maken is niet meer beschikbaar voor die actie."
+  },
+  "quick_action_undo_failed": {
+    "message": "Ongedaan maken mislukt. Probeer het opnieuw."
+  },
+  "quick_action_unknown": {
+    "message": "Onbekende snelle actie."
+  },
+  "options_filters_card_title": {
+    "message": "Advertentie- en spamverwijdering"
+  },
+  "options_filters_card_desc": {
+    "message": "Schakel de primaire DOM-verwijderingsdoelen in of uit."
+  },
+  "options_presets_title": {
+    "message": "Voorinstellingspakketten"
+  },
+  "options_presets_desc": {
+    "message": "Pas samengestelde bundels toe voor veelgebruikte scenario's en pas daarna alles handmatig aan."
+  },
+  "options_presets_label": {
+    "message": "Kies een voorinstelling"
+  },
+  "options_presets_work_focus": {
+    "message": "Werkfocus"
+  },
+  "options_presets_friends_only": {
+    "message": "Alleen vrienden"
+  },
+  "options_presets_minimal": {
+    "message": "Minimaal"
+  },
+  "options_presets_news_heavy": {
+    "message": "Nieuwsintensief"
+  },
+  "options_presets_messenger_privacy": {
+    "message": "Messenger-privacy"
+  },
+  "options_presets_apply_btn": {
+    "message": "Voorinstelling toepassen"
+  },
+  "options_mode_title": {
+    "message": "Feed-ervaringsmodus"
+  },
+  "options_mode_desc": {
+    "message": "Pas een blijvend gedragsprofiel toe bovenop je opgeslagen schakelaars."
+  },
+  "options_mode_label": {
+    "message": "Actieve modus"
+  },
+  "options_view_mode_label": {
+    "message": "Weergave"
+  },
+  "options_view_mode_basic": {
+    "message": "Basis"
+  },
+  "options_view_mode_advanced": {
+    "message": "Geavanceerd"
+  },
+  "options_mode_custom": {
+    "message": "Aangepast (gebruik mijn schakelaars)"
+  },
+  "options_mode_clean": {
+    "message": "Schone modus"
+  },
+  "options_mode_focus": {
+    "message": "Focusmodus"
+  },
+  "options_mode_ultrafast": {
+    "message": "Ultra snel modus (tekst eerst, maximale snelheid)"
+  },
+  "options_mode_smart": {
+    "message": "Slimme modus"
+  },
+  "options_mode_classic": {
+    "message": "Klassieke 2012-modus"
+  },
+  "options_mode_profile_custom": {
+    "message": "Gebruikt je exacte opgeslagen schakelaars zonder extra modusoverstyringen."
+  },
+  "options_mode_profile_clean": {
+    "message": "Verwijdert advertentie-/voorgestelde rommel en sociale ruis terwijl voorspellingsvisuals uitgeschakeld blijven voor een rustiger feed."
+  },
+  "options_mode_profile_focus": {
+    "message": "Diepfocusprofiel met startpagina als basis: agressieve rommelverwijdering, chronologie aan en scrollonderbreekbeveiliging ingeschakeld."
+  },
+  "options_mode_profile_ultrafast": {
+    "message": "Tekst-eerst snelheidsprofiel: verwijdert zware mediaoppervlakken, onderdrukt afbeelding-/videoberichttypen en minimaliseert extra UI-verwerking."
+  },
+  "options_mode_profile_smart": {
+    "message": "Houdt de kern-feed-opschoning aan terwijl scoren, samenvouwen van berichten met lage waarde en geloofwaardigheidsverificatiesignalen worden ingeschakeld."
+  },
+  "options_mode_profile_classic": {
+    "message": "Geeft prioriteit aan chronologisch klassiek feedgedrag en onderdrukt moderne algoritmische oppervlakken zoals Watch/Marketplace."
+  },
+  "options_quickstart_title": {
+    "message": "PureFusion in 5 seconden"
+  },
+  "options_quickstart_desc": {
+    "message": "Kies nu één snel profiel. Je kunt alles hieronder nog steeds fijnafstemmen."
+  },
+  "options_promise_clean_title": {
+    "message": "Schoon Facebook"
+  },
+  "options_promise_clean_desc": {
+    "message": "Minder advertentie- en algoritmerommel."
+  },
+  "options_promise_fast_title": {
+    "message": "Snel Facebook"
+  },
+  "options_promise_fast_desc": {
+    "message": "Ultra snel modus voor lichtere sessies."
+  },
+  "options_promise_smart_title": {
+    "message": "Slim Facebook"
+  },
+  "options_promise_smart_desc": {
+    "message": "Scoren + geloofwaardigheid + uitlegbaarheid."
+  },
+  "options_quickstart_btn_clean": {
+    "message": "Schoon gebruiken"
+  },
+  "options_quickstart_btn_fast": {
+    "message": "Ultra snel gebruiken"
+  },
+  "options_quickstart_btn_smart": {
+    "message": "Slim gebruiken"
+  },
+  "options_quickstart_recommended": {
+    "message": "Beste voor de meeste gebruikers"
+  },
+  "options_mode_perf_hint_low": {
+    "message": "Dit apparaat presteert mogelijk beter met Ultra snel modus (tekst eerst, lager CPU/GPU-gebruik)."
+  },
+  "options_mode_perf_hint_mid": {
+    "message": "Ultra snel modus kan vertraging verminderen tijdens zware sessies op dit apparaat."
+  },
+  "options_mode_perf_apply": {
+    "message": "Ultra snel aanbeveling toepassen"
+  },
+  "options_mode_recommendation_low": {
+    "message": "Aanbevolen: Ultra snel"
+  },
+  "options_mode_recommendation_mid": {
+    "message": "Optioneel: Ultra snel voor zware sessies"
+  },
+  "options_mode_recommendation_active": {
+    "message": "Aanbevolen modus actief"
+  },
+  "options_mode_recommendation_balanced": {
+    "message": "Gebalanceerd: huidige modus is prima"
+  },
+  "options_mode_why_custom": {
+    "message": "Reden: gebruikt alleen je handmatige schakelaarkeuzes."
+  },
+  "options_mode_why_clean": {
+    "message": "Reden: verwijdert veel voorkomende rommel terwijl de vertrouwde feed-uitstraling behouden blijft."
+  },
+  "options_mode_why_focus": {
+    "message": "Reden: afgestemd op diepe focus met sterkere afleidingsverwijdering."
+  },
+  "options_mode_why_ultrafast": {
+    "message": "Reden: geeft prioriteit aan snelheid door zware feedverwerking te verminderen."
+  },
+  "options_mode_why_smart": {
+    "message": "Reden: balanceert opschoning met scoren en geloofwaardigheidssignalen."
+  },
+  "options_mode_why_classic": {
+    "message": "Reden: benadrukt chronologisch, ouderwets feedgedrag."
+  },
+  "options_mode_why_device_low": {
+    "message": "Apparaatopmerking: Ultra snel wordt aanbevolen op deze hardware."
+  },
+  "options_mode_why_device_mid": {
+    "message": "Apparaatopmerking: Ultra snel kan helpen tijdens zware sessies."
+  },
+  "options_surface_title": {
+    "message": "Bereikbeheer per oppervlak"
+  },
+  "options_surface_desc": {
+    "message": "Kies op welke Facebook-oppervlakken PureFusion-filtering van toepassing moet zijn. Schakel een oppervlak uit om het ongemoeid te laten."
+  },
+  "options_surface_enable": {
+    "message": "Filterbereik per oppervlak inschakelen"
+  },
+  "options_surface_home": {
+    "message": "Toepassen op startpagina-feed"
+  },
+  "options_surface_groups": {
+    "message": "Toepassen op groepen"
+  },
+  "options_surface_watch": {
+    "message": "Toepassen op Watch"
+  },
+  "options_surface_marketplace": {
+    "message": "Toepassen op Marketplace"
+  },
+  "options_surface_other": {
+    "message": "Toepassen op andere oppervlakken (profiel/pagina's/evenementen)"
+  },
+  "options_filters_hide_suggested": {
+    "message": "\"Voorgesteld voor jou\" verbergen"
+  },
+  "options_filters_hide_pymk": {
+    "message": "\"Mensen die je misschien kent\" verbergen"
+  },
+  "options_filters_hide_group_suggestions": {
+    "message": "Groepssuggesties verbergen"
+  },
+  "options_filters_hide_page_suggestions": {
+    "message": "Paginasuggesties verbergen"
+  },
+  "options_filters_hide_fundraisers": {
+    "message": "Inzamelingsacties verbergen"
+  },
+  "options_filters_post_types_title": {
+    "message": "Berichttype-filterpakket v2"
+  },
+  "options_filters_post_types_desc": {
+    "message": "Strikte berichtomhulsel-targeting plus zinkernankers. Laat uit tenzij je agressieve type-opschoning wilt."
+  },
+  "options_filters_hide_video_posts": {
+    "message": "Videoberichten verbergen"
+  },
+  "options_filters_hide_photo_posts": {
+    "message": "Foto-/afbeeldingsberichten verbergen"
+  },
+  "options_filters_hide_link_posts": {
+    "message": "Externe link-/deelberichten verbergen"
+  },
+  "options_filters_hide_text_posts": {
+    "message": "Alleen-tekst statusberichten verbergen"
+  },
+  "options_filters_hide_live_video_posts": {
+    "message": "Live-videoberichten verbergen"
+  },
+  "options_filters_hide_share_reposts": {
+    "message": "Deel-/herplaatsingsberichten verbergen"
+  },
+  "options_filters_hide_poll_posts": {
+    "message": "Peiling-berichten verbergen"
+  },
+  "options_filters_clutter_title": {
+    "message": "Rommel & injecties"
+  },
+  "options_filters_hide_reels_tray": {
+    "message": "Reels-lade in feed verbergen"
+  },
+  "options_filters_widescreen_label": {
+    "message": "Breedbeeldmodus"
+  },
+  "options_filters_widescreen_desc": {
+    "message": "Middelste kolom grenzen opheffen om ultrabreed schermen te vullen."
+  },
+  "options_filters_hide_memories": {
+    "message": "Herinneringsberichten verbergen"
+  },
+  "options_filters_hide_stories": {
+    "message": "Verhalen-balk verbergen"
+  },
+  "options_filters_remove_colored_bg": {
+    "message": "Gekleurde achtergrondberichten verwijderen"
+  },
+  "options_filters_remove_game_invites": {
+    "message": "Speluitnodigings- en activiteitsberichten verbergen"
+  },
+  "options_filters_remove_large_reactions": {
+    "message": "Overdimensioneerde emoji-berichten normaliseren"
+  },
+  "options_filters_deduplicate_posts_label": {
+    "message": "Dubbele berichten verbergen"
+  },
+  "options_filters_deduplicate_posts_desc": {
+    "message": "Onderdruk berichten waarvan het ID al in deze sessie is verschenen — detecteert wanneer FB hetzelfde bericht meerdere keren opnieuw injecteert."
+  },
+  "options_filters_locale_label": {
+    "message": "Feed-taal"
+  },
+  "options_filters_locale_desc": {
+    "message": "Stem zinsfilters af op je Facebook-taal. Auto test alle ondersteunde talen (kan gemengdtalige feeds overfilteren)."
+  },
+  "options_filters_locale_auto": {
+    "message": "Auto (alle ondersteunde talen)"
+  },
+  "options_story_filters_title": {
+    "message": "Verhaalactiviteitsfilters"
+  },
+  "options_story_filters_desc": {
+    "message": "Verberg veelgebruikte activiteitsverhalen met weinig signaal uit je feed."
+  },
+  "options_story_filter_became_friends": {
+    "message": "\"Vrienden geworden\" verhalen verbergen"
+  },
+  "options_story_filter_joined_groups": {
+    "message": "\"Lid geworden van groep\" verhalen verbergen"
+  },
+  "options_story_filter_commented": {
+    "message": "\"Heeft hierop gereageerd\" verhalen verbergen"
+  },
+  "options_story_filter_liked": {
+    "message": "\"Heeft dit leuk gevonden\" verhalen verbergen"
+  },
+  "options_story_filter_events": {
+    "message": "Evenement-deelnamesverhalen verbergen"
+  },
+  "options_story_filter_memories": {
+    "message": "Gedeelde herinneringsverhalen verbergen"
+  },
+  "options_story_filter_profile_photo": {
+    "message": "Verhalen over profielfoto-updates verbergen"
+  },
+  "options_story_filter_cover_photo": {
+    "message": "Verhalen over omslagfoto-updates verbergen"
+  },
+  "options_story_filter_life_events": {
+    "message": "Levengebeurtenis-verhalen verbergen"
+  },
+  "options_story_filter_checkins": {
+    "message": "Inchecken-/locatieactiviteitsverhalen verbergen"
+  },
+  "options_story_filter_milestones": {
+    "message": "Mijlpaalbericht-verhalen verbergen"
+  },
+  "options_story_filter_job_work": {
+    "message": "Baan-/werk-updateverhalen verbergen"
+  },
+  "options_story_filter_relationship": {
+    "message": "Relatiestatusupdateverhalen verbergen"
+  },
+  "options_story_filter_group_activity": {
+    "message": "Groepsactiviteitsberichtverhalen verbergen"
+  },
+  "options_image_filters_title": {
+    "message": "Afbeeldingsonderwerp-filters"
+  },
+  "options_image_filters_desc": {
+    "message": "Gebruik Facebook-afbeeldingsbeschrijvingssignalen om geselecteerde visuele categorieën te verbergen."
+  },
+  "options_image_filters_enable": {
+    "message": "Afbeeldingsonderwerp-filters inschakelen (veilige modus)"
+  },
+  "options_image_filter_sports": {
+    "message": "Sportgerelateerde afbeeldingen verbergen"
+  },
+  "options_image_filter_food": {
+    "message": "Afbeeldingen van eten en drinken verbergen"
+  },
+  "options_image_filter_pets": {
+    "message": "Huisdierafbeeldingen verbergen (honden/katten)"
+  },
+  "options_image_filter_vehicles": {
+    "message": "Voertuigafbeeldingen verbergen"
+  },
+  "options_image_filter_screenshots": {
+    "message": "Memes en screenshot-achtige afbeeldingen verbergen"
+  },
+  "options_image_filter_travel": {
+    "message": "Reis- en landschapsafbeeldingen verbergen"
+  },
+  "options_ai_card_title": {
+    "message": "Lokale voorspellingsmotor"
+  },
+  "options_ai_card_desc": {
+    "message": "Beoordeelt feed-items lokaal op basis van je interactiegeschiedenis. Gegevens verlaten je apparaat nooit."
+  },
+  "options_ai_enable_predictions": {
+    "message": "AI-voorspellingen inschakelen"
+  },
+  "options_ai_show_pf_badge": {
+    "message": "\"PF Score\"-badge op berichten tonen"
+  },
+  "options_ai_show_reasons": {
+    "message": "Score-redenhinten op PF-badges tonen"
+  },
+  "options_ai_dim_low_interest": {
+    "message": "Berichten met lage interesse dimmen/samenvouwen (Score < 20)"
+  },
+  "options_ai_collapse_low_interest": {
+    "message": "Berichten met lage interesse samenvouwen met toon-chip"
+  },
+  "options_ai_never_empty_guard": {
+    "message": "Nooit-lege feed-beveiliging (houd minimum zichtbare berichten)"
+  },
+  "options_ai_never_empty_min": {
+    "message": "Minimum aantal zichtbare berichten"
+  },
+  "options_ai_highlight_high_interest": {
+    "message": "Berichten met hoge interesse markeren (Score > 80)"
+  },
+  "options_ai_analyze_trends": {
+    "message": "Lokale trends en trefwoorden analyseren"
+  },
+  "options_ai_true_affinity_sort": {
+    "message": "Ware-affiniteit sorteren"
+  },
+  "options_ai_true_affinity_sort_desc": {
+    "message": "Herordent de feed op basis van je lokale betrokkenheidsscore in realtime — berichten met de hoogste score komen bovenaan via CSS flexbox-volgorde, zonder de virtuele DOM van React te verbreken."
+  },
+  "options_ai_friend_activity": {
+    "message": "Vriendactiviteit feed-inzicht"
+  },
+  "options_ai_friend_activity_desc": {
+    "message": "Markeert contacten in de rechter zijbalk waarvan de berichten deze sessie niet in je feed zijn verschenen — helpt vrienden te identificeren die Facebook mogelijk stilzwijgend onderdrukt van je tijdlijn."
+  },
+  "options_ai_low_threshold": {
+    "message": "Lage scoredrempel"
+  },
+  "options_ai_high_threshold": {
+    "message": "Hoge scoredrempel"
+  },
+  "options_ai_cred_title": {
+    "message": "Geloofwaardigheidssignalen (Beta)"
+  },
+  "options_ai_cred_desc": {
+    "message": "Heuristische lokale controles op verdachte claimpatronen. Dit bewijst geen waarheid; het markeert berichten die verifiëren waard zijn."
+  },
+  "options_ai_cred_enabled": {
+    "message": "Verdachte-claimdetectie inschakelen"
+  },
+  "options_ai_cred_badge": {
+    "message": "\"Verifieer\" waarschuwingsbadge op gemarkeerde berichten tonen"
+  },
+  "options_ai_cred_strict": {
+    "message": "Strenge modus (sterkere scorestraf voor verdachte claims)"
+  },
+  "options_ai_cred_debug": {
+    "message": "Geloofwaardigheidsdebugoverzicht tonen op alle gescande berichten"
+  },
+  "options_ai_llm_title": {
+    "message": "Diepe intelligentieserver (BYOK API)"
+  },
+  "options_ai_llm_desc": {
+    "message": "Bring-Your-Own-Key. Ontgrendel LLM-mogelijkheden zoals TL;DRs en Comment AI. Je sleutels worden uitsluitend opgeslagen in de lokale machineopslagruimte."
+  },
+  "options_ai_provider_label": {
+    "message": "Actieve provider"
+  },
+  "options_ai_provider_none": {
+    "message": "Uitgeschakeld"
+  },
+  "options_ai_provider_openai": {
+    "message": "OpenAI (ChatGPT)"
+  },
+  "options_ai_provider_gemini": {
+    "message": "Google Gemini"
+  },
+  "options_ai_provider_windowai": {
+    "message": "Chrome Native (window.ai)"
+  },
+  "options_ai_openai_key_label": {
+    "message": "OpenAI API-sleutel"
+  },
+  "options_ai_gemini_key_label": {
+    "message": "Google Gemini API-sleutel"
+  },
+  "options_ai_tldr_toggle": {
+    "message": "\"TL;DR\" samenvattingsknoppen injecteren op lange berichten"
+  },
+  "options_ai_smart_comment_toggle": {
+    "message": "Slimme commentaar co-piloot (toverstafpictogram)"
+  },
+  "options_ai_clickbait_decode_toggle": {
+    "message": "Clickbait-decoder (sensationele koppen herschrijven met feiten)"
+  },
+  "options_ai_messenger_tools_title": {
+    "message": "Messenger AI-hulpmiddelen"
+  },
+  "options_ai_messenger_rewrite_toggle": {
+    "message": "Berichtconcepten herschrijven in de editor"
+  },
+  "options_ai_messenger_replies_toggle": {
+    "message": "3 slimme antwoordsuggesties genereren"
+  },
+  "options_ui_card_title": {
+    "message": "Interface-herstructurering"
+  },
+  "options_ui_friends_only": {
+    "message": "Alleen vrienden-modus (verwijder alle groepen/pagina's uit feed)"
+  },
+  "options_ui_anonymizer": {
+    "message": "Screenshot-anonimiseerder (profielfoto's/namen vervagen)"
+  },
+  "options_ui_compact_mode": {
+    "message": "Compacte modus (marges/opvulling verminderen)"
+  },
+  "options_ui_disable_comment_autofocus": {
+    "message": "Autofocus-stelen van commentaarinvoervak uitschakelen"
+  },
+  "options_ui_enforce_chrono": {
+    "message": "Chronologische feed afdwingen (meest recent)"
+  },
+  "options_ui_show_link_previews": {
+    "message": "Echte bestemming van uitgaande links tonen"
+  },
+  "options_ui_absolute_timestamps": {
+    "message": "Tijdstempels omzetten in absolute datums"
+  },
+  "options_ui_hide_composer": {
+    "message": "\"Wat heb je op je gedachten?\"-vak verbergen"
+  },
+  "options_ui_comment_sort_label": {
+    "message": "Standaard commentaarsortering"
+  },
+  "options_ui_comment_sort_desc": {
+    "message": "Pas automatisch een sorteervoorkeur toe wanneer commentaar op een bericht wordt uitgebreid. Werkt alleen wanneer commentaar al geladen is — dwingt samengevouwen commentaarsecties niet open."
+  },
+  "options_ui_comment_sort_all": {
+    "message": "Alle commentaren (FB standaard)"
+  },
+  "options_ui_comment_sort_newest": {
+    "message": "Nieuwste eerst"
+  },
+  "options_ui_comment_sort_top": {
+    "message": "Meest relevant"
+  },
+  "options_ui_distraction_free_label": {
+    "message": "Afleidingsvrije leezmodus (Alt+Shift+F)"
+  },
+  "options_ui_distraction_free_desc": {
+    "message": "Verbergt linker-/rechter zijbalken en centreert de feed voor een schone leeservaring. Schakel op elk moment in met Alt+Shift+F."
+  },
+  "options_ui_image_hover_label": {
+    "message": "Afbeelding hover-uitbreiding"
+  },
+  "options_ui_image_hover_desc": {
+    "message": "Beweeg over feed-afbeeldingen om ze op volledige grootte te bekijken. Sla op of open in nieuw tabblad vanuit het venster. Standaard uitgeschakeld."
+  },
+  "options_ui_auto_expand_see_more_label": {
+    "message": "\"Meer weergeven\" automatisch uitvouwen"
+  },
+  "options_ui_auto_expand_see_more_desc": {
+    "message": "\"Meer weergeven\" op afgeknotte berichten automatisch sluiten zodat je altijd de volledige tekst leest zonder extra klikken."
+  },
+  "options_ui_strip_tracking_params_label": {
+    "message": "Trackingparameters uit links verwijderen"
+  },
+  "options_ui_strip_tracking_params_desc": {
+    "message": "Verwijdert fbclid, utm_*, gclid en andere spionageparameters uit feed-links zodat gekopieerde of aangeklikte URL's schoon zijn."
+  },
+  "options_ui_autoplay_video_label": {
+    "message": "Video-autoplay beheer"
+  },
+  "options_ui_autoplay_video_desc": {
+    "message": "Beheer wat er gebeurt wanneer feed-video's automatisch beginnen te spelen."
+  },
+  "options_ui_autoplay_off": {
+    "message": "Uit (geen actie)"
+  },
+  "options_ui_autoplay_mute": {
+    "message": "Audio dempen (stil afspelen)"
+  },
+  "options_ui_autoplay_pause": {
+    "message": "Pauzeren (klik om af te spelen)"
+  },
+  "options_nav_filters_title": {
+    "message": "Navigatie- en zijbalkmodules"
+  },
+  "options_nav_filters_desc": {
+    "message": "Verberg specifieke linkernavigatie- en rechter zijbalkmodules."
+  },
+  "options_nav_master_enable": {
+    "message": "Module-niveau nav-filtering inschakelen (veilige modus)"
+  },
+  "options_nav_left_marketplace": {
+    "message": "Linkernavigatie verbergen: Marketplace"
+  },
+  "options_nav_left_watch": {
+    "message": "Linkernavigatie verbergen: Watch"
+  },
+  "options_nav_left_gaming": {
+    "message": "Linkernavigatie verbergen: Gaming"
+  },
+  "options_nav_left_memories": {
+    "message": "Linkernavigatie verbergen: Herinneringen"
+  },
+  "options_nav_left_meta_ai": {
+    "message": "Linkernavigatie verbergen: Meta AI"
+  },
+  "options_nav_left_manus_ai": {
+    "message": "Linkernavigatie verbergen: Manus AI"
+  },
+  "options_nav_right_trending": {
+    "message": "Rechter zijbalk verbergen: Trending"
+  },
+  "options_nav_right_contacts": {
+    "message": "Rechter zijbalk verbergen: Contacten"
+  },
+  "options_nav_right_meta_ai_contact": {
+    "message": "Rechter zijbalk verbergen: Meta AI-contact"
+  },
+  "options_nav_right_manus_ai_contact": {
+    "message": "Rechter zijbalk verbergen: Manus AI-contact"
+  },
+  "options_nav_right_events": {
+    "message": "Rechter zijbalk verbergen: Evenementen"
+  },
+  "options_nav_right_birthdays": {
+    "message": "Rechter zijbalk verbergen: Verjaardagen"
+  },
+  "options_topbar_filters_title": {
+    "message": "Bovenste headerbeheer"
+  },
+  "options_topbar_filters_desc": {
+    "message": "Verberg specifieke headerpictogrammen zonder de volledige headercontainer te verwijderen."
+  },
+  "options_topbar_master_enable": {
+    "message": "Bovenste headerfiltering inschakelen (veilige modus)"
+  },
+  "options_topbar_hide_home": {
+    "message": "Bovenste pictogram verbergen: Startpagina"
+  },
+  "options_topbar_hide_friends": {
+    "message": "Bovenste pictogram verbergen: Vrienden"
+  },
+  "options_topbar_hide_watch": {
+    "message": "Bovenste pictogram verbergen: Watch"
+  },
+  "options_topbar_hide_marketplace": {
+    "message": "Bovenste pictogram verbergen: Marketplace"
+  },
+  "options_topbar_hide_groups": {
+    "message": "Bovenste pictogram verbergen: Groepen"
+  },
+  "options_topbar_hide_gaming": {
+    "message": "Bovenste pictogram verbergen: Gaming"
+  },
+  "options_topbar_hide_messenger": {
+    "message": "Bovenste pictogram verbergen: Messenger"
+  },
+  "options_topbar_hide_notifications": {
+    "message": "Bovenste pictogram verbergen: Meldingen"
+  },
+  "options_topbar_hide_menu": {
+    "message": "Bovenste pictogram verbergen: Menu"
+  },
+  "options_topbar_hide_create": {
+    "message": "Bovenste pictogram verbergen: Maken"
+  },
+  "options_ui_theme_label": {
+    "message": "Applicatiethema"
+  },
+  "options_ui_theme_reload_desc": {
+    "message": "Pagina opnieuw laden vereist."
+  },
+  "options_ui_theme_default": {
+    "message": "Facebook standaard"
+  },
+  "options_ui_theme_darkpro": {
+    "message": "Dark Pro"
+  },
+  "options_ui_theme_amoled": {
+    "message": "AMOLED diepzwart"
+  },
+  "options_ui_theme_classic": {
+    "message": "Klassiek blauw"
+  },
+  "options_ui_theme_zen": {
+    "message": "Zen-modus (minimalistisch)"
+  },
+  "options_ui_theme_pastel": {
+    "message": "Pastel warm"
+  },
+  "options_ui_font_scale_label": {
+    "message": "Lettergrootte-schaling (%)"
+  },
+  "options_ui_custom_style_title": {
+    "message": "Geavanceerde aangepaste opmaak"
+  },
+  "options_ui_custom_style_desc": {
+    "message": "Optionele overschrijvingen voor lettertype, accentkleur, achtergrond en aangepaste CSS."
+  },
+  "options_ui_custom_style_warn": {
+    "message": "Gebruik alleen geldige CSS. Slechte regels kunnen de paginalay-out verbreken."
+  },
+  "options_ui_custom_style_enable": {
+    "message": "Geavanceerde aangepaste opmaak inschakelen"
+  },
+  "options_ui_custom_font": {
+    "message": "Aangepaste lettertypefamilie"
+  },
+  "options_ui_custom_accent": {
+    "message": "Aangepaste accentkleur"
+  },
+  "options_ui_custom_text_color": {
+    "message": "Aangepaste tekstkleur"
+  },
+  "options_ui_custom_card_background": {
+    "message": "Aangepaste berichtkaartachtergrond"
+  },
+  "options_ui_custom_background": {
+    "message": "Aangepaste paginaachtergrond"
+  },
+  "options_ui_custom_css": {
+    "message": "Aangepaste CSS"
+  },
+  "options_ui_custom_accent_placeholder": {
+    "message": "#22c1ff"
+  },
+  "options_ui_custom_text_color_placeholder": {
+    "message": "#f2f5ff"
+  },
+  "options_ui_custom_card_background_placeholder": {
+    "message": "rgba(24, 31, 42, 0.92)"
+  },
+  "options_ui_custom_background_placeholder": {
+    "message": "linear-gradient(...) or #111111"
+  },
+  "options_ui_custom_css_placeholder": {
+    "message": ".selector { display: none !important; }"
+  },
+  "options_ui_custom_css_preset_label": {
+    "message": "Aangepaste CSS-snippet-voorinstellingen"
+  },
+  "options_ui_custom_css_preset_desc": {
+    "message": "Laad een startsnippet in het aangepaste CSS-vak, controleer dan en sla op."
+  },
+  "options_ui_custom_css_preset_none": {
+    "message": "Selecteer een snippet"
+  },
+  "options_ui_custom_css_preset_subtle_cards": {
+    "message": "Subtiele kaartopmaak"
+  },
+  "options_ui_custom_css_preset_calmer_motion": {
+    "message": "Rustiger beweging"
+  },
+  "options_ui_custom_css_preset_readability_boost": {
+    "message": "Leesbaarheidsverbetering"
+  },
+  "options_ui_custom_css_preset_apply": {
+    "message": "Snippet laden"
+  },
+  "options_theme_preview_title": {
+    "message": "Live voorbeeld"
+  },
+  "options_theme_preview_post_title": {
+    "message": "Voorbeeldbericht-titel"
+  },
+  "options_theme_preview_desc": {
+    "message": "Dit minivoorbeeld wordt bijgewerkt terwijl je het thema en de lettergrootte-schaling wijzigt."
+  },
+  "options_theme_preview_chip_filtered": {
+    "message": "Ads Filtered"
+  },
+  "options_theme_preview_chip_score": {
+    "message": "PF Score 88"
+  },
+  "options_wellbeing_grayscale": {
+    "message": "Grijswaardenmodus (alle kleuren desatureren)"
+  },
+  "options_wellbeing_scroll_stopper": {
+    "message": "Eindeloos-scrollen-stopper"
+  },
+  "options_wellbeing_break_wall": {
+    "message": "Berichten tot pauzewall"
+  },
+  "options_wellbeing_session_timer": {
+    "message": "Zichtbare sessietimeyklok"
+  },
+  "options_wellbeing_session_awareness_enable": {
+    "message": "Sessie-bewustzijn zachte pauze-prompt"
+  },
+  "options_wellbeing_session_awareness_threshold": {
+    "message": "Scrol-pulsen per minuut voor prompt"
+  },
+  "options_wellbeing_session_awareness_cooldown": {
+    "message": "Prompt-afkoelingstijd (minuten)"
+  },
+  "options_wellbeing_daily_report_enable": {
+    "message": "Dagelijks feedrapport inschakelen"
+  },
+  "options_wellbeing_daily_report_minutes": {
+    "message": "Automatisch rapportinterval (minuten)"
+  },
+  "options_wellbeing_reels_limit_title": {
+    "message": "Reels-sessiebegrenzer"
+  },
+  "options_wellbeing_reels_limit_desc": {
+    "message": "Sta slechts een beperkt aantal Reels per sessie toe en blokkeer daarna extra Reels."
+  },
+  "options_wellbeing_reels_limit_enable": {
+    "message": "Reels-sessiebegrenzer inschakelen"
+  },
+  "options_wellbeing_reels_limit_count": {
+    "message": "Toegestane Reels per sessie"
+  },
+  "options_wellbeing_reels_limit_hardlock": {
+    "message": "Hard vergrendelen van Reels na bereiken van limiet"
+  },
+  "options_wellbeing_ai_blockers_title": {
+    "message": "Geavanceerde AI-blokkers (Welzijnsedity)"
+  },
+  "options_wellbeing_ragebait": {
+    "message": "Rage-bait-detector (vervag inflammatoire verontwaardigingsberichten)"
+  },
+  "options_wellbeing_clickbait": {
+    "message": "Clickbait-eliminator (verwijder virale manipulatieve koppen)"
+  },
+  "wellbeing_break_title": {
+    "message": "Adem even uit"
+  },
+  "wellbeing_break_body_template": {
+    "message": "Je hebt zojuist $1 berichten doorgescrold. PureFusion heeft de feed tijdelijk gepauzeerd om eindeloos scrollen te voorkomen. Is het tijd om iets anders te doen?"
+  },
+  "wellbeing_break_resume_btn": {
+    "message": "Toch doorgaan met scrollen"
+  },
+  "wellbeing_session_timer_prefix": {
+    "message": "Sessie"
+  },
+  "wellbeing_report_button": {
+    "message": "Rapport"
+  },
+  "wellbeing_weekly_report_button": {
+    "message": "Week"
+  },
+  "wellbeing_report_disabled": {
+    "message": "Dagelijks feedrapport is uitgeschakeld. Schakel het in bij Digitaal welzijn."
+  },
+  "wellbeing_report_label_auto": {
+    "message": "Dagelijks feedrapport"
+  },
+  "wellbeing_report_label_session": {
+    "message": "Sessie-feedrapport"
+  },
+  "wellbeing_weekly_report_label": {
+    "message": "Wekelijks feedrapport"
+  },
+  "wellbeing_report_no_filters": {
+    "message": "Nog geen filters geactiveerd"
+  },
+  "wellbeing_weekly_report_no_data": {
+    "message": "Wekelijks rapport heeft eerst meer activiteitsgegevens nodig."
+  },
+  "wellbeing_session_awareness_toast_template": {
+    "message": "Hoog scrolritme gedetecteerd: $1 scrolls in de afgelopen minuut ($2 min sessie). Overweeg een korte pauze."
+  },
+  "wellbeing_report_panel_title": {
+    "message": "PureFusion Feed-rapporten"
+  },
+  "wellbeing_report_panel_close": {
+    "message": "Sluiten"
+  },
+  "wellbeing_report_panel_session_tab": {
+    "message": "Sessie"
+  },
+  "wellbeing_report_panel_weekly_tab": {
+    "message": "Wekelijks"
+  },
+  "wellbeing_report_panel_hidden": {
+    "message": "Verborgen items"
+  },
+  "wellbeing_report_panel_reels": {
+    "message": "Reels geblokkeerd"
+  },
+  "wellbeing_report_panel_top_reason": {
+    "message": "Grootste afleiding"
+  },
+  "wellbeing_report_panel_minutes_saved": {
+    "message": "Minuten bespaard (schatting)"
+  },
+  "wellbeing_report_panel_elapsed": {
+    "message": "Sessieduur"
+  },
+  "wellbeing_report_panel_refresh": {
+    "message": "Vernieuwen"
+  },
+  "wellbeing_report_panel_reset_session": {
+    "message": "Sessie opnieuw instellen"
+  },
+  "wellbeing_report_panel_reset_done": {
+    "message": "Sessietellers opnieuw ingesteld."
+  },
+  "wellbeing_report_panel_note": {
+    "message": "Tip: Dagelijkse waarden worden opnieuw ingesteld bij sessiereset; wekelijkse rollup wordt berekend uit opgeslagen dagelijkse buckets."
+  },
+  "wellbeing_report_panel_weekly_window": {
+    "message": "Voortschrijdend 7-daags venster"
+  },
+  "wellbeing_report_panel_weekly_trend_title": {
+    "message": "7-daagse trend"
+  },
+  "wellbeing_report_panel_weekly_top_reasons_title": {
+    "message": "Belangrijkste afleidingsredenen"
+  },
+  "wellbeing_report_panel_weekly_no_reasons": {
+    "message": "Nog geen gegevens over afleidingsredenen."
+  },
+  "wellbeing_report_panel_weekly_reason_explain": {
+    "message": "Uitleggen"
+  },
+  "wellbeing_report_reason_explain_ads": {
+    "message": "Gesponsorde of advertentie-achtige inhoud werd gefilterd om promotionele rommel te verminderen."
+  },
+  "wellbeing_report_reason_explain_story": {
+    "message": "Verhaalactiviteitspatronen (likes/commentaren/vriendschappen/incheckingen) werden gefilterd als feed-ruis met weinig signaal."
+  },
+  "wellbeing_report_reason_explain_post_type": {
+    "message": "Een berichtformaatfilter verwijderde inhoudstypen die je hebt gekozen te onderdrukken (video/foto/link/alleen-tekst)."
+  },
+  "wellbeing_report_reason_explain_bait": {
+    "message": "Gedragsmatige veiligheidsfilters markeerden manipulatieve of hoge-verontwaardigingspatronen die je aan het scrollen houden."
+  },
+  "wellbeing_report_reason_explain_nav": {
+    "message": "Navigatie- en module-rommelbesturingen verwijderden afleidende niet-feed UI-elementen."
+  },
+  "wellbeing_report_reason_explain_keyword": {
+    "message": "Trefwoordregels kwamen overeen met dit item en filterden het op basis van je aangepaste blokkeringslijst."
+  },
+  "wellbeing_report_reason_explain_generic": {
+    "message": "Deze categorie werd gefilterd door je actieve PureFusion-regels om je feed schoner en meer gefocust te houden."
+  },
+  "wellbeing_report_reason_open_settings": {
+    "message": "Gerelateerde instellingen openen"
+  },
   "wellbeing_weekly_report_toast_template": {
     "message": "$LABEL$: $HIDDEN$ items verborgen, $REELS$ reels geblokkeerd, grootste afleiding $REASON$, schatting $MINUTES$ min bespaard over 7 dagen.",
-    "placeholders": {"label": {"content": "$1"}, "hidden": {"content": "$2"}, "reels": {"content": "$3"}, "reason": {"content": "$4"}, "minutes": {"content": "$5"}}
+    "placeholders": {
+      "label": {
+        "content": "$1"
+      },
+      "hidden": {
+        "content": "$2"
+      },
+      "reels": {
+        "content": "$3"
+      },
+      "reason": {
+        "content": "$4"
+      },
+      "minutes": {
+        "content": "$5"
+      }
+    }
   },
   "wellbeing_report_toast_template": {
     "message": "$LABEL$: $HIDDEN$ items verborgen, $REELS$ reels geblokkeerd, belangrijkste reden $REASON$, schatting $MINUTES$ min bespaard.",
-    "placeholders": {"label": {"content": "$1"}, "hidden": {"content": "$2"}, "reels": {"content": "$3"}, "reason": {"content": "$4"}, "minutes": {"content": "$5"}}
+    "placeholders": {
+      "label": {
+        "content": "$1"
+      },
+      "hidden": {
+        "content": "$2"
+      },
+      "reels": {
+        "content": "$3"
+      },
+      "reason": {
+        "content": "$4"
+      },
+      "minutes": {
+        "content": "$5"
+      }
+    }
   },
-  "options_social_ghost_title": {"message": "Spookmodus (Messenger)"},
-  "options_social_ghost_desc": {"message": "Privé-interacties. Verberg je sporen tijdens het berichten sturen."},
-  "options_social_hide_seen": {"message": "\"Gezien\"-bevestigingen verbergen (lezen zonder dat zij het weten)"},
-  "options_social_hide_typing": {"message": "\"Typt...\"-indicator verbergen"},
-  "options_social_privacy_blur": {"message": "Privacy-vervaging (chatlíchaam vervagen tot hover)"},
-  "options_social_meta_title": {"message": "Meta AI & algoritmische rommel"},
-  "options_social_auto_comment_preview": {"message": "Automatisch commentaarvoorbeeld"},
-  "options_social_auto_comment_preview_toggle": {"message": "Automatisch commentaarvoorbeeld inschakelen"},
-  "options_beta_badge": {"message": "BETA"},
-  "options_comment_preview_warning_text": {"message": "Deze functie simuleert knoopklikken om commentaarsecties uit te vouwen terwijl je scrolt. Het is experimenteel en werkt mogelijk niet op alle berichten, kan stoppen na Facebook-lay-outupdates, of kan snelheidsbegrenzing activeren als sweep-aantallen te hoog zijn ingesteld. Houd de afkoelingstijd boven 1200 ms en maximale berichten per sweep onder 20 bij eerste tests."},
-  "options_comment_preview_risk_text": {"message": "Inschakelen op eigen risico. De eerste keer dat je dit inschakelt verschijnt een bevestigingsverzoek."},
-  "options_social_comment_preview_desc": {"message": "Stel hieronder de afkoelingstijd en het bereik af. Hogere afkoelingstijden en lagere sweep-limieten verminderen de kans op FB-snelheidsbegrenzing."},
-  "options_social_comment_preview_cooldown": {"message": "Commentaarvoorbeeld-afkoelingstijd (ms)"},
-  "options_social_comment_preview_retry_cap": {"message": "Opnieuw proberen-limiet per bericht"},
-  "options_social_comment_preview_sweep_cap": {"message": "Maximale berichten per sweep"},
-  "options_social_comment_preview_home": {"message": "Toestaan op startpagina-feed"},
-  "options_social_comment_preview_groups": {"message": "Toestaan op groepen"},
-  "options_social_comment_preview_watch": {"message": "Toestaan op Watch"},
-  "options_social_comment_preview_marketplace": {"message": "Toestaan op Marketplace"},
-  "options_social_comment_preview_notifications": {"message": "Toestaan op meldingen"},
-  "options_social_comment_preview_other": {"message": "Toestaan op andere oppervlakken"},
-  "options_social_comment_preview_strategy": {"message": "Voorbeeldstrategie"},
-  "options_social_comment_preview_strategy_inject": {"message": "Slim injecteren (stabiel, v3)"},
-  "options_social_comment_preview_strategy_click": {"message": "Verouderd klikken (v2)"},
-  "options_social_nuke_meta": {"message": "Meta AI verwijderen (verwijder alle verlooppictogrammen en glitterknoppen)"},
-  "options_social_track_unfriends": {"message": "Ontvrienden en deactiveringen bijhouden"},
-  "options_social_notif_title": {"message": "Melding-zielenverzoeker"},
-  "options_social_notif_style": {"message": "Waarschuwingsjuweel-stijl (de rode stip)"},
-  "options_social_notif_style_classic": {"message": "Klassiek rood (standaard)"},
-  "options_social_notif_style_blue": {"message": "Puur blauw (subtiel)"},
-  "options_social_notif_style_purple": {"message": "Fusion paars (merkeigen)"},
-  "options_social_notif_style_grey": {"message": "Spookgrijs (minimaal)"},
-  "options_social_notif_style_hidden": {"message": "Volledig verborgen"},
-  "options_social_notif_digest": {"message": "Meldingsdigest-modus (bundel meldingen elk uur)"},
-  "options_social_notif_games": {"message": "Spelmeldingen verbergen"},
-  "options_social_notif_birthdays": {"message": "Verjaardagsmeldingen verbergen"},
-  "options_social_notif_marketplace": {"message": "Marketplace-meldingen verbergen"},
-  "options_social_notif_engagement": {"message": "Algoritmische betrokkenheidsverzoeken verbergen"},
-  "options_social_search_title": {"message": "Zoekpopup-beheer"},
-  "options_social_search_desc": {"message": "Onderdruk afleidende zoekdropdown-suggesties."},
-  "options_social_search_hide_all": {"message": "Alle zoekpopup-suggesties verbergen"},
-  "options_social_search_hide_trending": {"message": "Trending zoeksuggesties verbergen"},
-  "options_social_search_hide_recent": {"message": "Sectie recente zoekopdrachten verbergen"},
-  "options_keywords_card_desc": {"message": "Scheiden trefwoorden door komma's."},
-  "options_keywords_blocklist_label": {"message": "Blokkeringslijst (vouwt berichten samen met een \"Toch weergeven\"-knop)"},
-  "options_keywords_autohide_label": {"message": "Automatisch verbergen (verwijdert berichten met deze tekenreeksen stilzwijgend)"},
-  "options_keywords_source_blocklist_label": {"message": "Verborgen bronnen (verberg altijd overeenkomende bronnamen)"},
-  "options_keywords_allowlist_label": {"message": "Toegestane trefwoorden (nooit blokkeren als bericht deze bevat)"},
-  "options_keywords_allowlist_friends_label": {"message": "Nooit verbergen bronnen (vrienden/pagina's)"},
-  "options_keywords_blocklist_placeholder": {"message": "politiek, spoilers, enz..."},
-  "options_keywords_autohide_placeholder": {"message": "spam-buzzword..."},
-  "options_keywords_source_blocklist_placeholder": {"message": "Jan Janssen, Luid Nieuwspagina..."},
-  "options_keywords_allowlist_placeholder": {"message": "familieupdate, projectlancering..."},
-  "options_keywords_allowlist_friends_placeholder": {"message": "Jane Doe, Mijn favoriete pagina..."},
-  "options_data_backup_title": {"message": "Configuratieback-up"},
-  "options_data_backup_desc": {"message": "Exporteer je instellingen en blokkeringslijsten als JSON om te synchroniseren naar een andere machine."},
-  "options_data_export_btn": {"message": "Exporteren naar bestand"},
-  "options_data_import_btn": {"message": "Importeren uit bestand"},
-  "options_data_about_title": {"message": "Over & ondersteuning"},
-  "options_data_about_desc": {"message": "Hulp nodig, wil je een probleem melden of de ontwikkeling ondersteunen? Bereik me rechtstreeks via de onderstaande links."},
-  "options_data_about_discord": {"message": "Discord (Purefusion-Feeds)"},
-  "options_data_about_github": {"message": "GitHub-repository"},
-  "options_data_about_issues": {"message": "Problemen melden"},
-  "options_data_about_donate": {"message": "Doneren / ondersteunen"},
-  "options_data_diag_title": {"message": "Diagnostische modus"},
-  "options_data_diag_desc": {"message": "Optioneel lokaal debug-overlay om verbergredenen en filteractiviteit te inspecteren."},
-  "options_data_diag_enable": {"message": "Diagnostische modus inschakelen"},
-  "options_data_diag_overlay": {"message": "Diagnostisch overlay op de pagina tonen"},
-  "options_data_diag_compact": {"message": "Compact diagnostisch overlay gebruiken"},
-  "options_data_diag_console": {"message": "Uitgebreide diagnostiek in console"},
-  "options_data_diag_max_reasons": {"message": "Maximale reden-rijen in overlay"},
-  "options_data_diag_thresholds_title": {"message": "Observer-piekdrempelwaarden"},
-  "options_data_diag_thresholds_desc": {"message": "Stel waarschuwings- en ernstige drempelwaarden af die worden gebruikt door diagnostische werkbelastingswaarschuwingen."},
-  "options_data_diag_warn_duration": {"message": "Waarschuwingsduur (ms)"},
-  "options_data_diag_severe_duration": {"message": "Ernstige duur (ms)"},
-  "options_data_diag_warn_nodes": {"message": "Waarschuwingsknooppuntaantal"},
-  "options_data_diag_severe_nodes": {"message": "Ernstig knooppuntaantal"},
-  "options_data_diag_warn_records": {"message": "Waarschuwingsmutatie-records"},
-  "options_data_diag_severe_records": {"message": "Ernstige mutatie-records"},
-  "options_data_reset_title": {"message": "Fabrieksinstellingen herstellen"},
-  "options_data_reset_desc": {"message": "Hiermee worden alle voorkeuren en lokale AI-leergegevens gewist."},
-  "options_data_reset_btn": {"message": "Alles wissen"},
-  "options_toast_saved": {"message": "Instellingen succesvol opgeslagen."},
-  "options_toast_imported": {"message": "Instellingen succesvol geïmporteerd."},
-  "options_toast_invalid_backup": {"message": "Ongeldig PureFusion-back-upbestand."},
-  "options_toast_import_error": {"message": "Fout bij importeren van bestand. Het is mogelijk beschadigd."},
-  "options_toast_provider_permission_denied": {"message": "AI-provider toestemming geweigerd. Provider uitgeschakeld."},
-  "options_toast_preset_applied": {"message": "Voorinstelling succesvol toegepast."},
-  "options_toast_custom_css_snippet_loaded": {"message": "Aangepaste CSS-snippet geladen. Klik op Opslaan om toe te passen."},
-  "options_toast_ultrafast_applied": {"message": "Ultra snel modus toegepast voor dit apparaat."},
-  "options_toast_mode_clean_applied": {"message": "Schone modus toegepast."},
-  "options_toast_mode_smart_applied": {"message": "Slimme modus toegepast."},
-  "options_reset_confirm": {"message": "Weet je het zeker? Hiermee worden je voorkeuren en alle lokale AI-trackinggegevens gewist."},
-  "options_sidebar_filters": {"message": "🚫 Kernfilters"},
-  "options_sidebar_wellbeing": {"message": "🧘 Digitaal welzijn"},
-  "options_sidebar_ai": {"message": "🤖 AI-motor"},
-  "options_sidebar_ui": {"message": "🎨 UI-aanpassingen"},
-  "options_sidebar_keywords": {"message": "🔤 Trefwoordfilters"},
-  "options_sidebar_social": {"message": "🤝 Sociaal & privacy"},
-  "options_sidebar_data": {"message": "💾 Gegevens & back-up"},
-  "welcome_title": {"message": "Welkom bij PureFusion Feed"},
-  "welcome_subtitle": {"message": "Stap in een schonere, snellere en meer privé sociale ervaring."},
-  "welcome_god_mode": {"message": "God Mode Core"},
-  "welcome_god_mode_desc": {"message": "Totale verwijdering van gesponsorde inhoud, voorgestelde reels en algoritmische rommel."},
-  "welcome_privacy_ai": {"message": "Privacy AI"},
-  "welcome_privacy_ai_desc": {"message": "Vat lange berichten samen en blokkeer clickbait met behulp van offline, lokale AI-technologie."},
-  "welcome_dopamine": {"message": "Dopamine-brekers"},
-  "welcome_dopamine_desc": {"message": "Bestrijd eindeloos scrollen met sessietimers, grijswaardenmodus en scroll-limieten."},
-  "welcome_ready": {"message": "Klaar om de controle te nemen?"},
-  "welcome_ready_desc": {"message": "Je feed staat nu onder jouw bevel. Je kunt het **Geavanceerd dashboard** altijd openen."},
-  "welcome_help_title": {"message": "Hulp nodig of een bug wil melden?"},
-  "welcome_help_desc": {"message": "Bereik me rechtstreeks op Discord, open GitHub-problemen, of ondersteun PureFusion-ontwikkeling."},
-  "welcome_help_discord": {"message": "Discord: Purefusion-Feeds"},
-  "welcome_help_github": {"message": "GitHub-repository"},
-  "welcome_help_issues": {"message": "GitHub-problemen"},
-  "welcome_help_donate": {"message": "Doneren / ondersteunen"},
-  "welcome_support_development": {"message": "❤️ Ontwikkeling ondersteunen"},
-  "welcome_footer_built": {"message": "Gebouwd met ❤️ door Michael Harrell & aangedreven door PureFusion 2024"},
-  "inpage_fab_title": {"message": "PureFusion-dashboard openen"},
-  "inpage_modal_title": {"message": "PureFusion-paneel"},
-  "inpage_modal_ads": {"message": "Advertenties blokkeren"},
-  "inpage_modal_sponsored": {"message": "Gesponsorde berichten verbergen"},
-  "inpage_modal_sugg": {"message": "Suggesties en Reels verbergen"},
-  "inpage_modal_stories": {"message": "Verhalen-balk verbergen"},
-  "inpage_modal_ai": {"message": "AI Rage/Clickbait-filter"},
-  "inpage_modal_gray": {"message": "Grijswaardenmodus"},
-  "content_hidden_chip_label": {"message": "Verborgen door PureFusion"},
-  "content_hidden_chip_show_once": {"message": "Eenmalig weergeven"},
-  "content_hidden_chip_allow_source": {"message": "Bron altijd toestaan"},
-  "content_allow_source_exists": {"message": "staat al in Nooit verbergen-bronnen."},
-  "content_allow_source_added": {"message": "Toegevoegd"},
-  "content_allow_source_added_suffix": {"message": "aan Nooit verbergen-bronnen."},
-  "messenger_ai_rewrite_btn": {"message": "Herschrijven"},
-  "messenger_ai_replies_btn": {"message": "Slimme antwoorden"},
-  "messenger_ai_rewriting_btn": {"message": "Herschrijven..."},
-  "messenger_ai_generating_btn": {"message": "Genereren..."},
-  "messenger_ai_empty_input": {"message": "Typ eerst een bericht."},
-  "messenger_ai_rewrite_success": {"message": "Bericht herschreven."},
-  "messenger_ai_rewrite_fail": {"message": "Herschrijven mislukt. Controleer de AI-providerinstellingen."},
-  "messenger_ai_context_missing": {"message": "Meer chatcontext nodig voor slimme antwoorden."},
-  "messenger_ai_replies_fail": {"message": "Kon geen slimme antwoorden genereren."},
-  "messenger_ai_provider_required": {"message": "Configureer eerst een AI-provider in PureFusion-instellingen."},
-  "options_sidebar_poweruser": {"message": "⚡ Power-gebruikersregels"},
-  "options_poweruser_title": {"message": "Power-gebruiker regelmotor"},
-  "options_poweruser_desc": {"message": "Doelwit en verberg elk element op de pagina met behulp van aangepaste selectors of tekstovereenkomst. Wees precies om te voorkomen dat je inhoud verbergt die je wilt zien."},
-  "options_poweruser_add_rule": {"message": "Nieuwe verbergingsregel toevoegen"},
-  "options_poweruser_rule_list": {"message": "Actieve regels"},
-  "options_poweruser_no_rules": {"message": "Nog geen aangepaste regels gedefinieerd. Gebruik de '+'-knop of klik met de rechtermuisknop op elementen op Facebook om ze te 'Zappen'."},
-  "options_poweruser_type_label": {"message": "Regeltype"},
-  "options_poweruser_type_selector": {"message": "CSS-selector"},
-  "options_poweruser_type_text": {"message": "Tekstovereenkomst"},
-  "options_poweruser_rule_label": {"message": "Regellabel (interne naam)"},
-  "options_poweruser_rule_value": {"message": "Selector of zin"},
-  "options_poweruser_rule_wrapper_label": {"message": "Bereik (wrapper-selector)"},
-  "options_poweruser_rule_wrapper_placeholder": {"message": "bijv. [role='article'] (optioneel)"},
-  "options_poweruser_save_rule": {"message": "Regel opslaan"},
-  "options_poweruser_cancel": {"message": "Annuleren"},
-  "options_poweruser_rule_enabled": {"message": "Ingeschakeld"},
-  "options_poweruser_delete_rule": {"message": "Verwijderen"},
-  "options_poweruser_edit_rule": {"message": "Bewerken"},
-  "quick_action_menu_zap_element": {"message": "Element verwijderen (Zap)"},
-  "options_poweruser_delete_confirm": {"message": "Weet je zeker dat je deze regel wilt verwijderen?"},
-  "options_toast_rule_updated": {"message": "Regel bijgewerkt."},
-  "options_toast_rule_deleted": {"message": "Regel verwijderd."},
-  "options_toast_rules_saved": {"message": "Aangepaste regels succesvol opgeslagen."},
-  "options_toast_rule_value_required": {"message": "Regelwaarde (selector/tekst) is vereist."},
-  "quick_action_save_later": { "message": "Save to Read Later" },
-  "popup_readlater_title": { "message": "Read Later" },
-  "popup_readlater_one": { "message": "1 saved" },
-  "popup_readlater_many": { "message": "{count} saved" },
-  "popup_readlater_view": { "message": "View Queue" },
-  "options_readlater_title": { "message": "Read Later Queue" },
-  "options_readlater_desc": { "message": "Posts saved from the Facebook feed using right-click → Teach PureFusion → Save to Read Later." },
-  "options_readlater_clear": { "message": "Clear All" },
-  "content_saved_for_later": { "message": "Post saved to Read Later." },
-  "content_save_later_duplicate": { "message": "Already in your Read Later queue." },
-  "content_save_later_error": { "message": "Could not identify a post to save. Try right-clicking within a post." },
-  "options_filters_post_age_label": { "message": "Hide Posts Older Than" },
-  "options_filters_post_age_desc": { "message": "Hide feed posts older than the chosen threshold. Reads the post timestamp — posts without a detectable date are kept visible." },
-  "options_filters_post_age_off": { "message": "Off" },
-  "options_filters_post_age_6h": { "message": "6 hours" },
-  "options_filters_post_age_12h": { "message": "12 hours" },
-  "options_filters_post_age_24h": { "message": "24 hours (1 day)" },
-  "options_filters_post_age_48h": { "message": "2 days" },
-  "options_filters_post_age_72h": { "message": "3 days" },
-  "options_filters_post_age_7d": { "message": "7 days" },
-  "options_filters_post_age_14d": { "message": "14 days" },
-  "options_filters_post_age_30d": { "message": "30 days" },
-  "options_ui_reply_only_label": { "message": "Reply-Only Mode" },
-  "options_ui_reply_only_desc": { "message": "Collapse post bodies in the feed — hides post text and attached stories, leaving only the comment threads visible. Useful for cutting through engagement-bait without seeing the inflammatory content." }
+  "options_social_ghost_title": {
+    "message": "Spookmodus (Messenger)"
+  },
+  "options_social_ghost_desc": {
+    "message": "Privé-interacties. Verberg je sporen tijdens het berichten sturen."
+  },
+  "options_social_hide_seen": {
+    "message": "\"Gezien\"-bevestigingen verbergen (lezen zonder dat zij het weten)"
+  },
+  "options_social_hide_typing": {
+    "message": "\"Typt...\"-indicator verbergen"
+  },
+  "options_social_privacy_blur": {
+    "message": "Privacy-vervaging (chatlíchaam vervagen tot hover)"
+  },
+  "options_social_meta_title": {
+    "message": "Meta AI & algoritmische rommel"
+  },
+  "options_social_auto_comment_preview": {
+    "message": "Automatisch commentaarvoorbeeld"
+  },
+  "options_social_auto_comment_preview_toggle": {
+    "message": "Automatisch commentaarvoorbeeld inschakelen"
+  },
+  "options_beta_badge": {
+    "message": "BETA"
+  },
+  "options_comment_preview_warning_text": {
+    "message": "Deze functie simuleert knoopklikken om commentaarsecties uit te vouwen terwijl je scrolt. Het is experimenteel en werkt mogelijk niet op alle berichten, kan stoppen na Facebook-lay-outupdates, of kan snelheidsbegrenzing activeren als sweep-aantallen te hoog zijn ingesteld. Houd de afkoelingstijd boven 1200 ms en maximale berichten per sweep onder 20 bij eerste tests."
+  },
+  "options_comment_preview_risk_text": {
+    "message": "Inschakelen op eigen risico. De eerste keer dat je dit inschakelt verschijnt een bevestigingsverzoek."
+  },
+  "options_social_comment_preview_desc": {
+    "message": "Stel hieronder de afkoelingstijd en het bereik af. Hogere afkoelingstijden en lagere sweep-limieten verminderen de kans op FB-snelheidsbegrenzing."
+  },
+  "options_social_comment_preview_cooldown": {
+    "message": "Commentaarvoorbeeld-afkoelingstijd (ms)"
+  },
+  "options_social_comment_preview_retry_cap": {
+    "message": "Opnieuw proberen-limiet per bericht"
+  },
+  "options_social_comment_preview_sweep_cap": {
+    "message": "Maximale berichten per sweep"
+  },
+  "options_social_comment_preview_home": {
+    "message": "Toestaan op startpagina-feed"
+  },
+  "options_social_comment_preview_groups": {
+    "message": "Toestaan op groepen"
+  },
+  "options_social_comment_preview_watch": {
+    "message": "Toestaan op Watch"
+  },
+  "options_social_comment_preview_marketplace": {
+    "message": "Toestaan op Marketplace"
+  },
+  "options_social_comment_preview_notifications": {
+    "message": "Toestaan op meldingen"
+  },
+  "options_social_comment_preview_other": {
+    "message": "Toestaan op andere oppervlakken"
+  },
+  "options_social_comment_preview_strategy": {
+    "message": "Voorbeeldstrategie"
+  },
+  "options_social_comment_preview_strategy_inject": {
+    "message": "Slim injecteren (stabiel, v3)"
+  },
+  "options_social_comment_preview_strategy_click": {
+    "message": "Verouderd klikken (v2)"
+  },
+  "options_social_nuke_meta": {
+    "message": "Meta AI verwijderen (verwijder alle verlooppictogrammen en glitterknoppen)"
+  },
+  "options_social_track_unfriends": {
+    "message": "Ontvrienden en deactiveringen bijhouden"
+  },
+  "options_social_notif_title": {
+    "message": "Melding-zielenverzoeker"
+  },
+  "options_social_notif_style": {
+    "message": "Waarschuwingsjuweel-stijl (de rode stip)"
+  },
+  "options_social_notif_style_classic": {
+    "message": "Klassiek rood (standaard)"
+  },
+  "options_social_notif_style_blue": {
+    "message": "Puur blauw (subtiel)"
+  },
+  "options_social_notif_style_purple": {
+    "message": "Fusion paars (merkeigen)"
+  },
+  "options_social_notif_style_grey": {
+    "message": "Spookgrijs (minimaal)"
+  },
+  "options_social_notif_style_hidden": {
+    "message": "Volledig verborgen"
+  },
+  "options_social_notif_digest": {
+    "message": "Meldingsdigest-modus (bundel meldingen elk uur)"
+  },
+  "options_social_notif_games": {
+    "message": "Spelmeldingen verbergen"
+  },
+  "options_social_notif_birthdays": {
+    "message": "Verjaardagsmeldingen verbergen"
+  },
+  "options_social_notif_marketplace": {
+    "message": "Marketplace-meldingen verbergen"
+  },
+  "options_social_notif_engagement": {
+    "message": "Algoritmische betrokkenheidsverzoeken verbergen"
+  },
+  "options_social_search_title": {
+    "message": "Zoekpopup-beheer"
+  },
+  "options_social_search_desc": {
+    "message": "Onderdruk afleidende zoekdropdown-suggesties."
+  },
+  "options_social_search_hide_all": {
+    "message": "Alle zoekpopup-suggesties verbergen"
+  },
+  "options_social_search_hide_trending": {
+    "message": "Trending zoeksuggesties verbergen"
+  },
+  "options_social_search_hide_recent": {
+    "message": "Sectie recente zoekopdrachten verbergen"
+  },
+  "options_keywords_card_desc": {
+    "message": "Scheiden trefwoorden door komma's."
+  },
+  "options_keywords_blocklist_label": {
+    "message": "Blokkeringslijst (vouwt berichten samen met een \"Toch weergeven\"-knop)"
+  },
+  "options_keywords_autohide_label": {
+    "message": "Automatisch verbergen (verwijdert berichten met deze tekenreeksen stilzwijgend)"
+  },
+  "options_keywords_source_blocklist_label": {
+    "message": "Verborgen bronnen (verberg altijd overeenkomende bronnamen)"
+  },
+  "options_keywords_allowlist_label": {
+    "message": "Toegestane trefwoorden (nooit blokkeren als bericht deze bevat)"
+  },
+  "options_keywords_allowlist_friends_label": {
+    "message": "Nooit verbergen bronnen (vrienden/pagina's)"
+  },
+  "options_keywords_blocklist_placeholder": {
+    "message": "politiek, spoilers, enz..."
+  },
+  "options_keywords_autohide_placeholder": {
+    "message": "spam-buzzword..."
+  },
+  "options_keywords_source_blocklist_placeholder": {
+    "message": "Jan Janssen, Luid Nieuwspagina..."
+  },
+  "options_keywords_allowlist_placeholder": {
+    "message": "familieupdate, projectlancering..."
+  },
+  "options_keywords_allowlist_friends_placeholder": {
+    "message": "Jane Doe, Mijn favoriete pagina..."
+  },
+  "options_data_backup_title": {
+    "message": "Configuratieback-up"
+  },
+  "options_data_backup_desc": {
+    "message": "Exporteer je instellingen en blokkeringslijsten als JSON om te synchroniseren naar een andere machine."
+  },
+  "options_data_export_btn": {
+    "message": "Exporteren naar bestand"
+  },
+  "options_data_import_btn": {
+    "message": "Importeren uit bestand"
+  },
+  "options_data_about_title": {
+    "message": "Over & ondersteuning"
+  },
+  "options_data_about_desc": {
+    "message": "Hulp nodig, wil je een probleem melden of de ontwikkeling ondersteunen? Bereik me rechtstreeks via de onderstaande links."
+  },
+  "options_data_about_discord": {
+    "message": "Discord (Purefusion-Feeds)"
+  },
+  "options_data_about_github": {
+    "message": "GitHub-repository"
+  },
+  "options_data_about_issues": {
+    "message": "Problemen melden"
+  },
+  "options_data_about_donate": {
+    "message": "Doneren / ondersteunen"
+  },
+  "options_data_diag_title": {
+    "message": "Diagnostische modus"
+  },
+  "options_data_diag_desc": {
+    "message": "Optioneel lokaal debug-overlay om verbergredenen en filteractiviteit te inspecteren."
+  },
+  "options_data_diag_enable": {
+    "message": "Diagnostische modus inschakelen"
+  },
+  "options_data_diag_overlay": {
+    "message": "Diagnostisch overlay op de pagina tonen"
+  },
+  "options_data_diag_compact": {
+    "message": "Compact diagnostisch overlay gebruiken"
+  },
+  "options_data_diag_console": {
+    "message": "Uitgebreide diagnostiek in console"
+  },
+  "options_data_diag_max_reasons": {
+    "message": "Maximale reden-rijen in overlay"
+  },
+  "options_data_diag_thresholds_title": {
+    "message": "Observer-piekdrempelwaarden"
+  },
+  "options_data_diag_thresholds_desc": {
+    "message": "Stel waarschuwings- en ernstige drempelwaarden af die worden gebruikt door diagnostische werkbelastingswaarschuwingen."
+  },
+  "options_data_diag_warn_duration": {
+    "message": "Waarschuwingsduur (ms)"
+  },
+  "options_data_diag_severe_duration": {
+    "message": "Ernstige duur (ms)"
+  },
+  "options_data_diag_warn_nodes": {
+    "message": "Waarschuwingsknooppuntaantal"
+  },
+  "options_data_diag_severe_nodes": {
+    "message": "Ernstig knooppuntaantal"
+  },
+  "options_data_diag_warn_records": {
+    "message": "Waarschuwingsmutatie-records"
+  },
+  "options_data_diag_severe_records": {
+    "message": "Ernstige mutatie-records"
+  },
+  "options_data_reset_title": {
+    "message": "Fabrieksinstellingen herstellen"
+  },
+  "options_data_reset_desc": {
+    "message": "Hiermee worden alle voorkeuren en lokale AI-leergegevens gewist."
+  },
+  "options_data_reset_btn": {
+    "message": "Alles wissen"
+  },
+  "options_toast_saved": {
+    "message": "Instellingen succesvol opgeslagen."
+  },
+  "options_toast_imported": {
+    "message": "Instellingen succesvol geïmporteerd."
+  },
+  "options_toast_invalid_backup": {
+    "message": "Ongeldig PureFusion-back-upbestand."
+  },
+  "options_toast_import_error": {
+    "message": "Fout bij importeren van bestand. Het is mogelijk beschadigd."
+  },
+  "options_toast_provider_permission_denied": {
+    "message": "AI-provider toestemming geweigerd. Provider uitgeschakeld."
+  },
+  "options_toast_preset_applied": {
+    "message": "Voorinstelling succesvol toegepast."
+  },
+  "options_toast_custom_css_snippet_loaded": {
+    "message": "Aangepaste CSS-snippet geladen. Klik op Opslaan om toe te passen."
+  },
+  "options_toast_ultrafast_applied": {
+    "message": "Ultra snel modus toegepast voor dit apparaat."
+  },
+  "options_toast_mode_clean_applied": {
+    "message": "Schone modus toegepast."
+  },
+  "options_toast_mode_smart_applied": {
+    "message": "Slimme modus toegepast."
+  },
+  "options_reset_confirm": {
+    "message": "Weet je het zeker? Hiermee worden je voorkeuren en alle lokale AI-trackinggegevens gewist."
+  },
+  "options_sidebar_filters": {
+    "message": "🚫 Kernfilters"
+  },
+  "options_sidebar_wellbeing": {
+    "message": "🧘 Digitaal welzijn"
+  },
+  "options_sidebar_ai": {
+    "message": "🤖 AI-motor"
+  },
+  "options_sidebar_ui": {
+    "message": "🎨 UI-aanpassingen"
+  },
+  "options_sidebar_keywords": {
+    "message": "🔤 Trefwoordfilters"
+  },
+  "options_sidebar_social": {
+    "message": "🤝 Sociaal & privacy"
+  },
+  "options_sidebar_data": {
+    "message": "💾 Gegevens & back-up"
+  },
+  "welcome_title": {
+    "message": "Welkom bij PureFusion Feed"
+  },
+  "welcome_subtitle": {
+    "message": "Stap in een schonere, snellere en meer privé sociale ervaring."
+  },
+  "welcome_god_mode": {
+    "message": "God Mode Core"
+  },
+  "welcome_god_mode_desc": {
+    "message": "Totale verwijdering van gesponsorde inhoud, voorgestelde reels en algoritmische rommel."
+  },
+  "welcome_privacy_ai": {
+    "message": "Privacy AI"
+  },
+  "welcome_privacy_ai_desc": {
+    "message": "Vat lange berichten samen en blokkeer clickbait met behulp van offline, lokale AI-technologie."
+  },
+  "welcome_dopamine": {
+    "message": "Dopamine-brekers"
+  },
+  "welcome_dopamine_desc": {
+    "message": "Bestrijd eindeloos scrollen met sessietimers, grijswaardenmodus en scroll-limieten."
+  },
+  "welcome_ready": {
+    "message": "Klaar om de controle te nemen?"
+  },
+  "welcome_ready_desc": {
+    "message": "Je feed staat nu onder jouw bevel. Je kunt het **Geavanceerd dashboard** altijd openen."
+  },
+  "welcome_help_title": {
+    "message": "Hulp nodig of een bug wil melden?"
+  },
+  "welcome_help_desc": {
+    "message": "Bereik me rechtstreeks op Discord, open GitHub-problemen, of ondersteun PureFusion-ontwikkeling."
+  },
+  "welcome_help_discord": {
+    "message": "Discord: Purefusion-Feeds"
+  },
+  "welcome_help_github": {
+    "message": "GitHub-repository"
+  },
+  "welcome_help_issues": {
+    "message": "GitHub-problemen"
+  },
+  "welcome_help_donate": {
+    "message": "Doneren / ondersteunen"
+  },
+  "welcome_support_development": {
+    "message": "❤️ Ontwikkeling ondersteunen"
+  },
+  "welcome_footer_built": {
+    "message": "Gebouwd met ❤️ door Michael Harrell & aangedreven door PureFusion 2024"
+  },
+  "inpage_fab_title": {
+    "message": "PureFusion-dashboard openen"
+  },
+  "inpage_modal_title": {
+    "message": "PureFusion-paneel"
+  },
+  "inpage_modal_ads": {
+    "message": "Advertenties blokkeren"
+  },
+  "inpage_modal_sponsored": {
+    "message": "Enhanced Ad Filter"
+  },
+  "inpage_modal_sugg": {
+    "message": "Suggesties en Reels verbergen"
+  },
+  "inpage_modal_stories": {
+    "message": "Verhalen-balk verbergen"
+  },
+  "inpage_modal_ai": {
+    "message": "AI Rage/Clickbait-filter"
+  },
+  "inpage_modal_gray": {
+    "message": "Grijswaardenmodus"
+  },
+  "content_hidden_chip_label": {
+    "message": "Verborgen door PureFusion"
+  },
+  "content_hidden_chip_show_once": {
+    "message": "Eenmalig weergeven"
+  },
+  "content_hidden_chip_allow_source": {
+    "message": "Bron altijd toestaan"
+  },
+  "content_allow_source_exists": {
+    "message": "staat al in Nooit verbergen-bronnen."
+  },
+  "content_allow_source_added": {
+    "message": "Toegevoegd"
+  },
+  "content_allow_source_added_suffix": {
+    "message": "aan Nooit verbergen-bronnen."
+  },
+  "messenger_ai_rewrite_btn": {
+    "message": "Herschrijven"
+  },
+  "messenger_ai_replies_btn": {
+    "message": "Slimme antwoorden"
+  },
+  "messenger_ai_rewriting_btn": {
+    "message": "Herschrijven..."
+  },
+  "messenger_ai_generating_btn": {
+    "message": "Genereren..."
+  },
+  "messenger_ai_empty_input": {
+    "message": "Typ eerst een bericht."
+  },
+  "messenger_ai_rewrite_success": {
+    "message": "Bericht herschreven."
+  },
+  "messenger_ai_rewrite_fail": {
+    "message": "Herschrijven mislukt. Controleer de AI-providerinstellingen."
+  },
+  "messenger_ai_context_missing": {
+    "message": "Meer chatcontext nodig voor slimme antwoorden."
+  },
+  "messenger_ai_replies_fail": {
+    "message": "Kon geen slimme antwoorden genereren."
+  },
+  "messenger_ai_provider_required": {
+    "message": "Configureer eerst een AI-provider in PureFusion-instellingen."
+  },
+  "options_sidebar_poweruser": {
+    "message": "⚡ Power-gebruikersregels"
+  },
+  "options_poweruser_title": {
+    "message": "Power-gebruiker regelmotor"
+  },
+  "options_poweruser_desc": {
+    "message": "Doelwit en verberg elk element op de pagina met behulp van aangepaste selectors of tekstovereenkomst. Wees precies om te voorkomen dat je inhoud verbergt die je wilt zien."
+  },
+  "options_poweruser_add_rule": {
+    "message": "Nieuwe verbergingsregel toevoegen"
+  },
+  "options_poweruser_rule_list": {
+    "message": "Actieve regels"
+  },
+  "options_poweruser_no_rules": {
+    "message": "Nog geen aangepaste regels gedefinieerd. Gebruik de '+'-knop of klik met de rechtermuisknop op elementen op Facebook om ze te 'Zappen'."
+  },
+  "options_poweruser_type_label": {
+    "message": "Regeltype"
+  },
+  "options_poweruser_type_selector": {
+    "message": "CSS-selector"
+  },
+  "options_poweruser_type_text": {
+    "message": "Tekstovereenkomst"
+  },
+  "options_poweruser_rule_label": {
+    "message": "Regellabel (interne naam)"
+  },
+  "options_poweruser_rule_value": {
+    "message": "Selector of zin"
+  },
+  "options_poweruser_rule_wrapper_label": {
+    "message": "Bereik (wrapper-selector)"
+  },
+  "options_poweruser_rule_wrapper_placeholder": {
+    "message": "bijv. [role='article'] (optioneel)"
+  },
+  "options_poweruser_save_rule": {
+    "message": "Regel opslaan"
+  },
+  "options_poweruser_cancel": {
+    "message": "Annuleren"
+  },
+  "options_poweruser_rule_enabled": {
+    "message": "Ingeschakeld"
+  },
+  "options_poweruser_delete_rule": {
+    "message": "Verwijderen"
+  },
+  "options_poweruser_edit_rule": {
+    "message": "Bewerken"
+  },
+  "quick_action_menu_zap_element": {
+    "message": "Element verwijderen (Zap)"
+  },
+  "options_poweruser_delete_confirm": {
+    "message": "Weet je zeker dat je deze regel wilt verwijderen?"
+  },
+  "options_toast_rule_updated": {
+    "message": "Regel bijgewerkt."
+  },
+  "options_toast_rule_deleted": {
+    "message": "Regel verwijderd."
+  },
+  "options_toast_rules_saved": {
+    "message": "Aangepaste regels succesvol opgeslagen."
+  },
+  "options_toast_rule_value_required": {
+    "message": "Regelwaarde (selector/tekst) is vereist."
+  },
+  "quick_action_save_later": {
+    "message": "Save to Read Later"
+  },
+  "popup_readlater_title": {
+    "message": "Read Later"
+  },
+  "popup_readlater_one": {
+    "message": "1 saved"
+  },
+  "popup_readlater_many": {
+    "message": "{count} saved"
+  },
+  "popup_readlater_view": {
+    "message": "View Queue"
+  },
+  "options_readlater_title": {
+    "message": "Read Later Queue"
+  },
+  "options_readlater_desc": {
+    "message": "Posts saved from the Facebook feed using right-click → Teach PureFusion → Save to Read Later."
+  },
+  "options_readlater_clear": {
+    "message": "Clear All"
+  },
+  "content_saved_for_later": {
+    "message": "Post saved to Read Later."
+  },
+  "content_save_later_duplicate": {
+    "message": "Already in your Read Later queue."
+  },
+  "content_save_later_error": {
+    "message": "Could not identify a post to save. Try right-clicking within a post."
+  },
+  "options_filters_post_age_label": {
+    "message": "Hide Posts Older Than"
+  },
+  "options_filters_post_age_desc": {
+    "message": "Hide feed posts older than the chosen threshold. Reads the post timestamp — posts without a detectable date are kept visible."
+  },
+  "options_filters_post_age_off": {
+    "message": "Off"
+  },
+  "options_filters_post_age_6h": {
+    "message": "6 hours"
+  },
+  "options_filters_post_age_12h": {
+    "message": "12 hours"
+  },
+  "options_filters_post_age_24h": {
+    "message": "24 hours (1 day)"
+  },
+  "options_filters_post_age_48h": {
+    "message": "2 days"
+  },
+  "options_filters_post_age_72h": {
+    "message": "3 days"
+  },
+  "options_filters_post_age_7d": {
+    "message": "7 days"
+  },
+  "options_filters_post_age_14d": {
+    "message": "14 days"
+  },
+  "options_filters_post_age_30d": {
+    "message": "30 days"
+  },
+  "options_ui_reply_only_label": {
+    "message": "Reply-Only Mode"
+  },
+  "options_ui_reply_only_desc": {
+    "message": "Collapse post bodies in the feed — hides post text and attached stories, leaving only the comment threads visible. Useful for cutting through engagement-bait without seeing the inflammatory content."
+  }
 }

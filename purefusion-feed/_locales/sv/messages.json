@@ -1,567 +1,1715 @@
 {
-  "extName": {"message": "PureFusion Feed", "description": "The name of the extension"},
-  "extDesc": {"message": "Premium Feed Manager med smarta filter, AI-insikter och integritetsskydd för Facebook.", "description": "The extension description"},
-  "common_ads_blocked": {"message": "Annonser blockerade"},
-  "common_spam_hidden": {"message": "Skräp dolt"},
-  "common_save_settings": {"message": "Spara inställningar"},
-  "common_save_changes": {"message": "Spara ändringar"},
-  "common_support_developer": {"message": "Stöd utvecklaren"},
-  "common_open_dashboard": {"message": "Öppna fullständiga inställningar"},
-  "common_open_advanced": {"message": "Öppna avancerad instrumentpanel"},
-  "common_logo_alt": {"message": "PureFusion-logotyp"},
-  "options_page_title": {"message": "PureFusion Feed - Inställningar"},
-  "popup_quick_filters": {"message": "Snabbfilter"},
-  "popup_hide_sponsored_posts": {"message": "Dölj sponsrade inlägg"},
-  "popup_hide_sponsored_posts_desc": {"message": "Etikettbaserad detektering — av som standard"},
-  "popup_block_sponsored": {"message": "Blockera annonser"},
-  "popup_block_sponsored_desc": {"message": "Blockerar annonser via infrastruktursignaler"},
-  "popup_ad_blocker_on": {"message": "✓ Blockerar annonser via infrastruktursignaler"},
-  "popup_ad_blocker_off": {"message": "⚠ Annonsblockerare är av — klicka för att aktivera"},
-  "options_filters_removeAds": {"message": "Blockera annonser (infrastruktursignaler)"},
-  "options_filters_removeSponsored": {"message": "Dölj sponsrade inlägg (etikettdetektering)"},
-  "popup_hide_suggested": {"message": "Dölj förslag/PYMK"},
-  "popup_hide_suggested_desc": {"message": "Tar bort algoritmiska förslag"},
-  "popup_hide_reels": {"message": "Dölj Reels"},
-  "popup_hide_reels_desc": {"message": "Tar bort Reels-fack som injiceras i flödet"},
-  "popup_force_recent": {"message": "Tvinga senaste"},
-  "popup_force_recent_desc": {"message": "Ladda alltid kronologiskt flöde"},
-  "popup_distraction_free": {"message": "Distraheringsfritt läge"},
-  "popup_distraction_free_desc": {"message": "Dölj sidofält, centrera flöde (Alt+Shift+F)"},
-  "popup_fast_keyword": {"message": "Snabb nyckelordsblockning"},
-  "popup_keyword_placeholder": {"message": "Ange nyckelord att komprimera..."},
-  "popup_hide_groups": {"message": "Dölj föreslagna grupper"},
-  "popup_hide_groups_desc": {"message": "Tar bort algoritmiska grupprekommen dationer"},
-  "popup_ghost_mode": {"message": "Spökläge (Meddelanden)"},
-  "popup_ghost_mode_desc": {"message": "Dölj sedd- och skriver-indikatorer"},
-  "popup_nuke_meta_ai": {"message": "Nuka Meta AI"},
-  "popup_nuke_meta_ai_desc": {"message": "Ta bort AI-knappar och glimrar"},
-  "popup_master_toggle_title": {"message": "Växla PureFusion på eller av"},
-  "popup_add_keyword_title": {"message": "Lägg till nyckelord"},
-  "popup_keyword_added": {"message": "Lade till \"{keyword}\" i blocklistan."},
-  "popup_keyword_exists": {"message": "Nyckelordet finns redan."},
-  "quick_action_menu_root": {"message": "Lär PureFusion"},
-  "quick_action_menu_block_keyword": {"message": "Lägg till i blocklista"},
-  "quick_action_menu_autohide_keyword": {"message": "Lägg till i auto-dölj-lista"},
-  "quick_action_menu_allow_keyword": {"message": "Lägg till i tillåtslista"},
-  "quick_action_menu_hide_source": {"message": "Dölj inlägg från den här källan"},
-  "quick_action_menu_allow_source": {"message": "Dölj aldrig den här källan"},
-  "quick_action_select_text_first": {"message": "Markera text först, använd sedan en PureFusion snabbåtgärd."},
-  "quick_action_source_select_name": {"message": "Högerklicka på ett profil-/sida-/gruppnamn eller markera ett källnamn först."},
-  "quick_action_selection_too_short": {"message": "Markerad text är för kort. Välj ett tydligare ord eller fras."},
-  "quick_action_source_too_broad": {"message": "Den källan verkar för bred. Välj ett fullständigt sida-/person-/gruppnamn."},
-  "quick_action_exists_blocklist": {"message": "Finns redan i blocklistan."},
-  "quick_action_exists_autohide": {"message": "Finns redan i auto-dölj-listan."},
-  "quick_action_exists_allowlist": {"message": "Finns redan i tillåtslistan."},
-  "quick_action_exists_source_hide": {"message": "Källan är redan dold."},
-  "quick_action_exists_source_allow": {"message": "Källan finns redan i Dölj aldrig-källor."},
-  "quick_action_added_blocklist": {"message": "Lade till \"$1\" i blocklistan och skannade om flödet."},
-  "quick_action_added_autohide": {"message": "Lade till \"$1\" i auto-dölj och skannade om flödet."},
-  "quick_action_added_allowlist": {"message": "Lade till \"$1\" i tillåtslistan och skannade om flödet."},
-  "quick_action_added_source_hide": {"message": "Döljer nu källan \"$1\" och skannade om flödet."},
-  "quick_action_added_source_allow": {"message": "Lade till \"$1\" i Dölj aldrig-källor och skannade om flödet."},
-  "quick_action_undo_label": {"message": "Ångra"},
-  "quick_action_undo_success": {"message": "Snabbåtgärd ångrad."},
-  "quick_action_undo_expired": {"message": "Ångra är inte längre tillgängligt för den åtgärden."},
-  "quick_action_undo_failed": {"message": "Ångra misslyckades. Försök igen."},
-  "quick_action_unknown": {"message": "Okänd snabbåtgärd."},
-  "options_filters_card_title": {"message": "Annons- och skräpborttagning"},
-  "options_filters_card_desc": {"message": "Växla primära DOM-borttagningsmål."},
-  "options_presets_title": {"message": "Förinställningspaket"},
-  "options_presets_desc": {"message": "Använd kurerade paket för vanliga användningsfall och justera sedan allt manuellt."},
-  "options_presets_label": {"message": "Välj en förinställning"},
-  "options_presets_work_focus": {"message": "Arbetsfo kus"},
-  "options_presets_friends_only": {"message": "Endast vänner"},
-  "options_presets_minimal": {"message": "Minimal"},
-  "options_presets_news_heavy": {"message": "Nyhetsintensiv"},
-  "options_presets_messenger_privacy": {"message": "Messenger-integritet"},
-  "options_presets_apply_btn": {"message": "Tillämpa förinställning"},
-  "options_mode_title": {"message": "Flödesupplevelse-läge"},
-  "options_mode_desc": {"message": "Tillämpa en beständig beteendeprofil ovanpå dina sparade växlar."},
-  "options_mode_label": {"message": "Aktivt läge"},
-  "options_view_mode_label": {"message": "Vy"},
-  "options_view_mode_basic": {"message": "Grundläggande"},
-  "options_view_mode_advanced": {"message": "Avancerat"},
-  "options_mode_custom": {"message": "Anpassat (Använd mina växlar)"},
-  "options_mode_clean": {"message": "Rent läge"},
-  "options_mode_focus": {"message": "Fokusläge"},
-  "options_mode_ultrafast": {"message": "Ultrasnabbt läge (text först, maximal hastighet)"},
-  "options_mode_smart": {"message": "Smart läge"},
-  "options_mode_classic": {"message": "Klassiskt 2012-läge"},
-  "options_mode_profile_custom": {"message": "Använder dina exakt sparade växlar utan ytterligare lägesöverstyningar."},
-  "options_mode_profile_clean": {"message": "Tar bort annons-/föreslagen-röra och socialt brus medan förutsägningsvisuals hålls av för ett lugnare flöde."},
-  "options_mode_profile_focus": {"message": "Hem-först djupfokusprofil: aggressiv röraklippning, kronologi på och bläddravbrottsskydd aktiverat."},
-  "options_mode_profile_ultrafast": {"message": "Text-först hastighetsprofil: tar bort tunga medietyper, undertrycker bild-/videoinläggstyper och minimerar extra UI-bearbetning."},
-  "options_mode_profile_smart": {"message": "Håller kärn-flödesrensning på medan poängsättning, ihopfällning av lågvärdeinlägg och trovärdighetsverifieringssignaler aktiveras."},
-  "options_mode_profile_classic": {"message": "Prioriterar kronologiskt klassiskt flödesbeteende och undertrycker moderna algoritmiska ytor som Watch/Marketplace."},
-  "options_quickstart_title": {"message": "PureFusion på 5 sekunder"},
-  "options_quickstart_desc": {"message": "Välj en snabbprofil nu. Du kan fortfarande finjustera allt nedan."},
-  "options_promise_clean_title": {"message": "Rent Facebook"},
-  "options_promise_clean_desc": {"message": "Mindre annons- och algoritmrör."},
-  "options_promise_fast_title": {"message": "Snabbt Facebook"},
-  "options_promise_fast_desc": {"message": "Ultrasnabbt läge för lättare sessioner."},
-  "options_promise_smart_title": {"message": "Smart Facebook"},
-  "options_promise_smart_desc": {"message": "Poängsättning + trovärdighet + förklarbarhet."},
-  "options_quickstart_btn_clean": {"message": "Använd Rent"},
-  "options_quickstart_btn_fast": {"message": "Använd Ultrasnabbt"},
-  "options_quickstart_btn_smart": {"message": "Använd Smart"},
-  "options_quickstart_recommended": {"message": "Bäst för de flesta användare"},
-  "options_mode_perf_hint_low": {"message": "Den här enheten kanske presterar bättre med Ultrasnabbt läge (text först, lägre CPU/GPU-belastning)."},
-  "options_mode_perf_hint_mid": {"message": "Ultrasnabbt läge kan minska fördröjning under tunga sessioner på den här enheten."},
-  "options_mode_perf_apply": {"message": "Tillämpa Ultrasnabb-rekommendation"},
-  "options_mode_recommendation_low": {"message": "Rekommenderat: Ultrasnabbt"},
-  "options_mode_recommendation_mid": {"message": "Valfritt: Ultrasnabbt för tunga sessioner"},
-  "options_mode_recommendation_active": {"message": "Rekommenderat läge aktivt"},
-  "options_mode_recommendation_balanced": {"message": "Balanserat: nuvarande läge är bra"},
-  "options_mode_why_custom": {"message": "Varför: använder endast dina manuella växelval."},
-  "options_mode_why_clean": {"message": "Varför: tar bort vanlig röra medan en bekant flödeskänsla behålls."},
-  "options_mode_why_focus": {"message": "Varför: inställd för djupt fokus med starkare distraktionsklippning."},
-  "options_mode_why_ultrafast": {"message": "Varför: prioriterar hastighet genom att minska tung flödesbearbetning."},
-  "options_mode_why_smart": {"message": "Varför: balanserar rensning med poängsättning och trovärdighetsignaler."},
-  "options_mode_why_classic": {"message": "Varför: betonar kronologiskt, gammaldags flödesbeteende."},
-  "options_mode_why_device_low": {"message": "Enhetsnot: Ultrasnabbt rekommenderas på den här hårdvaran."},
-  "options_mode_why_device_mid": {"message": "Enhetsnot: Ultrasnabbt kan hjälpa under tunga sessioner."},
-  "options_surface_title": {"message": "Per-yta omfångskontroller"},
-  "options_surface_desc": {"message": "Välj vilka Facebook-ytor som ska ta emot PureFusion-filtrering. Inaktivera en yta för att lämna den orörd."},
-  "options_surface_enable": {"message": "Aktivera filtrering per yta"},
-  "options_surface_home": {"message": "Tillämpa på hemflöde"},
-  "options_surface_groups": {"message": "Tillämpa på grupper"},
-  "options_surface_watch": {"message": "Tillämpa på Watch"},
-  "options_surface_marketplace": {"message": "Tillämpa på Marketplace"},
-  "options_surface_other": {"message": "Tillämpa på andra ytor (profil/sidor/händelser)"},
-  "options_filters_hide_suggested": {"message": "Dölj \"Föreslaget för dig\""},
-  "options_filters_hide_pymk": {"message": "Dölj \"Personer du kanske känner\""},
-  "options_filters_hide_group_suggestions": {"message": "Dölj gruppförslag"},
-  "options_filters_hide_page_suggestions": {"message": "Dölj sidförslag"},
-  "options_filters_hide_fundraisers": {"message": "Dölj insamlingar"},
-  "options_filters_post_types_title": {"message": "Inläggstypsfilterpaket v2"},
-  "options_filters_post_types_desc": {"message": "Strikt inläggsomslags-inriktning plus frasnankare. Håll av om du inte vill ha aggressiv typrensning."},
-  "options_filters_hide_video_posts": {"message": "Dölj videoinlägg"},
-  "options_filters_hide_photo_posts": {"message": "Dölj foto-/bildinlägg"},
-  "options_filters_hide_link_posts": {"message": "Dölj externa länk-/delningsinlägg"},
-  "options_filters_hide_text_posts": {"message": "Dölj textbaserade statusinlägg"},
-  "options_filters_hide_live_video_posts": {"message": "Dölj live-videoinlägg"},
-  "options_filters_hide_share_reposts": {"message": "Dölj dela-/återpubliceringsinlägg"},
-  "options_filters_hide_poll_posts": {"message": "Dölj omröstningsinlägg"},
-  "options_filters_clutter_title": {"message": "Röra och injektioner"},
-  "options_filters_hide_reels_tray": {"message": "Dölj Reels-fack i flöde"},
-  "options_filters_widescreen_label": {"message": "Bredbildsläge"},
-  "options_filters_widescreen_desc": {"message": "Lås upp mittpelargränser för att fylla ultrabreda skärmar."},
-  "options_filters_hide_memories": {"message": "Dölj minnesinlägg"},
-  "options_filters_hide_stories": {"message": "Dölj Berättelse-fältet"},
-  "options_filters_remove_colored_bg": {"message": "Ta bort inlägg med färgad bakgrund"},
-  "options_filters_remove_game_invites": {"message": "Dölj spelinbjudnings- och aktivitetsinlägg"},
-  "options_filters_remove_large_reactions": {"message": "Normalisera överdimensionerade emoji-inlägg"},
-  "options_filters_deduplicate_posts_label": {"message": "Dölj duplicerade inlägg"},
-  "options_filters_deduplicate_posts_desc": {"message": "Undertryck inlägg vars ID redan visats under den här sessionen — fångar FB som återinjicerar samma berättelse flera gånger."},
-  "options_filters_locale_label": {"message": "Flödesspråk"},
-  "options_filters_locale_desc": {"message": "Matcha frasfilter med ditt Facebook-språk. Auto testar alla stödda språk (kan överfiltera blandspråkiga flöden)."},
-  "options_filters_locale_auto": {"message": "Auto (alla stödda språk)"},
-  "options_story_filters_title": {"message": "Berättelseaktivitetsfilter"},
-  "options_story_filters_desc": {"message": "Dölj vanliga lågsignals-aktivitetsberättelser från ditt flöde."},
-  "options_story_filter_became_friends": {"message": "Dölj \"Blev vänner\"-berättelser"},
-  "options_story_filter_joined_groups": {"message": "Dölj \"Gick med i grupp\"-berättelser"},
-  "options_story_filter_commented": {"message": "Dölj \"Kommenterade detta\"-berättelser"},
-  "options_story_filter_liked": {"message": "Dölj \"Gillade detta\"-berättelser"},
-  "options_story_filter_events": {"message": "Dölj händelsedeltagandeberättelser"},
-  "options_story_filter_memories": {"message": "Dölj delade minneberättelser"},
-  "options_story_filter_profile_photo": {"message": "Dölj profilbildsuppdateringsberättelser"},
-  "options_story_filter_cover_photo": {"message": "Dölj omslagsbildsuppdateringsberättelser"},
-  "options_story_filter_life_events": {"message": "Dölj livshändelsesberättelser"},
-  "options_story_filter_checkins": {"message": "Dölj incheckning-/platsaktivitetsberättelser"},
-  "options_story_filter_milestones": {"message": "Dölj milstolpeberättelser"},
-  "options_story_filter_job_work": {"message": "Dölj jobb-/arbetsuppdateringsberättelser"},
-  "options_story_filter_relationship": {"message": "Dölj relationsuppdateringsberättelser"},
-  "options_story_filter_group_activity": {"message": "Dölj gruppaktivitetsinläggsberättelser"},
-  "options_image_filters_title": {"message": "Bildämnesfilter"},
-  "options_image_filters_desc": {"message": "Använd Facebooks bildbe skrivningssignaler för att dölja valda visuella kategorier."},
-  "options_image_filters_enable": {"message": "Aktivera bildämnesfilter (säkert läge)"},
-  "options_image_filter_sports": {"message": "Dölj sportsrelaterade bilder"},
-  "options_image_filter_food": {"message": "Dölj mat- och dryckesbilder"},
-  "options_image_filter_pets": {"message": "Dölj husdjursbilder (hundar/katter)"},
-  "options_image_filter_vehicles": {"message": "Dölj fordonsbilder"},
-  "options_image_filter_screenshots": {"message": "Dölj memes och skärmbild-liknande bilder"},
-  "options_image_filter_travel": {"message": "Dölj rese- och naturbilder"},
-  "options_ai_card_title": {"message": "Lokal förutsägelsemotor"},
-  "options_ai_card_desc": {"message": "Poängsätter flödesobjekt lokalt baserat på din interaktionshistorik. Data lämnar aldrig din enhet."},
-  "options_ai_enable_predictions": {"message": "Aktivera AI-förutsägelser"},
-  "options_ai_show_pf_badge": {"message": "Visa \"PF Score\"-emblem på inlägg"},
-  "options_ai_show_reasons": {"message": "Visa poängorsakshintar på PF-emblem"},
-  "options_ai_dim_low_interest": {"message": "Tona ned/Komprimera lågintresseinlägg (Poäng < 20)"},
-  "options_ai_collapse_low_interest": {"message": "Komprimera lågintresseinlägg med visa-chip"},
-  "options_ai_never_empty_guard": {"message": "Aldrig-tomt flödesskydd (behåll minsta synliga inlägg)"},
-  "options_ai_never_empty_min": {"message": "Minsta antal synliga inlägg"},
-  "options_ai_highlight_high_interest": {"message": "Markera högintresseinlägg (Poäng > 80)"},
-  "options_ai_analyze_trends": {"message": "Analysera lokala trender och nyckelord"},
-  "options_ai_true_affinity_sort": {"message": "Sant affinitetssortering"},
-  "options_ai_true_affinity_sort_desc": {"message": "Ordnar om flödet efter ditt lokala engagemangspoäng i realtid — inlägg med högsta poäng flyter upp med CSS flexbox-ordning, utan att bryta Reacts virtuella DOM."},
-  "options_ai_friend_activity": {"message": "Vänaktivitetsflödesinsikt"},
-  "options_ai_friend_activity_desc": {"message": "Markerar kontakter i det högra sidofältet vars inlägg inte visats i ditt flöde den här sessionen — hjälper identifiera vänner som Facebook kanske tyst undertrycker från din tidslinje."},
-  "options_ai_low_threshold": {"message": "Lågt poängtröskelvärde"},
-  "options_ai_high_threshold": {"message": "Högt poängtröskelvärde"},
-  "options_ai_cred_title": {"message": "Trovärdighetsignaler (Beta)"},
-  "options_ai_cred_desc": {"message": "Heuristiska lokala kontroller för misstänkta påståendemönster. Det här bevisar ingen sanning; det markerar inlägg värda att verifiera."},
-  "options_ai_cred_enabled": {"message": "Aktivera misstänkt påståendedetektering"},
-  "options_ai_cred_badge": {"message": "Visa \"verifiera\" varningsemblem på flaggade inlägg"},
-  "options_ai_cred_strict": {"message": "Strikt läge (starkare poängstraff för misstänkta påståenden)"},
-  "options_ai_cred_debug": {"message": "Visa trovärdighetsfelsökningsförhandsvisning på alla skannade inlägg"},
-  "options_ai_llm_title": {"message": "Djup intelligensserver (BYOK API)"},
-  "options_ai_llm_desc": {"message": "Bring-Your-Own-Key. Lås upp LLM-funktioner som TL;DRs och Kommentar-AI. Dina nycklar sparas uteslutande i lokal maskinlagring."},
-  "options_ai_provider_label": {"message": "Aktiv leverantör"},
-  "options_ai_provider_none": {"message": "Inaktiverad"},
-  "options_ai_provider_openai": {"message": "OpenAI (ChatGPT)"},
-  "options_ai_provider_gemini": {"message": "Google Gemini"},
-  "options_ai_provider_windowai": {"message": "Chrome Native (window.ai)"},
-  "options_ai_openai_key_label": {"message": "OpenAI API-nyckel"},
-  "options_ai_gemini_key_label": {"message": "Google Gemini API-nyckel"},
-  "options_ai_tldr_toggle": {"message": "Injicera \"TL;DR\" sammanfattningsknappar på långa inlägg"},
-  "options_ai_smart_comment_toggle": {"message": "Smart kommentar co-pilot (trollstavsikon)"},
-  "options_ai_clickbait_decode_toggle": {"message": "Clickbait-avkodare (Skriv om sensationella rubriker med fakta)"},
-  "options_ai_messenger_tools_title": {"message": "Messenger AI-verktyg"},
-  "options_ai_messenger_rewrite_toggle": {"message": "Skriv om meddelandeutkast i skrivaren"},
-  "options_ai_messenger_replies_toggle": {"message": "Generera 3 smarta svarsförslag"},
-  "options_ui_card_title": {"message": "Gränssnittsomstrukturering"},
-  "options_ui_friends_only": {"message": "Endast vänner-läge (Ta bort alla grupper/sidor från flöde)"},
-  "options_ui_anonymizer": {"message": "Skärmbild-anonymiserare (Sudda ut profilbilder/namn)"},
-  "options_ui_compact_mode": {"message": "Kompakt läge (Minska marginaler/utfyllnad)"},
-  "options_ui_disable_comment_autofocus": {"message": "Inaktivera autofokusstöld i kommentarrutan"},
-  "options_ui_enforce_chrono": {"message": "Tvinga kronologiskt flöde (Senaste)"},
-  "options_ui_show_link_previews": {"message": "Visa verklig destination för utgående länkar"},
-  "options_ui_absolute_timestamps": {"message": "Konvertera tidsstämplar till absoluta datum"},
-  "options_ui_hide_composer": {"message": "Dölj \"Vad tänker du på?\"-rutan"},
-  "options_ui_comment_sort_label": {"message": "Standard kommentarsortering"},
-  "options_ui_comment_sort_desc": {"message": "Tillämpa automatiskt en sorteringsinställning när kommentarer expanderas på ett inlägg. Aktiveras bara när kommentarer redan är laddade — tvingar inte ihopfällda kommentarsektioner att öppnas."},
-  "options_ui_comment_sort_all": {"message": "Alla kommentarer (FB standard)"},
-  "options_ui_comment_sort_newest": {"message": "Nyaste först"},
-  "options_ui_comment_sort_top": {"message": "Mest relevant"},
-  "options_ui_distraction_free_label": {"message": "Distraheringsfritt läsläge (Alt+Shift+F)"},
-  "options_ui_distraction_free_desc": {"message": "Döljer vänster/höger sidofält och centrerar flödet för en ren läsupplevelse. Växla med Alt+Shift+F när som helst."},
-  "options_ui_image_hover_label": {"message": "Bild hover-expansion"},
-  "options_ui_image_hover_desc": {"message": "Hovra över flödesbilder för att förhandsgranska dem i full storlek. Spara eller öppna i ny flik direkt från panelen. Av som standard."},
-  "options_ui_auto_expand_see_more_label": {"message": "Expandera automatiskt \"Visa mer\""},
-  "options_ui_auto_expand_see_more_desc": {"message": "Stäng automatiskt \"Visa mer\" på trunkerade inlägg så att du alltid läser hela texten utan extra klick."},
-  "options_ui_strip_tracking_params_label": {"message": "Ta bort spårningsparametrar från länkar"},
-  "options_ui_strip_tracking_params_desc": {"message": "Tar bort fbclid, utm_*, gclid och andra spionparametrar från flödeslänkar så att kopierade eller klickade URL:er är rena."},
-  "options_ui_autoplay_video_label": {"message": "Video-autospela kontroll"},
-  "options_ui_autoplay_video_desc": {"message": "Kontrollera vad som händer när flödesvideor börjar spelas automatiskt."},
-  "options_ui_autoplay_off": {"message": "Av (ingen åtgärd)"},
-  "options_ui_autoplay_mute": {"message": "Stäng av ljud (spela tyst)"},
-  "options_ui_autoplay_pause": {"message": "Pausa (klicka för att spela)"},
-  "options_nav_filters_title": {"message": "Navigerings- och sidofältsmoduler"},
-  "options_nav_filters_desc": {"message": "Dölj specifika vänsternavigerings- och högra sidofältsmoduler."},
-  "options_nav_master_enable": {"message": "Aktivera modulnivå-navfiltrering (säkert läge)"},
-  "options_nav_left_marketplace": {"message": "Dölj vänsternavigering: Marketplace"},
-  "options_nav_left_watch": {"message": "Dölj vänsternavigering: Watch"},
-  "options_nav_left_gaming": {"message": "Dölj vänsternavigering: Gaming"},
-  "options_nav_left_memories": {"message": "Dölj vänsternavigering: Minnen"},
-  "options_nav_left_meta_ai": {"message": "Dölj vänsternavigering: Meta AI"},
-  "options_nav_left_manus_ai": {"message": "Dölj vänsternavigering: Manus AI"},
-  "options_nav_right_trending": {"message": "Dölj högra sidofältet: Trender"},
-  "options_nav_right_contacts": {"message": "Dölj högra sidofältet: Kontakter"},
-  "options_nav_right_meta_ai_contact": {"message": "Dölj högra sidofältet: Meta AI-kontakt"},
-  "options_nav_right_manus_ai_contact": {"message": "Dölj högra sidofältet: Manus AI-kontakt"},
-  "options_nav_right_events": {"message": "Dölj högra sidofältet: Händelser"},
-  "options_nav_right_birthdays": {"message": "Dölj högra sidofältet: Födelsedagar"},
-  "options_topbar_filters_title": {"message": "Övre headerkontrroller"},
-  "options_topbar_filters_desc": {"message": "Dölj specifika headerikoner utan att ta bort hela headercontainern."},
-  "options_topbar_master_enable": {"message": "Aktivera övre headerfiltrering (säkert läge)"},
-  "options_topbar_hide_home": {"message": "Dölj toppikon: Hem"},
-  "options_topbar_hide_friends": {"message": "Dölj toppikon: Vänner"},
-  "options_topbar_hide_watch": {"message": "Dölj toppikon: Watch"},
-  "options_topbar_hide_marketplace": {"message": "Dölj toppikon: Marketplace"},
-  "options_topbar_hide_groups": {"message": "Dölj toppikon: Grupper"},
-  "options_topbar_hide_gaming": {"message": "Dölj toppikon: Gaming"},
-  "options_topbar_hide_messenger": {"message": "Dölj toppikon: Messenger"},
-  "options_topbar_hide_notifications": {"message": "Dölj toppikon: Aviseringar"},
-  "options_topbar_hide_menu": {"message": "Dölj toppikon: Meny"},
-  "options_topbar_hide_create": {"message": "Dölj toppikon: Skapa"},
-  "options_ui_theme_label": {"message": "Programtema"},
-  "options_ui_theme_reload_desc": {"message": "Kräver sidladdning."},
-  "options_ui_theme_default": {"message": "Facebook standard"},
-  "options_ui_theme_darkpro": {"message": "Dark Pro"},
-  "options_ui_theme_amoled": {"message": "AMOLED djupsvart"},
-  "options_ui_theme_classic": {"message": "Klassisk blå"},
-  "options_ui_theme_zen": {"message": "Zen-läge (minimalistiskt)"},
-  "options_ui_theme_pastel": {"message": "Pastell varm"},
-  "options_ui_font_scale_label": {"message": "Teckenstorlek-skalning (%)"},
-  "options_ui_custom_style_title": {"message": "Avancerad anpassad styling"},
-  "options_ui_custom_style_desc": {"message": "Valfria överskrivningar för teckensnitt, accentfärg, bakgrund och anpassad CSS."},
-  "options_ui_custom_style_warn": {"message": "Använd endast giltig CSS. Dåliga regler kan förstöra sidlayouten."},
-  "options_ui_custom_style_enable": {"message": "Aktivera avancerad anpassad styling"},
-  "options_ui_custom_font": {"message": "Anpassad teckensnittsfa milj"},
-  "options_ui_custom_accent": {"message": "Anpassad accentfärg"},
-  "options_ui_custom_text_color": {"message": "Anpassad textfärg"},
-  "options_ui_custom_card_background": {"message": "Anpassad inläggskortbakgrund"},
-  "options_ui_custom_background": {"message": "Anpassad sidbakgrund"},
-  "options_ui_custom_css": {"message": "Anpassad CSS"},
-  "options_ui_custom_accent_placeholder": {"message": "#22c1ff"},
-  "options_ui_custom_text_color_placeholder": {"message": "#f2f5ff"},
-  "options_ui_custom_card_background_placeholder": {"message": "rgba(24, 31, 42, 0.92)"},
-  "options_ui_custom_background_placeholder": {"message": "linear-gradient(...) or #111111"},
-  "options_ui_custom_css_placeholder": {"message": ".selector { display: none !important; }"},
-  "options_ui_custom_css_preset_label": {"message": "Anpassade CSS-snippet-förinställningar"},
-  "options_ui_custom_css_preset_desc": {"message": "Läs in ett startsnippet i rutan för anpassad CSS, granska sedan och spara."},
-  "options_ui_custom_css_preset_none": {"message": "Välj ett snippet"},
-  "options_ui_custom_css_preset_subtle_cards": {"message": "Subtil kortpolering"},
-  "options_ui_custom_css_preset_calmer_motion": {"message": "Lugnare rörelse"},
-  "options_ui_custom_css_preset_readability_boost": {"message": "Läsbarhetsförbättring"},
-  "options_ui_custom_css_preset_apply": {"message": "Läs in snippet"},
-  "options_theme_preview_title": {"message": "Live-förhandsvisning"},
-  "options_theme_preview_post_title": {"message": "Förhandsvisning inläggsrubrik"},
-  "options_theme_preview_desc": {"message": "Den här mini-förhandsvisningen uppdateras när du ändrar tema och teckenstorlek-skalning."},
-  "options_theme_preview_chip_filtered": {"message": "Sponsrat dolt"},
-  "options_theme_preview_chip_score": {"message": "PF Score 88"},
-  "options_wellbeing_grayscale": {"message": "Gråskaleläge (Desaturera alla färger)"},
-  "options_wellbeing_scroll_stopper": {"message": "Oändlig-bläddring-stoppare"},
-  "options_wellbeing_break_wall": {"message": "Inlägg tills pausvägg"},
-  "options_wellbeing_session_timer": {"message": "Synlig sessionstimer-klocka"},
-  "options_wellbeing_session_awareness_enable": {"message": "Sessionsmedvetenhet mjuk pausuppmaning"},
-  "options_wellbeing_session_awareness_threshold": {"message": "Bläddringspulser per minut före uppmaning"},
-  "options_wellbeing_session_awareness_cooldown": {"message": "Uppmanings-nedkylning (minuter)"},
-  "options_wellbeing_daily_report_enable": {"message": "Aktivera daglig flödesrapport"},
-  "options_wellbeing_daily_report_minutes": {"message": "Automatiskt rapportintervall (minuter)"},
-  "options_wellbeing_reels_limit_title": {"message": "Reels-sessionsbegränsare"},
-  "options_wellbeing_reels_limit_desc": {"message": "Tillåt bara ett begränsat antal Reels per session, blockera sedan ytterligare Reels."},
-  "options_wellbeing_reels_limit_enable": {"message": "Aktivera Reels-sessionsbegränsare"},
-  "options_wellbeing_reels_limit_count": {"message": "Tillåtna Reels per session"},
-  "options_wellbeing_reels_limit_hardlock": {"message": "Hård låsning av Reels efter nådd gräns"},
-  "options_wellbeing_ai_blockers_title": {"message": "Avancerade AI-blockerare (Välmående-utgåva)"},
-  "options_wellbeing_ragebait": {"message": "Ragebait-detektor (Sudda ut inflammatoriska ilskeinlägg)"},
-  "options_wellbeing_clickbait": {"message": "Clickbait-eliminator (Ta bort virala manipulativa rubriker)"},
-  "wellbeing_break_title": {"message": "Ta ett andetag"},
-  "wellbeing_break_body_template": {"message": "Du har precis bläddrat förbi $1 inlägg. PureFusion har tillfälligt pausat flödet för att hjälpa dig undvika doom-scrolling. Är det dags att göra något annat?"},
-  "wellbeing_break_resume_btn": {"message": "Fortsätt bläddra ändå"},
-  "wellbeing_session_timer_prefix": {"message": "Session"},
-  "wellbeing_report_button": {"message": "Rapport"},
-  "wellbeing_weekly_report_button": {"message": "Vecka"},
-  "wellbeing_report_disabled": {"message": "Daglig flödesrapport är inaktiverad. Aktivera den i Digital välmående."},
-  "wellbeing_report_label_auto": {"message": "Daglig flödesrapport"},
-  "wellbeing_report_label_session": {"message": "Sessions-flödesrapport"},
-  "wellbeing_weekly_report_label": {"message": "Veckovis flödesrapport"},
-  "wellbeing_report_no_filters": {"message": "Inga filter aktiverade än"},
-  "wellbeing_weekly_report_no_data": {"message": "Veckorrapporten behöver mer aktivitetsdata först."},
-  "wellbeing_session_awareness_toast_template": {"message": "Högt bläddertempo detekterat: $1 bläddring under den senaste minuten ($2 min session). Överväg en kort paus."},
-  "wellbeing_report_panel_title": {"message": "PureFusion Feed-rapporter"},
-  "wellbeing_report_panel_close": {"message": "Stäng"},
-  "wellbeing_report_panel_session_tab": {"message": "Session"},
-  "wellbeing_report_panel_weekly_tab": {"message": "Veckovis"},
-  "wellbeing_report_panel_hidden": {"message": "Dolda objekt"},
-  "wellbeing_report_panel_reels": {"message": "Reels blockerade"},
-  "wellbeing_report_panel_top_reason": {"message": "Största distraktion"},
-  "wellbeing_report_panel_minutes_saved": {"message": "Minuter sparade (uppskattning)"},
-  "wellbeing_report_panel_elapsed": {"message": "Session förfluten"},
-  "wellbeing_report_panel_refresh": {"message": "Uppdatera"},
-  "wellbeing_report_panel_reset_session": {"message": "Återställ session"},
-  "wellbeing_report_panel_reset_done": {"message": "Sessionräknare återställda."},
-  "wellbeing_report_panel_note": {"message": "Tips: Dagliga värden återställs med sessionsåterställning; veckovis sammanslagning beräknas från sparade dagliga hinkar."},
-  "wellbeing_report_panel_weekly_window": {"message": "Rullande 7-dagarsfönster"},
-  "wellbeing_report_panel_weekly_trend_title": {"message": "7-dagarstrend"},
-  "wellbeing_report_panel_weekly_top_reasons_title": {"message": "Främsta distraktionsorsaker"},
-  "wellbeing_report_panel_weekly_no_reasons": {"message": "Ingen distraktionsorsakdata ännu."},
-  "wellbeing_report_panel_weekly_reason_explain": {"message": "Förklara"},
-  "wellbeing_report_reason_explain_ads": {"message": "Sponsrat eller annonslikt innehåll filtrerades för att minska reklamröra."},
-  "wellbeing_report_reason_explain_story": {"message": "Berättelseaktivitetsmönster (gillar/kommentarer/vänskaper/incheckningar) filtrerades som lågsignals-flödesljud."},
-  "wellbeing_report_reason_explain_post_type": {"message": "Ett inläggsformatsfilter tog bort innehållstyper du valde att undertrycka (video/foto/länk/textbaserat)."},
-  "wellbeing_report_reason_explain_bait": {"message": "Beteendesäkerhetsfiltren flaggade manipulativa eller högt ilskemönster utformade för att hålla dig bläddrande."},
-  "wellbeing_report_reason_explain_nav": {"message": "Navigerings- och modulrörskontrollerna tog bort distraherande icke-flödes-UI-element."},
-  "wellbeing_report_reason_explain_keyword": {"message": "Nyckelordsregler matchade det här objektet och filtrerade det baserat på din anpassade blocklista."},
-  "wellbeing_report_reason_explain_generic": {"message": "Den här kategorin filtrerades av dina aktiva PureFusion-regler för att hålla ditt flöde renare och mer fokuserat."},
-  "wellbeing_report_reason_open_settings": {"message": "Öppna relaterade inställningar"},
+  "extName": {
+    "message": "PureFusion Feed",
+    "description": "The name of the extension"
+  },
+  "extDesc": {
+    "message": "Premium Feed Manager med smarta filter, AI-insikter och integritetsskydd för Facebook.",
+    "description": "The extension description"
+  },
+  "common_ads_blocked": {
+    "message": "Annonser blockerade"
+  },
+  "common_spam_hidden": {
+    "message": "Skräp dolt"
+  },
+  "common_save_settings": {
+    "message": "Spara inställningar"
+  },
+  "common_save_changes": {
+    "message": "Spara ändringar"
+  },
+  "common_support_developer": {
+    "message": "Stöd utvecklaren"
+  },
+  "common_open_dashboard": {
+    "message": "Öppna fullständiga inställningar"
+  },
+  "common_open_advanced": {
+    "message": "Öppna avancerad instrumentpanel"
+  },
+  "common_logo_alt": {
+    "message": "PureFusion-logotyp"
+  },
+  "options_page_title": {
+    "message": "PureFusion Feed - Inställningar"
+  },
+  "popup_quick_filters": {
+    "message": "Snabbfilter"
+  },
+  "popup_hide_sponsored_posts": {
+    "message": "Enhanced Ad Filter"
+  },
+  "popup_hide_sponsored_posts_desc": {
+    "message": "Etikettbaserad detektering — av som standard"
+  },
+  "popup_block_sponsored": {
+    "message": "Blockera annonser"
+  },
+  "popup_block_sponsored_desc": {
+    "message": "Blockerar annonser via infrastruktursignaler"
+  },
+  "popup_ad_blocker_on": {
+    "message": "✓ Blockerar annonser via infrastruktursignaler"
+  },
+  "popup_ad_blocker_off": {
+    "message": "⚠ Annonsblockerare är av — klicka för att aktivera"
+  },
+  "options_filters_removeAds": {
+    "message": "Blockera annonser (infrastruktursignaler)"
+  },
+  "options_filters_removeSponsored": {
+    "message": "Enhanced Ad Filter (label detection)"
+  },
+  "popup_hide_suggested": {
+    "message": "Dölj förslag/PYMK"
+  },
+  "popup_hide_suggested_desc": {
+    "message": "Tar bort algoritmiska förslag"
+  },
+  "popup_hide_reels": {
+    "message": "Dölj Reels"
+  },
+  "popup_hide_reels_desc": {
+    "message": "Tar bort Reels-fack som injiceras i flödet"
+  },
+  "popup_force_recent": {
+    "message": "Tvinga senaste"
+  },
+  "popup_force_recent_desc": {
+    "message": "Ladda alltid kronologiskt flöde"
+  },
+  "popup_distraction_free": {
+    "message": "Distraheringsfritt läge"
+  },
+  "popup_distraction_free_desc": {
+    "message": "Dölj sidofält, centrera flöde (Alt+Shift+F)"
+  },
+  "popup_fast_keyword": {
+    "message": "Snabb nyckelordsblockning"
+  },
+  "popup_keyword_placeholder": {
+    "message": "Ange nyckelord att komprimera..."
+  },
+  "popup_hide_groups": {
+    "message": "Dölj föreslagna grupper"
+  },
+  "popup_hide_groups_desc": {
+    "message": "Tar bort algoritmiska grupprekommen dationer"
+  },
+  "popup_ghost_mode": {
+    "message": "Spökläge (Meddelanden)"
+  },
+  "popup_ghost_mode_desc": {
+    "message": "Dölj sedd- och skriver-indikatorer"
+  },
+  "popup_nuke_meta_ai": {
+    "message": "Nuka Meta AI"
+  },
+  "popup_nuke_meta_ai_desc": {
+    "message": "Ta bort AI-knappar och glimrar"
+  },
+  "popup_master_toggle_title": {
+    "message": "Växla PureFusion på eller av"
+  },
+  "popup_add_keyword_title": {
+    "message": "Lägg till nyckelord"
+  },
+  "popup_keyword_added": {
+    "message": "Lade till \"{keyword}\" i blocklistan."
+  },
+  "popup_keyword_exists": {
+    "message": "Nyckelordet finns redan."
+  },
+  "quick_action_menu_root": {
+    "message": "Lär PureFusion"
+  },
+  "quick_action_menu_block_keyword": {
+    "message": "Lägg till i blocklista"
+  },
+  "quick_action_menu_autohide_keyword": {
+    "message": "Lägg till i auto-dölj-lista"
+  },
+  "quick_action_menu_allow_keyword": {
+    "message": "Lägg till i tillåtslista"
+  },
+  "quick_action_menu_hide_source": {
+    "message": "Dölj inlägg från den här källan"
+  },
+  "quick_action_menu_allow_source": {
+    "message": "Dölj aldrig den här källan"
+  },
+  "quick_action_select_text_first": {
+    "message": "Markera text först, använd sedan en PureFusion snabbåtgärd."
+  },
+  "quick_action_source_select_name": {
+    "message": "Högerklicka på ett profil-/sida-/gruppnamn eller markera ett källnamn först."
+  },
+  "quick_action_selection_too_short": {
+    "message": "Markerad text är för kort. Välj ett tydligare ord eller fras."
+  },
+  "quick_action_source_too_broad": {
+    "message": "Den källan verkar för bred. Välj ett fullständigt sida-/person-/gruppnamn."
+  },
+  "quick_action_exists_blocklist": {
+    "message": "Finns redan i blocklistan."
+  },
+  "quick_action_exists_autohide": {
+    "message": "Finns redan i auto-dölj-listan."
+  },
+  "quick_action_exists_allowlist": {
+    "message": "Finns redan i tillåtslistan."
+  },
+  "quick_action_exists_source_hide": {
+    "message": "Källan är redan dold."
+  },
+  "quick_action_exists_source_allow": {
+    "message": "Källan finns redan i Dölj aldrig-källor."
+  },
+  "quick_action_added_blocklist": {
+    "message": "Lade till \"$1\" i blocklistan och skannade om flödet."
+  },
+  "quick_action_added_autohide": {
+    "message": "Lade till \"$1\" i auto-dölj och skannade om flödet."
+  },
+  "quick_action_added_allowlist": {
+    "message": "Lade till \"$1\" i tillåtslistan och skannade om flödet."
+  },
+  "quick_action_added_source_hide": {
+    "message": "Döljer nu källan \"$1\" och skannade om flödet."
+  },
+  "quick_action_added_source_allow": {
+    "message": "Lade till \"$1\" i Dölj aldrig-källor och skannade om flödet."
+  },
+  "quick_action_undo_label": {
+    "message": "Ångra"
+  },
+  "quick_action_undo_success": {
+    "message": "Snabbåtgärd ångrad."
+  },
+  "quick_action_undo_expired": {
+    "message": "Ångra är inte längre tillgängligt för den åtgärden."
+  },
+  "quick_action_undo_failed": {
+    "message": "Ångra misslyckades. Försök igen."
+  },
+  "quick_action_unknown": {
+    "message": "Okänd snabbåtgärd."
+  },
+  "options_filters_card_title": {
+    "message": "Annons- och skräpborttagning"
+  },
+  "options_filters_card_desc": {
+    "message": "Växla primära DOM-borttagningsmål."
+  },
+  "options_presets_title": {
+    "message": "Förinställningspaket"
+  },
+  "options_presets_desc": {
+    "message": "Använd kurerade paket för vanliga användningsfall och justera sedan allt manuellt."
+  },
+  "options_presets_label": {
+    "message": "Välj en förinställning"
+  },
+  "options_presets_work_focus": {
+    "message": "Arbetsfo kus"
+  },
+  "options_presets_friends_only": {
+    "message": "Endast vänner"
+  },
+  "options_presets_minimal": {
+    "message": "Minimal"
+  },
+  "options_presets_news_heavy": {
+    "message": "Nyhetsintensiv"
+  },
+  "options_presets_messenger_privacy": {
+    "message": "Messenger-integritet"
+  },
+  "options_presets_apply_btn": {
+    "message": "Tillämpa förinställning"
+  },
+  "options_mode_title": {
+    "message": "Flödesupplevelse-läge"
+  },
+  "options_mode_desc": {
+    "message": "Tillämpa en beständig beteendeprofil ovanpå dina sparade växlar."
+  },
+  "options_mode_label": {
+    "message": "Aktivt läge"
+  },
+  "options_view_mode_label": {
+    "message": "Vy"
+  },
+  "options_view_mode_basic": {
+    "message": "Grundläggande"
+  },
+  "options_view_mode_advanced": {
+    "message": "Avancerat"
+  },
+  "options_mode_custom": {
+    "message": "Anpassat (Använd mina växlar)"
+  },
+  "options_mode_clean": {
+    "message": "Rent läge"
+  },
+  "options_mode_focus": {
+    "message": "Fokusläge"
+  },
+  "options_mode_ultrafast": {
+    "message": "Ultrasnabbt läge (text först, maximal hastighet)"
+  },
+  "options_mode_smart": {
+    "message": "Smart läge"
+  },
+  "options_mode_classic": {
+    "message": "Klassiskt 2012-läge"
+  },
+  "options_mode_profile_custom": {
+    "message": "Använder dina exakt sparade växlar utan ytterligare lägesöverstyningar."
+  },
+  "options_mode_profile_clean": {
+    "message": "Tar bort annons-/föreslagen-röra och socialt brus medan förutsägningsvisuals hålls av för ett lugnare flöde."
+  },
+  "options_mode_profile_focus": {
+    "message": "Hem-först djupfokusprofil: aggressiv röraklippning, kronologi på och bläddravbrottsskydd aktiverat."
+  },
+  "options_mode_profile_ultrafast": {
+    "message": "Text-först hastighetsprofil: tar bort tunga medietyper, undertrycker bild-/videoinläggstyper och minimerar extra UI-bearbetning."
+  },
+  "options_mode_profile_smart": {
+    "message": "Håller kärn-flödesrensning på medan poängsättning, ihopfällning av lågvärdeinlägg och trovärdighetsverifieringssignaler aktiveras."
+  },
+  "options_mode_profile_classic": {
+    "message": "Prioriterar kronologiskt klassiskt flödesbeteende och undertrycker moderna algoritmiska ytor som Watch/Marketplace."
+  },
+  "options_quickstart_title": {
+    "message": "PureFusion på 5 sekunder"
+  },
+  "options_quickstart_desc": {
+    "message": "Välj en snabbprofil nu. Du kan fortfarande finjustera allt nedan."
+  },
+  "options_promise_clean_title": {
+    "message": "Rent Facebook"
+  },
+  "options_promise_clean_desc": {
+    "message": "Mindre annons- och algoritmrör."
+  },
+  "options_promise_fast_title": {
+    "message": "Snabbt Facebook"
+  },
+  "options_promise_fast_desc": {
+    "message": "Ultrasnabbt läge för lättare sessioner."
+  },
+  "options_promise_smart_title": {
+    "message": "Smart Facebook"
+  },
+  "options_promise_smart_desc": {
+    "message": "Poängsättning + trovärdighet + förklarbarhet."
+  },
+  "options_quickstart_btn_clean": {
+    "message": "Använd Rent"
+  },
+  "options_quickstart_btn_fast": {
+    "message": "Använd Ultrasnabbt"
+  },
+  "options_quickstart_btn_smart": {
+    "message": "Använd Smart"
+  },
+  "options_quickstart_recommended": {
+    "message": "Bäst för de flesta användare"
+  },
+  "options_mode_perf_hint_low": {
+    "message": "Den här enheten kanske presterar bättre med Ultrasnabbt läge (text först, lägre CPU/GPU-belastning)."
+  },
+  "options_mode_perf_hint_mid": {
+    "message": "Ultrasnabbt läge kan minska fördröjning under tunga sessioner på den här enheten."
+  },
+  "options_mode_perf_apply": {
+    "message": "Tillämpa Ultrasnabb-rekommendation"
+  },
+  "options_mode_recommendation_low": {
+    "message": "Rekommenderat: Ultrasnabbt"
+  },
+  "options_mode_recommendation_mid": {
+    "message": "Valfritt: Ultrasnabbt för tunga sessioner"
+  },
+  "options_mode_recommendation_active": {
+    "message": "Rekommenderat läge aktivt"
+  },
+  "options_mode_recommendation_balanced": {
+    "message": "Balanserat: nuvarande läge är bra"
+  },
+  "options_mode_why_custom": {
+    "message": "Varför: använder endast dina manuella växelval."
+  },
+  "options_mode_why_clean": {
+    "message": "Varför: tar bort vanlig röra medan en bekant flödeskänsla behålls."
+  },
+  "options_mode_why_focus": {
+    "message": "Varför: inställd för djupt fokus med starkare distraktionsklippning."
+  },
+  "options_mode_why_ultrafast": {
+    "message": "Varför: prioriterar hastighet genom att minska tung flödesbearbetning."
+  },
+  "options_mode_why_smart": {
+    "message": "Varför: balanserar rensning med poängsättning och trovärdighetsignaler."
+  },
+  "options_mode_why_classic": {
+    "message": "Varför: betonar kronologiskt, gammaldags flödesbeteende."
+  },
+  "options_mode_why_device_low": {
+    "message": "Enhetsnot: Ultrasnabbt rekommenderas på den här hårdvaran."
+  },
+  "options_mode_why_device_mid": {
+    "message": "Enhetsnot: Ultrasnabbt kan hjälpa under tunga sessioner."
+  },
+  "options_surface_title": {
+    "message": "Per-yta omfångskontroller"
+  },
+  "options_surface_desc": {
+    "message": "Välj vilka Facebook-ytor som ska ta emot PureFusion-filtrering. Inaktivera en yta för att lämna den orörd."
+  },
+  "options_surface_enable": {
+    "message": "Aktivera filtrering per yta"
+  },
+  "options_surface_home": {
+    "message": "Tillämpa på hemflöde"
+  },
+  "options_surface_groups": {
+    "message": "Tillämpa på grupper"
+  },
+  "options_surface_watch": {
+    "message": "Tillämpa på Watch"
+  },
+  "options_surface_marketplace": {
+    "message": "Tillämpa på Marketplace"
+  },
+  "options_surface_other": {
+    "message": "Tillämpa på andra ytor (profil/sidor/händelser)"
+  },
+  "options_filters_hide_suggested": {
+    "message": "Dölj \"Föreslaget för dig\""
+  },
+  "options_filters_hide_pymk": {
+    "message": "Dölj \"Personer du kanske känner\""
+  },
+  "options_filters_hide_group_suggestions": {
+    "message": "Dölj gruppförslag"
+  },
+  "options_filters_hide_page_suggestions": {
+    "message": "Dölj sidförslag"
+  },
+  "options_filters_hide_fundraisers": {
+    "message": "Dölj insamlingar"
+  },
+  "options_filters_post_types_title": {
+    "message": "Inläggstypsfilterpaket v2"
+  },
+  "options_filters_post_types_desc": {
+    "message": "Strikt inläggsomslags-inriktning plus frasnankare. Håll av om du inte vill ha aggressiv typrensning."
+  },
+  "options_filters_hide_video_posts": {
+    "message": "Dölj videoinlägg"
+  },
+  "options_filters_hide_photo_posts": {
+    "message": "Dölj foto-/bildinlägg"
+  },
+  "options_filters_hide_link_posts": {
+    "message": "Dölj externa länk-/delningsinlägg"
+  },
+  "options_filters_hide_text_posts": {
+    "message": "Dölj textbaserade statusinlägg"
+  },
+  "options_filters_hide_live_video_posts": {
+    "message": "Dölj live-videoinlägg"
+  },
+  "options_filters_hide_share_reposts": {
+    "message": "Dölj dela-/återpubliceringsinlägg"
+  },
+  "options_filters_hide_poll_posts": {
+    "message": "Dölj omröstningsinlägg"
+  },
+  "options_filters_clutter_title": {
+    "message": "Röra och injektioner"
+  },
+  "options_filters_hide_reels_tray": {
+    "message": "Dölj Reels-fack i flöde"
+  },
+  "options_filters_widescreen_label": {
+    "message": "Bredbildsläge"
+  },
+  "options_filters_widescreen_desc": {
+    "message": "Lås upp mittpelargränser för att fylla ultrabreda skärmar."
+  },
+  "options_filters_hide_memories": {
+    "message": "Dölj minnesinlägg"
+  },
+  "options_filters_hide_stories": {
+    "message": "Dölj Berättelse-fältet"
+  },
+  "options_filters_remove_colored_bg": {
+    "message": "Ta bort inlägg med färgad bakgrund"
+  },
+  "options_filters_remove_game_invites": {
+    "message": "Dölj spelinbjudnings- och aktivitetsinlägg"
+  },
+  "options_filters_remove_large_reactions": {
+    "message": "Normalisera överdimensionerade emoji-inlägg"
+  },
+  "options_filters_deduplicate_posts_label": {
+    "message": "Dölj duplicerade inlägg"
+  },
+  "options_filters_deduplicate_posts_desc": {
+    "message": "Undertryck inlägg vars ID redan visats under den här sessionen — fångar FB som återinjicerar samma berättelse flera gånger."
+  },
+  "options_filters_locale_label": {
+    "message": "Flödesspråk"
+  },
+  "options_filters_locale_desc": {
+    "message": "Matcha frasfilter med ditt Facebook-språk. Auto testar alla stödda språk (kan överfiltera blandspråkiga flöden)."
+  },
+  "options_filters_locale_auto": {
+    "message": "Auto (alla stödda språk)"
+  },
+  "options_story_filters_title": {
+    "message": "Berättelseaktivitetsfilter"
+  },
+  "options_story_filters_desc": {
+    "message": "Dölj vanliga lågsignals-aktivitetsberättelser från ditt flöde."
+  },
+  "options_story_filter_became_friends": {
+    "message": "Dölj \"Blev vänner\"-berättelser"
+  },
+  "options_story_filter_joined_groups": {
+    "message": "Dölj \"Gick med i grupp\"-berättelser"
+  },
+  "options_story_filter_commented": {
+    "message": "Dölj \"Kommenterade detta\"-berättelser"
+  },
+  "options_story_filter_liked": {
+    "message": "Dölj \"Gillade detta\"-berättelser"
+  },
+  "options_story_filter_events": {
+    "message": "Dölj händelsedeltagandeberättelser"
+  },
+  "options_story_filter_memories": {
+    "message": "Dölj delade minneberättelser"
+  },
+  "options_story_filter_profile_photo": {
+    "message": "Dölj profilbildsuppdateringsberättelser"
+  },
+  "options_story_filter_cover_photo": {
+    "message": "Dölj omslagsbildsuppdateringsberättelser"
+  },
+  "options_story_filter_life_events": {
+    "message": "Dölj livshändelsesberättelser"
+  },
+  "options_story_filter_checkins": {
+    "message": "Dölj incheckning-/platsaktivitetsberättelser"
+  },
+  "options_story_filter_milestones": {
+    "message": "Dölj milstolpeberättelser"
+  },
+  "options_story_filter_job_work": {
+    "message": "Dölj jobb-/arbetsuppdateringsberättelser"
+  },
+  "options_story_filter_relationship": {
+    "message": "Dölj relationsuppdateringsberättelser"
+  },
+  "options_story_filter_group_activity": {
+    "message": "Dölj gruppaktivitetsinläggsberättelser"
+  },
+  "options_image_filters_title": {
+    "message": "Bildämnesfilter"
+  },
+  "options_image_filters_desc": {
+    "message": "Använd Facebooks bildbe skrivningssignaler för att dölja valda visuella kategorier."
+  },
+  "options_image_filters_enable": {
+    "message": "Aktivera bildämnesfilter (säkert läge)"
+  },
+  "options_image_filter_sports": {
+    "message": "Dölj sportsrelaterade bilder"
+  },
+  "options_image_filter_food": {
+    "message": "Dölj mat- och dryckesbilder"
+  },
+  "options_image_filter_pets": {
+    "message": "Dölj husdjursbilder (hundar/katter)"
+  },
+  "options_image_filter_vehicles": {
+    "message": "Dölj fordonsbilder"
+  },
+  "options_image_filter_screenshots": {
+    "message": "Dölj memes och skärmbild-liknande bilder"
+  },
+  "options_image_filter_travel": {
+    "message": "Dölj rese- och naturbilder"
+  },
+  "options_ai_card_title": {
+    "message": "Lokal förutsägelsemotor"
+  },
+  "options_ai_card_desc": {
+    "message": "Poängsätter flödesobjekt lokalt baserat på din interaktionshistorik. Data lämnar aldrig din enhet."
+  },
+  "options_ai_enable_predictions": {
+    "message": "Aktivera AI-förutsägelser"
+  },
+  "options_ai_show_pf_badge": {
+    "message": "Visa \"PF Score\"-emblem på inlägg"
+  },
+  "options_ai_show_reasons": {
+    "message": "Visa poängorsakshintar på PF-emblem"
+  },
+  "options_ai_dim_low_interest": {
+    "message": "Tona ned/Komprimera lågintresseinlägg (Poäng < 20)"
+  },
+  "options_ai_collapse_low_interest": {
+    "message": "Komprimera lågintresseinlägg med visa-chip"
+  },
+  "options_ai_never_empty_guard": {
+    "message": "Aldrig-tomt flödesskydd (behåll minsta synliga inlägg)"
+  },
+  "options_ai_never_empty_min": {
+    "message": "Minsta antal synliga inlägg"
+  },
+  "options_ai_highlight_high_interest": {
+    "message": "Markera högintresseinlägg (Poäng > 80)"
+  },
+  "options_ai_analyze_trends": {
+    "message": "Analysera lokala trender och nyckelord"
+  },
+  "options_ai_true_affinity_sort": {
+    "message": "Sant affinitetssortering"
+  },
+  "options_ai_true_affinity_sort_desc": {
+    "message": "Ordnar om flödet efter ditt lokala engagemangspoäng i realtid — inlägg med högsta poäng flyter upp med CSS flexbox-ordning, utan att bryta Reacts virtuella DOM."
+  },
+  "options_ai_friend_activity": {
+    "message": "Vänaktivitetsflödesinsikt"
+  },
+  "options_ai_friend_activity_desc": {
+    "message": "Markerar kontakter i det högra sidofältet vars inlägg inte visats i ditt flöde den här sessionen — hjälper identifiera vänner som Facebook kanske tyst undertrycker från din tidslinje."
+  },
+  "options_ai_low_threshold": {
+    "message": "Lågt poängtröskelvärde"
+  },
+  "options_ai_high_threshold": {
+    "message": "Högt poängtröskelvärde"
+  },
+  "options_ai_cred_title": {
+    "message": "Trovärdighetsignaler (Beta)"
+  },
+  "options_ai_cred_desc": {
+    "message": "Heuristiska lokala kontroller för misstänkta påståendemönster. Det här bevisar ingen sanning; det markerar inlägg värda att verifiera."
+  },
+  "options_ai_cred_enabled": {
+    "message": "Aktivera misstänkt påståendedetektering"
+  },
+  "options_ai_cred_badge": {
+    "message": "Visa \"verifiera\" varningsemblem på flaggade inlägg"
+  },
+  "options_ai_cred_strict": {
+    "message": "Strikt läge (starkare poängstraff för misstänkta påståenden)"
+  },
+  "options_ai_cred_debug": {
+    "message": "Visa trovärdighetsfelsökningsförhandsvisning på alla skannade inlägg"
+  },
+  "options_ai_llm_title": {
+    "message": "Djup intelligensserver (BYOK API)"
+  },
+  "options_ai_llm_desc": {
+    "message": "Bring-Your-Own-Key. Lås upp LLM-funktioner som TL;DRs och Kommentar-AI. Dina nycklar sparas uteslutande i lokal maskinlagring."
+  },
+  "options_ai_provider_label": {
+    "message": "Aktiv leverantör"
+  },
+  "options_ai_provider_none": {
+    "message": "Inaktiverad"
+  },
+  "options_ai_provider_openai": {
+    "message": "OpenAI (ChatGPT)"
+  },
+  "options_ai_provider_gemini": {
+    "message": "Google Gemini"
+  },
+  "options_ai_provider_windowai": {
+    "message": "Chrome Native (window.ai)"
+  },
+  "options_ai_openai_key_label": {
+    "message": "OpenAI API-nyckel"
+  },
+  "options_ai_gemini_key_label": {
+    "message": "Google Gemini API-nyckel"
+  },
+  "options_ai_tldr_toggle": {
+    "message": "Injicera \"TL;DR\" sammanfattningsknappar på långa inlägg"
+  },
+  "options_ai_smart_comment_toggle": {
+    "message": "Smart kommentar co-pilot (trollstavsikon)"
+  },
+  "options_ai_clickbait_decode_toggle": {
+    "message": "Clickbait-avkodare (Skriv om sensationella rubriker med fakta)"
+  },
+  "options_ai_messenger_tools_title": {
+    "message": "Messenger AI-verktyg"
+  },
+  "options_ai_messenger_rewrite_toggle": {
+    "message": "Skriv om meddelandeutkast i skrivaren"
+  },
+  "options_ai_messenger_replies_toggle": {
+    "message": "Generera 3 smarta svarsförslag"
+  },
+  "options_ui_card_title": {
+    "message": "Gränssnittsomstrukturering"
+  },
+  "options_ui_friends_only": {
+    "message": "Endast vänner-läge (Ta bort alla grupper/sidor från flöde)"
+  },
+  "options_ui_anonymizer": {
+    "message": "Skärmbild-anonymiserare (Sudda ut profilbilder/namn)"
+  },
+  "options_ui_compact_mode": {
+    "message": "Kompakt läge (Minska marginaler/utfyllnad)"
+  },
+  "options_ui_disable_comment_autofocus": {
+    "message": "Inaktivera autofokusstöld i kommentarrutan"
+  },
+  "options_ui_enforce_chrono": {
+    "message": "Tvinga kronologiskt flöde (Senaste)"
+  },
+  "options_ui_show_link_previews": {
+    "message": "Visa verklig destination för utgående länkar"
+  },
+  "options_ui_absolute_timestamps": {
+    "message": "Konvertera tidsstämplar till absoluta datum"
+  },
+  "options_ui_hide_composer": {
+    "message": "Dölj \"Vad tänker du på?\"-rutan"
+  },
+  "options_ui_comment_sort_label": {
+    "message": "Standard kommentarsortering"
+  },
+  "options_ui_comment_sort_desc": {
+    "message": "Tillämpa automatiskt en sorteringsinställning när kommentarer expanderas på ett inlägg. Aktiveras bara när kommentarer redan är laddade — tvingar inte ihopfällda kommentarsektioner att öppnas."
+  },
+  "options_ui_comment_sort_all": {
+    "message": "Alla kommentarer (FB standard)"
+  },
+  "options_ui_comment_sort_newest": {
+    "message": "Nyaste först"
+  },
+  "options_ui_comment_sort_top": {
+    "message": "Mest relevant"
+  },
+  "options_ui_distraction_free_label": {
+    "message": "Distraheringsfritt läsläge (Alt+Shift+F)"
+  },
+  "options_ui_distraction_free_desc": {
+    "message": "Döljer vänster/höger sidofält och centrerar flödet för en ren läsupplevelse. Växla med Alt+Shift+F när som helst."
+  },
+  "options_ui_image_hover_label": {
+    "message": "Bild hover-expansion"
+  },
+  "options_ui_image_hover_desc": {
+    "message": "Hovra över flödesbilder för att förhandsgranska dem i full storlek. Spara eller öppna i ny flik direkt från panelen. Av som standard."
+  },
+  "options_ui_auto_expand_see_more_label": {
+    "message": "Expandera automatiskt \"Visa mer\""
+  },
+  "options_ui_auto_expand_see_more_desc": {
+    "message": "Stäng automatiskt \"Visa mer\" på trunkerade inlägg så att du alltid läser hela texten utan extra klick."
+  },
+  "options_ui_strip_tracking_params_label": {
+    "message": "Ta bort spårningsparametrar från länkar"
+  },
+  "options_ui_strip_tracking_params_desc": {
+    "message": "Tar bort fbclid, utm_*, gclid och andra spionparametrar från flödeslänkar så att kopierade eller klickade URL:er är rena."
+  },
+  "options_ui_autoplay_video_label": {
+    "message": "Video-autospela kontroll"
+  },
+  "options_ui_autoplay_video_desc": {
+    "message": "Kontrollera vad som händer när flödesvideor börjar spelas automatiskt."
+  },
+  "options_ui_autoplay_off": {
+    "message": "Av (ingen åtgärd)"
+  },
+  "options_ui_autoplay_mute": {
+    "message": "Stäng av ljud (spela tyst)"
+  },
+  "options_ui_autoplay_pause": {
+    "message": "Pausa (klicka för att spela)"
+  },
+  "options_nav_filters_title": {
+    "message": "Navigerings- och sidofältsmoduler"
+  },
+  "options_nav_filters_desc": {
+    "message": "Dölj specifika vänsternavigerings- och högra sidofältsmoduler."
+  },
+  "options_nav_master_enable": {
+    "message": "Aktivera modulnivå-navfiltrering (säkert läge)"
+  },
+  "options_nav_left_marketplace": {
+    "message": "Dölj vänsternavigering: Marketplace"
+  },
+  "options_nav_left_watch": {
+    "message": "Dölj vänsternavigering: Watch"
+  },
+  "options_nav_left_gaming": {
+    "message": "Dölj vänsternavigering: Gaming"
+  },
+  "options_nav_left_memories": {
+    "message": "Dölj vänsternavigering: Minnen"
+  },
+  "options_nav_left_meta_ai": {
+    "message": "Dölj vänsternavigering: Meta AI"
+  },
+  "options_nav_left_manus_ai": {
+    "message": "Dölj vänsternavigering: Manus AI"
+  },
+  "options_nav_right_trending": {
+    "message": "Dölj högra sidofältet: Trender"
+  },
+  "options_nav_right_contacts": {
+    "message": "Dölj högra sidofältet: Kontakter"
+  },
+  "options_nav_right_meta_ai_contact": {
+    "message": "Dölj högra sidofältet: Meta AI-kontakt"
+  },
+  "options_nav_right_manus_ai_contact": {
+    "message": "Dölj högra sidofältet: Manus AI-kontakt"
+  },
+  "options_nav_right_events": {
+    "message": "Dölj högra sidofältet: Händelser"
+  },
+  "options_nav_right_birthdays": {
+    "message": "Dölj högra sidofältet: Födelsedagar"
+  },
+  "options_topbar_filters_title": {
+    "message": "Övre headerkontrroller"
+  },
+  "options_topbar_filters_desc": {
+    "message": "Dölj specifika headerikoner utan att ta bort hela headercontainern."
+  },
+  "options_topbar_master_enable": {
+    "message": "Aktivera övre headerfiltrering (säkert läge)"
+  },
+  "options_topbar_hide_home": {
+    "message": "Dölj toppikon: Hem"
+  },
+  "options_topbar_hide_friends": {
+    "message": "Dölj toppikon: Vänner"
+  },
+  "options_topbar_hide_watch": {
+    "message": "Dölj toppikon: Watch"
+  },
+  "options_topbar_hide_marketplace": {
+    "message": "Dölj toppikon: Marketplace"
+  },
+  "options_topbar_hide_groups": {
+    "message": "Dölj toppikon: Grupper"
+  },
+  "options_topbar_hide_gaming": {
+    "message": "Dölj toppikon: Gaming"
+  },
+  "options_topbar_hide_messenger": {
+    "message": "Dölj toppikon: Messenger"
+  },
+  "options_topbar_hide_notifications": {
+    "message": "Dölj toppikon: Aviseringar"
+  },
+  "options_topbar_hide_menu": {
+    "message": "Dölj toppikon: Meny"
+  },
+  "options_topbar_hide_create": {
+    "message": "Dölj toppikon: Skapa"
+  },
+  "options_ui_theme_label": {
+    "message": "Programtema"
+  },
+  "options_ui_theme_reload_desc": {
+    "message": "Kräver sidladdning."
+  },
+  "options_ui_theme_default": {
+    "message": "Facebook standard"
+  },
+  "options_ui_theme_darkpro": {
+    "message": "Dark Pro"
+  },
+  "options_ui_theme_amoled": {
+    "message": "AMOLED djupsvart"
+  },
+  "options_ui_theme_classic": {
+    "message": "Klassisk blå"
+  },
+  "options_ui_theme_zen": {
+    "message": "Zen-läge (minimalistiskt)"
+  },
+  "options_ui_theme_pastel": {
+    "message": "Pastell varm"
+  },
+  "options_ui_font_scale_label": {
+    "message": "Teckenstorlek-skalning (%)"
+  },
+  "options_ui_custom_style_title": {
+    "message": "Avancerad anpassad styling"
+  },
+  "options_ui_custom_style_desc": {
+    "message": "Valfria överskrivningar för teckensnitt, accentfärg, bakgrund och anpassad CSS."
+  },
+  "options_ui_custom_style_warn": {
+    "message": "Använd endast giltig CSS. Dåliga regler kan förstöra sidlayouten."
+  },
+  "options_ui_custom_style_enable": {
+    "message": "Aktivera avancerad anpassad styling"
+  },
+  "options_ui_custom_font": {
+    "message": "Anpassad teckensnittsfa milj"
+  },
+  "options_ui_custom_accent": {
+    "message": "Anpassad accentfärg"
+  },
+  "options_ui_custom_text_color": {
+    "message": "Anpassad textfärg"
+  },
+  "options_ui_custom_card_background": {
+    "message": "Anpassad inläggskortbakgrund"
+  },
+  "options_ui_custom_background": {
+    "message": "Anpassad sidbakgrund"
+  },
+  "options_ui_custom_css": {
+    "message": "Anpassad CSS"
+  },
+  "options_ui_custom_accent_placeholder": {
+    "message": "#22c1ff"
+  },
+  "options_ui_custom_text_color_placeholder": {
+    "message": "#f2f5ff"
+  },
+  "options_ui_custom_card_background_placeholder": {
+    "message": "rgba(24, 31, 42, 0.92)"
+  },
+  "options_ui_custom_background_placeholder": {
+    "message": "linear-gradient(...) or #111111"
+  },
+  "options_ui_custom_css_placeholder": {
+    "message": ".selector { display: none !important; }"
+  },
+  "options_ui_custom_css_preset_label": {
+    "message": "Anpassade CSS-snippet-förinställningar"
+  },
+  "options_ui_custom_css_preset_desc": {
+    "message": "Läs in ett startsnippet i rutan för anpassad CSS, granska sedan och spara."
+  },
+  "options_ui_custom_css_preset_none": {
+    "message": "Välj ett snippet"
+  },
+  "options_ui_custom_css_preset_subtle_cards": {
+    "message": "Subtil kortpolering"
+  },
+  "options_ui_custom_css_preset_calmer_motion": {
+    "message": "Lugnare rörelse"
+  },
+  "options_ui_custom_css_preset_readability_boost": {
+    "message": "Läsbarhetsförbättring"
+  },
+  "options_ui_custom_css_preset_apply": {
+    "message": "Läs in snippet"
+  },
+  "options_theme_preview_title": {
+    "message": "Live-förhandsvisning"
+  },
+  "options_theme_preview_post_title": {
+    "message": "Förhandsvisning inläggsrubrik"
+  },
+  "options_theme_preview_desc": {
+    "message": "Den här mini-förhandsvisningen uppdateras när du ändrar tema och teckenstorlek-skalning."
+  },
+  "options_theme_preview_chip_filtered": {
+    "message": "Ads Filtered"
+  },
+  "options_theme_preview_chip_score": {
+    "message": "PF Score 88"
+  },
+  "options_wellbeing_grayscale": {
+    "message": "Gråskaleläge (Desaturera alla färger)"
+  },
+  "options_wellbeing_scroll_stopper": {
+    "message": "Oändlig-bläddring-stoppare"
+  },
+  "options_wellbeing_break_wall": {
+    "message": "Inlägg tills pausvägg"
+  },
+  "options_wellbeing_session_timer": {
+    "message": "Synlig sessionstimer-klocka"
+  },
+  "options_wellbeing_session_awareness_enable": {
+    "message": "Sessionsmedvetenhet mjuk pausuppmaning"
+  },
+  "options_wellbeing_session_awareness_threshold": {
+    "message": "Bläddringspulser per minut före uppmaning"
+  },
+  "options_wellbeing_session_awareness_cooldown": {
+    "message": "Uppmanings-nedkylning (minuter)"
+  },
+  "options_wellbeing_daily_report_enable": {
+    "message": "Aktivera daglig flödesrapport"
+  },
+  "options_wellbeing_daily_report_minutes": {
+    "message": "Automatiskt rapportintervall (minuter)"
+  },
+  "options_wellbeing_reels_limit_title": {
+    "message": "Reels-sessionsbegränsare"
+  },
+  "options_wellbeing_reels_limit_desc": {
+    "message": "Tillåt bara ett begränsat antal Reels per session, blockera sedan ytterligare Reels."
+  },
+  "options_wellbeing_reels_limit_enable": {
+    "message": "Aktivera Reels-sessionsbegränsare"
+  },
+  "options_wellbeing_reels_limit_count": {
+    "message": "Tillåtna Reels per session"
+  },
+  "options_wellbeing_reels_limit_hardlock": {
+    "message": "Hård låsning av Reels efter nådd gräns"
+  },
+  "options_wellbeing_ai_blockers_title": {
+    "message": "Avancerade AI-blockerare (Välmående-utgåva)"
+  },
+  "options_wellbeing_ragebait": {
+    "message": "Ragebait-detektor (Sudda ut inflammatoriska ilskeinlägg)"
+  },
+  "options_wellbeing_clickbait": {
+    "message": "Clickbait-eliminator (Ta bort virala manipulativa rubriker)"
+  },
+  "wellbeing_break_title": {
+    "message": "Ta ett andetag"
+  },
+  "wellbeing_break_body_template": {
+    "message": "Du har precis bläddrat förbi $1 inlägg. PureFusion har tillfälligt pausat flödet för att hjälpa dig undvika doom-scrolling. Är det dags att göra något annat?"
+  },
+  "wellbeing_break_resume_btn": {
+    "message": "Fortsätt bläddra ändå"
+  },
+  "wellbeing_session_timer_prefix": {
+    "message": "Session"
+  },
+  "wellbeing_report_button": {
+    "message": "Rapport"
+  },
+  "wellbeing_weekly_report_button": {
+    "message": "Vecka"
+  },
+  "wellbeing_report_disabled": {
+    "message": "Daglig flödesrapport är inaktiverad. Aktivera den i Digital välmående."
+  },
+  "wellbeing_report_label_auto": {
+    "message": "Daglig flödesrapport"
+  },
+  "wellbeing_report_label_session": {
+    "message": "Sessions-flödesrapport"
+  },
+  "wellbeing_weekly_report_label": {
+    "message": "Veckovis flödesrapport"
+  },
+  "wellbeing_report_no_filters": {
+    "message": "Inga filter aktiverade än"
+  },
+  "wellbeing_weekly_report_no_data": {
+    "message": "Veckorrapporten behöver mer aktivitetsdata först."
+  },
+  "wellbeing_session_awareness_toast_template": {
+    "message": "Högt bläddertempo detekterat: $1 bläddring under den senaste minuten ($2 min session). Överväg en kort paus."
+  },
+  "wellbeing_report_panel_title": {
+    "message": "PureFusion Feed-rapporter"
+  },
+  "wellbeing_report_panel_close": {
+    "message": "Stäng"
+  },
+  "wellbeing_report_panel_session_tab": {
+    "message": "Session"
+  },
+  "wellbeing_report_panel_weekly_tab": {
+    "message": "Veckovis"
+  },
+  "wellbeing_report_panel_hidden": {
+    "message": "Dolda objekt"
+  },
+  "wellbeing_report_panel_reels": {
+    "message": "Reels blockerade"
+  },
+  "wellbeing_report_panel_top_reason": {
+    "message": "Största distraktion"
+  },
+  "wellbeing_report_panel_minutes_saved": {
+    "message": "Minuter sparade (uppskattning)"
+  },
+  "wellbeing_report_panel_elapsed": {
+    "message": "Session förfluten"
+  },
+  "wellbeing_report_panel_refresh": {
+    "message": "Uppdatera"
+  },
+  "wellbeing_report_panel_reset_session": {
+    "message": "Återställ session"
+  },
+  "wellbeing_report_panel_reset_done": {
+    "message": "Sessionräknare återställda."
+  },
+  "wellbeing_report_panel_note": {
+    "message": "Tips: Dagliga värden återställs med sessionsåterställning; veckovis sammanslagning beräknas från sparade dagliga hinkar."
+  },
+  "wellbeing_report_panel_weekly_window": {
+    "message": "Rullande 7-dagarsfönster"
+  },
+  "wellbeing_report_panel_weekly_trend_title": {
+    "message": "7-dagarstrend"
+  },
+  "wellbeing_report_panel_weekly_top_reasons_title": {
+    "message": "Främsta distraktionsorsaker"
+  },
+  "wellbeing_report_panel_weekly_no_reasons": {
+    "message": "Ingen distraktionsorsakdata ännu."
+  },
+  "wellbeing_report_panel_weekly_reason_explain": {
+    "message": "Förklara"
+  },
+  "wellbeing_report_reason_explain_ads": {
+    "message": "Sponsrat eller annonslikt innehåll filtrerades för att minska reklamröra."
+  },
+  "wellbeing_report_reason_explain_story": {
+    "message": "Berättelseaktivitetsmönster (gillar/kommentarer/vänskaper/incheckningar) filtrerades som lågsignals-flödesljud."
+  },
+  "wellbeing_report_reason_explain_post_type": {
+    "message": "Ett inläggsformatsfilter tog bort innehållstyper du valde att undertrycka (video/foto/länk/textbaserat)."
+  },
+  "wellbeing_report_reason_explain_bait": {
+    "message": "Beteendesäkerhetsfiltren flaggade manipulativa eller högt ilskemönster utformade för att hålla dig bläddrande."
+  },
+  "wellbeing_report_reason_explain_nav": {
+    "message": "Navigerings- och modulrörskontrollerna tog bort distraherande icke-flödes-UI-element."
+  },
+  "wellbeing_report_reason_explain_keyword": {
+    "message": "Nyckelordsregler matchade det här objektet och filtrerade det baserat på din anpassade blocklista."
+  },
+  "wellbeing_report_reason_explain_generic": {
+    "message": "Den här kategorin filtrerades av dina aktiva PureFusion-regler för att hålla ditt flöde renare och mer fokuserat."
+  },
+  "wellbeing_report_reason_open_settings": {
+    "message": "Öppna relaterade inställningar"
+  },
   "wellbeing_weekly_report_toast_template": {
     "message": "$LABEL$: dolda $HIDDEN$ objekt, reels blockerade $REELS$, största distraktion $REASON$, uppskattningsvis $MINUTES$ min sparade under 7 dagar.",
-    "placeholders": {"label": {"content": "$1"}, "hidden": {"content": "$2"}, "reels": {"content": "$3"}, "reason": {"content": "$4"}, "minutes": {"content": "$5"}}
+    "placeholders": {
+      "label": {
+        "content": "$1"
+      },
+      "hidden": {
+        "content": "$2"
+      },
+      "reels": {
+        "content": "$3"
+      },
+      "reason": {
+        "content": "$4"
+      },
+      "minutes": {
+        "content": "$5"
+      }
+    }
   },
   "wellbeing_report_toast_template": {
     "message": "$LABEL$: dolda $HIDDEN$ objekt, reels blockerade $REELS$, främsta orsak $REASON$, uppskattningsvis $MINUTES$ min sparade.",
-    "placeholders": {"label": {"content": "$1"}, "hidden": {"content": "$2"}, "reels": {"content": "$3"}, "reason": {"content": "$4"}, "minutes": {"content": "$5"}}
+    "placeholders": {
+      "label": {
+        "content": "$1"
+      },
+      "hidden": {
+        "content": "$2"
+      },
+      "reels": {
+        "content": "$3"
+      },
+      "reason": {
+        "content": "$4"
+      },
+      "minutes": {
+        "content": "$5"
+      }
+    }
   },
-  "options_social_ghost_title": {"message": "Spökläge (Messenger)"},
-  "options_social_ghost_desc": {"message": "Privata interaktioner. Dölj dina spår när du skickar meddelanden."},
-  "options_social_hide_seen": {"message": "Dölj \"Sett\"-kvitton (Läs utan att de vet)"},
-  "options_social_hide_typing": {"message": "Dölj \"Skriver...\"-indikator"},
-  "options_social_privacy_blur": {"message": "Integritetssuddning (Sudda ut chattbody tills hover)"},
-  "options_social_meta_title": {"message": "Meta AI och algoritmisk röra"},
-  "options_social_auto_comment_preview": {"message": "Auto kommentarförhandsvisning"},
-  "options_social_auto_comment_preview_toggle": {"message": "Aktivera auto kommentarförhandsvisning"},
-  "options_beta_badge": {"message": "BETA"},
-  "options_comment_preview_warning_text": {"message": "Den här funktionen simulerar knapptryckningar för att expandera kommentarsektioner när du bläddrar. Det är experimentellt och kanske inte fungerar på alla inlägg, kan sluta fungera efter Facebook-layoutuppdateringar, eller kan utlösa hastighetsbegränsning om sweep-antal ställs för högt. Håll nedkylning över 1200 ms och maximala inlägg per sweep under 20 vid första testning."},
-  "options_comment_preview_risk_text": {"message": "Aktivera på egen risk. En bekräftelseprompt visas första gången du slår på detta."},
-  "options_social_comment_preview_desc": {"message": "Justera nedkylning och omfång nedan. Högre nedkylningar och lägre sweep-tak minskar chansen att utlösa FB-hastighetsbegränsning."},
-  "options_social_comment_preview_cooldown": {"message": "Kommentarförhandsvisning-nedkylning (ms)"},
-  "options_social_comment_preview_retry_cap": {"message": "Försök igen-tak per inlägg"},
-  "options_social_comment_preview_sweep_cap": {"message": "Maximala inlägg per sweep"},
-  "options_social_comment_preview_home": {"message": "Tillåt på hemflöde"},
-  "options_social_comment_preview_groups": {"message": "Tillåt på grupper"},
-  "options_social_comment_preview_watch": {"message": "Tillåt på Watch"},
-  "options_social_comment_preview_marketplace": {"message": "Tillåt på Marketplace"},
-  "options_social_comment_preview_notifications": {"message": "Tillåt på aviseringar"},
-  "options_social_comment_preview_other": {"message": "Tillåt på andra ytor"},
-  "options_social_comment_preview_strategy": {"message": "Förhandsvisningsstrategi"},
-  "options_social_comment_preview_strategy_inject": {"message": "Smart Inject (Stabil, v3)"},
-  "options_social_comment_preview_strategy_click": {"message": "Legacy Click (v2)"},
-  "options_social_nuke_meta": {"message": "Nuka Meta AI (Ta bort alla gradientikoner och glimmarknappar)"},
-  "options_social_track_unfriends": {"message": "Spåra avvänskningar och avaktiveringar"},
-  "options_social_notif_title": {"message": "Aviserings-själalugnare"},
-  "options_social_notif_style": {"message": "Varningsjuvel-stil (Den röda pricken)"},
-  "options_social_notif_style_classic": {"message": "Klassisk röd (Standard)"},
-  "options_social_notif_style_blue": {"message": "Ren blå (Subtil)"},
-  "options_social_notif_style_purple": {"message": "Fusion lila (Varumärkt)"},
-  "options_social_notif_style_grey": {"message": "Spökgrå (Minimal)"},
-  "options_social_notif_style_hidden": {"message": "Helt dold"},
-  "options_social_notif_digest": {"message": "Aviseringssammanfattningsläge (Batch-aviseringar varje timme)"},
-  "options_social_notif_games": {"message": "Dölj spelaviseringar"},
-  "options_social_notif_birthdays": {"message": "Dölj födelsdagsaviseringar"},
-  "options_social_notif_marketplace": {"message": "Dölj Marketplace-aviseringar"},
-  "options_social_notif_engagement": {"message": "Dölj algoritmiska engagemangsuppmaningar"},
-  "options_social_search_title": {"message": "Sökpopup-kontroller"},
-  "options_social_search_desc": {"message": "Undertryck distraherande sökrullgardinmenyn-förslag."},
-  "options_social_search_hide_all": {"message": "Dölj alla sökpopup-förslag"},
-  "options_social_search_hide_trending": {"message": "Dölj trendande sökförslag"},
-  "options_social_search_hide_recent": {"message": "Dölj sektionen för senaste sökningar"},
-  "options_keywords_card_desc": {"message": "Separera nyckelord med kommatecken."},
-  "options_keywords_blocklist_label": {"message": "Blocklista (Komprimerar inlägg med en \"Visa ändå\"-knapp)"},
-  "options_keywords_autohide_label": {"message": "Auto-dölj (Tar tyst bort inlägg som innehåller dessa strängar)"},
-  "options_keywords_source_blocklist_label": {"message": "Dolda källor (Dölj alltid matchande källnamn)"},
-  "options_keywords_allowlist_label": {"message": "Tillåtna nyckelord (Blockera aldrig om inlägg innehåller dessa)"},
-  "options_keywords_allowlist_friends_label": {"message": "Dölj aldrig-källor (Vänner/Sidor)"},
-  "options_keywords_blocklist_placeholder": {"message": "politik, spoilers, etc..."},
-  "options_keywords_autohide_placeholder": {"message": "skräp-buzzord..."},
-  "options_keywords_source_blocklist_placeholder": {"message": "John Doe, Högt Nyhetssida..."},
-  "options_keywords_allowlist_placeholder": {"message": "familjeuppdatering, projektlansering..."},
-  "options_keywords_allowlist_friends_placeholder": {"message": "Jane Doe, Min favori tsida..."},
-  "options_data_backup_title": {"message": "Konfigurationssäkerhetskopiering"},
-  "options_data_backup_desc": {"message": "Exportera dina inställningar och blocklistor som JSON för synkronisering till en annan maskin."},
-  "options_data_export_btn": {"message": "Exportera till fil"},
-  "options_data_import_btn": {"message": "Importera från fil"},
-  "options_data_about_title": {"message": "Om och support"},
-  "options_data_about_desc": {"message": "Behöver hjälp, vill rapportera ett problem, eller stödja utvecklingen? Nå mig direkt via länkarna nedan."},
-  "options_data_about_discord": {"message": "Discord (Purefusion-Feeds)"},
-  "options_data_about_github": {"message": "GitHub-förvar"},
-  "options_data_about_issues": {"message": "Rapportera problem"},
-  "options_data_about_donate": {"message": "Donera / stödja"},
-  "options_data_diag_title": {"message": "Diagnostikläge"},
-  "options_data_diag_desc": {"message": "Valfritt lokalt felsöknings-overlay för att inspektera döljorsaker och filteraktivitet."},
-  "options_data_diag_enable": {"message": "Aktivera diagnostikläge"},
-  "options_data_diag_overlay": {"message": "Visa diagnostik-overlay på sidan"},
-  "options_data_diag_compact": {"message": "Använd kompakt diagnostik-overlay"},
-  "options_data_diag_console": {"message": "Utförlig diagnostik i konsolen"},
-  "options_data_diag_max_reasons": {"message": "Overlay max orsaksrader"},
-  "options_data_diag_thresholds_title": {"message": "Observer-spik-tröskel värden"},
-  "options_data_diag_thresholds_desc": {"message": "Justera varnings- och allvarliga tröskel värden som används av diagnostik-arbetsbelastningsvarningar."},
-  "options_data_diag_warn_duration": {"message": "Varningsduration (ms)"},
-  "options_data_diag_severe_duration": {"message": "Allvarlig duration (ms)"},
-  "options_data_diag_warn_nodes": {"message": "Varningsnodantal"},
-  "options_data_diag_severe_nodes": {"message": "Allvarligt nodantal"},
-  "options_data_diag_warn_records": {"message": "Varnings-mutationsrecord"},
-  "options_data_diag_severe_records": {"message": "Allvarliga mutationsrecord"},
-  "options_data_reset_title": {"message": "Fabriksåterställning"},
-  "options_data_reset_desc": {"message": "Det här raderar alla inställningar och lokala AI-inlärningsdata."},
-  "options_data_reset_btn": {"message": "Radera allt"},
-  "options_toast_saved": {"message": "Inställningar sparade framgångsrikt."},
-  "options_toast_imported": {"message": "Inställningar importerade framgångsrikt."},
-  "options_toast_invalid_backup": {"message": "Ogiltig PureFusion-säkerhetskopieringsfil."},
-  "options_toast_import_error": {"message": "Fel vid import av fil. Den kan vara skadad."},
-  "options_toast_provider_permission_denied": {"message": "AI-leverantörsbehörighet nekad. Leverantör inaktiverad."},
-  "options_toast_preset_applied": {"message": "Förinställning tillämpad framgångsrikt."},
-  "options_toast_custom_css_snippet_loaded": {"message": "Anpassat CSS-snippet laddat. Klicka Spara för att tillämpa."},
-  "options_toast_ultrafast_applied": {"message": "Ultrasnabbt läge tillämpat för den här enheten."},
-  "options_toast_mode_clean_applied": {"message": "Rent läge tillämpat."},
-  "options_toast_mode_smart_applied": {"message": "Smart läge tillämpat."},
-  "options_reset_confirm": {"message": "Är du säker? Det här raderar dina inställningar och all lokal AI-spårningsdata."},
-  "options_sidebar_filters": {"message": "🚫 Kärnfilter"},
-  "options_sidebar_wellbeing": {"message": "🧘 Digitalt välmående"},
-  "options_sidebar_ai": {"message": "🤖 AI-motor"},
-  "options_sidebar_ui": {"message": "🎨 UI-justeringar"},
-  "options_sidebar_keywords": {"message": "🔤 Nyckelordsfilter"},
-  "options_sidebar_social": {"message": "🤝 Socialt och integritet"},
-  "options_sidebar_data": {"message": "💾 Data och säkerhetskopiering"},
-  "welcome_title": {"message": "Välkommen till PureFusion Feed"},
-  "welcome_subtitle": {"message": "Kliv in i en renare, snabbare och mer privat social upplevelse."},
-  "welcome_god_mode": {"message": "God Mode Core"},
-  "welcome_god_mode_desc": {"message": "Total utrotning av sponsrat innehåll, föreslagna reels och algoritmisk skräp."},
-  "welcome_privacy_ai": {"message": "Privacy AI"},
-  "welcome_privacy_ai_desc": {"message": "Sammanfatta långa inlägg och blockera clickbait med offline, lokal AI-teknik."},
-  "welcome_dopamine": {"message": "Dopamin-brytare"},
-  "welcome_dopamine_desc": {"message": "Bekämpa doom-scrolling med sessionstimers, gråskaleläge och bläddergränser."},
-  "welcome_ready": {"message": "Redo att ta kontroll?"},
-  "welcome_ready_desc": {"message": "Ditt flöde är nu under din kontroll. Du kan komma åt **Avancerad instrumentpanel** när som helst."},
-  "welcome_help_title": {"message": "Behöver hjälp eller vill rapportera en bugg?"},
-  "welcome_help_desc": {"message": "Nå mig direkt på Discord, öppna GitHub-ärenden, eller stödja PureFusion-utveckling."},
-  "welcome_help_discord": {"message": "Discord: Purefusion-Feeds"},
-  "welcome_help_github": {"message": "GitHub-förvar"},
-  "welcome_help_issues": {"message": "GitHub-ärenden"},
-  "welcome_help_donate": {"message": "Donera / stödja"},
-  "welcome_support_development": {"message": "❤️ Stödja utveckling"},
-  "welcome_footer_built": {"message": "Byggd med ❤️ av Michael Harrell & Drivs av PureFusion 2024"},
-  "inpage_fab_title": {"message": "Öppna PureFusion-instrumentpanel"},
-  "inpage_modal_title": {"message": "PureFusion-panel"},
-  "inpage_modal_ads": {"message": "Blockera annonser"},
-  "inpage_modal_sponsored": {"message": "Dölj sponsrade inlägg"},
-  "inpage_modal_sugg": {"message": "Dölj förslag och Reels"},
-  "inpage_modal_stories": {"message": "Dölj Berättelse-fältet"},
-  "inpage_modal_ai": {"message": "AI Rage/Clickbait-filter"},
-  "inpage_modal_gray": {"message": "Gråskaleläge"},
-  "content_hidden_chip_label": {"message": "Dold av PureFusion"},
-  "content_hidden_chip_show_once": {"message": "Visa en gång"},
-  "content_hidden_chip_allow_source": {"message": "Tillåt alltid källan"},
-  "content_allow_source_exists": {"message": "finns redan i Dölj aldrig-källor."},
-  "content_allow_source_added": {"message": "Tillagd"},
-  "content_allow_source_added_suffix": {"message": "till Dölj aldrig-källor."},
-  "messenger_ai_rewrite_btn": {"message": "Skriv om"},
-  "messenger_ai_replies_btn": {"message": "Smarta svar"},
-  "messenger_ai_rewriting_btn": {"message": "Skriver om..."},
-  "messenger_ai_generating_btn": {"message": "Genererar..."},
-  "messenger_ai_empty_input": {"message": "Skriv ett meddelande först."},
-  "messenger_ai_rewrite_success": {"message": "Meddelande omskrivet."},
-  "messenger_ai_rewrite_fail": {"message": "Omskrivning misslyckades. Kontrollera AI-leverantörsinställningar."},
-  "messenger_ai_context_missing": {"message": "Behöver mer chattkontext för smarta svar."},
-  "messenger_ai_replies_fail": {"message": "Kunde inte generera smarta svar."},
-  "messenger_ai_provider_required": {"message": "Konfigurera en AI-leverantör i PureFusion-inställningar först."},
-  "options_sidebar_poweruser": {"message": "⚡ Avancerade användarregler"},
-  "options_poweruser_title": {"message": "Avancerad användar-regelmotor"},
-  "options_poweruser_desc": {"message": "Sikta och dölj valfritt element på sidan med anpassade selektorer eller textmatchning. Var exakt för att undvika att dölja innehåll du vill se."},
-  "options_poweruser_add_rule": {"message": "Lägg till ny dölj-regel"},
-  "options_poweruser_rule_list": {"message": "Aktiva regler"},
-  "options_poweruser_no_rules": {"message": "Inga anpassade regler definierade ännu. Använd '+'-knappen eller högerklicka på element på Facebook för att 'Zappa' dem."},
-  "options_poweruser_type_label": {"message": "Regeltyp"},
-  "options_poweruser_type_selector": {"message": "CSS-selektor"},
-  "options_poweruser_type_text": {"message": "Textmatchning"},
-  "options_poweruser_rule_label": {"message": "Regeletikett (Internt namn)"},
-  "options_poweruser_rule_value": {"message": "Selektor eller fras"},
-  "options_poweruser_rule_wrapper_label": {"message": "Omfång (Wrapper-selektor)"},
-  "options_poweruser_rule_wrapper_placeholder": {"message": "t.ex. [role='article'] (Valfritt)"},
-  "options_poweruser_save_rule": {"message": "Spara regel"},
-  "options_poweruser_cancel": {"message": "Avbryt"},
-  "options_poweruser_rule_enabled": {"message": "Aktiverad"},
-  "options_poweruser_delete_rule": {"message": "Ta bort"},
-  "options_poweruser_edit_rule": {"message": "Redigera"},
-  "quick_action_menu_zap_element": {"message": "Zappa (Dölj) element"},
-  "options_poweruser_delete_confirm": {"message": "Är du säker på att du vill ta bort den här regeln?"},
-  "options_toast_rule_updated": {"message": "Regel uppdaterad."},
-  "options_toast_rule_deleted": {"message": "Regel borttagen."},
-  "options_toast_rules_saved": {"message": "Anpassade regler sparade framgångsrikt."},
-  "options_toast_rule_value_required": {"message": "Regelvärde (selektor/text) krävs."},
-  "quick_action_save_later": { "message": "Save to Read Later" },
-  "popup_readlater_title": { "message": "Read Later" },
-  "popup_readlater_one": { "message": "1 saved" },
-  "popup_readlater_many": { "message": "{count} saved" },
-  "popup_readlater_view": { "message": "View Queue" },
-  "options_readlater_title": { "message": "Read Later Queue" },
-  "options_readlater_desc": { "message": "Posts saved from the Facebook feed using right-click → Teach PureFusion → Save to Read Later." },
-  "options_readlater_clear": { "message": "Clear All" },
-  "content_saved_for_later": { "message": "Post saved to Read Later." },
-  "content_save_later_duplicate": { "message": "Already in your Read Later queue." },
-  "content_save_later_error": { "message": "Could not identify a post to save. Try right-clicking within a post." },
-  "options_filters_post_age_label": { "message": "Hide Posts Older Than" },
-  "options_filters_post_age_desc": { "message": "Hide feed posts older than the chosen threshold. Reads the post timestamp — posts without a detectable date are kept visible." },
-  "options_filters_post_age_off": { "message": "Off" },
-  "options_filters_post_age_6h": { "message": "6 hours" },
-  "options_filters_post_age_12h": { "message": "12 hours" },
-  "options_filters_post_age_24h": { "message": "24 hours (1 day)" },
-  "options_filters_post_age_48h": { "message": "2 days" },
-  "options_filters_post_age_72h": { "message": "3 days" },
-  "options_filters_post_age_7d": { "message": "7 days" },
-  "options_filters_post_age_14d": { "message": "14 days" },
-  "options_filters_post_age_30d": { "message": "30 days" },
-  "options_ui_reply_only_label": { "message": "Reply-Only Mode" },
-  "options_ui_reply_only_desc": { "message": "Collapse post bodies in the feed — hides post text and attached stories, leaving only the comment threads visible. Useful for cutting through engagement-bait without seeing the inflammatory content." }
+  "options_social_ghost_title": {
+    "message": "Spökläge (Messenger)"
+  },
+  "options_social_ghost_desc": {
+    "message": "Privata interaktioner. Dölj dina spår när du skickar meddelanden."
+  },
+  "options_social_hide_seen": {
+    "message": "Dölj \"Sett\"-kvitton (Läs utan att de vet)"
+  },
+  "options_social_hide_typing": {
+    "message": "Dölj \"Skriver...\"-indikator"
+  },
+  "options_social_privacy_blur": {
+    "message": "Integritetssuddning (Sudda ut chattbody tills hover)"
+  },
+  "options_social_meta_title": {
+    "message": "Meta AI och algoritmisk röra"
+  },
+  "options_social_auto_comment_preview": {
+    "message": "Auto kommentarförhandsvisning"
+  },
+  "options_social_auto_comment_preview_toggle": {
+    "message": "Aktivera auto kommentarförhandsvisning"
+  },
+  "options_beta_badge": {
+    "message": "BETA"
+  },
+  "options_comment_preview_warning_text": {
+    "message": "Den här funktionen simulerar knapptryckningar för att expandera kommentarsektioner när du bläddrar. Det är experimentellt och kanske inte fungerar på alla inlägg, kan sluta fungera efter Facebook-layoutuppdateringar, eller kan utlösa hastighetsbegränsning om sweep-antal ställs för högt. Håll nedkylning över 1200 ms och maximala inlägg per sweep under 20 vid första testning."
+  },
+  "options_comment_preview_risk_text": {
+    "message": "Aktivera på egen risk. En bekräftelseprompt visas första gången du slår på detta."
+  },
+  "options_social_comment_preview_desc": {
+    "message": "Justera nedkylning och omfång nedan. Högre nedkylningar och lägre sweep-tak minskar chansen att utlösa FB-hastighetsbegränsning."
+  },
+  "options_social_comment_preview_cooldown": {
+    "message": "Kommentarförhandsvisning-nedkylning (ms)"
+  },
+  "options_social_comment_preview_retry_cap": {
+    "message": "Försök igen-tak per inlägg"
+  },
+  "options_social_comment_preview_sweep_cap": {
+    "message": "Maximala inlägg per sweep"
+  },
+  "options_social_comment_preview_home": {
+    "message": "Tillåt på hemflöde"
+  },
+  "options_social_comment_preview_groups": {
+    "message": "Tillåt på grupper"
+  },
+  "options_social_comment_preview_watch": {
+    "message": "Tillåt på Watch"
+  },
+  "options_social_comment_preview_marketplace": {
+    "message": "Tillåt på Marketplace"
+  },
+  "options_social_comment_preview_notifications": {
+    "message": "Tillåt på aviseringar"
+  },
+  "options_social_comment_preview_other": {
+    "message": "Tillåt på andra ytor"
+  },
+  "options_social_comment_preview_strategy": {
+    "message": "Förhandsvisningsstrategi"
+  },
+  "options_social_comment_preview_strategy_inject": {
+    "message": "Smart Inject (Stabil, v3)"
+  },
+  "options_social_comment_preview_strategy_click": {
+    "message": "Legacy Click (v2)"
+  },
+  "options_social_nuke_meta": {
+    "message": "Nuka Meta AI (Ta bort alla gradientikoner och glimmarknappar)"
+  },
+  "options_social_track_unfriends": {
+    "message": "Spåra avvänskningar och avaktiveringar"
+  },
+  "options_social_notif_title": {
+    "message": "Aviserings-själalugnare"
+  },
+  "options_social_notif_style": {
+    "message": "Varningsjuvel-stil (Den röda pricken)"
+  },
+  "options_social_notif_style_classic": {
+    "message": "Klassisk röd (Standard)"
+  },
+  "options_social_notif_style_blue": {
+    "message": "Ren blå (Subtil)"
+  },
+  "options_social_notif_style_purple": {
+    "message": "Fusion lila (Varumärkt)"
+  },
+  "options_social_notif_style_grey": {
+    "message": "Spökgrå (Minimal)"
+  },
+  "options_social_notif_style_hidden": {
+    "message": "Helt dold"
+  },
+  "options_social_notif_digest": {
+    "message": "Aviseringssammanfattningsläge (Batch-aviseringar varje timme)"
+  },
+  "options_social_notif_games": {
+    "message": "Dölj spelaviseringar"
+  },
+  "options_social_notif_birthdays": {
+    "message": "Dölj födelsdagsaviseringar"
+  },
+  "options_social_notif_marketplace": {
+    "message": "Dölj Marketplace-aviseringar"
+  },
+  "options_social_notif_engagement": {
+    "message": "Dölj algoritmiska engagemangsuppmaningar"
+  },
+  "options_social_search_title": {
+    "message": "Sökpopup-kontroller"
+  },
+  "options_social_search_desc": {
+    "message": "Undertryck distraherande sökrullgardinmenyn-förslag."
+  },
+  "options_social_search_hide_all": {
+    "message": "Dölj alla sökpopup-förslag"
+  },
+  "options_social_search_hide_trending": {
+    "message": "Dölj trendande sökförslag"
+  },
+  "options_social_search_hide_recent": {
+    "message": "Dölj sektionen för senaste sökningar"
+  },
+  "options_keywords_card_desc": {
+    "message": "Separera nyckelord med kommatecken."
+  },
+  "options_keywords_blocklist_label": {
+    "message": "Blocklista (Komprimerar inlägg med en \"Visa ändå\"-knapp)"
+  },
+  "options_keywords_autohide_label": {
+    "message": "Auto-dölj (Tar tyst bort inlägg som innehåller dessa strängar)"
+  },
+  "options_keywords_source_blocklist_label": {
+    "message": "Dolda källor (Dölj alltid matchande källnamn)"
+  },
+  "options_keywords_allowlist_label": {
+    "message": "Tillåtna nyckelord (Blockera aldrig om inlägg innehåller dessa)"
+  },
+  "options_keywords_allowlist_friends_label": {
+    "message": "Dölj aldrig-källor (Vänner/Sidor)"
+  },
+  "options_keywords_blocklist_placeholder": {
+    "message": "politik, spoilers, etc..."
+  },
+  "options_keywords_autohide_placeholder": {
+    "message": "skräp-buzzord..."
+  },
+  "options_keywords_source_blocklist_placeholder": {
+    "message": "John Doe, Högt Nyhetssida..."
+  },
+  "options_keywords_allowlist_placeholder": {
+    "message": "familjeuppdatering, projektlansering..."
+  },
+  "options_keywords_allowlist_friends_placeholder": {
+    "message": "Jane Doe, Min favori tsida..."
+  },
+  "options_data_backup_title": {
+    "message": "Konfigurationssäkerhetskopiering"
+  },
+  "options_data_backup_desc": {
+    "message": "Exportera dina inställningar och blocklistor som JSON för synkronisering till en annan maskin."
+  },
+  "options_data_export_btn": {
+    "message": "Exportera till fil"
+  },
+  "options_data_import_btn": {
+    "message": "Importera från fil"
+  },
+  "options_data_about_title": {
+    "message": "Om och support"
+  },
+  "options_data_about_desc": {
+    "message": "Behöver hjälp, vill rapportera ett problem, eller stödja utvecklingen? Nå mig direkt via länkarna nedan."
+  },
+  "options_data_about_discord": {
+    "message": "Discord (Purefusion-Feeds)"
+  },
+  "options_data_about_github": {
+    "message": "GitHub-förvar"
+  },
+  "options_data_about_issues": {
+    "message": "Rapportera problem"
+  },
+  "options_data_about_donate": {
+    "message": "Donera / stödja"
+  },
+  "options_data_diag_title": {
+    "message": "Diagnostikläge"
+  },
+  "options_data_diag_desc": {
+    "message": "Valfritt lokalt felsöknings-overlay för att inspektera döljorsaker och filteraktivitet."
+  },
+  "options_data_diag_enable": {
+    "message": "Aktivera diagnostikläge"
+  },
+  "options_data_diag_overlay": {
+    "message": "Visa diagnostik-overlay på sidan"
+  },
+  "options_data_diag_compact": {
+    "message": "Använd kompakt diagnostik-overlay"
+  },
+  "options_data_diag_console": {
+    "message": "Utförlig diagnostik i konsolen"
+  },
+  "options_data_diag_max_reasons": {
+    "message": "Overlay max orsaksrader"
+  },
+  "options_data_diag_thresholds_title": {
+    "message": "Observer-spik-tröskel värden"
+  },
+  "options_data_diag_thresholds_desc": {
+    "message": "Justera varnings- och allvarliga tröskel värden som används av diagnostik-arbetsbelastningsvarningar."
+  },
+  "options_data_diag_warn_duration": {
+    "message": "Varningsduration (ms)"
+  },
+  "options_data_diag_severe_duration": {
+    "message": "Allvarlig duration (ms)"
+  },
+  "options_data_diag_warn_nodes": {
+    "message": "Varningsnodantal"
+  },
+  "options_data_diag_severe_nodes": {
+    "message": "Allvarligt nodantal"
+  },
+  "options_data_diag_warn_records": {
+    "message": "Varnings-mutationsrecord"
+  },
+  "options_data_diag_severe_records": {
+    "message": "Allvarliga mutationsrecord"
+  },
+  "options_data_reset_title": {
+    "message": "Fabriksåterställning"
+  },
+  "options_data_reset_desc": {
+    "message": "Det här raderar alla inställningar och lokala AI-inlärningsdata."
+  },
+  "options_data_reset_btn": {
+    "message": "Radera allt"
+  },
+  "options_toast_saved": {
+    "message": "Inställningar sparade framgångsrikt."
+  },
+  "options_toast_imported": {
+    "message": "Inställningar importerade framgångsrikt."
+  },
+  "options_toast_invalid_backup": {
+    "message": "Ogiltig PureFusion-säkerhetskopieringsfil."
+  },
+  "options_toast_import_error": {
+    "message": "Fel vid import av fil. Den kan vara skadad."
+  },
+  "options_toast_provider_permission_denied": {
+    "message": "AI-leverantörsbehörighet nekad. Leverantör inaktiverad."
+  },
+  "options_toast_preset_applied": {
+    "message": "Förinställning tillämpad framgångsrikt."
+  },
+  "options_toast_custom_css_snippet_loaded": {
+    "message": "Anpassat CSS-snippet laddat. Klicka Spara för att tillämpa."
+  },
+  "options_toast_ultrafast_applied": {
+    "message": "Ultrasnabbt läge tillämpat för den här enheten."
+  },
+  "options_toast_mode_clean_applied": {
+    "message": "Rent läge tillämpat."
+  },
+  "options_toast_mode_smart_applied": {
+    "message": "Smart läge tillämpat."
+  },
+  "options_reset_confirm": {
+    "message": "Är du säker? Det här raderar dina inställningar och all lokal AI-spårningsdata."
+  },
+  "options_sidebar_filters": {
+    "message": "🚫 Kärnfilter"
+  },
+  "options_sidebar_wellbeing": {
+    "message": "🧘 Digitalt välmående"
+  },
+  "options_sidebar_ai": {
+    "message": "🤖 AI-motor"
+  },
+  "options_sidebar_ui": {
+    "message": "🎨 UI-justeringar"
+  },
+  "options_sidebar_keywords": {
+    "message": "🔤 Nyckelordsfilter"
+  },
+  "options_sidebar_social": {
+    "message": "🤝 Socialt och integritet"
+  },
+  "options_sidebar_data": {
+    "message": "💾 Data och säkerhetskopiering"
+  },
+  "welcome_title": {
+    "message": "Välkommen till PureFusion Feed"
+  },
+  "welcome_subtitle": {
+    "message": "Kliv in i en renare, snabbare och mer privat social upplevelse."
+  },
+  "welcome_god_mode": {
+    "message": "God Mode Core"
+  },
+  "welcome_god_mode_desc": {
+    "message": "Total utrotning av sponsrat innehåll, föreslagna reels och algoritmisk skräp."
+  },
+  "welcome_privacy_ai": {
+    "message": "Privacy AI"
+  },
+  "welcome_privacy_ai_desc": {
+    "message": "Sammanfatta långa inlägg och blockera clickbait med offline, lokal AI-teknik."
+  },
+  "welcome_dopamine": {
+    "message": "Dopamin-brytare"
+  },
+  "welcome_dopamine_desc": {
+    "message": "Bekämpa doom-scrolling med sessionstimers, gråskaleläge och bläddergränser."
+  },
+  "welcome_ready": {
+    "message": "Redo att ta kontroll?"
+  },
+  "welcome_ready_desc": {
+    "message": "Ditt flöde är nu under din kontroll. Du kan komma åt **Avancerad instrumentpanel** när som helst."
+  },
+  "welcome_help_title": {
+    "message": "Behöver hjälp eller vill rapportera en bugg?"
+  },
+  "welcome_help_desc": {
+    "message": "Nå mig direkt på Discord, öppna GitHub-ärenden, eller stödja PureFusion-utveckling."
+  },
+  "welcome_help_discord": {
+    "message": "Discord: Purefusion-Feeds"
+  },
+  "welcome_help_github": {
+    "message": "GitHub-förvar"
+  },
+  "welcome_help_issues": {
+    "message": "GitHub-ärenden"
+  },
+  "welcome_help_donate": {
+    "message": "Donera / stödja"
+  },
+  "welcome_support_development": {
+    "message": "❤️ Stödja utveckling"
+  },
+  "welcome_footer_built": {
+    "message": "Byggd med ❤️ av Michael Harrell & Drivs av PureFusion 2024"
+  },
+  "inpage_fab_title": {
+    "message": "Öppna PureFusion-instrumentpanel"
+  },
+  "inpage_modal_title": {
+    "message": "PureFusion-panel"
+  },
+  "inpage_modal_ads": {
+    "message": "Blockera annonser"
+  },
+  "inpage_modal_sponsored": {
+    "message": "Enhanced Ad Filter"
+  },
+  "inpage_modal_sugg": {
+    "message": "Dölj förslag och Reels"
+  },
+  "inpage_modal_stories": {
+    "message": "Dölj Berättelse-fältet"
+  },
+  "inpage_modal_ai": {
+    "message": "AI Rage/Clickbait-filter"
+  },
+  "inpage_modal_gray": {
+    "message": "Gråskaleläge"
+  },
+  "content_hidden_chip_label": {
+    "message": "Dold av PureFusion"
+  },
+  "content_hidden_chip_show_once": {
+    "message": "Visa en gång"
+  },
+  "content_hidden_chip_allow_source": {
+    "message": "Tillåt alltid källan"
+  },
+  "content_allow_source_exists": {
+    "message": "finns redan i Dölj aldrig-källor."
+  },
+  "content_allow_source_added": {
+    "message": "Tillagd"
+  },
+  "content_allow_source_added_suffix": {
+    "message": "till Dölj aldrig-källor."
+  },
+  "messenger_ai_rewrite_btn": {
+    "message": "Skriv om"
+  },
+  "messenger_ai_replies_btn": {
+    "message": "Smarta svar"
+  },
+  "messenger_ai_rewriting_btn": {
+    "message": "Skriver om..."
+  },
+  "messenger_ai_generating_btn": {
+    "message": "Genererar..."
+  },
+  "messenger_ai_empty_input": {
+    "message": "Skriv ett meddelande först."
+  },
+  "messenger_ai_rewrite_success": {
+    "message": "Meddelande omskrivet."
+  },
+  "messenger_ai_rewrite_fail": {
+    "message": "Omskrivning misslyckades. Kontrollera AI-leverantörsinställningar."
+  },
+  "messenger_ai_context_missing": {
+    "message": "Behöver mer chattkontext för smarta svar."
+  },
+  "messenger_ai_replies_fail": {
+    "message": "Kunde inte generera smarta svar."
+  },
+  "messenger_ai_provider_required": {
+    "message": "Konfigurera en AI-leverantör i PureFusion-inställningar först."
+  },
+  "options_sidebar_poweruser": {
+    "message": "⚡ Avancerade användarregler"
+  },
+  "options_poweruser_title": {
+    "message": "Avancerad användar-regelmotor"
+  },
+  "options_poweruser_desc": {
+    "message": "Sikta och dölj valfritt element på sidan med anpassade selektorer eller textmatchning. Var exakt för att undvika att dölja innehåll du vill se."
+  },
+  "options_poweruser_add_rule": {
+    "message": "Lägg till ny dölj-regel"
+  },
+  "options_poweruser_rule_list": {
+    "message": "Aktiva regler"
+  },
+  "options_poweruser_no_rules": {
+    "message": "Inga anpassade regler definierade ännu. Använd '+'-knappen eller högerklicka på element på Facebook för att 'Zappa' dem."
+  },
+  "options_poweruser_type_label": {
+    "message": "Regeltyp"
+  },
+  "options_poweruser_type_selector": {
+    "message": "CSS-selektor"
+  },
+  "options_poweruser_type_text": {
+    "message": "Textmatchning"
+  },
+  "options_poweruser_rule_label": {
+    "message": "Regeletikett (Internt namn)"
+  },
+  "options_poweruser_rule_value": {
+    "message": "Selektor eller fras"
+  },
+  "options_poweruser_rule_wrapper_label": {
+    "message": "Omfång (Wrapper-selektor)"
+  },
+  "options_poweruser_rule_wrapper_placeholder": {
+    "message": "t.ex. [role='article'] (Valfritt)"
+  },
+  "options_poweruser_save_rule": {
+    "message": "Spara regel"
+  },
+  "options_poweruser_cancel": {
+    "message": "Avbryt"
+  },
+  "options_poweruser_rule_enabled": {
+    "message": "Aktiverad"
+  },
+  "options_poweruser_delete_rule": {
+    "message": "Ta bort"
+  },
+  "options_poweruser_edit_rule": {
+    "message": "Redigera"
+  },
+  "quick_action_menu_zap_element": {
+    "message": "Zappa (Dölj) element"
+  },
+  "options_poweruser_delete_confirm": {
+    "message": "Är du säker på att du vill ta bort den här regeln?"
+  },
+  "options_toast_rule_updated": {
+    "message": "Regel uppdaterad."
+  },
+  "options_toast_rule_deleted": {
+    "message": "Regel borttagen."
+  },
+  "options_toast_rules_saved": {
+    "message": "Anpassade regler sparade framgångsrikt."
+  },
+  "options_toast_rule_value_required": {
+    "message": "Regelvärde (selektor/text) krävs."
+  },
+  "quick_action_save_later": {
+    "message": "Save to Read Later"
+  },
+  "popup_readlater_title": {
+    "message": "Read Later"
+  },
+  "popup_readlater_one": {
+    "message": "1 saved"
+  },
+  "popup_readlater_many": {
+    "message": "{count} saved"
+  },
+  "popup_readlater_view": {
+    "message": "View Queue"
+  },
+  "options_readlater_title": {
+    "message": "Read Later Queue"
+  },
+  "options_readlater_desc": {
+    "message": "Posts saved from the Facebook feed using right-click → Teach PureFusion → Save to Read Later."
+  },
+  "options_readlater_clear": {
+    "message": "Clear All"
+  },
+  "content_saved_for_later": {
+    "message": "Post saved to Read Later."
+  },
+  "content_save_later_duplicate": {
+    "message": "Already in your Read Later queue."
+  },
+  "content_save_later_error": {
+    "message": "Could not identify a post to save. Try right-clicking within a post."
+  },
+  "options_filters_post_age_label": {
+    "message": "Hide Posts Older Than"
+  },
+  "options_filters_post_age_desc": {
+    "message": "Hide feed posts older than the chosen threshold. Reads the post timestamp — posts without a detectable date are kept visible."
+  },
+  "options_filters_post_age_off": {
+    "message": "Off"
+  },
+  "options_filters_post_age_6h": {
+    "message": "6 hours"
+  },
+  "options_filters_post_age_12h": {
+    "message": "12 hours"
+  },
+  "options_filters_post_age_24h": {
+    "message": "24 hours (1 day)"
+  },
+  "options_filters_post_age_48h": {
+    "message": "2 days"
+  },
+  "options_filters_post_age_72h": {
+    "message": "3 days"
+  },
+  "options_filters_post_age_7d": {
+    "message": "7 days"
+  },
+  "options_filters_post_age_14d": {
+    "message": "14 days"
+  },
+  "options_filters_post_age_30d": {
+    "message": "30 days"
+  },
+  "options_ui_reply_only_label": {
+    "message": "Reply-Only Mode"
+  },
+  "options_ui_reply_only_desc": {
+    "message": "Collapse post bodies in the feed — hides post text and attached stories, leaving only the comment threads visible. Useful for cutting through engagement-bait without seeing the inflammatory content."
+  }
 }

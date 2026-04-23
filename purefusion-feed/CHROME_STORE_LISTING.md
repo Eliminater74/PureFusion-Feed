@@ -21,7 +21,7 @@ PureFusion Feed gives you full control over your Facebook feed. It removes clutt
 - Removes Suggested Posts, People You May Know, Group injection modules, and Reels trays
 - Removes Stories bar, Memories posts, Fundraisers, and Page Suggestion modules
 - Ad blocker removes feed ads using infrastructure signals (zero false positives)
-- Separate sponsored post detection using label-heuristic scanning
+- Enhanced ad filter adds label-heuristic scanning as a secondary pass
 - **Post Age Filter** — hide posts older than 6 h, 12 h, 24 h, 2 d, 3 d, 1 week, 2 weeks, or 1 month
 - **Post Deduplication** — hide posts you have already seen in the current session
 - Keyword blocklist collapses posts; autohide list removes them entirely

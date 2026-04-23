@@ -1,561 +1,1715 @@
 {
-  "extName": { "message": "PureFusion Feed", "description": "The name of the extension" },
-  "extDesc": { "message": "Feed Manager Premium con Filtri Intelligenti, Approfondimenti AI e Privacy Guard per Facebook.", "description": "The extension description" },
-  "common_ads_blocked": { "message": "Annunci bloccati" },
-  "common_spam_hidden": { "message": "Spam nascosto" },
-  "common_save_settings": { "message": "Salva impostazioni" },
-  "common_save_changes": { "message": "Salva modifiche" },
-  "common_support_developer": { "message": "Supporta lo sviluppatore" },
-  "common_open_dashboard": { "message": "Apri impostazioni complete" },
-  "common_open_advanced": { "message": "Apri dashboard avanzata" },
-  "common_logo_alt": { "message": "Logo PureFusion" },
-  "options_page_title": { "message": "PureFusion Feed - Impostazioni" },
-  "popup_quick_filters": { "message": "Filtri rapidi" },
-  "popup_hide_sponsored_posts": { "message": "Nascondi post sponsorizzati" },
-  "popup_hide_sponsored_posts_desc": { "message": "Rilevamento basato su etichette — disattivato per impostazione predefinita" },
-  "popup_block_sponsored": { "message": "Blocca annunci" },
-  "popup_block_sponsored_desc": { "message": "Blocca annunci tramite segnali infrastrutturali" },
-  "popup_ad_blocker_on": { "message": "✓ Annunci bloccati tramite segnali infrastrutturali" },
-  "popup_ad_blocker_off": { "message": "⚠ Blocco annunci disattivato — clicca per attivare" },
-  "options_filters_removeAds": { "message": "Blocca annunci (segnali infrastrutturali)" },
-  "options_filters_removeSponsored": { "message": "Nascondi post sponsorizzati (rilevamento etichette)" },
-  "popup_hide_suggested": { "message": "Nascondi suggeriti/PYMK" },
-  "popup_hide_suggested_desc": { "message": "Rimuove i suggerimenti algoritmici" },
-  "popup_hide_reels": { "message": "Nascondi Reels" },
-  "popup_hide_reels_desc": { "message": "Rimuove le barre Reels iniettate nel feed" },
-  "popup_force_recent": { "message": "Forza i più recenti" },
-  "popup_force_recent_desc": { "message": "Carica sempre il feed cronologico" },
-  "popup_distraction_free": { "message": "Modalità senza distrazioni" },
-  "popup_distraction_free_desc": { "message": "Nascondi barre laterali, centra il feed (Alt+Shift+F)" },
-  "popup_fast_keyword": { "message": "Blocco parole chiave rapido" },
-  "popup_keyword_placeholder": { "message": "Inserisci parola chiave da comprimere..." },
-  "popup_hide_groups": { "message": "Nascondi gruppi suggeriti" },
-  "popup_hide_groups_desc": { "message": "Rimuove i consigli algoritmici sui gruppi" },
-  "popup_ghost_mode": { "message": "Modalità fantasma (Messaggi)" },
-  "popup_ghost_mode_desc": { "message": "Nascondi indicatori di lettura e digitazione" },
-  "popup_nuke_meta_ai": { "message": "Elimina Meta AI" },
-  "popup_nuke_meta_ai_desc": { "message": "Rimuovi pulsanti AI e sparkles" },
-  "popup_master_toggle_title": { "message": "Attiva o disattiva PureFusion" },
-  "popup_add_keyword_title": { "message": "Aggiungi parola chiave" },
-  "popup_keyword_added": { "message": "Aggiunto \"{keyword}\" alla lista bloccati." },
-  "popup_keyword_exists": { "message": "La parola chiave esiste già." },
-  "quick_action_menu_root": { "message": "Addestra PureFusion" },
-  "quick_action_menu_block_keyword": { "message": "Aggiungi alla lista bloccati" },
-  "quick_action_menu_autohide_keyword": { "message": "Aggiungi alla lista nascondi automaticamente" },
-  "quick_action_menu_allow_keyword": { "message": "Aggiungi alla lista consentiti" },
-  "quick_action_menu_hide_source": { "message": "Nascondi post da questa fonte" },
-  "quick_action_menu_allow_source": { "message": "Non nascondere mai questa fonte" },
-  "quick_action_select_text_first": { "message": "Seleziona prima del testo, poi usa un'azione rapida di PureFusion." },
-  "quick_action_source_select_name": { "message": "Fai clic destro sul nome di un profilo/pagina/gruppo o evidenzia prima un nome sorgente." },
-  "quick_action_selection_too_short": { "message": "Il testo selezionato è troppo breve. Scegli una parola o frase più chiara." },
-  "quick_action_source_too_broad": { "message": "Questa fonte sembra troppo generica. Seleziona un nome completo di pagina/persona/gruppo." },
-  "quick_action_exists_blocklist": { "message": "Già nella lista bloccati." },
-  "quick_action_exists_autohide": { "message": "Già nella lista nascondi automaticamente." },
-  "quick_action_exists_allowlist": { "message": "Già nella lista consentiti." },
-  "quick_action_exists_source_hide": { "message": "La fonte è già nascosta." },
-  "quick_action_exists_source_allow": { "message": "La fonte è già in Non nascondere mai le fonti." },
-  "quick_action_added_blocklist": { "message": "Aggiunto \"$1\" alla lista bloccati e feed riscansionato." },
-  "quick_action_added_autohide": { "message": "Aggiunto \"$1\" alla lista nascondi automaticamente e feed riscansionato." },
-  "quick_action_added_allowlist": { "message": "Aggiunto \"$1\" alla lista consentiti e feed riscansionato." },
-  "quick_action_added_source_hide": { "message": "Ora nascondo la fonte \"$1\" e feed riscansionato." },
-  "quick_action_added_source_allow": { "message": "Aggiunto \"$1\" a Non nascondere mai le fonti e feed riscansionato." },
-  "quick_action_undo_label": { "message": "Annulla" },
-  "quick_action_undo_success": { "message": "Azione rapida annullata." },
-  "quick_action_undo_expired": { "message": "L'annullamento non è più disponibile per questa azione." },
-  "quick_action_undo_failed": { "message": "Annullamento fallito. Riprova." },
-  "quick_action_unknown": { "message": "Azione rapida sconosciuta." },
-  "options_filters_card_title": { "message": "Rimozione annunci e spam" },
-  "options_filters_card_desc": { "message": "Attiva/disattiva i target di rimozione DOM principali." },
-  "options_presets_title": { "message": "Pacchetti preimpostati" },
-  "options_presets_desc": { "message": "Applica bundle curati per casi d'uso comuni, poi regola manualmente tutto ciò che vuoi." },
-  "options_presets_label": { "message": "Scegli una preimpostazione" },
-  "options_presets_work_focus": { "message": "Focus lavorativo" },
-  "options_presets_friends_only": { "message": "Solo amici" },
-  "options_presets_minimal": { "message": "Minimale" },
-  "options_presets_news_heavy": { "message": "Notizie intensive" },
-  "options_presets_messenger_privacy": { "message": "Privacy Messenger" },
-  "options_presets_apply_btn": { "message": "Applica preimpostazione" },
-  "options_mode_title": { "message": "Modalità esperienza feed" },
-  "options_mode_desc": { "message": "Applica un profilo comportamentale persistente in aggiunta alle tue opzioni salvate." },
-  "options_mode_label": { "message": "Modalità attiva" },
-  "options_view_mode_label": { "message": "Visualizza" },
-  "options_view_mode_basic": { "message": "Base" },
-  "options_view_mode_advanced": { "message": "Avanzata" },
-  "options_mode_custom": { "message": "Personalizzata (usa le mie opzioni)" },
-  "options_mode_clean": { "message": "Modalità pulita" },
-  "options_mode_focus": { "message": "Modalità focus" },
-  "options_mode_ultrafast": { "message": "Modalità ultra rapida (testo prima, velocità massima)" },
-  "options_mode_smart": { "message": "Modalità intelligente" },
-  "options_mode_classic": { "message": "Modalità classica 2012" },
-  "options_mode_profile_custom": { "message": "Usa le tue opzioni salvate esatte senza sovrascritture di modalità aggiuntive." },
-  "options_mode_profile_clean": { "message": "Rimuove il disordine da annunci/suggeriti e il rumore sociale mantenendo le visualizzazioni predittive disattivate per un feed più tranquillo." },
-  "options_mode_profile_focus": { "message": "Profilo di focus intenso con priorità alla home: tagli aggressivi al disordine, cronologia attiva e guardia pausa scorrimento abilitata." },
-  "options_mode_profile_ultrafast": { "message": "Profilo velocità testo-prima: rimuove le superfici multimediali pesanti, sopprime i tipi di post immagine/video e minimizza l'elaborazione UI aggiuntiva." },
-  "options_mode_profile_smart": { "message": "Mantiene attiva la pulizia del feed principale abilitando punteggio, compressione dei post a basso valore e segnali di verifica della credibilità." },
-  "options_mode_profile_classic": { "message": "Prioritizza il comportamento cronologico classico del feed e sopprime le moderne superfici algoritmiche come Watch/Marketplace." },
-  "options_quickstart_title": { "message": "PureFusion in 5 secondi" },
-  "options_quickstart_desc": { "message": "Scegli subito un profilo rapido. Puoi comunque regolare tutto nel dettaglio qui sotto." },
-  "options_promise_clean_title": { "message": "Facebook pulito" },
-  "options_promise_clean_desc": { "message": "Meno disordine da annunci e algoritmi." },
-  "options_promise_fast_title": { "message": "Facebook veloce" },
-  "options_promise_fast_desc": { "message": "Modalità ultra rapida per sessioni più leggere." },
-  "options_promise_smart_title": { "message": "Facebook intelligente" },
-  "options_promise_smart_desc": { "message": "Punteggio + credibilità + spiegabilità." },
-  "options_quickstart_btn_clean": { "message": "Usa Pulita" },
-  "options_quickstart_btn_fast": { "message": "Usa Ultra Rapida" },
-  "options_quickstart_btn_smart": { "message": "Usa Intelligente" },
-  "options_quickstart_recommended": { "message": "Consigliata per la maggior parte degli utenti" },
-  "options_mode_perf_hint_low": { "message": "Questo dispositivo potrebbe funzionare meglio con la modalità ultra rapida (testo prima, carico CPU/GPU ridotto)." },
-  "options_mode_perf_hint_mid": { "message": "La modalità ultra rapida può ridurre i rallentamenti durante sessioni intensive su questo dispositivo." },
-  "options_mode_perf_apply": { "message": "Applica consiglio ultra rapido" },
-  "options_mode_recommendation_low": { "message": "Consigliata: Ultra Rapida" },
-  "options_mode_recommendation_mid": { "message": "Opzionale: Ultra Rapida per sessioni intensive" },
-  "options_mode_recommendation_active": { "message": "Modalità consigliata attiva" },
-  "options_mode_recommendation_balanced": { "message": "Bilanciata: la modalità attuale va bene" },
-  "options_mode_why_custom": { "message": "Perché: usa solo le scelte manuali delle tue opzioni." },
-  "options_mode_why_clean": { "message": "Perché: rimuove il disordine comune mantenendo un feed familiare." },
-  "options_mode_why_focus": { "message": "Perché: ottimizzata per il focus intenso con tagli alle distrazioni più forti." },
-  "options_mode_why_ultrafast": { "message": "Perché: prioritizza la velocità riducendo l'elaborazione pesante del feed." },
-  "options_mode_why_smart": { "message": "Perché: bilancia la pulizia con segnali di punteggio e credibilità." },
-  "options_mode_why_classic": { "message": "Perché: enfatizza il comportamento cronologico del feed in stile classico." },
-  "options_mode_why_device_low": { "message": "Nota dispositivo: Ultra Rapida è consigliata su questo hardware." },
-  "options_mode_why_device_mid": { "message": "Nota dispositivo: Ultra Rapida può aiutare durante sessioni intensive." },
-  "options_surface_title": { "message": "Controlli ambito per superficie" },
-  "options_surface_desc": { "message": "Scegli quali superfici Facebook devono ricevere il filtraggio di PureFusion. Disattiva una superficie per lasciarla intatta." },
-  "options_surface_enable": { "message": "Abilita ambito di filtraggio per superficie" },
-  "options_surface_home": { "message": "Applica sul feed Home" },
-  "options_surface_groups": { "message": "Applica sui Gruppi" },
-  "options_surface_watch": { "message": "Applica su Watch" },
-  "options_surface_marketplace": { "message": "Applica su Marketplace" },
-  "options_surface_other": { "message": "Applica su altre superfici (profilo/pagine/eventi)" },
-  "options_filters_hide_suggested": { "message": "Nascondi \"Suggeriti per te\"" },
-  "options_filters_hide_pymk": { "message": "Nascondi \"Persone che potresti conoscere\"" },
-  "options_filters_hide_group_suggestions": { "message": "Nascondi suggerimenti di gruppi" },
-  "options_filters_hide_page_suggestions": { "message": "Nascondi suggerimenti di pagine" },
-  "options_filters_hide_fundraisers": { "message": "Nascondi raccolte fondi" },
-  "options_filters_post_types_title": { "message": "Pacchetto filtri tipo post v2" },
-  "options_filters_post_types_desc": { "message": "Targeting rigoroso del wrapper dei post più ancore di frasi. Lascia disattivato a meno che tu voglia una pulizia aggressiva per tipo." },
-  "options_filters_hide_video_posts": { "message": "Nascondi post video" },
-  "options_filters_hide_photo_posts": { "message": "Nascondi post foto/immagini" },
-  "options_filters_hide_link_posts": { "message": "Nascondi post con link/condivisioni esterni" },
-  "options_filters_hide_text_posts": { "message": "Nascondi post di stato solo testo" },
-  "options_filters_hide_live_video_posts": { "message": "Nascondi post video in diretta" },
-  "options_filters_hide_share_reposts": { "message": "Nascondi post condivisi/repost" },
-  "options_filters_hide_poll_posts": { "message": "Nascondi post con sondaggi" },
-  "options_filters_clutter_title": { "message": "Disordine e iniezioni" },
-  "options_filters_hide_reels_tray": { "message": "Nascondi barra Reels nel feed" },
-  "options_filters_widescreen_label": { "message": "Modalità widescreen" },
-  "options_filters_widescreen_desc": { "message": "Sblocca i limiti della colonna centrale per riempire i monitor ultra-wide." },
-  "options_filters_hide_memories": { "message": "Nascondi post ricordi" },
-  "options_filters_hide_stories": { "message": "Nascondi barra storie" },
-  "options_filters_remove_colored_bg": { "message": "Rimuovi post con sfondo colorato" },
-  "options_filters_remove_game_invites": { "message": "Nascondi inviti a giochi e post attività" },
-  "options_filters_remove_large_reactions": { "message": "Normalizza post con emoji sovradimensionate" },
-  "options_filters_deduplicate_posts_label": { "message": "Nascondi post duplicati" },
-  "options_filters_deduplicate_posts_desc": { "message": "Sopprime i post il cui ID è già apparso in questa sessione — rileva FB che reinietta la stessa storia più volte." },
-  "options_filters_locale_label": { "message": "Lingua del feed" },
-  "options_filters_locale_desc": { "message": "Adatta i filtri di frasi alla tua lingua di Facebook. Auto testa tutte le lingue supportate (potrebbe sovra-filtrare feed in lingue miste)." },
-  "options_filters_locale_auto": { "message": "Auto (tutte le lingue supportate)" },
-  "options_story_filters_title": { "message": "Filtri attività storie" },
-  "options_story_filters_desc": { "message": "Nascondi le storie di attività a basso segnale comuni dal tuo feed." },
-  "options_story_filter_became_friends": { "message": "Nascondi storie \"Sono diventati amici\"" },
-  "options_story_filter_joined_groups": { "message": "Nascondi storie \"Iscritto al gruppo\"" },
-  "options_story_filter_commented": { "message": "Nascondi storie \"Ha commentato\"" },
-  "options_story_filter_liked": { "message": "Nascondi storie \"Ha messo Mi piace\"" },
-  "options_story_filter_events": { "message": "Nascondi storie di partecipazione a eventi" },
-  "options_story_filter_memories": { "message": "Nascondi storie di ricordi condivisi" },
-  "options_story_filter_profile_photo": { "message": "Nascondi storie di aggiornamento foto profilo" },
-  "options_story_filter_cover_photo": { "message": "Nascondi storie di aggiornamento foto copertina" },
-  "options_story_filter_life_events": { "message": "Nascondi storie di eventi della vita" },
-  "options_story_filter_checkins": { "message": "Nascondi storie di check-in/attività di posizione" },
-  "options_story_filter_milestones": { "message": "Nascondi storie di traguardi" },
-  "options_story_filter_job_work": { "message": "Nascondi storie di aggiornamenti lavoro/occupazione" },
-  "options_story_filter_relationship": { "message": "Nascondi storie di aggiornamenti relazione" },
-  "options_story_filter_group_activity": { "message": "Nascondi storie di post attività di gruppo" },
-  "options_image_filters_title": { "message": "Filtri soggetto immagine" },
-  "options_image_filters_desc": { "message": "Usa i segnali di descrizione immagine di Facebook per nascondere categorie visive selezionate." },
-  "options_image_filters_enable": { "message": "Abilita filtri soggetto immagine (Modalità sicura)" },
-  "options_image_filter_sports": { "message": "Nascondi immagini sportive" },
-  "options_image_filter_food": { "message": "Nascondi immagini di cibo e bevande" },
-  "options_image_filter_pets": { "message": "Nascondi immagini di animali domestici (cani/gatti)" },
-  "options_image_filter_vehicles": { "message": "Nascondi immagini di veicoli" },
-  "options_image_filter_screenshots": { "message": "Nascondi meme e immagini in stile screenshot" },
-  "options_image_filter_travel": { "message": "Nascondi immagini di viaggi e paesaggi" },
-  "options_ai_card_title": { "message": "Motore di previsione locale" },
-  "options_ai_card_desc": { "message": "Punteggia gli elementi del feed localmente in base alla tua cronologia di interazioni. I dati non lasciano mai il tuo dispositivo." },
-  "options_ai_enable_predictions": { "message": "Abilita previsioni AI" },
-  "options_ai_show_pf_badge": { "message": "Mostra badge \"PF Score\" sui post" },
-  "options_ai_show_reasons": { "message": "Mostra suggerimenti sul punteggio sui badge PF" },
-  "options_ai_dim_low_interest": { "message": "Oscura/comprimi post a basso interesse (Score < 20)" },
-  "options_ai_collapse_low_interest": { "message": "Comprimi post a basso interesse con chip di visualizzazione" },
-  "options_ai_never_empty_guard": { "message": "Guardia feed mai vuoto (mantieni il minimo di post visibili)" },
-  "options_ai_never_empty_min": { "message": "Post visibili minimi da mantenere" },
-  "options_ai_highlight_high_interest": { "message": "Evidenzia post ad alto interesse (Score > 80)" },
-  "options_ai_analyze_trends": { "message": "Analizza tendenze e parole chiave locali" },
-  "options_ai_true_affinity_sort": { "message": "Ordinamento per vera affinità" },
-  "options_ai_true_affinity_sort_desc": { "message": "Riordina il feed in base al tuo punteggio di engagement locale in tempo reale — i post con punteggio più alto salgono in cima usando l'ordine flexbox CSS, senza interrompere il DOM virtuale di React." },
-  "options_ai_friend_activity": { "message": "Approfondimento attività amici nel feed" },
-  "options_ai_friend_activity_desc": { "message": "Segna i contatti nella barra laterale destra i cui post non sono apparsi nel tuo feed in questa sessione — aiuta a identificare gli amici che Facebook potrebbe star sopprimendo silenziosamente dalla tua cronologia." },
-  "options_ai_low_threshold": { "message": "Soglia punteggio basso" },
-  "options_ai_high_threshold": { "message": "Soglia punteggio alto" },
-  "options_ai_cred_title": { "message": "Segnali di credibilità (Beta)" },
-  "options_ai_cred_desc": { "message": "Controlli locali euristici per pattern di affermazioni sospette. Non prova la verità; segnala post che vale la pena verificare." },
-  "options_ai_cred_enabled": { "message": "Abilita rilevamento affermazioni sospette" },
-  "options_ai_cred_badge": { "message": "Mostra badge di avviso \"verifica\" sui post segnalati" },
-  "options_ai_cred_strict": { "message": "Modalità rigorosa (penalità punteggio più forte per affermazioni sospette)" },
-  "options_ai_cred_debug": { "message": "Mostra anteprima debug credibilità su tutti i post scansionati" },
-  "options_ai_llm_title": { "message": "Server di intelligenza profonda (BYOK API)" },
-  "options_ai_llm_desc": { "message": "Porta la tua chiave. Sblocca funzionalità LLM come TL;DR e AI per commenti. Le tue chiavi vengono salvate esclusivamente nello storage locale della macchina." },
-  "options_ai_provider_label": { "message": "Provider attivo" },
-  "options_ai_provider_none": { "message": "Disabilitato" },
-  "options_ai_provider_openai": { "message": "OpenAI (ChatGPT)" },
-  "options_ai_provider_gemini": { "message": "Google Gemini" },
-  "options_ai_provider_windowai": { "message": "Chrome Native (window.ai)" },
-  "options_ai_openai_key_label": { "message": "Chiave API OpenAI" },
-  "options_ai_gemini_key_label": { "message": "Chiave API Google Gemini" },
-  "options_ai_tldr_toggle": { "message": "Inserisci pulsanti \"TL;DR\" Riepiloga sui post lunghi" },
-  "options_ai_smart_comment_toggle": { "message": "Co-Pilota commenti intelligenti (icona bacchetta)" },
-  "options_ai_clickbait_decode_toggle": { "message": "Decoder clickbait (Riscrivi titoli sensazionalistici con i fatti)" },
-  "options_ai_messenger_tools_title": { "message": "Strumenti AI per Messenger" },
-  "options_ai_messenger_rewrite_toggle": { "message": "Riscrivi bozze di messaggi nel compositore" },
-  "options_ai_messenger_replies_toggle": { "message": "Genera 3 suggerimenti di risposta intelligente" },
-  "options_ui_card_title": { "message": "Ristrutturazione interfaccia" },
-  "options_ui_friends_only": { "message": "Modalità solo amici (Elimina tutti i gruppi/pagine dal feed)" },
-  "options_ui_anonymizer": { "message": "Anonimizzatore screenshot (Sfoca foto profilo/nomi)" },
-  "options_ui_compact_mode": { "message": "Modalità compatta (Riduci margini/spaziatura)" },
-  "options_ui_disable_comment_autofocus": { "message": "Disabilita furto autofocus della casella commenti" },
-  "options_ui_enforce_chrono": { "message": "Forza feed cronologico (più recenti)" },
-  "options_ui_show_link_previews": { "message": "Mostra destinazione reale dei link in uscita" },
-  "options_ui_absolute_timestamps": { "message": "Converti timestamp in date assolute" },
-  "options_ui_hide_composer": { "message": "Nascondi la casella \"A cosa stai pensando?\"" },
-  "options_ui_comment_sort_label": { "message": "Ordinamento commenti predefinito" },
-  "options_ui_comment_sort_desc": { "message": "Applica automaticamente una preferenza di ordinamento quando i commenti si espandono su un post. Si attiva solo quando i commenti sono già caricati — non forza l'espansione delle sezioni commenti compresse." },
-  "options_ui_comment_sort_all": { "message": "Tutti i commenti (predefinito FB)" },
-  "options_ui_comment_sort_newest": { "message": "Più recenti prima" },
-  "options_ui_comment_sort_top": { "message": "Più pertinenti" },
-  "options_ui_distraction_free_label": { "message": "Modalità di lettura senza distrazioni (Alt+Shift+F)" },
-  "options_ui_distraction_free_desc": { "message": "Nasconde le barre laterali sinistra/destra e centra il feed per un'esperienza di lettura pulita. Attiva/disattiva con Alt+Shift+F in qualsiasi momento." },
-  "options_ui_image_hover_label": { "message": "Espansione immagine al passaggio del mouse" },
-  "options_ui_image_hover_desc": { "message": "Passa il mouse sulle immagini del feed per vederle a dimensione intera. Salva o apri in una nuova scheda direttamente dal pannello. Disattivato per impostazione predefinita." },
-  "options_ui_auto_expand_see_more_label": { "message": "Espandi automaticamente \"Vedi altro\"" },
-  "options_ui_auto_expand_see_more_desc": { "message": "Elimina automaticamente \"Vedi altro\" sui post troncati così leggi sempre il testo completo senza clic aggiuntivi." },
-  "options_ui_strip_tracking_params_label": { "message": "Rimuovi parametri di tracciamento dai link" },
-  "options_ui_strip_tracking_params_desc": { "message": "Rimuove fbclid, utm_*, gclid e altri parametri spia dai link del feed così gli URL copiati o cliccati sono puliti." },
-  "options_ui_autoplay_video_label": { "message": "Controllo riproduzione automatica video" },
-  "options_ui_autoplay_video_desc": { "message": "Controlla cosa succede quando i video del feed iniziano a riprodursi automaticamente." },
-  "options_ui_autoplay_off": { "message": "Disattivato (nessuna azione)" },
-  "options_ui_autoplay_mute": { "message": "Muto audio (riproduci in silenzio)" },
-  "options_ui_autoplay_pause": { "message": "Pausa (clicca per riprodurre)" },
-  "options_nav_filters_title": { "message": "Moduli navigazione e barra laterale" },
-  "options_nav_filters_desc": { "message": "Nascondi moduli specifici della navigazione sinistra e della barra laterale destra." },
-  "options_nav_master_enable": { "message": "Abilita filtraggio nav a livello modulo (Modalità sicura)" },
-  "options_nav_left_marketplace": { "message": "Nascondi nav sinistra: Marketplace" },
-  "options_nav_left_watch": { "message": "Nascondi nav sinistra: Watch" },
-  "options_nav_left_gaming": { "message": "Nascondi nav sinistra: Gaming" },
-  "options_nav_left_memories": { "message": "Nascondi nav sinistra: Ricordi" },
-  "options_nav_left_meta_ai": { "message": "Nascondi nav sinistra: Meta AI" },
-  "options_nav_left_manus_ai": { "message": "Nascondi nav sinistra: Manus AI" },
-  "options_nav_right_trending": { "message": "Nascondi barra laterale destra: Di tendenza" },
-  "options_nav_right_contacts": { "message": "Nascondi barra laterale destra: Contatti" },
-  "options_nav_right_meta_ai_contact": { "message": "Nascondi barra laterale destra: contatto Meta AI" },
-  "options_nav_right_manus_ai_contact": { "message": "Nascondi barra laterale destra: contatto Manus AI" },
-  "options_nav_right_events": { "message": "Nascondi barra laterale destra: Eventi" },
-  "options_nav_right_birthdays": { "message": "Nascondi barra laterale destra: Compleanni" },
-  "options_topbar_filters_title": { "message": "Controlli intestazione superiore" },
-  "options_topbar_filters_desc": { "message": "Nascondi icone specifiche dell'intestazione senza rimuovere l'intero contenitore dell'intestazione." },
-  "options_topbar_master_enable": { "message": "Abilita filtraggio intestazione superiore (Modalità sicura)" },
-  "options_topbar_hide_home": { "message": "Nascondi icona superiore: Home" },
-  "options_topbar_hide_friends": { "message": "Nascondi icona superiore: Amici" },
-  "options_topbar_hide_watch": { "message": "Nascondi icona superiore: Watch" },
-  "options_topbar_hide_marketplace": { "message": "Nascondi icona superiore: Marketplace" },
-  "options_topbar_hide_groups": { "message": "Nascondi icona superiore: Gruppi" },
-  "options_topbar_hide_gaming": { "message": "Nascondi icona superiore: Gaming" },
-  "options_topbar_hide_messenger": { "message": "Nascondi icona superiore: Messenger" },
-  "options_topbar_hide_notifications": { "message": "Nascondi icona superiore: Notifiche" },
-  "options_topbar_hide_menu": { "message": "Nascondi icona superiore: Menu" },
-  "options_topbar_hide_create": { "message": "Nascondi icona superiore: Crea" },
-  "options_ui_theme_label": { "message": "Tema applicazione" },
-  "options_ui_theme_reload_desc": { "message": "Richiede il ricaricamento della pagina." },
-  "options_ui_theme_default": { "message": "Predefinito Facebook" },
-  "options_ui_theme_darkpro": { "message": "Dark Pro" },
-  "options_ui_theme_amoled": { "message": "AMOLED Nero Profondo" },
-  "options_ui_theme_classic": { "message": "Blu Classico" },
-  "options_ui_theme_zen": { "message": "Modalità Zen (Minimalista)" },
-  "options_ui_theme_pastel": { "message": "Pastello caldo" },
-  "options_ui_font_scale_label": { "message": "Scala dimensione font (%)" },
-  "options_ui_custom_style_title": { "message": "Stile personalizzato avanzato" },
-  "options_ui_custom_style_desc": { "message": "Sovrascritture opzionali per font, colore accento, sfondo e CSS personalizzato." },
-  "options_ui_custom_style_warn": { "message": "Usa solo CSS valido. Regole errate possono rompere il layout della pagina." },
-  "options_ui_custom_style_enable": { "message": "Abilita stile personalizzato avanzato" },
-  "options_ui_custom_font": { "message": "Famiglia di font personalizzata" },
-  "options_ui_custom_accent": { "message": "Colore accento personalizzato" },
-  "options_ui_custom_text_color": { "message": "Colore testo personalizzato" },
-  "options_ui_custom_card_background": { "message": "Sfondo scheda post personalizzato" },
-  "options_ui_custom_background": { "message": "Sfondo pagina personalizzato" },
-  "options_ui_custom_css": { "message": "CSS personalizzato" },
-  "options_ui_custom_accent_placeholder": { "message": "#22c1ff" },
-  "options_ui_custom_text_color_placeholder": { "message": "#f2f5ff" },
-  "options_ui_custom_card_background_placeholder": { "message": "rgba(24, 31, 42, 0.92)" },
-  "options_ui_custom_background_placeholder": { "message": "linear-gradient(...) or #111111" },
-  "options_ui_custom_css_placeholder": { "message": ".selector { display: none !important; }" },
-  "options_ui_custom_css_preset_label": { "message": "Preimpostazioni snippet CSS personalizzato" },
-  "options_ui_custom_css_preset_desc": { "message": "Carica uno snippet di partenza nella casella CSS personalizzato, poi rivedi e salva." },
-  "options_ui_custom_css_preset_none": { "message": "Seleziona uno snippet" },
-  "options_ui_custom_css_preset_subtle_cards": { "message": "Rifinitura schede sottile" },
-  "options_ui_custom_css_preset_calmer_motion": { "message": "Movimento più calmo" },
-  "options_ui_custom_css_preset_readability_boost": { "message": "Miglioramento leggibilità" },
-  "options_ui_custom_css_preset_apply": { "message": "Carica snippet" },
-  "options_theme_preview_title": { "message": "Anteprima dal vivo" },
-  "options_theme_preview_post_title": { "message": "Titolo post di anteprima" },
-  "options_theme_preview_desc": { "message": "Questa mini anteprima si aggiorna mentre cambi tema e scala font." },
-  "options_theme_preview_chip_filtered": { "message": "Sponsorizzato nascosto" },
-  "options_theme_preview_chip_score": { "message": "PF Score 88" },
-  "options_wellbeing_grayscale": { "message": "Modalità scala di grigi (Desatura tutti i colori)" },
-  "options_wellbeing_scroll_stopper": { "message": "Blocca scorrimento infinito" },
-  "options_wellbeing_break_wall": { "message": "Post prima del muro di pausa" },
-  "options_wellbeing_session_timer": { "message": "Timer sessione visibile" },
-  "options_wellbeing_session_awareness_enable": { "message": "Promemoria pausa leggera consapevolezza sessione" },
-  "options_wellbeing_session_awareness_threshold": { "message": "Impulsi di scorrimento al minuto prima del promemoria" },
-  "options_wellbeing_session_awareness_cooldown": { "message": "Tempo di recupero promemoria (minuti)" },
-  "options_wellbeing_daily_report_enable": { "message": "Abilita report feed giornaliero" },
-  "options_wellbeing_daily_report_minutes": { "message": "Intervallo report automatico (minuti)" },
-  "options_wellbeing_reels_limit_title": { "message": "Limitatore sessione Reels" },
-  "options_wellbeing_reels_limit_desc": { "message": "Consenti solo un numero limitato di Reels per sessione, poi blocca i Reels aggiuntivi." },
-  "options_wellbeing_reels_limit_enable": { "message": "Abilita limitatore sessione Reels" },
-  "options_wellbeing_reels_limit_count": { "message": "Reels consentiti per sessione" },
-  "options_wellbeing_reels_limit_hardlock": { "message": "Blocca rigidamente i Reels dopo il limite raggiunto" },
-  "options_wellbeing_ai_blockers_title": { "message": "Blocchi AI avanzati (Edizione Wellbeing)" },
-  "options_wellbeing_ragebait": { "message": "Rilevatore rage-bait (Sfoca post di sdegno infiammatorio)" },
-  "options_wellbeing_clickbait": { "message": "Eliminatore clickbait (Elimina titoli virali manipolativi)" },
-  "wellbeing_break_title": { "message": "Prenditi un respiro" },
-  "wellbeing_break_body_template": { "message": "Hai appena scorso oltre $1 post. PureFusion ha temporaneamente messo in pausa il feed per aiutarti a evitare lo scorrimento compulsivo. È il momento di fare qualcos'altro?" },
-  "wellbeing_break_resume_btn": { "message": "Continua a scorrere comunque" },
-  "wellbeing_session_timer_prefix": { "message": "Sessione" },
-  "wellbeing_report_button": { "message": "Report" },
-  "wellbeing_weekly_report_button": { "message": "Settimana" },
-  "wellbeing_report_disabled": { "message": "Report feed giornaliero disabilitato. Abilitalo in Benessere digitale." },
-  "wellbeing_report_label_auto": { "message": "Report feed giornaliero" },
-  "wellbeing_report_label_session": { "message": "Report feed sessione" },
-  "wellbeing_weekly_report_label": { "message": "Report feed settimanale" },
-  "wellbeing_report_no_filters": { "message": "Nessun filtro ancora attivato" },
-  "wellbeing_weekly_report_no_data": { "message": "Il report settimanale necessita prima di più dati di attività." },
-  "wellbeing_session_awareness_toast_template": { "message": "Ritmo di scorrimento elevato rilevato: $1 scorrimenti nell'ultimo minuto (sessione di $2 min). Considera una breve pausa." },
-  "wellbeing_report_panel_title": { "message": "Report PureFusion Feed" },
-  "wellbeing_report_panel_close": { "message": "Chiudi" },
-  "wellbeing_report_panel_session_tab": { "message": "Sessione" },
-  "wellbeing_report_panel_weekly_tab": { "message": "Settimanale" },
-  "wellbeing_report_panel_hidden": { "message": "Elementi nascosti" },
-  "wellbeing_report_panel_reels": { "message": "Reels bloccati" },
-  "wellbeing_report_panel_top_reason": { "message": "Distrazione principale" },
-  "wellbeing_report_panel_minutes_saved": { "message": "Minuti risparmiati (stima)" },
-  "wellbeing_report_panel_elapsed": { "message": "Durata sessione" },
-  "wellbeing_report_panel_refresh": { "message": "Aggiorna" },
-  "wellbeing_report_panel_reset_session": { "message": "Reimposta sessione" },
-  "wellbeing_report_panel_reset_done": { "message": "Contatori sessione reimpostati." },
-  "wellbeing_report_panel_note": { "message": "Suggerimento: i valori giornalieri si reimpostano con il reset della sessione; il riepilogo settimanale è calcolato dai bucket giornalieri salvati." },
-  "wellbeing_report_panel_weekly_window": { "message": "Finestra di 7 giorni scorrevole" },
-  "wellbeing_report_panel_weekly_trend_title": { "message": "Tendenza 7 giorni" },
-  "wellbeing_report_panel_weekly_top_reasons_title": { "message": "Principali ragioni di distrazione" },
-  "wellbeing_report_panel_weekly_no_reasons": { "message": "Nessun dato sulle ragioni di distrazione ancora." },
-  "wellbeing_report_panel_weekly_reason_explain": { "message": "Spiega" },
-  "wellbeing_report_reason_explain_ads": { "message": "Il contenuto sponsorizzato o simile a pubblicità è stato filtrato per ridurre il disordine promozionale." },
-  "wellbeing_report_reason_explain_story": { "message": "I pattern di attività delle storie (mi piace/commenti/iscrizioni amici/check-in) sono stati filtrati come rumore a basso segnale nel feed." },
-  "wellbeing_report_reason_explain_post_type": { "message": "Un filtro per formato post ha rimosso i tipi di contenuto che hai scelto di sopprimere (video/foto/link/solo testo)." },
-  "wellbeing_report_reason_explain_bait": { "message": "I filtri di sicurezza comportamentale hanno segnalato pattern manipolativi o ad alto sdegno progettati per farti scorrere ancora." },
-  "wellbeing_report_reason_explain_nav": { "message": "I controlli sul disordine di navigazione e moduli hanno rimosso elementi UI non-feed distraenti." },
-  "wellbeing_report_reason_explain_keyword": { "message": "Le regole per parole chiave hanno trovato corrispondenza in questo elemento e lo hanno filtrato in base alla tua lista bloccati personalizzata." },
-  "wellbeing_report_reason_explain_generic": { "message": "Questa categoria è stata filtrata dalle tue regole PureFusion attive per mantenere il tuo feed più pulito e focalizzato." },
-  "wellbeing_report_reason_open_settings": { "message": "Apri impostazioni correlate" },
-  "wellbeing_weekly_report_toast_template": { "message": "$LABEL$: nascosti $HIDDEN$ elementi, bloccati $REELS$ Reels, distrazione principale $REASON$, stimati $MINUTES$ min risparmiati in 7 giorni.", "placeholders": { "label": { "content": "$1" }, "hidden": { "content": "$2" }, "reels": { "content": "$3" }, "reason": { "content": "$4" }, "minutes": { "content": "$5" } } },
-  "wellbeing_report_toast_template": { "message": "$LABEL$: nascosti $HIDDEN$ elementi, bloccati $REELS$ Reels, ragione principale $REASON$, stimati $MINUTES$ min risparmiati.", "placeholders": { "label": { "content": "$1" }, "hidden": { "content": "$2" }, "reels": { "content": "$3" }, "reason": { "content": "$4" }, "minutes": { "content": "$5" } } },
-  "options_social_ghost_title": { "message": "Modalità fantasma (Messenger)" },
-  "options_social_ghost_desc": { "message": "Interazioni private. Nascondi le tue tracce mentre scrivi messaggi." },
-  "options_social_hide_seen": { "message": "Nascondi ricevute di lettura \"Visto\" (Leggi senza che lo sappiano)" },
-  "options_social_hide_typing": { "message": "Nascondi indicatore \"Sta scrivendo...\"" },
-  "options_social_privacy_blur": { "message": "Sfocatura privacy (Sfoca il corpo della chat fino al passaggio del mouse)" },
-  "options_social_meta_title": { "message": "Meta AI e disordine algoritmico" },
-  "options_social_auto_comment_preview": { "message": "Anteprima commenti automatica" },
-  "options_social_auto_comment_preview_toggle": { "message": "Abilita anteprima commenti automatica" },
-  "options_beta_badge": { "message": "BETA" },
-  "options_comment_preview_warning_text": { "message": "Questa funzione simula clic sui pulsanti per espandere le sezioni commenti mentre scorri. È sperimentale e potrebbe non funzionare su tutti i post, potrebbe smettere di funzionare dopo aggiornamenti del layout di Facebook, o potrebbe attivare il rate-limiting se i conteggi sweep sono impostati troppo in alto. Mantieni il cooldown sopra 1200 ms e il massimo post per sweep sotto 20 durante i primi test." },
-  "options_comment_preview_risk_text": { "message": "Abilita a tuo rischio. Apparirà una richiesta di conferma la prima volta che lo attivi." },
-  "options_social_comment_preview_desc": { "message": "Regola cooldown e ambito qui sotto. Cooldown più alti e cap sweep più bassi riducono la possibilità di attivare i rate limit di FB." },
-  "options_social_comment_preview_cooldown": { "message": "Cooldown anteprima commenti (ms)" },
-  "options_social_comment_preview_retry_cap": { "message": "Limite tentativi per post" },
-  "options_social_comment_preview_sweep_cap": { "message": "Max post per sweep" },
-  "options_social_comment_preview_home": { "message": "Consenti sul feed Home" },
-  "options_social_comment_preview_groups": { "message": "Consenti sui Gruppi" },
-  "options_social_comment_preview_watch": { "message": "Consenti su Watch" },
-  "options_social_comment_preview_marketplace": { "message": "Consenti su Marketplace" },
-  "options_social_comment_preview_notifications": { "message": "Consenti sulle Notifiche" },
-  "options_social_comment_preview_other": { "message": "Consenti su altre superfici" },
-  "options_social_comment_preview_strategy": { "message": "Strategia di anteprima" },
-  "options_social_comment_preview_strategy_inject": { "message": "Smart Inject (Stabile, v3)" },
-  "options_social_comment_preview_strategy_click": { "message": "Clic legacy (v2)" },
-  "options_social_nuke_meta": { "message": "Elimina Meta AI (Rimuovi tutte le icone sfumate e i pulsanti sparkle)" },
-  "options_social_track_unfriends": { "message": "Traccia rimozioni amicizia e disattivazioni" },
-  "options_social_notif_title": { "message": "Calmante notifiche" },
-  "options_social_notif_style": { "message": "Stile gioiello avvisi (Il pallino rosso)" },
-  "options_social_notif_style_classic": { "message": "Rosso classico (Predefinito)" },
-  "options_social_notif_style_blue": { "message": "Blu puro (Discreto)" },
-  "options_social_notif_style_purple": { "message": "Viola Fusion (Brandizzato)" },
-  "options_social_notif_style_grey": { "message": "Grigio fantasma (Minimale)" },
-  "options_social_notif_style_hidden": { "message": "Completamente nascosto" },
-  "options_social_notif_digest": { "message": "Modalità digest notifiche (Raggruppa avvisi ogni ora)" },
-  "options_social_notif_games": { "message": "Nascondi notifiche di giochi" },
-  "options_social_notif_birthdays": { "message": "Nascondi notifiche di compleanni" },
-  "options_social_notif_marketplace": { "message": "Nascondi notifiche Marketplace" },
-  "options_social_notif_engagement": { "message": "Nascondi solleciti di engagement algoritmico" },
-  "options_social_search_title": { "message": "Controlli popup ricerca" },
-  "options_social_search_desc": { "message": "Sopprime i suggerimenti distraenti nel menu a discesa della ricerca." },
-  "options_social_search_hide_all": { "message": "Nascondi tutti i suggerimenti popup di ricerca" },
-  "options_social_search_hide_trending": { "message": "Nascondi suggerimenti di ricerca di tendenza" },
-  "options_social_search_hide_recent": { "message": "Nascondi sezione ricerche recenti" },
-  "options_keywords_card_desc": { "message": "Separa le parole chiave con virgole." },
-  "options_keywords_blocklist_label": { "message": "Lista bloccati (Comprime i post con un pulsante \"Mostra comunque\")" },
-  "options_keywords_autohide_label": { "message": "Nascondi automaticamente (Elimina silenziosamente i post contenenti queste stringhe)" },
-  "options_keywords_source_blocklist_label": { "message": "Fonti nascoste (Nascondi sempre i nomi delle fonti corrispondenti)" },
-  "options_keywords_allowlist_label": { "message": "Parole chiave consentite (Non bloccare mai se il post le contiene)" },
-  "options_keywords_allowlist_friends_label": { "message": "Non nascondere mai le fonti (Amici/Pagine)" },
-  "options_keywords_blocklist_placeholder": { "message": "politica, spoiler, ecc..." },
-  "options_keywords_autohide_placeholder": { "message": "parola spam..." },
-  "options_keywords_source_blocklist_placeholder": { "message": "Mario Rossi, Pagina di notizie rumorosa..." },
-  "options_keywords_allowlist_placeholder": { "message": "aggiornamento famiglia, lancio progetto..." },
-  "options_keywords_allowlist_friends_placeholder": { "message": "Maria Rossi, La mia pagina preferita..." },
-  "options_data_backup_title": { "message": "Backup configurazione" },
-  "options_data_backup_desc": { "message": "Esporta le tue impostazioni e liste bloccati come JSON per sincronizzarle su un altro dispositivo." },
-  "options_data_export_btn": { "message": "Esporta in file" },
-  "options_data_import_btn": { "message": "Importa da file" },
-  "options_data_about_title": { "message": "Informazioni e supporto" },
-  "options_data_about_desc": { "message": "Hai bisogno di aiuto, vuoi segnalare un problema o supportare lo sviluppo? Contattami direttamente usando i link qui sotto." },
-  "options_data_about_discord": { "message": "Discord (Purefusion-Feeds)" },
-  "options_data_about_github": { "message": "Repository GitHub" },
-  "options_data_about_issues": { "message": "Segnala problemi" },
-  "options_data_about_donate": { "message": "Dona / Supporta" },
-  "options_data_diag_title": { "message": "Modalità diagnostica" },
-  "options_data_diag_desc": { "message": "Overlay di debug locale opzionale per ispezionare le ragioni di nascondimento e l'attività dei filtri." },
-  "options_data_diag_enable": { "message": "Abilita modalità diagnostica" },
-  "options_data_diag_overlay": { "message": "Mostra overlay diagnostica nella pagina" },
-  "options_data_diag_compact": { "message": "Usa overlay diagnostica compatta" },
-  "options_data_diag_console": { "message": "Diagnostica dettagliata nella console" },
-  "options_data_diag_max_reasons": { "message": "Numero massimo righe motivo nell'overlay" },
-  "options_data_diag_thresholds_title": { "message": "Soglie spike observer" },
-  "options_data_diag_thresholds_desc": { "message": "Regola le soglie di avviso e grave usate dagli avvisi di carico di lavoro diagnostica." },
-  "options_data_diag_warn_duration": { "message": "Durata avviso (ms)" },
-  "options_data_diag_severe_duration": { "message": "Durata grave (ms)" },
-  "options_data_diag_warn_nodes": { "message": "Conteggio nodi avviso" },
-  "options_data_diag_severe_nodes": { "message": "Conteggio nodi grave" },
-  "options_data_diag_warn_records": { "message": "Record mutazione avviso" },
-  "options_data_diag_severe_records": { "message": "Record mutazione grave" },
-  "options_data_reset_title": { "message": "Ripristino impostazioni di fabbrica" },
-  "options_data_reset_desc": { "message": "Questo cancellerà tutte le preferenze e i dati di apprendimento AI locali." },
-  "options_data_reset_btn": { "message": "Cancella tutto" },
-  "options_toast_saved": { "message": "Impostazioni salvate con successo." },
-  "options_toast_imported": { "message": "Impostazioni importate con successo." },
-  "options_toast_invalid_backup": { "message": "File di backup PureFusion non valido." },
-  "options_toast_import_error": { "message": "Errore nell'importazione del file. Potrebbe essere corrotto." },
-  "options_toast_provider_permission_denied": { "message": "Autorizzazione provider AI negata. Provider disabilitato." },
-  "options_toast_preset_applied": { "message": "Preimpostazione applicata con successo." },
-  "options_toast_custom_css_snippet_loaded": { "message": "Snippet CSS personalizzato caricato. Clicca Salva per applicare." },
-  "options_toast_ultrafast_applied": { "message": "Modalità ultra rapida applicata per questo dispositivo." },
-  "options_toast_mode_clean_applied": { "message": "Modalità pulita applicata." },
-  "options_toast_mode_smart_applied": { "message": "Modalità intelligente applicata." },
-  "options_reset_confirm": { "message": "Sei sicuro? Questo cancellerà le tue preferenze e tutti i dati di tracciamento AI locali." },
-  "options_sidebar_filters": { "message": "🚫 Filtri principali" },
-  "options_sidebar_wellbeing": { "message": "🧘 Benessere digitale" },
-  "options_sidebar_ai": { "message": "🤖 Motore AI" },
-  "options_sidebar_ui": { "message": "🎨 Personalizzazioni UI" },
-  "options_sidebar_keywords": { "message": "🔤 Filtri parole chiave" },
-  "options_sidebar_social": { "message": "🤝 Sociale e privacy" },
-  "options_sidebar_data": { "message": "💾 Dati e backup" },
-  "welcome_title": { "message": "Benvenuto in PureFusion Feed" },
-  "welcome_subtitle": { "message": "Entra in un'esperienza social più pulita, veloce e privata." },
-  "welcome_god_mode": { "message": "God Mode Core" },
-  "welcome_god_mode_desc": { "message": "Eliminazione totale di contenuti sponsorizzati, Reels suggeriti e spazzatura algoritmica." },
-  "welcome_privacy_ai": { "message": "AI Privacy" },
-  "welcome_privacy_ai_desc": { "message": "Riepiloga post lunghi e blocca il clickbait usando tecnologia AI locale offline." },
-  "welcome_dopamine": { "message": "Rompitori di dopamina" },
-  "welcome_dopamine_desc": { "message": "Combatti lo scorrimento compulsivo con timer di sessione, modalità scala di grigi e limiti di scorrimento." },
-  "welcome_ready": { "message": "Pronto a prendere il controllo?" },
-  "welcome_ready_desc": { "message": "Il tuo feed è ora sotto il tuo comando. Puoi accedere alla **Dashboard Avanzata** in qualsiasi momento." },
-  "welcome_help_title": { "message": "Hai bisogno di aiuto o vuoi segnalare un bug?" },
-  "welcome_help_desc": { "message": "Contattami direttamente su Discord, apri issue su GitHub o supporta lo sviluppo di PureFusion." },
-  "welcome_help_discord": { "message": "Discord: Purefusion-Feeds" },
-  "welcome_help_github": { "message": "Repository GitHub" },
-  "welcome_help_issues": { "message": "Issue GitHub" },
-  "welcome_help_donate": { "message": "Dona / Supporta" },
-  "welcome_support_development": { "message": "❤️ Supporta lo sviluppo" },
-  "welcome_footer_built": { "message": "Realizzato con ❤️ da Michael Harrell & Alimentato da PureFusion 2024" },
-  "inpage_fab_title": { "message": "Apri dashboard PureFusion" },
-  "inpage_modal_title": { "message": "Pannello PureFusion" },
-  "inpage_modal_ads": { "message": "Blocca annunci" },
-  "inpage_modal_sponsored": { "message": "Nascondi post sponsorizzati" },
-  "inpage_modal_sugg": { "message": "Nascondi suggeriti e Reels" },
-  "inpage_modal_stories": { "message": "Nascondi barra storie" },
-  "inpage_modal_ai": { "message": "Filtro AI Rage/Clickbait" },
-  "inpage_modal_gray": { "message": "Modalità scala di grigi" },
-  "content_hidden_chip_label": { "message": "Nascosto da PureFusion" },
-  "content_hidden_chip_show_once": { "message": "Mostra una volta" },
-  "content_hidden_chip_allow_source": { "message": "Consenti sempre la fonte" },
-  "content_allow_source_exists": { "message": "è già in Non nascondere mai le fonti." },
-  "content_allow_source_added": { "message": "Aggiunto" },
-  "content_allow_source_added_suffix": { "message": "a Non nascondere mai le fonti." },
-  "messenger_ai_rewrite_btn": { "message": "Riscrivi" },
-  "messenger_ai_replies_btn": { "message": "Risposte intelligenti" },
-  "messenger_ai_rewriting_btn": { "message": "Riscrittura in corso..." },
-  "messenger_ai_generating_btn": { "message": "Generazione in corso..." },
-  "messenger_ai_empty_input": { "message": "Prima digita un messaggio." },
-  "messenger_ai_rewrite_success": { "message": "Messaggio riscritto." },
-  "messenger_ai_rewrite_fail": { "message": "Riscrittura fallita. Controlla le impostazioni del provider AI." },
-  "messenger_ai_context_missing": { "message": "Necessario più contesto della chat per le risposte intelligenti." },
-  "messenger_ai_replies_fail": { "message": "Impossibile generare risposte intelligenti." },
-  "messenger_ai_provider_required": { "message": "Prima configura un provider AI nelle impostazioni di PureFusion." },
-  "options_sidebar_poweruser": { "message": "⚡ Regole Power-User" },
-  "options_poweruser_title": { "message": "Motore regole Power-User" },
-  "options_poweruser_desc": { "message": "Punta e nascondi qualsiasi elemento nella pagina usando selettori personalizzati o corrispondenza testo. Sii preciso per evitare di nascondere contenuto che vuoi vedere." },
-  "options_poweruser_add_rule": { "message": "Aggiungi nuova regola nascondi" },
-  "options_poweruser_rule_list": { "message": "Regole attive" },
-  "options_poweruser_no_rules": { "message": "Nessuna regola personalizzata definita ancora. Usa il pulsante '+' o fai clic destro sugli elementi di Facebook per 'Zapparli'." },
-  "options_poweruser_type_label": { "message": "Tipo regola" },
-  "options_poweruser_type_selector": { "message": "Selettore CSS" },
-  "options_poweruser_type_text": { "message": "Corrispondenza testo" },
-  "options_poweruser_rule_label": { "message": "Etichetta regola (nome interno)" },
-  "options_poweruser_rule_value": { "message": "Selettore o frase" },
-  "options_poweruser_rule_wrapper_label": { "message": "Ambito (selettore wrapper)" },
-  "options_poweruser_rule_wrapper_placeholder": { "message": "es. [role='article'] (Opzionale)" },
-  "options_poweruser_save_rule": { "message": "Salva regola" },
-  "options_poweruser_cancel": { "message": "Annulla" },
-  "options_poweruser_rule_enabled": { "message": "Abilitata" },
-  "options_poweruser_delete_rule": { "message": "Elimina" },
-  "options_poweruser_edit_rule": { "message": "Modifica" },
-  "quick_action_menu_zap_element": { "message": "Zappa (nascondi) elemento" },
-  "options_poweruser_delete_confirm": { "message": "Sei sicuro di voler eliminare questa regola?" },
-  "options_toast_rule_updated": { "message": "Regola aggiornata." },
-  "options_toast_rule_deleted": { "message": "Regola eliminata." },
-  "options_toast_rules_saved": { "message": "Regole personalizzate salvate con successo." },
-  "options_toast_rule_value_required": { "message": "Il valore della regola (selettore/testo) è obbligatorio." },
-  "quick_action_save_later": { "message": "Save to Read Later" },
-  "popup_readlater_title": { "message": "Read Later" },
-  "popup_readlater_one": { "message": "1 saved" },
-  "popup_readlater_many": { "message": "{count} saved" },
-  "popup_readlater_view": { "message": "View Queue" },
-  "options_readlater_title": { "message": "Read Later Queue" },
-  "options_readlater_desc": { "message": "Posts saved from the Facebook feed using right-click → Teach PureFusion → Save to Read Later." },
-  "options_readlater_clear": { "message": "Clear All" },
-  "content_saved_for_later": { "message": "Post saved to Read Later." },
-  "content_save_later_duplicate": { "message": "Already in your Read Later queue." },
-  "content_save_later_error": { "message": "Could not identify a post to save. Try right-clicking within a post." },
-  "options_filters_post_age_label": { "message": "Hide Posts Older Than" },
-  "options_filters_post_age_desc": { "message": "Hide feed posts older than the chosen threshold. Reads the post timestamp — posts without a detectable date are kept visible." },
-  "options_filters_post_age_off": { "message": "Off" },
-  "options_filters_post_age_6h": { "message": "6 hours" },
-  "options_filters_post_age_12h": { "message": "12 hours" },
-  "options_filters_post_age_24h": { "message": "24 hours (1 day)" },
-  "options_filters_post_age_48h": { "message": "2 days" },
-  "options_filters_post_age_72h": { "message": "3 days" },
-  "options_filters_post_age_7d": { "message": "7 days" },
-  "options_filters_post_age_14d": { "message": "14 days" },
-  "options_filters_post_age_30d": { "message": "30 days" },
-  "options_ui_reply_only_label": { "message": "Reply-Only Mode" },
-  "options_ui_reply_only_desc": { "message": "Collapse post bodies in the feed — hides post text and attached stories, leaving only the comment threads visible. Useful for cutting through engagement-bait without seeing the inflammatory content." }
+  "extName": {
+    "message": "PureFusion Feed",
+    "description": "The name of the extension"
+  },
+  "extDesc": {
+    "message": "Feed Manager Premium con Filtri Intelligenti, Approfondimenti AI e Privacy Guard per Facebook.",
+    "description": "The extension description"
+  },
+  "common_ads_blocked": {
+    "message": "Annunci bloccati"
+  },
+  "common_spam_hidden": {
+    "message": "Spam nascosto"
+  },
+  "common_save_settings": {
+    "message": "Salva impostazioni"
+  },
+  "common_save_changes": {
+    "message": "Salva modifiche"
+  },
+  "common_support_developer": {
+    "message": "Supporta lo sviluppatore"
+  },
+  "common_open_dashboard": {
+    "message": "Apri impostazioni complete"
+  },
+  "common_open_advanced": {
+    "message": "Apri dashboard avanzata"
+  },
+  "common_logo_alt": {
+    "message": "Logo PureFusion"
+  },
+  "options_page_title": {
+    "message": "PureFusion Feed - Impostazioni"
+  },
+  "popup_quick_filters": {
+    "message": "Filtri rapidi"
+  },
+  "popup_hide_sponsored_posts": {
+    "message": "Enhanced Ad Filter"
+  },
+  "popup_hide_sponsored_posts_desc": {
+    "message": "Rilevamento basato su etichette — disattivato per impostazione predefinita"
+  },
+  "popup_block_sponsored": {
+    "message": "Blocca annunci"
+  },
+  "popup_block_sponsored_desc": {
+    "message": "Blocca annunci tramite segnali infrastrutturali"
+  },
+  "popup_ad_blocker_on": {
+    "message": "✓ Annunci bloccati tramite segnali infrastrutturali"
+  },
+  "popup_ad_blocker_off": {
+    "message": "⚠ Blocco annunci disattivato — clicca per attivare"
+  },
+  "options_filters_removeAds": {
+    "message": "Blocca annunci (segnali infrastrutturali)"
+  },
+  "options_filters_removeSponsored": {
+    "message": "Enhanced Ad Filter (label detection)"
+  },
+  "popup_hide_suggested": {
+    "message": "Nascondi suggeriti/PYMK"
+  },
+  "popup_hide_suggested_desc": {
+    "message": "Rimuove i suggerimenti algoritmici"
+  },
+  "popup_hide_reels": {
+    "message": "Nascondi Reels"
+  },
+  "popup_hide_reels_desc": {
+    "message": "Rimuove le barre Reels iniettate nel feed"
+  },
+  "popup_force_recent": {
+    "message": "Forza i più recenti"
+  },
+  "popup_force_recent_desc": {
+    "message": "Carica sempre il feed cronologico"
+  },
+  "popup_distraction_free": {
+    "message": "Modalità senza distrazioni"
+  },
+  "popup_distraction_free_desc": {
+    "message": "Nascondi barre laterali, centra il feed (Alt+Shift+F)"
+  },
+  "popup_fast_keyword": {
+    "message": "Blocco parole chiave rapido"
+  },
+  "popup_keyword_placeholder": {
+    "message": "Inserisci parola chiave da comprimere..."
+  },
+  "popup_hide_groups": {
+    "message": "Nascondi gruppi suggeriti"
+  },
+  "popup_hide_groups_desc": {
+    "message": "Rimuove i consigli algoritmici sui gruppi"
+  },
+  "popup_ghost_mode": {
+    "message": "Modalità fantasma (Messaggi)"
+  },
+  "popup_ghost_mode_desc": {
+    "message": "Nascondi indicatori di lettura e digitazione"
+  },
+  "popup_nuke_meta_ai": {
+    "message": "Elimina Meta AI"
+  },
+  "popup_nuke_meta_ai_desc": {
+    "message": "Rimuovi pulsanti AI e sparkles"
+  },
+  "popup_master_toggle_title": {
+    "message": "Attiva o disattiva PureFusion"
+  },
+  "popup_add_keyword_title": {
+    "message": "Aggiungi parola chiave"
+  },
+  "popup_keyword_added": {
+    "message": "Aggiunto \"{keyword}\" alla lista bloccati."
+  },
+  "popup_keyword_exists": {
+    "message": "La parola chiave esiste già."
+  },
+  "quick_action_menu_root": {
+    "message": "Addestra PureFusion"
+  },
+  "quick_action_menu_block_keyword": {
+    "message": "Aggiungi alla lista bloccati"
+  },
+  "quick_action_menu_autohide_keyword": {
+    "message": "Aggiungi alla lista nascondi automaticamente"
+  },
+  "quick_action_menu_allow_keyword": {
+    "message": "Aggiungi alla lista consentiti"
+  },
+  "quick_action_menu_hide_source": {
+    "message": "Nascondi post da questa fonte"
+  },
+  "quick_action_menu_allow_source": {
+    "message": "Non nascondere mai questa fonte"
+  },
+  "quick_action_select_text_first": {
+    "message": "Seleziona prima del testo, poi usa un'azione rapida di PureFusion."
+  },
+  "quick_action_source_select_name": {
+    "message": "Fai clic destro sul nome di un profilo/pagina/gruppo o evidenzia prima un nome sorgente."
+  },
+  "quick_action_selection_too_short": {
+    "message": "Il testo selezionato è troppo breve. Scegli una parola o frase più chiara."
+  },
+  "quick_action_source_too_broad": {
+    "message": "Questa fonte sembra troppo generica. Seleziona un nome completo di pagina/persona/gruppo."
+  },
+  "quick_action_exists_blocklist": {
+    "message": "Già nella lista bloccati."
+  },
+  "quick_action_exists_autohide": {
+    "message": "Già nella lista nascondi automaticamente."
+  },
+  "quick_action_exists_allowlist": {
+    "message": "Già nella lista consentiti."
+  },
+  "quick_action_exists_source_hide": {
+    "message": "La fonte è già nascosta."
+  },
+  "quick_action_exists_source_allow": {
+    "message": "La fonte è già in Non nascondere mai le fonti."
+  },
+  "quick_action_added_blocklist": {
+    "message": "Aggiunto \"$1\" alla lista bloccati e feed riscansionato."
+  },
+  "quick_action_added_autohide": {
+    "message": "Aggiunto \"$1\" alla lista nascondi automaticamente e feed riscansionato."
+  },
+  "quick_action_added_allowlist": {
+    "message": "Aggiunto \"$1\" alla lista consentiti e feed riscansionato."
+  },
+  "quick_action_added_source_hide": {
+    "message": "Ora nascondo la fonte \"$1\" e feed riscansionato."
+  },
+  "quick_action_added_source_allow": {
+    "message": "Aggiunto \"$1\" a Non nascondere mai le fonti e feed riscansionato."
+  },
+  "quick_action_undo_label": {
+    "message": "Annulla"
+  },
+  "quick_action_undo_success": {
+    "message": "Azione rapida annullata."
+  },
+  "quick_action_undo_expired": {
+    "message": "L'annullamento non è più disponibile per questa azione."
+  },
+  "quick_action_undo_failed": {
+    "message": "Annullamento fallito. Riprova."
+  },
+  "quick_action_unknown": {
+    "message": "Azione rapida sconosciuta."
+  },
+  "options_filters_card_title": {
+    "message": "Rimozione annunci e spam"
+  },
+  "options_filters_card_desc": {
+    "message": "Attiva/disattiva i target di rimozione DOM principali."
+  },
+  "options_presets_title": {
+    "message": "Pacchetti preimpostati"
+  },
+  "options_presets_desc": {
+    "message": "Applica bundle curati per casi d'uso comuni, poi regola manualmente tutto ciò che vuoi."
+  },
+  "options_presets_label": {
+    "message": "Scegli una preimpostazione"
+  },
+  "options_presets_work_focus": {
+    "message": "Focus lavorativo"
+  },
+  "options_presets_friends_only": {
+    "message": "Solo amici"
+  },
+  "options_presets_minimal": {
+    "message": "Minimale"
+  },
+  "options_presets_news_heavy": {
+    "message": "Notizie intensive"
+  },
+  "options_presets_messenger_privacy": {
+    "message": "Privacy Messenger"
+  },
+  "options_presets_apply_btn": {
+    "message": "Applica preimpostazione"
+  },
+  "options_mode_title": {
+    "message": "Modalità esperienza feed"
+  },
+  "options_mode_desc": {
+    "message": "Applica un profilo comportamentale persistente in aggiunta alle tue opzioni salvate."
+  },
+  "options_mode_label": {
+    "message": "Modalità attiva"
+  },
+  "options_view_mode_label": {
+    "message": "Visualizza"
+  },
+  "options_view_mode_basic": {
+    "message": "Base"
+  },
+  "options_view_mode_advanced": {
+    "message": "Avanzata"
+  },
+  "options_mode_custom": {
+    "message": "Personalizzata (usa le mie opzioni)"
+  },
+  "options_mode_clean": {
+    "message": "Modalità pulita"
+  },
+  "options_mode_focus": {
+    "message": "Modalità focus"
+  },
+  "options_mode_ultrafast": {
+    "message": "Modalità ultra rapida (testo prima, velocità massima)"
+  },
+  "options_mode_smart": {
+    "message": "Modalità intelligente"
+  },
+  "options_mode_classic": {
+    "message": "Modalità classica 2012"
+  },
+  "options_mode_profile_custom": {
+    "message": "Usa le tue opzioni salvate esatte senza sovrascritture di modalità aggiuntive."
+  },
+  "options_mode_profile_clean": {
+    "message": "Rimuove il disordine da annunci/suggeriti e il rumore sociale mantenendo le visualizzazioni predittive disattivate per un feed più tranquillo."
+  },
+  "options_mode_profile_focus": {
+    "message": "Profilo di focus intenso con priorità alla home: tagli aggressivi al disordine, cronologia attiva e guardia pausa scorrimento abilitata."
+  },
+  "options_mode_profile_ultrafast": {
+    "message": "Profilo velocità testo-prima: rimuove le superfici multimediali pesanti, sopprime i tipi di post immagine/video e minimizza l'elaborazione UI aggiuntiva."
+  },
+  "options_mode_profile_smart": {
+    "message": "Mantiene attiva la pulizia del feed principale abilitando punteggio, compressione dei post a basso valore e segnali di verifica della credibilità."
+  },
+  "options_mode_profile_classic": {
+    "message": "Prioritizza il comportamento cronologico classico del feed e sopprime le moderne superfici algoritmiche come Watch/Marketplace."
+  },
+  "options_quickstart_title": {
+    "message": "PureFusion in 5 secondi"
+  },
+  "options_quickstart_desc": {
+    "message": "Scegli subito un profilo rapido. Puoi comunque regolare tutto nel dettaglio qui sotto."
+  },
+  "options_promise_clean_title": {
+    "message": "Facebook pulito"
+  },
+  "options_promise_clean_desc": {
+    "message": "Meno disordine da annunci e algoritmi."
+  },
+  "options_promise_fast_title": {
+    "message": "Facebook veloce"
+  },
+  "options_promise_fast_desc": {
+    "message": "Modalità ultra rapida per sessioni più leggere."
+  },
+  "options_promise_smart_title": {
+    "message": "Facebook intelligente"
+  },
+  "options_promise_smart_desc": {
+    "message": "Punteggio + credibilità + spiegabilità."
+  },
+  "options_quickstart_btn_clean": {
+    "message": "Usa Pulita"
+  },
+  "options_quickstart_btn_fast": {
+    "message": "Usa Ultra Rapida"
+  },
+  "options_quickstart_btn_smart": {
+    "message": "Usa Intelligente"
+  },
+  "options_quickstart_recommended": {
+    "message": "Consigliata per la maggior parte degli utenti"
+  },
+  "options_mode_perf_hint_low": {
+    "message": "Questo dispositivo potrebbe funzionare meglio con la modalità ultra rapida (testo prima, carico CPU/GPU ridotto)."
+  },
+  "options_mode_perf_hint_mid": {
+    "message": "La modalità ultra rapida può ridurre i rallentamenti durante sessioni intensive su questo dispositivo."
+  },
+  "options_mode_perf_apply": {
+    "message": "Applica consiglio ultra rapido"
+  },
+  "options_mode_recommendation_low": {
+    "message": "Consigliata: Ultra Rapida"
+  },
+  "options_mode_recommendation_mid": {
+    "message": "Opzionale: Ultra Rapida per sessioni intensive"
+  },
+  "options_mode_recommendation_active": {
+    "message": "Modalità consigliata attiva"
+  },
+  "options_mode_recommendation_balanced": {
+    "message": "Bilanciata: la modalità attuale va bene"
+  },
+  "options_mode_why_custom": {
+    "message": "Perché: usa solo le scelte manuali delle tue opzioni."
+  },
+  "options_mode_why_clean": {
+    "message": "Perché: rimuove il disordine comune mantenendo un feed familiare."
+  },
+  "options_mode_why_focus": {
+    "message": "Perché: ottimizzata per il focus intenso con tagli alle distrazioni più forti."
+  },
+  "options_mode_why_ultrafast": {
+    "message": "Perché: prioritizza la velocità riducendo l'elaborazione pesante del feed."
+  },
+  "options_mode_why_smart": {
+    "message": "Perché: bilancia la pulizia con segnali di punteggio e credibilità."
+  },
+  "options_mode_why_classic": {
+    "message": "Perché: enfatizza il comportamento cronologico del feed in stile classico."
+  },
+  "options_mode_why_device_low": {
+    "message": "Nota dispositivo: Ultra Rapida è consigliata su questo hardware."
+  },
+  "options_mode_why_device_mid": {
+    "message": "Nota dispositivo: Ultra Rapida può aiutare durante sessioni intensive."
+  },
+  "options_surface_title": {
+    "message": "Controlli ambito per superficie"
+  },
+  "options_surface_desc": {
+    "message": "Scegli quali superfici Facebook devono ricevere il filtraggio di PureFusion. Disattiva una superficie per lasciarla intatta."
+  },
+  "options_surface_enable": {
+    "message": "Abilita ambito di filtraggio per superficie"
+  },
+  "options_surface_home": {
+    "message": "Applica sul feed Home"
+  },
+  "options_surface_groups": {
+    "message": "Applica sui Gruppi"
+  },
+  "options_surface_watch": {
+    "message": "Applica su Watch"
+  },
+  "options_surface_marketplace": {
+    "message": "Applica su Marketplace"
+  },
+  "options_surface_other": {
+    "message": "Applica su altre superfici (profilo/pagine/eventi)"
+  },
+  "options_filters_hide_suggested": {
+    "message": "Nascondi \"Suggeriti per te\""
+  },
+  "options_filters_hide_pymk": {
+    "message": "Nascondi \"Persone che potresti conoscere\""
+  },
+  "options_filters_hide_group_suggestions": {
+    "message": "Nascondi suggerimenti di gruppi"
+  },
+  "options_filters_hide_page_suggestions": {
+    "message": "Nascondi suggerimenti di pagine"
+  },
+  "options_filters_hide_fundraisers": {
+    "message": "Nascondi raccolte fondi"
+  },
+  "options_filters_post_types_title": {
+    "message": "Pacchetto filtri tipo post v2"
+  },
+  "options_filters_post_types_desc": {
+    "message": "Targeting rigoroso del wrapper dei post più ancore di frasi. Lascia disattivato a meno che tu voglia una pulizia aggressiva per tipo."
+  },
+  "options_filters_hide_video_posts": {
+    "message": "Nascondi post video"
+  },
+  "options_filters_hide_photo_posts": {
+    "message": "Nascondi post foto/immagini"
+  },
+  "options_filters_hide_link_posts": {
+    "message": "Nascondi post con link/condivisioni esterni"
+  },
+  "options_filters_hide_text_posts": {
+    "message": "Nascondi post di stato solo testo"
+  },
+  "options_filters_hide_live_video_posts": {
+    "message": "Nascondi post video in diretta"
+  },
+  "options_filters_hide_share_reposts": {
+    "message": "Nascondi post condivisi/repost"
+  },
+  "options_filters_hide_poll_posts": {
+    "message": "Nascondi post con sondaggi"
+  },
+  "options_filters_clutter_title": {
+    "message": "Disordine e iniezioni"
+  },
+  "options_filters_hide_reels_tray": {
+    "message": "Nascondi barra Reels nel feed"
+  },
+  "options_filters_widescreen_label": {
+    "message": "Modalità widescreen"
+  },
+  "options_filters_widescreen_desc": {
+    "message": "Sblocca i limiti della colonna centrale per riempire i monitor ultra-wide."
+  },
+  "options_filters_hide_memories": {
+    "message": "Nascondi post ricordi"
+  },
+  "options_filters_hide_stories": {
+    "message": "Nascondi barra storie"
+  },
+  "options_filters_remove_colored_bg": {
+    "message": "Rimuovi post con sfondo colorato"
+  },
+  "options_filters_remove_game_invites": {
+    "message": "Nascondi inviti a giochi e post attività"
+  },
+  "options_filters_remove_large_reactions": {
+    "message": "Normalizza post con emoji sovradimensionate"
+  },
+  "options_filters_deduplicate_posts_label": {
+    "message": "Nascondi post duplicati"
+  },
+  "options_filters_deduplicate_posts_desc": {
+    "message": "Sopprime i post il cui ID è già apparso in questa sessione — rileva FB che reinietta la stessa storia più volte."
+  },
+  "options_filters_locale_label": {
+    "message": "Lingua del feed"
+  },
+  "options_filters_locale_desc": {
+    "message": "Adatta i filtri di frasi alla tua lingua di Facebook. Auto testa tutte le lingue supportate (potrebbe sovra-filtrare feed in lingue miste)."
+  },
+  "options_filters_locale_auto": {
+    "message": "Auto (tutte le lingue supportate)"
+  },
+  "options_story_filters_title": {
+    "message": "Filtri attività storie"
+  },
+  "options_story_filters_desc": {
+    "message": "Nascondi le storie di attività a basso segnale comuni dal tuo feed."
+  },
+  "options_story_filter_became_friends": {
+    "message": "Nascondi storie \"Sono diventati amici\""
+  },
+  "options_story_filter_joined_groups": {
+    "message": "Nascondi storie \"Iscritto al gruppo\""
+  },
+  "options_story_filter_commented": {
+    "message": "Nascondi storie \"Ha commentato\""
+  },
+  "options_story_filter_liked": {
+    "message": "Nascondi storie \"Ha messo Mi piace\""
+  },
+  "options_story_filter_events": {
+    "message": "Nascondi storie di partecipazione a eventi"
+  },
+  "options_story_filter_memories": {
+    "message": "Nascondi storie di ricordi condivisi"
+  },
+  "options_story_filter_profile_photo": {
+    "message": "Nascondi storie di aggiornamento foto profilo"
+  },
+  "options_story_filter_cover_photo": {
+    "message": "Nascondi storie di aggiornamento foto copertina"
+  },
+  "options_story_filter_life_events": {
+    "message": "Nascondi storie di eventi della vita"
+  },
+  "options_story_filter_checkins": {
+    "message": "Nascondi storie di check-in/attività di posizione"
+  },
+  "options_story_filter_milestones": {
+    "message": "Nascondi storie di traguardi"
+  },
+  "options_story_filter_job_work": {
+    "message": "Nascondi storie di aggiornamenti lavoro/occupazione"
+  },
+  "options_story_filter_relationship": {
+    "message": "Nascondi storie di aggiornamenti relazione"
+  },
+  "options_story_filter_group_activity": {
+    "message": "Nascondi storie di post attività di gruppo"
+  },
+  "options_image_filters_title": {
+    "message": "Filtri soggetto immagine"
+  },
+  "options_image_filters_desc": {
+    "message": "Usa i segnali di descrizione immagine di Facebook per nascondere categorie visive selezionate."
+  },
+  "options_image_filters_enable": {
+    "message": "Abilita filtri soggetto immagine (Modalità sicura)"
+  },
+  "options_image_filter_sports": {
+    "message": "Nascondi immagini sportive"
+  },
+  "options_image_filter_food": {
+    "message": "Nascondi immagini di cibo e bevande"
+  },
+  "options_image_filter_pets": {
+    "message": "Nascondi immagini di animali domestici (cani/gatti)"
+  },
+  "options_image_filter_vehicles": {
+    "message": "Nascondi immagini di veicoli"
+  },
+  "options_image_filter_screenshots": {
+    "message": "Nascondi meme e immagini in stile screenshot"
+  },
+  "options_image_filter_travel": {
+    "message": "Nascondi immagini di viaggi e paesaggi"
+  },
+  "options_ai_card_title": {
+    "message": "Motore di previsione locale"
+  },
+  "options_ai_card_desc": {
+    "message": "Punteggia gli elementi del feed localmente in base alla tua cronologia di interazioni. I dati non lasciano mai il tuo dispositivo."
+  },
+  "options_ai_enable_predictions": {
+    "message": "Abilita previsioni AI"
+  },
+  "options_ai_show_pf_badge": {
+    "message": "Mostra badge \"PF Score\" sui post"
+  },
+  "options_ai_show_reasons": {
+    "message": "Mostra suggerimenti sul punteggio sui badge PF"
+  },
+  "options_ai_dim_low_interest": {
+    "message": "Oscura/comprimi post a basso interesse (Score < 20)"
+  },
+  "options_ai_collapse_low_interest": {
+    "message": "Comprimi post a basso interesse con chip di visualizzazione"
+  },
+  "options_ai_never_empty_guard": {
+    "message": "Guardia feed mai vuoto (mantieni il minimo di post visibili)"
+  },
+  "options_ai_never_empty_min": {
+    "message": "Post visibili minimi da mantenere"
+  },
+  "options_ai_highlight_high_interest": {
+    "message": "Evidenzia post ad alto interesse (Score > 80)"
+  },
+  "options_ai_analyze_trends": {
+    "message": "Analizza tendenze e parole chiave locali"
+  },
+  "options_ai_true_affinity_sort": {
+    "message": "Ordinamento per vera affinità"
+  },
+  "options_ai_true_affinity_sort_desc": {
+    "message": "Riordina il feed in base al tuo punteggio di engagement locale in tempo reale — i post con punteggio più alto salgono in cima usando l'ordine flexbox CSS, senza interrompere il DOM virtuale di React."
+  },
+  "options_ai_friend_activity": {
+    "message": "Approfondimento attività amici nel feed"
+  },
+  "options_ai_friend_activity_desc": {
+    "message": "Segna i contatti nella barra laterale destra i cui post non sono apparsi nel tuo feed in questa sessione — aiuta a identificare gli amici che Facebook potrebbe star sopprimendo silenziosamente dalla tua cronologia."
+  },
+  "options_ai_low_threshold": {
+    "message": "Soglia punteggio basso"
+  },
+  "options_ai_high_threshold": {
+    "message": "Soglia punteggio alto"
+  },
+  "options_ai_cred_title": {
+    "message": "Segnali di credibilità (Beta)"
+  },
+  "options_ai_cred_desc": {
+    "message": "Controlli locali euristici per pattern di affermazioni sospette. Non prova la verità; segnala post che vale la pena verificare."
+  },
+  "options_ai_cred_enabled": {
+    "message": "Abilita rilevamento affermazioni sospette"
+  },
+  "options_ai_cred_badge": {
+    "message": "Mostra badge di avviso \"verifica\" sui post segnalati"
+  },
+  "options_ai_cred_strict": {
+    "message": "Modalità rigorosa (penalità punteggio più forte per affermazioni sospette)"
+  },
+  "options_ai_cred_debug": {
+    "message": "Mostra anteprima debug credibilità su tutti i post scansionati"
+  },
+  "options_ai_llm_title": {
+    "message": "Server di intelligenza profonda (BYOK API)"
+  },
+  "options_ai_llm_desc": {
+    "message": "Porta la tua chiave. Sblocca funzionalità LLM come TL;DR e AI per commenti. Le tue chiavi vengono salvate esclusivamente nello storage locale della macchina."
+  },
+  "options_ai_provider_label": {
+    "message": "Provider attivo"
+  },
+  "options_ai_provider_none": {
+    "message": "Disabilitato"
+  },
+  "options_ai_provider_openai": {
+    "message": "OpenAI (ChatGPT)"
+  },
+  "options_ai_provider_gemini": {
+    "message": "Google Gemini"
+  },
+  "options_ai_provider_windowai": {
+    "message": "Chrome Native (window.ai)"
+  },
+  "options_ai_openai_key_label": {
+    "message": "Chiave API OpenAI"
+  },
+  "options_ai_gemini_key_label": {
+    "message": "Chiave API Google Gemini"
+  },
+  "options_ai_tldr_toggle": {
+    "message": "Inserisci pulsanti \"TL;DR\" Riepiloga sui post lunghi"
+  },
+  "options_ai_smart_comment_toggle": {
+    "message": "Co-Pilota commenti intelligenti (icona bacchetta)"
+  },
+  "options_ai_clickbait_decode_toggle": {
+    "message": "Decoder clickbait (Riscrivi titoli sensazionalistici con i fatti)"
+  },
+  "options_ai_messenger_tools_title": {
+    "message": "Strumenti AI per Messenger"
+  },
+  "options_ai_messenger_rewrite_toggle": {
+    "message": "Riscrivi bozze di messaggi nel compositore"
+  },
+  "options_ai_messenger_replies_toggle": {
+    "message": "Genera 3 suggerimenti di risposta intelligente"
+  },
+  "options_ui_card_title": {
+    "message": "Ristrutturazione interfaccia"
+  },
+  "options_ui_friends_only": {
+    "message": "Modalità solo amici (Elimina tutti i gruppi/pagine dal feed)"
+  },
+  "options_ui_anonymizer": {
+    "message": "Anonimizzatore screenshot (Sfoca foto profilo/nomi)"
+  },
+  "options_ui_compact_mode": {
+    "message": "Modalità compatta (Riduci margini/spaziatura)"
+  },
+  "options_ui_disable_comment_autofocus": {
+    "message": "Disabilita furto autofocus della casella commenti"
+  },
+  "options_ui_enforce_chrono": {
+    "message": "Forza feed cronologico (più recenti)"
+  },
+  "options_ui_show_link_previews": {
+    "message": "Mostra destinazione reale dei link in uscita"
+  },
+  "options_ui_absolute_timestamps": {
+    "message": "Converti timestamp in date assolute"
+  },
+  "options_ui_hide_composer": {
+    "message": "Nascondi la casella \"A cosa stai pensando?\""
+  },
+  "options_ui_comment_sort_label": {
+    "message": "Ordinamento commenti predefinito"
+  },
+  "options_ui_comment_sort_desc": {
+    "message": "Applica automaticamente una preferenza di ordinamento quando i commenti si espandono su un post. Si attiva solo quando i commenti sono già caricati — non forza l'espansione delle sezioni commenti compresse."
+  },
+  "options_ui_comment_sort_all": {
+    "message": "Tutti i commenti (predefinito FB)"
+  },
+  "options_ui_comment_sort_newest": {
+    "message": "Più recenti prima"
+  },
+  "options_ui_comment_sort_top": {
+    "message": "Più pertinenti"
+  },
+  "options_ui_distraction_free_label": {
+    "message": "Modalità di lettura senza distrazioni (Alt+Shift+F)"
+  },
+  "options_ui_distraction_free_desc": {
+    "message": "Nasconde le barre laterali sinistra/destra e centra il feed per un'esperienza di lettura pulita. Attiva/disattiva con Alt+Shift+F in qualsiasi momento."
+  },
+  "options_ui_image_hover_label": {
+    "message": "Espansione immagine al passaggio del mouse"
+  },
+  "options_ui_image_hover_desc": {
+    "message": "Passa il mouse sulle immagini del feed per vederle a dimensione intera. Salva o apri in una nuova scheda direttamente dal pannello. Disattivato per impostazione predefinita."
+  },
+  "options_ui_auto_expand_see_more_label": {
+    "message": "Espandi automaticamente \"Vedi altro\""
+  },
+  "options_ui_auto_expand_see_more_desc": {
+    "message": "Elimina automaticamente \"Vedi altro\" sui post troncati così leggi sempre il testo completo senza clic aggiuntivi."
+  },
+  "options_ui_strip_tracking_params_label": {
+    "message": "Rimuovi parametri di tracciamento dai link"
+  },
+  "options_ui_strip_tracking_params_desc": {
+    "message": "Rimuove fbclid, utm_*, gclid e altri parametri spia dai link del feed così gli URL copiati o cliccati sono puliti."
+  },
+  "options_ui_autoplay_video_label": {
+    "message": "Controllo riproduzione automatica video"
+  },
+  "options_ui_autoplay_video_desc": {
+    "message": "Controlla cosa succede quando i video del feed iniziano a riprodursi automaticamente."
+  },
+  "options_ui_autoplay_off": {
+    "message": "Disattivato (nessuna azione)"
+  },
+  "options_ui_autoplay_mute": {
+    "message": "Muto audio (riproduci in silenzio)"
+  },
+  "options_ui_autoplay_pause": {
+    "message": "Pausa (clicca per riprodurre)"
+  },
+  "options_nav_filters_title": {
+    "message": "Moduli navigazione e barra laterale"
+  },
+  "options_nav_filters_desc": {
+    "message": "Nascondi moduli specifici della navigazione sinistra e della barra laterale destra."
+  },
+  "options_nav_master_enable": {
+    "message": "Abilita filtraggio nav a livello modulo (Modalità sicura)"
+  },
+  "options_nav_left_marketplace": {
+    "message": "Nascondi nav sinistra: Marketplace"
+  },
+  "options_nav_left_watch": {
+    "message": "Nascondi nav sinistra: Watch"
+  },
+  "options_nav_left_gaming": {
+    "message": "Nascondi nav sinistra: Gaming"
+  },
+  "options_nav_left_memories": {
+    "message": "Nascondi nav sinistra: Ricordi"
+  },
+  "options_nav_left_meta_ai": {
+    "message": "Nascondi nav sinistra: Meta AI"
+  },
+  "options_nav_left_manus_ai": {
+    "message": "Nascondi nav sinistra: Manus AI"
+  },
+  "options_nav_right_trending": {
+    "message": "Nascondi barra laterale destra: Di tendenza"
+  },
+  "options_nav_right_contacts": {
+    "message": "Nascondi barra laterale destra: Contatti"
+  },
+  "options_nav_right_meta_ai_contact": {
+    "message": "Nascondi barra laterale destra: contatto Meta AI"
+  },
+  "options_nav_right_manus_ai_contact": {
+    "message": "Nascondi barra laterale destra: contatto Manus AI"
+  },
+  "options_nav_right_events": {
+    "message": "Nascondi barra laterale destra: Eventi"
+  },
+  "options_nav_right_birthdays": {
+    "message": "Nascondi barra laterale destra: Compleanni"
+  },
+  "options_topbar_filters_title": {
+    "message": "Controlli intestazione superiore"
+  },
+  "options_topbar_filters_desc": {
+    "message": "Nascondi icone specifiche dell'intestazione senza rimuovere l'intero contenitore dell'intestazione."
+  },
+  "options_topbar_master_enable": {
+    "message": "Abilita filtraggio intestazione superiore (Modalità sicura)"
+  },
+  "options_topbar_hide_home": {
+    "message": "Nascondi icona superiore: Home"
+  },
+  "options_topbar_hide_friends": {
+    "message": "Nascondi icona superiore: Amici"
+  },
+  "options_topbar_hide_watch": {
+    "message": "Nascondi icona superiore: Watch"
+  },
+  "options_topbar_hide_marketplace": {
+    "message": "Nascondi icona superiore: Marketplace"
+  },
+  "options_topbar_hide_groups": {
+    "message": "Nascondi icona superiore: Gruppi"
+  },
+  "options_topbar_hide_gaming": {
+    "message": "Nascondi icona superiore: Gaming"
+  },
+  "options_topbar_hide_messenger": {
+    "message": "Nascondi icona superiore: Messenger"
+  },
+  "options_topbar_hide_notifications": {
+    "message": "Nascondi icona superiore: Notifiche"
+  },
+  "options_topbar_hide_menu": {
+    "message": "Nascondi icona superiore: Menu"
+  },
+  "options_topbar_hide_create": {
+    "message": "Nascondi icona superiore: Crea"
+  },
+  "options_ui_theme_label": {
+    "message": "Tema applicazione"
+  },
+  "options_ui_theme_reload_desc": {
+    "message": "Richiede il ricaricamento della pagina."
+  },
+  "options_ui_theme_default": {
+    "message": "Predefinito Facebook"
+  },
+  "options_ui_theme_darkpro": {
+    "message": "Dark Pro"
+  },
+  "options_ui_theme_amoled": {
+    "message": "AMOLED Nero Profondo"
+  },
+  "options_ui_theme_classic": {
+    "message": "Blu Classico"
+  },
+  "options_ui_theme_zen": {
+    "message": "Modalità Zen (Minimalista)"
+  },
+  "options_ui_theme_pastel": {
+    "message": "Pastello caldo"
+  },
+  "options_ui_font_scale_label": {
+    "message": "Scala dimensione font (%)"
+  },
+  "options_ui_custom_style_title": {
+    "message": "Stile personalizzato avanzato"
+  },
+  "options_ui_custom_style_desc": {
+    "message": "Sovrascritture opzionali per font, colore accento, sfondo e CSS personalizzato."
+  },
+  "options_ui_custom_style_warn": {
+    "message": "Usa solo CSS valido. Regole errate possono rompere il layout della pagina."
+  },
+  "options_ui_custom_style_enable": {
+    "message": "Abilita stile personalizzato avanzato"
+  },
+  "options_ui_custom_font": {
+    "message": "Famiglia di font personalizzata"
+  },
+  "options_ui_custom_accent": {
+    "message": "Colore accento personalizzato"
+  },
+  "options_ui_custom_text_color": {
+    "message": "Colore testo personalizzato"
+  },
+  "options_ui_custom_card_background": {
+    "message": "Sfondo scheda post personalizzato"
+  },
+  "options_ui_custom_background": {
+    "message": "Sfondo pagina personalizzato"
+  },
+  "options_ui_custom_css": {
+    "message": "CSS personalizzato"
+  },
+  "options_ui_custom_accent_placeholder": {
+    "message": "#22c1ff"
+  },
+  "options_ui_custom_text_color_placeholder": {
+    "message": "#f2f5ff"
+  },
+  "options_ui_custom_card_background_placeholder": {
+    "message": "rgba(24, 31, 42, 0.92)"
+  },
+  "options_ui_custom_background_placeholder": {
+    "message": "linear-gradient(...) or #111111"
+  },
+  "options_ui_custom_css_placeholder": {
+    "message": ".selector { display: none !important; }"
+  },
+  "options_ui_custom_css_preset_label": {
+    "message": "Preimpostazioni snippet CSS personalizzato"
+  },
+  "options_ui_custom_css_preset_desc": {
+    "message": "Carica uno snippet di partenza nella casella CSS personalizzato, poi rivedi e salva."
+  },
+  "options_ui_custom_css_preset_none": {
+    "message": "Seleziona uno snippet"
+  },
+  "options_ui_custom_css_preset_subtle_cards": {
+    "message": "Rifinitura schede sottile"
+  },
+  "options_ui_custom_css_preset_calmer_motion": {
+    "message": "Movimento più calmo"
+  },
+  "options_ui_custom_css_preset_readability_boost": {
+    "message": "Miglioramento leggibilità"
+  },
+  "options_ui_custom_css_preset_apply": {
+    "message": "Carica snippet"
+  },
+  "options_theme_preview_title": {
+    "message": "Anteprima dal vivo"
+  },
+  "options_theme_preview_post_title": {
+    "message": "Titolo post di anteprima"
+  },
+  "options_theme_preview_desc": {
+    "message": "Questa mini anteprima si aggiorna mentre cambi tema e scala font."
+  },
+  "options_theme_preview_chip_filtered": {
+    "message": "Ads Filtered"
+  },
+  "options_theme_preview_chip_score": {
+    "message": "PF Score 88"
+  },
+  "options_wellbeing_grayscale": {
+    "message": "Modalità scala di grigi (Desatura tutti i colori)"
+  },
+  "options_wellbeing_scroll_stopper": {
+    "message": "Blocca scorrimento infinito"
+  },
+  "options_wellbeing_break_wall": {
+    "message": "Post prima del muro di pausa"
+  },
+  "options_wellbeing_session_timer": {
+    "message": "Timer sessione visibile"
+  },
+  "options_wellbeing_session_awareness_enable": {
+    "message": "Promemoria pausa leggera consapevolezza sessione"
+  },
+  "options_wellbeing_session_awareness_threshold": {
+    "message": "Impulsi di scorrimento al minuto prima del promemoria"
+  },
+  "options_wellbeing_session_awareness_cooldown": {
+    "message": "Tempo di recupero promemoria (minuti)"
+  },
+  "options_wellbeing_daily_report_enable": {
+    "message": "Abilita report feed giornaliero"
+  },
+  "options_wellbeing_daily_report_minutes": {
+    "message": "Intervallo report automatico (minuti)"
+  },
+  "options_wellbeing_reels_limit_title": {
+    "message": "Limitatore sessione Reels"
+  },
+  "options_wellbeing_reels_limit_desc": {
+    "message": "Consenti solo un numero limitato di Reels per sessione, poi blocca i Reels aggiuntivi."
+  },
+  "options_wellbeing_reels_limit_enable": {
+    "message": "Abilita limitatore sessione Reels"
+  },
+  "options_wellbeing_reels_limit_count": {
+    "message": "Reels consentiti per sessione"
+  },
+  "options_wellbeing_reels_limit_hardlock": {
+    "message": "Blocca rigidamente i Reels dopo il limite raggiunto"
+  },
+  "options_wellbeing_ai_blockers_title": {
+    "message": "Blocchi AI avanzati (Edizione Wellbeing)"
+  },
+  "options_wellbeing_ragebait": {
+    "message": "Rilevatore rage-bait (Sfoca post di sdegno infiammatorio)"
+  },
+  "options_wellbeing_clickbait": {
+    "message": "Eliminatore clickbait (Elimina titoli virali manipolativi)"
+  },
+  "wellbeing_break_title": {
+    "message": "Prenditi un respiro"
+  },
+  "wellbeing_break_body_template": {
+    "message": "Hai appena scorso oltre $1 post. PureFusion ha temporaneamente messo in pausa il feed per aiutarti a evitare lo scorrimento compulsivo. È il momento di fare qualcos'altro?"
+  },
+  "wellbeing_break_resume_btn": {
+    "message": "Continua a scorrere comunque"
+  },
+  "wellbeing_session_timer_prefix": {
+    "message": "Sessione"
+  },
+  "wellbeing_report_button": {
+    "message": "Report"
+  },
+  "wellbeing_weekly_report_button": {
+    "message": "Settimana"
+  },
+  "wellbeing_report_disabled": {
+    "message": "Report feed giornaliero disabilitato. Abilitalo in Benessere digitale."
+  },
+  "wellbeing_report_label_auto": {
+    "message": "Report feed giornaliero"
+  },
+  "wellbeing_report_label_session": {
+    "message": "Report feed sessione"
+  },
+  "wellbeing_weekly_report_label": {
+    "message": "Report feed settimanale"
+  },
+  "wellbeing_report_no_filters": {
+    "message": "Nessun filtro ancora attivato"
+  },
+  "wellbeing_weekly_report_no_data": {
+    "message": "Il report settimanale necessita prima di più dati di attività."
+  },
+  "wellbeing_session_awareness_toast_template": {
+    "message": "Ritmo di scorrimento elevato rilevato: $1 scorrimenti nell'ultimo minuto (sessione di $2 min). Considera una breve pausa."
+  },
+  "wellbeing_report_panel_title": {
+    "message": "Report PureFusion Feed"
+  },
+  "wellbeing_report_panel_close": {
+    "message": "Chiudi"
+  },
+  "wellbeing_report_panel_session_tab": {
+    "message": "Sessione"
+  },
+  "wellbeing_report_panel_weekly_tab": {
+    "message": "Settimanale"
+  },
+  "wellbeing_report_panel_hidden": {
+    "message": "Elementi nascosti"
+  },
+  "wellbeing_report_panel_reels": {
+    "message": "Reels bloccati"
+  },
+  "wellbeing_report_panel_top_reason": {
+    "message": "Distrazione principale"
+  },
+  "wellbeing_report_panel_minutes_saved": {
+    "message": "Minuti risparmiati (stima)"
+  },
+  "wellbeing_report_panel_elapsed": {
+    "message": "Durata sessione"
+  },
+  "wellbeing_report_panel_refresh": {
+    "message": "Aggiorna"
+  },
+  "wellbeing_report_panel_reset_session": {
+    "message": "Reimposta sessione"
+  },
+  "wellbeing_report_panel_reset_done": {
+    "message": "Contatori sessione reimpostati."
+  },
+  "wellbeing_report_panel_note": {
+    "message": "Suggerimento: i valori giornalieri si reimpostano con il reset della sessione; il riepilogo settimanale è calcolato dai bucket giornalieri salvati."
+  },
+  "wellbeing_report_panel_weekly_window": {
+    "message": "Finestra di 7 giorni scorrevole"
+  },
+  "wellbeing_report_panel_weekly_trend_title": {
+    "message": "Tendenza 7 giorni"
+  },
+  "wellbeing_report_panel_weekly_top_reasons_title": {
+    "message": "Principali ragioni di distrazione"
+  },
+  "wellbeing_report_panel_weekly_no_reasons": {
+    "message": "Nessun dato sulle ragioni di distrazione ancora."
+  },
+  "wellbeing_report_panel_weekly_reason_explain": {
+    "message": "Spiega"
+  },
+  "wellbeing_report_reason_explain_ads": {
+    "message": "Il contenuto sponsorizzato o simile a pubblicità è stato filtrato per ridurre il disordine promozionale."
+  },
+  "wellbeing_report_reason_explain_story": {
+    "message": "I pattern di attività delle storie (mi piace/commenti/iscrizioni amici/check-in) sono stati filtrati come rumore a basso segnale nel feed."
+  },
+  "wellbeing_report_reason_explain_post_type": {
+    "message": "Un filtro per formato post ha rimosso i tipi di contenuto che hai scelto di sopprimere (video/foto/link/solo testo)."
+  },
+  "wellbeing_report_reason_explain_bait": {
+    "message": "I filtri di sicurezza comportamentale hanno segnalato pattern manipolativi o ad alto sdegno progettati per farti scorrere ancora."
+  },
+  "wellbeing_report_reason_explain_nav": {
+    "message": "I controlli sul disordine di navigazione e moduli hanno rimosso elementi UI non-feed distraenti."
+  },
+  "wellbeing_report_reason_explain_keyword": {
+    "message": "Le regole per parole chiave hanno trovato corrispondenza in questo elemento e lo hanno filtrato in base alla tua lista bloccati personalizzata."
+  },
+  "wellbeing_report_reason_explain_generic": {
+    "message": "Questa categoria è stata filtrata dalle tue regole PureFusion attive per mantenere il tuo feed più pulito e focalizzato."
+  },
+  "wellbeing_report_reason_open_settings": {
+    "message": "Apri impostazioni correlate"
+  },
+  "wellbeing_weekly_report_toast_template": {
+    "message": "$LABEL$: nascosti $HIDDEN$ elementi, bloccati $REELS$ Reels, distrazione principale $REASON$, stimati $MINUTES$ min risparmiati in 7 giorni.",
+    "placeholders": {
+      "label": {
+        "content": "$1"
+      },
+      "hidden": {
+        "content": "$2"
+      },
+      "reels": {
+        "content": "$3"
+      },
+      "reason": {
+        "content": "$4"
+      },
+      "minutes": {
+        "content": "$5"
+      }
+    }
+  },
+  "wellbeing_report_toast_template": {
+    "message": "$LABEL$: nascosti $HIDDEN$ elementi, bloccati $REELS$ Reels, ragione principale $REASON$, stimati $MINUTES$ min risparmiati.",
+    "placeholders": {
+      "label": {
+        "content": "$1"
+      },
+      "hidden": {
+        "content": "$2"
+      },
+      "reels": {
+        "content": "$3"
+      },
+      "reason": {
+        "content": "$4"
+      },
+      "minutes": {
+        "content": "$5"
+      }
+    }
+  },
+  "options_social_ghost_title": {
+    "message": "Modalità fantasma (Messenger)"
+  },
+  "options_social_ghost_desc": {
+    "message": "Interazioni private. Nascondi le tue tracce mentre scrivi messaggi."
+  },
+  "options_social_hide_seen": {
+    "message": "Nascondi ricevute di lettura \"Visto\" (Leggi senza che lo sappiano)"
+  },
+  "options_social_hide_typing": {
+    "message": "Nascondi indicatore \"Sta scrivendo...\""
+  },
+  "options_social_privacy_blur": {
+    "message": "Sfocatura privacy (Sfoca il corpo della chat fino al passaggio del mouse)"
+  },
+  "options_social_meta_title": {
+    "message": "Meta AI e disordine algoritmico"
+  },
+  "options_social_auto_comment_preview": {
+    "message": "Anteprima commenti automatica"
+  },
+  "options_social_auto_comment_preview_toggle": {
+    "message": "Abilita anteprima commenti automatica"
+  },
+  "options_beta_badge": {
+    "message": "BETA"
+  },
+  "options_comment_preview_warning_text": {
+    "message": "Questa funzione simula clic sui pulsanti per espandere le sezioni commenti mentre scorri. È sperimentale e potrebbe non funzionare su tutti i post, potrebbe smettere di funzionare dopo aggiornamenti del layout di Facebook, o potrebbe attivare il rate-limiting se i conteggi sweep sono impostati troppo in alto. Mantieni il cooldown sopra 1200 ms e il massimo post per sweep sotto 20 durante i primi test."
+  },
+  "options_comment_preview_risk_text": {
+    "message": "Abilita a tuo rischio. Apparirà una richiesta di conferma la prima volta che lo attivi."
+  },
+  "options_social_comment_preview_desc": {
+    "message": "Regola cooldown e ambito qui sotto. Cooldown più alti e cap sweep più bassi riducono la possibilità di attivare i rate limit di FB."
+  },
+  "options_social_comment_preview_cooldown": {
+    "message": "Cooldown anteprima commenti (ms)"
+  },
+  "options_social_comment_preview_retry_cap": {
+    "message": "Limite tentativi per post"
+  },
+  "options_social_comment_preview_sweep_cap": {
+    "message": "Max post per sweep"
+  },
+  "options_social_comment_preview_home": {
+    "message": "Consenti sul feed Home"
+  },
+  "options_social_comment_preview_groups": {
+    "message": "Consenti sui Gruppi"
+  },
+  "options_social_comment_preview_watch": {
+    "message": "Consenti su Watch"
+  },
+  "options_social_comment_preview_marketplace": {
+    "message": "Consenti su Marketplace"
+  },
+  "options_social_comment_preview_notifications": {
+    "message": "Consenti sulle Notifiche"
+  },
+  "options_social_comment_preview_other": {
+    "message": "Consenti su altre superfici"
+  },
+  "options_social_comment_preview_strategy": {
+    "message": "Strategia di anteprima"
+  },
+  "options_social_comment_preview_strategy_inject": {
+    "message": "Smart Inject (Stabile, v3)"
+  },
+  "options_social_comment_preview_strategy_click": {
+    "message": "Clic legacy (v2)"
+  },
+  "options_social_nuke_meta": {
+    "message": "Elimina Meta AI (Rimuovi tutte le icone sfumate e i pulsanti sparkle)"
+  },
+  "options_social_track_unfriends": {
+    "message": "Traccia rimozioni amicizia e disattivazioni"
+  },
+  "options_social_notif_title": {
+    "message": "Calmante notifiche"
+  },
+  "options_social_notif_style": {
+    "message": "Stile gioiello avvisi (Il pallino rosso)"
+  },
+  "options_social_notif_style_classic": {
+    "message": "Rosso classico (Predefinito)"
+  },
+  "options_social_notif_style_blue": {
+    "message": "Blu puro (Discreto)"
+  },
+  "options_social_notif_style_purple": {
+    "message": "Viola Fusion (Brandizzato)"
+  },
+  "options_social_notif_style_grey": {
+    "message": "Grigio fantasma (Minimale)"
+  },
+  "options_social_notif_style_hidden": {
+    "message": "Completamente nascosto"
+  },
+  "options_social_notif_digest": {
+    "message": "Modalità digest notifiche (Raggruppa avvisi ogni ora)"
+  },
+  "options_social_notif_games": {
+    "message": "Nascondi notifiche di giochi"
+  },
+  "options_social_notif_birthdays": {
+    "message": "Nascondi notifiche di compleanni"
+  },
+  "options_social_notif_marketplace": {
+    "message": "Nascondi notifiche Marketplace"
+  },
+  "options_social_notif_engagement": {
+    "message": "Nascondi solleciti di engagement algoritmico"
+  },
+  "options_social_search_title": {
+    "message": "Controlli popup ricerca"
+  },
+  "options_social_search_desc": {
+    "message": "Sopprime i suggerimenti distraenti nel menu a discesa della ricerca."
+  },
+  "options_social_search_hide_all": {
+    "message": "Nascondi tutti i suggerimenti popup di ricerca"
+  },
+  "options_social_search_hide_trending": {
+    "message": "Nascondi suggerimenti di ricerca di tendenza"
+  },
+  "options_social_search_hide_recent": {
+    "message": "Nascondi sezione ricerche recenti"
+  },
+  "options_keywords_card_desc": {
+    "message": "Separa le parole chiave con virgole."
+  },
+  "options_keywords_blocklist_label": {
+    "message": "Lista bloccati (Comprime i post con un pulsante \"Mostra comunque\")"
+  },
+  "options_keywords_autohide_label": {
+    "message": "Nascondi automaticamente (Elimina silenziosamente i post contenenti queste stringhe)"
+  },
+  "options_keywords_source_blocklist_label": {
+    "message": "Fonti nascoste (Nascondi sempre i nomi delle fonti corrispondenti)"
+  },
+  "options_keywords_allowlist_label": {
+    "message": "Parole chiave consentite (Non bloccare mai se il post le contiene)"
+  },
+  "options_keywords_allowlist_friends_label": {
+    "message": "Non nascondere mai le fonti (Amici/Pagine)"
+  },
+  "options_keywords_blocklist_placeholder": {
+    "message": "politica, spoiler, ecc..."
+  },
+  "options_keywords_autohide_placeholder": {
+    "message": "parola spam..."
+  },
+  "options_keywords_source_blocklist_placeholder": {
+    "message": "Mario Rossi, Pagina di notizie rumorosa..."
+  },
+  "options_keywords_allowlist_placeholder": {
+    "message": "aggiornamento famiglia, lancio progetto..."
+  },
+  "options_keywords_allowlist_friends_placeholder": {
+    "message": "Maria Rossi, La mia pagina preferita..."
+  },
+  "options_data_backup_title": {
+    "message": "Backup configurazione"
+  },
+  "options_data_backup_desc": {
+    "message": "Esporta le tue impostazioni e liste bloccati come JSON per sincronizzarle su un altro dispositivo."
+  },
+  "options_data_export_btn": {
+    "message": "Esporta in file"
+  },
+  "options_data_import_btn": {
+    "message": "Importa da file"
+  },
+  "options_data_about_title": {
+    "message": "Informazioni e supporto"
+  },
+  "options_data_about_desc": {
+    "message": "Hai bisogno di aiuto, vuoi segnalare un problema o supportare lo sviluppo? Contattami direttamente usando i link qui sotto."
+  },
+  "options_data_about_discord": {
+    "message": "Discord (Purefusion-Feeds)"
+  },
+  "options_data_about_github": {
+    "message": "Repository GitHub"
+  },
+  "options_data_about_issues": {
+    "message": "Segnala problemi"
+  },
+  "options_data_about_donate": {
+    "message": "Dona / Supporta"
+  },
+  "options_data_diag_title": {
+    "message": "Modalità diagnostica"
+  },
+  "options_data_diag_desc": {
+    "message": "Overlay di debug locale opzionale per ispezionare le ragioni di nascondimento e l'attività dei filtri."
+  },
+  "options_data_diag_enable": {
+    "message": "Abilita modalità diagnostica"
+  },
+  "options_data_diag_overlay": {
+    "message": "Mostra overlay diagnostica nella pagina"
+  },
+  "options_data_diag_compact": {
+    "message": "Usa overlay diagnostica compatta"
+  },
+  "options_data_diag_console": {
+    "message": "Diagnostica dettagliata nella console"
+  },
+  "options_data_diag_max_reasons": {
+    "message": "Numero massimo righe motivo nell'overlay"
+  },
+  "options_data_diag_thresholds_title": {
+    "message": "Soglie spike observer"
+  },
+  "options_data_diag_thresholds_desc": {
+    "message": "Regola le soglie di avviso e grave usate dagli avvisi di carico di lavoro diagnostica."
+  },
+  "options_data_diag_warn_duration": {
+    "message": "Durata avviso (ms)"
+  },
+  "options_data_diag_severe_duration": {
+    "message": "Durata grave (ms)"
+  },
+  "options_data_diag_warn_nodes": {
+    "message": "Conteggio nodi avviso"
+  },
+  "options_data_diag_severe_nodes": {
+    "message": "Conteggio nodi grave"
+  },
+  "options_data_diag_warn_records": {
+    "message": "Record mutazione avviso"
+  },
+  "options_data_diag_severe_records": {
+    "message": "Record mutazione grave"
+  },
+  "options_data_reset_title": {
+    "message": "Ripristino impostazioni di fabbrica"
+  },
+  "options_data_reset_desc": {
+    "message": "Questo cancellerà tutte le preferenze e i dati di apprendimento AI locali."
+  },
+  "options_data_reset_btn": {
+    "message": "Cancella tutto"
+  },
+  "options_toast_saved": {
+    "message": "Impostazioni salvate con successo."
+  },
+  "options_toast_imported": {
+    "message": "Impostazioni importate con successo."
+  },
+  "options_toast_invalid_backup": {
+    "message": "File di backup PureFusion non valido."
+  },
+  "options_toast_import_error": {
+    "message": "Errore nell'importazione del file. Potrebbe essere corrotto."
+  },
+  "options_toast_provider_permission_denied": {
+    "message": "Autorizzazione provider AI negata. Provider disabilitato."
+  },
+  "options_toast_preset_applied": {
+    "message": "Preimpostazione applicata con successo."
+  },
+  "options_toast_custom_css_snippet_loaded": {
+    "message": "Snippet CSS personalizzato caricato. Clicca Salva per applicare."
+  },
+  "options_toast_ultrafast_applied": {
+    "message": "Modalità ultra rapida applicata per questo dispositivo."
+  },
+  "options_toast_mode_clean_applied": {
+    "message": "Modalità pulita applicata."
+  },
+  "options_toast_mode_smart_applied": {
+    "message": "Modalità intelligente applicata."
+  },
+  "options_reset_confirm": {
+    "message": "Sei sicuro? Questo cancellerà le tue preferenze e tutti i dati di tracciamento AI locali."
+  },
+  "options_sidebar_filters": {
+    "message": "🚫 Filtri principali"
+  },
+  "options_sidebar_wellbeing": {
+    "message": "🧘 Benessere digitale"
+  },
+  "options_sidebar_ai": {
+    "message": "🤖 Motore AI"
+  },
+  "options_sidebar_ui": {
+    "message": "🎨 Personalizzazioni UI"
+  },
+  "options_sidebar_keywords": {
+    "message": "🔤 Filtri parole chiave"
+  },
+  "options_sidebar_social": {
+    "message": "🤝 Sociale e privacy"
+  },
+  "options_sidebar_data": {
+    "message": "💾 Dati e backup"
+  },
+  "welcome_title": {
+    "message": "Benvenuto in PureFusion Feed"
+  },
+  "welcome_subtitle": {
+    "message": "Entra in un'esperienza social più pulita, veloce e privata."
+  },
+  "welcome_god_mode": {
+    "message": "God Mode Core"
+  },
+  "welcome_god_mode_desc": {
+    "message": "Eliminazione totale di contenuti sponsorizzati, Reels suggeriti e spazzatura algoritmica."
+  },
+  "welcome_privacy_ai": {
+    "message": "AI Privacy"
+  },
+  "welcome_privacy_ai_desc": {
+    "message": "Riepiloga post lunghi e blocca il clickbait usando tecnologia AI locale offline."
+  },
+  "welcome_dopamine": {
+    "message": "Rompitori di dopamina"
+  },
+  "welcome_dopamine_desc": {
+    "message": "Combatti lo scorrimento compulsivo con timer di sessione, modalità scala di grigi e limiti di scorrimento."
+  },
+  "welcome_ready": {
+    "message": "Pronto a prendere il controllo?"
+  },
+  "welcome_ready_desc": {
+    "message": "Il tuo feed è ora sotto il tuo comando. Puoi accedere alla **Dashboard Avanzata** in qualsiasi momento."
+  },
+  "welcome_help_title": {
+    "message": "Hai bisogno di aiuto o vuoi segnalare un bug?"
+  },
+  "welcome_help_desc": {
+    "message": "Contattami direttamente su Discord, apri issue su GitHub o supporta lo sviluppo di PureFusion."
+  },
+  "welcome_help_discord": {
+    "message": "Discord: Purefusion-Feeds"
+  },
+  "welcome_help_github": {
+    "message": "Repository GitHub"
+  },
+  "welcome_help_issues": {
+    "message": "Issue GitHub"
+  },
+  "welcome_help_donate": {
+    "message": "Dona / Supporta"
+  },
+  "welcome_support_development": {
+    "message": "❤️ Supporta lo sviluppo"
+  },
+  "welcome_footer_built": {
+    "message": "Realizzato con ❤️ da Michael Harrell & Alimentato da PureFusion 2024"
+  },
+  "inpage_fab_title": {
+    "message": "Apri dashboard PureFusion"
+  },
+  "inpage_modal_title": {
+    "message": "Pannello PureFusion"
+  },
+  "inpage_modal_ads": {
+    "message": "Blocca annunci"
+  },
+  "inpage_modal_sponsored": {
+    "message": "Enhanced Ad Filter"
+  },
+  "inpage_modal_sugg": {
+    "message": "Nascondi suggeriti e Reels"
+  },
+  "inpage_modal_stories": {
+    "message": "Nascondi barra storie"
+  },
+  "inpage_modal_ai": {
+    "message": "Filtro AI Rage/Clickbait"
+  },
+  "inpage_modal_gray": {
+    "message": "Modalità scala di grigi"
+  },
+  "content_hidden_chip_label": {
+    "message": "Nascosto da PureFusion"
+  },
+  "content_hidden_chip_show_once": {
+    "message": "Mostra una volta"
+  },
+  "content_hidden_chip_allow_source": {
+    "message": "Consenti sempre la fonte"
+  },
+  "content_allow_source_exists": {
+    "message": "è già in Non nascondere mai le fonti."
+  },
+  "content_allow_source_added": {
+    "message": "Aggiunto"
+  },
+  "content_allow_source_added_suffix": {
+    "message": "a Non nascondere mai le fonti."
+  },
+  "messenger_ai_rewrite_btn": {
+    "message": "Riscrivi"
+  },
+  "messenger_ai_replies_btn": {
+    "message": "Risposte intelligenti"
+  },
+  "messenger_ai_rewriting_btn": {
+    "message": "Riscrittura in corso..."
+  },
+  "messenger_ai_generating_btn": {
+    "message": "Generazione in corso..."
+  },
+  "messenger_ai_empty_input": {
+    "message": "Prima digita un messaggio."
+  },
+  "messenger_ai_rewrite_success": {
+    "message": "Messaggio riscritto."
+  },
+  "messenger_ai_rewrite_fail": {
+    "message": "Riscrittura fallita. Controlla le impostazioni del provider AI."
+  },
+  "messenger_ai_context_missing": {
+    "message": "Necessario più contesto della chat per le risposte intelligenti."
+  },
+  "messenger_ai_replies_fail": {
+    "message": "Impossibile generare risposte intelligenti."
+  },
+  "messenger_ai_provider_required": {
+    "message": "Prima configura un provider AI nelle impostazioni di PureFusion."
+  },
+  "options_sidebar_poweruser": {
+    "message": "⚡ Regole Power-User"
+  },
+  "options_poweruser_title": {
+    "message": "Motore regole Power-User"
+  },
+  "options_poweruser_desc": {
+    "message": "Punta e nascondi qualsiasi elemento nella pagina usando selettori personalizzati o corrispondenza testo. Sii preciso per evitare di nascondere contenuto che vuoi vedere."
+  },
+  "options_poweruser_add_rule": {
+    "message": "Aggiungi nuova regola nascondi"
+  },
+  "options_poweruser_rule_list": {
+    "message": "Regole attive"
+  },
+  "options_poweruser_no_rules": {
+    "message": "Nessuna regola personalizzata definita ancora. Usa il pulsante '+' o fai clic destro sugli elementi di Facebook per 'Zapparli'."
+  },
+  "options_poweruser_type_label": {
+    "message": "Tipo regola"
+  },
+  "options_poweruser_type_selector": {
+    "message": "Selettore CSS"
+  },
+  "options_poweruser_type_text": {
+    "message": "Corrispondenza testo"
+  },
+  "options_poweruser_rule_label": {
+    "message": "Etichetta regola (nome interno)"
+  },
+  "options_poweruser_rule_value": {
+    "message": "Selettore o frase"
+  },
+  "options_poweruser_rule_wrapper_label": {
+    "message": "Ambito (selettore wrapper)"
+  },
+  "options_poweruser_rule_wrapper_placeholder": {
+    "message": "es. [role='article'] (Opzionale)"
+  },
+  "options_poweruser_save_rule": {
+    "message": "Salva regola"
+  },
+  "options_poweruser_cancel": {
+    "message": "Annulla"
+  },
+  "options_poweruser_rule_enabled": {
+    "message": "Abilitata"
+  },
+  "options_poweruser_delete_rule": {
+    "message": "Elimina"
+  },
+  "options_poweruser_edit_rule": {
+    "message": "Modifica"
+  },
+  "quick_action_menu_zap_element": {
+    "message": "Zappa (nascondi) elemento"
+  },
+  "options_poweruser_delete_confirm": {
+    "message": "Sei sicuro di voler eliminare questa regola?"
+  },
+  "options_toast_rule_updated": {
+    "message": "Regola aggiornata."
+  },
+  "options_toast_rule_deleted": {
+    "message": "Regola eliminata."
+  },
+  "options_toast_rules_saved": {
+    "message": "Regole personalizzate salvate con successo."
+  },
+  "options_toast_rule_value_required": {
+    "message": "Il valore della regola (selettore/testo) è obbligatorio."
+  },
+  "quick_action_save_later": {
+    "message": "Save to Read Later"
+  },
+  "popup_readlater_title": {
+    "message": "Read Later"
+  },
+  "popup_readlater_one": {
+    "message": "1 saved"
+  },
+  "popup_readlater_many": {
+    "message": "{count} saved"
+  },
+  "popup_readlater_view": {
+    "message": "View Queue"
+  },
+  "options_readlater_title": {
+    "message": "Read Later Queue"
+  },
+  "options_readlater_desc": {
+    "message": "Posts saved from the Facebook feed using right-click → Teach PureFusion → Save to Read Later."
+  },
+  "options_readlater_clear": {
+    "message": "Clear All"
+  },
+  "content_saved_for_later": {
+    "message": "Post saved to Read Later."
+  },
+  "content_save_later_duplicate": {
+    "message": "Already in your Read Later queue."
+  },
+  "content_save_later_error": {
+    "message": "Could not identify a post to save. Try right-clicking within a post."
+  },
+  "options_filters_post_age_label": {
+    "message": "Hide Posts Older Than"
+  },
+  "options_filters_post_age_desc": {
+    "message": "Hide feed posts older than the chosen threshold. Reads the post timestamp — posts without a detectable date are kept visible."
+  },
+  "options_filters_post_age_off": {
+    "message": "Off"
+  },
+  "options_filters_post_age_6h": {
+    "message": "6 hours"
+  },
+  "options_filters_post_age_12h": {
+    "message": "12 hours"
+  },
+  "options_filters_post_age_24h": {
+    "message": "24 hours (1 day)"
+  },
+  "options_filters_post_age_48h": {
+    "message": "2 days"
+  },
+  "options_filters_post_age_72h": {
+    "message": "3 days"
+  },
+  "options_filters_post_age_7d": {
+    "message": "7 days"
+  },
+  "options_filters_post_age_14d": {
+    "message": "14 days"
+  },
+  "options_filters_post_age_30d": {
+    "message": "30 days"
+  },
+  "options_ui_reply_only_label": {
+    "message": "Reply-Only Mode"
+  },
+  "options_ui_reply_only_desc": {
+    "message": "Collapse post bodies in the feed — hides post text and attached stories, leaving only the comment threads visible. Useful for cutting through engagement-bait without seeing the inflammatory content."
+  }
 }

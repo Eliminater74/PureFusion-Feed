@@ -38,7 +38,7 @@
     "message": "Filtros Rápidos"
   },
   "popup_hide_sponsored_posts": {
-    "message": "Ocultar Publicaciones Patrocinadas"
+    "message": "Enhanced Ad Filter"
   },
   "popup_hide_sponsored_posts_desc": {
     "message": "Detección por etiqueta — desactivada por defecto"
@@ -59,7 +59,7 @@
     "message": "Bloquear anuncios (señales de infraestructura)"
   },
   "options_filters_removeSponsored": {
-    "message": "Ocultar publicaciones patrocinadas (detección de etiquetas)"
+    "message": "Enhanced Ad Filter (label detection)"
   },
   "popup_hide_suggested": {
     "message": "Ocultar Sugeridos/PYMK"
@@ -929,7 +929,7 @@
     "message": "Esta mini vista previa se actualiza al cambiar el tema y la escala de fuente."
   },
   "options_theme_preview_chip_filtered": {
-    "message": "Patrocinado oculto"
+    "message": "Ads Filtered"
   },
   "options_theme_preview_chip_score": {
     "message": "Puntuación PF 88"
@@ -1551,7 +1551,7 @@
     "message": "Bloquear Anuncios"
   },
   "inpage_modal_sponsored": {
-    "message": "Ocultar Publicaciones Patrocinadas"
+    "message": "Enhanced Ad Filter"
   },
   "inpage_modal_sugg": {
     "message": "Ocultar Sugeridos"
