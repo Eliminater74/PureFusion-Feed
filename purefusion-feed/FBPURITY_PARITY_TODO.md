@@ -181,7 +181,77 @@ Status key: **DONE** = complete and stable | **DONE+** = complete but intentiona
 
 ## Remaining Work (Priority Order)
 
-**No phases currently queued.**
+**No phases currently queued from the parity roadmap.**
+
+---
+
+## Code Quality & Performance Audit Queue
+
+*Added 2026-05-04 from full codebase audit. Tackle in order — do not skip ahead.*
+
+### Tier 1 — Performance (Highest Real-World Impact)
+
+- 🔲 **Audit-01 (Phase 71): ESLint + Prettier Setup** — Add `.eslintrc.json` and `.prettierrc` at repo root. Configure ESLint with `eslint:recommended` + browser globals (`chrome`, `window`). Add a `scripts/lint.py` wrapper that runs ESLint over `purefusion-feed/src/`. Low effort, high catch rate for silent bugs (unused vars, missing returns in async functions, inconsistent error handling). *Do this first — it gates all subsequent code work.*
+
+- 🔲 **Audit-02 (Phase 72): build_release.py Script** — New `scripts/build_release.py`: validates that all version strings across manifest + HTML + README are consistent, zips `purefusion-feed/` to `purefusion-feed-vX.Y.Z-YYYYMMDD.zip`, prints SHA256 hash of the zip. Replaces the current manual zip step and prevents packaging mistakes (shipping with wrong version badge, etc.). Add `scripts/requirements.txt` (`Pillow>=9.0`) for `make_icons.py`/`resize_icons.py` dependencies.
+
+- 🔲 **Audit-03 (Phase 73): Shared Node Dispatch — Eliminate Parallel DOM Scans** — Currently `cleaner.js`, `predictor.js`, `wellbeing.js`, and `ui-tweaks.js` each independently call `querySelectorAll` over the same nodes when the observer fires. Refactor `observer.js` to call a single `dispatchNodesToModules(nodes)` function in `main.js` that fans out to all registered modules in sequence within one DOM pass. Estimated ~60–75% reduction in DOM query work per mutation batch.
+
+- 🔲 **Audit-04 (Phase 74): Observer ↔ Pipeline Backpressure** — Observer dispatches up to 260 nodes/batch; pipeline in `main.js` caps at 220 nodes and 14ms. These limits don't coordinate — if the pipeline is backed up, the observer keeps queuing. Add a `_pipelineBusy` flag in `main.js`; observer checks it before dispatching and holds its batch in a pending queue. Prevents scroll-lag spikes when a large batch of posts loads simultaneously.
+
+- 🔲 **Audit-05 (Phase 75): Lazy-Load diagnostics.js** — `diagnostics.js` (1,538 lines) is injected on every Facebook page load even for users who never open the diagnostic panel (`Alt+Shift+H`). Move it out of the manifest content_scripts list and into a dynamic `import()` triggered only when the user first presses `Alt+Shift+H`. Saves ~1,538 lines of parse + execute cost on every page load.
+
+- 🔲 **Audit-06 (Phase 76): WeakSet Tracking Audit** — Audit every content script module for consistent `_processedNodes` WeakSet usage. Any module that re-processes already-seen nodes on every mutation wastes CPU. Document which modules have it, add it where missing. Likely candidates: `wellbeing.js`, `social-tools.js`, `notifications.js`.
+
+- 🔲 **Audit-07 (Phase 77): Interval → Observer-Driven Conversion** — Identify all `setInterval` calls in content scripts used for periodic DOM re-checks. Convert each to observer-triggered callbacks (fire on DOM change, not on a timer). Reduces idle CPU use when the user isn't scrolling. Audit `wellbeing.js` and `inpage-ui.js` first.
+
+- 🔲 **Audit-08 (Phase 78): Storage Write Centralization** — Audit all content scripts for direct `chrome.storage.local.set()` calls that bypass `PF_Storage`. Funnel all writes through `PF_Storage.setLocalData()` so the debounce logic applies universally. Prevents storage API hammering when multiple modules write in rapid succession.
+
+---
+
+### Tier 2 — Code Quality & Maintainability
+
+- 🔲 **Audit-09 (Phase 79): Split cleaner.js (3,563 lines)** — Break into four focused files: `cleaner-core.js` (orchestration + batching + queue management), `cleaner-ads.js` (ad/sponsored detection logic), `cleaner-content.js` (post type + story + image subject filters + dedup + age filter), `cleaner-undo.js` (undo chip injection + restore logic). `main.js` registers all four. No behavior changes — pure structural split.
+
+- 🔲 **Audit-10 (Phase 80): Split predictor.js (2,777 lines)** — Break into three focused files: `predictor-engine.js` (engagement scoring + content classification + trend analysis), `predictor-sources.js` (blocklist/allowlist CRUD + storage sync), `predictor-ui.js` (insight chip rendering + badge injection + friend activity). No behavior changes — pure structural split.
+
+- 🔲 **Audit-11 (Phase 81): window.__PF Namespace** — All modules currently attach directly to `window` (`window.PF_Cleaner`, `window.PF_Storage`, etc.). This risks collision with any FB page script that happens to use the same property name. Migrate all modules to a single `window.__PF` namespace object (`window.__PF.Cleaner`, `window.__PF.Storage`, etc.) and update all cross-module references. Low risk of behavior change; eliminates namespace collision risk entirely.
+
+- 🔲 **Audit-12 (Phase 82): Module Load-Order Guards** — The manifest relies on implicit script load order (21 JS files in a specific sequence). If the order is ever changed, the extension silently breaks. Add an explicit guard at the top of each module that depends on another: `if (!window.__PF?.Helpers) throw new Error('PF: helpers not loaded')`. These guards surface load-order bugs immediately during development instead of producing silent failures in production.
+
+- 🔲 **Audit-13 (Phase 83): bump_version.py Hardening** — Add `--verify` mode: after a bump, grep all source files for the old version string and warn if any are found (catches newly added files the script doesn't know about). Add `--list-files` mode: print the list of files the script will touch without making any changes. Both flags cost ~30 lines of Python and prevent silent version drift.
+
+---
+
+### Tier 3 — Architecture & Robustness
+
+- 🔲 **Audit-14 (Phase 84): Unit Tests — Python Scripts** — Add `scripts/tests/` folder with `pytest`-based tests for `bump_version.py`: test that `--patch`, `--minor`, `--major`, `--set X.Y.Z` all produce correct version strings; test that `--dry-run` writes nothing; test that all 7 target files are updated. Zero risk — pure Python, no extension code touched. Run with `pytest scripts/tests/`.
+
+- 🔲 **Audit-15 (Phase 85): Unit Tests — Core JS Logic** — Set up a minimal Node.js test harness (no bundler needed — just `node --experimental-vm-modules`) for pure-function logic in content scripts. Priority targets: `predictor.js` engagement scoring formula, `cleaner.js` `_extractPostTimestamp()`, `helpers.js` utility functions, `storage.js` `_deepMerge()` and `_runSchemaMigrations()`. Goal: ~20 tests covering the highest-risk pure functions.
+
+- 🔲 **Audit-16 (Phase 86): GitHub Actions CI** — Add `.github/workflows/ci.yml`: on every PR, run ESLint over `purefusion-feed/src/`, run `pytest scripts/tests/`, and run `bump_version.py --verify` to confirm no version drift. No deployment step needed — just a green/red gate on PRs. Setup cost: ~40 lines of YAML.
+
+---
+
+### Tier 4 — Features & UX
+
+- 🔲 **Audit-17 (Phase 87): Update Notification on Install** — In `service-worker.js` `onInstalled` handler, when `reason === 'update'`, set a `pf_pending_update_notice` flag in local storage with the new version string. Popup reads this flag on open and shows a one-time amber banner ("Updated to v2.1.2 — see what's new →" linking to the CHANGELOG). Flag cleared after display. Keeps users aware of improvements they're already getting.
+
+- 🔲 **Audit-18 (Phase 88): Cumulative Stats Counter** — Extend `_sessionStats` in `main.js` to also increment a persistent `pf_lifetime_stats` counter in `chrome.storage.local` (ads blocked + spam hidden totals, plus a `firstInstall` date). Popup shows a small "Total since install" line beneath the session counters. Weekly and monthly breakdown optional in a future phase. Surfaces the extension's long-term value to the user.
+
+- 🔲 **Audit-19 (Phase 89): Custom Preset Save/Export** — Add a "Save as Preset" button to the options page Feed Mode Presets section. User names the preset; it's stored as a JSON snapshot in `chrome.storage.local` under `pf_custom_presets`. Up to 5 named custom slots. Export a preset as a shareable `.json` file (same format as the enhanced backup but preset-only). Load preset from file. Power-user feature with high perceived value.
+
+- 🔲 **Audit-20 (Phase 90): Keyboard Shortcut Discoverability** — Add a "Keyboard Shortcuts" section to the popup footer (collapsible, closed by default) listing: `Alt+Shift+F` (Distraction-Free Mode), `Alt+Shift+D` (In-page Dashboard), `Alt+Shift+H` (Diagnostics Panel), `Alt+Shift+R` (Daily Feed Report). Also add the same list as a card in Options → UI Tweaks tab. Zero new functionality; pure discoverability improvement for existing features.
+
+- 🔲 **Audit-21 (Phase 91): Return Path to Welcome Page** — Add an "Open Welcome / Setup Guide" link button in Options → Data & Backup tab. Opens `src/welcome/welcome.html` in a new tab. Users who reset to defaults or reinstall can re-run the onboarding flow without knowing the internal URL.
+
+---
+
+### Tier 5 — Developer Experience & Scripts
+
+- 🔲 **Audit-22 (Phase 92): .gitignore Cleanup** — Current `.gitignore` lists individual files inside `TEMP/` instead of ignoring the folder. Replace with `TEMP/`, `*.zip`, `*.crx`, `*.pem`, and `__pycache__/` patterns. Also verify `purefusion-feed.zip` (currently in root) is excluded. Keeps the repo clean as new build artifacts appear.
+
+---
 
 ### Deferred — Auto Comment Preview v3.1 — Real Comment Data
 
