@@ -1,20 +1,43 @@
-TEMP/38.4.0.0_1/background.js
-TEMP/38.4.0.0_1/fbp-16x16.png
-TEMP/38.4.0.0_1/fbp-48x48.png
-TEMP/38.4.0.0_1/fbp-128x128.png
-TEMP/38.4.0.0_1/fbp-info.html
-TEMP/38.4.0.0_1/fbp-info.js
-TEMP/38.4.0.0_1/manifest.json
-TEMP/38.4.0.0_1/script.js
-TEMP/38.4.0.0_1/_metadata/computed_hashes.json
-TEMP/38.4.0.0_1/_metadata/verified_contents.json
-TEMP/Extension - Shortcut.lnk
-purefusion-feed.pem
-purefusion-feed.crx
-purefusion-feed.zip
-# Hidden tool/editor config directories
+# ─── Build Artifacts ──────────────────────────────────────────────────────────
+TEMP/
+*.zip
+*.crx
+*.pem
+
+# ─── Node / NPM ───────────────────────────────────────────────────────────────
+node_modules/
+package-lock.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ─── Python ───────────────────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+
+# ─── Hidden Tool / AI / Editor Config ─────────────────────────────────────────
 .claude/
 .opencode/
 .sixth/
 .vscode/
-node_modules
+.idea/
+*.suo
+*.user
+
+# ─── OS Junk ──────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+*.lnk
+
+# ─── Secrets & Env ────────────────────────────────────────────────────────────
+.env
+.env.*
+*.key
+*.secret
+
+# ─── Logs & Debug ─────────────────────────────────────────────────────────────
+*.log
+logs/
+debug/
