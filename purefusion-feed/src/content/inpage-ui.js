@@ -9,7 +9,7 @@ class PF_InPageUI {
     constructor(settings) {
         this.settings = settings;
         this.isOpen = false;
-        this.fabDockIntervalId = null;
+        this.fabDockObserver = null;
         this.boundVisibilityHandler = null;
         this.boundOpenAdvancedSettingsHandler = null;
         this.pendingAdvancedNavigation = null;
@@ -179,28 +179,45 @@ class PF_InPageUI {
     }
 
     _startFabDockingLoop() {
-        if (this.fabDockIntervalId) return;
+        if (this.fabDockObserver) return;
 
-        this.fabDockIntervalId = setInterval(() => {
-            this._dockFabIntoHeader();
-        }, 2000);
+        this._dockFabIntoHeader();
+        this._attachFabDockObserver();
 
         this.boundVisibilityHandler = () => {
-            if (!document.hidden) {
-                this._dockFabIntoHeader();
-            }
+            if (!document.hidden) this._dockFabIntoHeader();
         };
 
         document.addEventListener('visibilitychange', this.boundVisibilityHandler);
         window.addEventListener('beforeunload', () => this._stopFabDockingLoop(), { once: true });
+    }
 
-        this._dockFabIntoHeader();
+    _attachFabDockObserver() {
+        if (this.fabDockObserver) this.fabDockObserver.disconnect();
+
+        const banner = document.querySelector('[role="banner"]');
+        if (banner) {
+            // Narrow observation: only the header itself, not the entire document.
+            // Fires when FB's SPA re-renders [role="banner"] (page navigation) and
+            // the prepended FAB element is ejected by React reconciliation.
+            this.fabDockObserver = new MutationObserver(() => this._dockFabIntoHeader());
+            this.fabDockObserver.observe(banner, { childList: true, subtree: true });
+        } else {
+            // Banner not yet in DOM — watch body (shallow, not subtree) for it to appear.
+            this.fabDockObserver = new MutationObserver(() => {
+                if (document.querySelector('[role="banner"]')) {
+                    this._dockFabIntoHeader();
+                    this._attachFabDockObserver(); // switch to narrow banner observation
+                }
+            });
+            this.fabDockObserver.observe(document.body, { childList: true });
+        }
     }
 
     _stopFabDockingLoop() {
-        if (this.fabDockIntervalId) {
-            clearInterval(this.fabDockIntervalId);
-            this.fabDockIntervalId = null;
+        if (this.fabDockObserver) {
+            this.fabDockObserver.disconnect();
+            this.fabDockObserver = null;
         }
         if (this.boundVisibilityHandler) {
             document.removeEventListener('visibilitychange', this.boundVisibilityHandler);

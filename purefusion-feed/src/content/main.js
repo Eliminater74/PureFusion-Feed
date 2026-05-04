@@ -19,6 +19,8 @@ class PureFusionApp {
         this.quickContextCaptureBound = false;
         this._sessionStats = { ads: 0, spam: 0 };
         this._sessionStatsFlushTimer = null;
+        this._pipelineBusy = false;
+        this._pendingPipelineNodes = [];
     }
 
     async boot() {
@@ -44,13 +46,17 @@ class PureFusionApp {
             this.messengerAI = new window.PF_MessengerAI(initialSettings);
             this.marketplaceFilter = new window.PF_MarketplaceFilter(initialSettings);
             this.inpageUI = new window.PF_InPageUI(initialSettings);
-            this.diagnostics = new window.PF_Diagnostics(initialSettings);
+            this.diagnostics = null; // lazy — created on first Alt+Shift+H or when enabled in settings
             this.observer = new window.PF_Observer();
 
             // Set up our centralized event bus listeners
             this.setupEventListeners();
 
             this._syncModuleSettings();
+
+            // Auto-init diagnostics only when the user has it enabled in settings.
+            // Otherwise it is created lazily on first Alt+Shift+H press.
+            if (initialSettings?.diagnostics?.enabled) this._ensureDiagnostics();
 
             // Lifecycle guard: detect extension invalidation via port disconnect
             this._startLifecycleGuard();
@@ -63,7 +69,7 @@ class PureFusionApp {
                 this.feedManager.applyDocumentLevelTweaks();
                 this.uiTweaks.applyDocumentLevelTweaks();
                 this._applyNavigationHardening();
-                this.diagnostics.applyDocumentLevelTweaks();
+                if (this.diagnostics) this.diagnostics.applyDocumentLevelTweaks();
                 this.commentPreview.sweepDocument();
                 if (this.llmFeatures) this.llmFeatures.sweepDocument();
                 if (this.predictor) this.predictor.sweepDocument();
@@ -138,6 +144,17 @@ class PureFusionApp {
             let blockProcessing = false;
             if (this.wellbeing) blockProcessing = this.wellbeing.applyScrollStopper(addedNodes);
             if (blockProcessing) return; // Drop processing payload
+
+            // Backpressure: if a pipeline is still running its deferred slices, queue
+            // these nodes rather than starting an overlapping second pipeline.
+            if (this._pipelineBusy) {
+                const cap = this.maxPipelineNodesPerBatch * 2;
+                for (const n of addedNodes) {
+                    if (this._pendingPipelineNodes.length >= cap) break;
+                    this._pendingPipelineNodes.push(n);
+                }
+                return;
+            }
 
             this._runNodeProcessorsWithBudget(addedNodes);
         });
@@ -234,6 +251,25 @@ class PureFusionApp {
         });
 
         this._setupQuickActionContextCapture();
+
+        // Alt+Shift+H: open/close diagnostics overlay on demand (lazy-loads the module).
+        document.addEventListener('keydown', (e) => {
+            if (!e.altKey || !e.shiftKey || e.key !== 'H') return;
+            this._ensureDiagnostics();
+            if (!this.diagnostics) return;
+            const diagCfg = this.diagnostics.settings?.diagnostics || {};
+            const showing = !!(diagCfg.enabled && diagCfg.showOverlay);
+            this.diagnostics.updateSettings({
+                ...this.diagnostics.settings,
+                diagnostics: { ...diagCfg, enabled: true, showOverlay: !showing }
+            });
+            this.diagnostics.applyDocumentLevelTweaks();
+        }, true);
+    }
+
+    _ensureDiagnostics() {
+        if (this.diagnostics || !window.PF_Diagnostics) return;
+        this.diagnostics = new window.PF_Diagnostics(this.settings);
     }
 
     _setupQuickActionContextCapture() {
@@ -598,23 +634,27 @@ class PureFusionApp {
     }
 
     _runNodeProcessorsWithBudget(nodes) {
+        this._pipelineBusy = true;
         const processors = [
-            { name: 'cleaner', run: () => this.cleaner && this.cleaner.sweepNodes(nodes) },
-            { name: 'uiTweaks', run: () => this.uiTweaks && this.uiTweaks.applyToNodes(nodes) },
-            { name: 'predictor', run: () => this.predictor && this.predictor.applyToNodes(nodes) },
-            { name: 'commentPreview', run: () => this.commentPreview && this.commentPreview.applyToNodes(nodes) },
-            { name: 'llmFeatures', run: () => this.llmFeatures && this.llmFeatures.applyToNodes(nodes) },
-            { name: 'messengerAI', run: () => this.messengerAI && this.messengerAI.applyToNodes(nodes) },
-            { name: 'marketplaceFilter', run: () => this.marketplaceFilter && this.marketplaceFilter.applyToNodes(nodes) },
-            { name: 'notifControls', run: () => this.notifControls && this.notifControls.applyToNodes(nodes) },
-            { name: 'diagnostics', run: () => this.diagnostics && this.diagnostics.applyToNodes(nodes) }
+            { name: 'cleaner',          run: () => this.cleaner          && this.cleaner.sweepNodes(nodes) },
+            { name: 'uiTweaks',         run: () => this.uiTweaks         && this.uiTweaks.applyToNodes(nodes) },
+            { name: 'predictor',        run: () => this.predictor        && this.predictor.applyToNodes(nodes) },
+            { name: 'commentPreview',   run: () => this.commentPreview   && this.commentPreview.applyToNodes(nodes) },
+            { name: 'llmFeatures',      run: () => this.llmFeatures      && this.llmFeatures.applyToNodes(nodes) },
+            { name: 'messengerAI',      run: () => this.messengerAI      && this.messengerAI.applyToNodes(nodes) },
+            { name: 'marketplaceFilter',run: () => this.marketplaceFilter && this.marketplaceFilter.applyToNodes(nodes) },
+            { name: 'notifControls',    run: () => this.notifControls    && this.notifControls.applyToNodes(nodes) },
+            { name: 'diagnostics',      run: () => this.diagnostics      && this.diagnostics.applyToNodes(nodes) }
         ];
 
         this._runNodeProcessorsWithBudgetSlice(nodes, processors, 0);
     }
 
     _runNodeProcessorsWithBudgetSlice(nodes, processors, startIndex) {
-        if (!Array.isArray(processors) || startIndex >= processors.length) return;
+        if (!Array.isArray(processors) || startIndex >= processors.length) {
+            this._onPipelineDone();
+            return;
+        }
 
         const sliceStart = this._pipelineNow();
 
@@ -643,12 +683,28 @@ class PureFusionApp {
                 });
 
                 setTimeout(() => {
-                    if (!this.isEnabled()) return;
+                    if (!this.isEnabled()) {
+                        this._onPipelineDone();
+                        return;
+                    }
                     this._runNodeProcessorsWithBudgetSlice(nodes, processors, i + 1);
                 }, 0);
 
                 return;
             }
+        }
+
+        this._onPipelineDone();
+    }
+
+    _onPipelineDone() {
+        this._pipelineBusy = false;
+        if (this._pendingPipelineNodes.length === 0) return;
+
+        const pending = this._pendingPipelineNodes.splice(0);
+        const prepared = this._preparePipelineNodes(pending);
+        if (prepared.length > 0) {
+            this._runNodeProcessorsWithBudget(prepared);
         }
     }
 

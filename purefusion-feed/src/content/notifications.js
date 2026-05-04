@@ -10,7 +10,7 @@ class PF_NotificationControls {
         this.settings = settings;
         this.lastDigestOpen = 0;
         this.digestIntervalId = null;
-        this.popupScanIntervalId = null;
+        this.popupScanObserver = null;
         this.isDigestClickBound = false;
         this.init();
     }
@@ -222,12 +222,16 @@ class PF_NotificationControls {
     }
 
     _startPopupScanner() {
-        if (this.popupScanIntervalId) return;
+        if (this.popupScanObserver) return;
 
-        this.popupScanIntervalId = setInterval(() => {
-            if (document.hidden) return;
-            this._scanDocumentPopups();
-        }, 1500);
+        // Watch [role="banner"] for childList changes — fires when the notification
+        // popup or search listbox opens/updates inside the header, avoiding a
+        // 1500ms polling interval that ran even while nothing was open.
+        const banner = document.querySelector('[role="banner"]') || document.body;
+        this.popupScanObserver = new MutationObserver(() => {
+            if (!document.hidden) this._scanDocumentPopups();
+        });
+        this.popupScanObserver.observe(banner, { childList: true, subtree: true });
 
         this._scanDocumentPopups();
     }
@@ -537,9 +541,9 @@ class PF_NotificationControls {
     }
 
     destroy() {
-        if (this.popupScanIntervalId) {
-            clearInterval(this.popupScanIntervalId);
-            this.popupScanIntervalId = null;
+        if (this.popupScanObserver) {
+            this.popupScanObserver.disconnect();
+            this.popupScanObserver = null;
         }
         this._clearDigestMode();
     }
