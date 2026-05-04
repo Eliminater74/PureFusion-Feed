@@ -110,7 +110,7 @@ class PF_Cleaner {
      * Run a full sweep on the entire document body (usually done on navigation end).
      */
     sweepDocument() {
-        PF_Logger.log("Running initial document sweep...");
+        PF_Logger.log('Running initial document sweep...');
         this._applyAllFilters(document.body);
         this._checkFeedRecovery();
     }
@@ -255,12 +255,12 @@ class PF_Cleaner {
         if (this.settings.filters.hideReels) this.removeReelsTray(rootNode);
         if (this.settings.filters.hideStories) this.removeStoriesTray(rootNode);
         if (this.settings.filters.hideMemories) this.removeMemoriesPosts(rootNode);
-        if (this.settings.filters.hideMarketplace) this.hideTarget(rootNode, PF_SELECTOR_MAP.marketplaceTray || '[data-pagelet*="Marketplace"]', "Marketplace Tray");
+        if (this.settings.filters.hideMarketplace) this.hideTarget(rootNode, PF_SELECTOR_MAP.marketplaceTray || '[data-pagelet*="Marketplace"]', 'Marketplace Tray');
         if (this.settings.filters.hideMarketplace) {
             // General marketplace injections in the feed often share the 'suggested' wrappers or a specific aria-label
             // For safety we catch strings here
             const marketplaceNodes = PF_Helpers.findContains(rootNode, '[role="article"]', 'Marketplace');
-            marketplaceNodes.forEach(node => this._hidePostNode(PF_Helpers.getClosest(node, PF_SELECTOR_MAP.postContainer), "Marketplace Unit"));
+            marketplaceNodes.forEach(node => this._hidePostNode(PF_Helpers.getClosest(node, PF_SELECTOR_MAP.postContainer), 'Marketplace Unit'));
         }
 
         // F.B. Purity Parity Feature: Algorithmic Friend Activity (X liked this, Y commented on this)
@@ -1147,7 +1147,7 @@ class PF_Cleaner {
             // Prefix: "3 unread Notifications", "5 Messages"
             // Colon/Dash: "Notifications: 3", "2 - Messages"
             
-            let stripped = signal
+            const stripped = signal
                 .replace(/\s*\(\d+[^)]*\)\s*$/, '') // Suffix (N)
                 .replace(/^\s*\d+[^a-z]*\s*/i, '')  // Prefix N
                 .replace(/\s*[:\-]\s*\d+\s*$/, '')  // Suffix : N or - N
@@ -1586,7 +1586,7 @@ class PF_Cleaner {
         const staticAds = rightCol.querySelectorAll('[data-pagelet="RightRailAdUnits"], [data-pagelet="EgoPane"]');
         staticAds.forEach((ad) => {
             if (this._looksLikeContactsModule(ad)) return;
-            this._hideNodeSafely(ad, "Right Rail Target");
+            this._hideNodeSafely(ad, 'Right Rail Target');
         });
 
         // 2. Deep traverse for obfuscated text injection.
@@ -1604,7 +1604,7 @@ class PF_Cleaner {
             if (this._isSponsoredLabel(el.textContent)) {
                 const targetWrap = this._findRightRailAdContainer(el, rightCol);
                 if (targetWrap && !targetWrap.dataset.pfHidden) {
-                    this._hideNodeSafely(targetWrap, "Right Rail Heuristics");
+                    this._hideNodeSafely(targetWrap, 'Right Rail Heuristics');
                 }
             }
         });
@@ -1692,7 +1692,7 @@ class PF_Cleaner {
      */
     removeReelsTray(rootNode) {
         // 1. Map Check
-        this.hideTarget(rootNode, PF_SELECTOR_MAP.reelsTray, "Reels Target Array");
+        this.hideTarget(rootNode, PF_SELECTOR_MAP.reelsTray, 'Reels Target Array');
 
         // 2. Aria-label structural scan — catches FB layouts without data-pagelet
         const ariaReels = rootNode.querySelectorAll
@@ -1813,7 +1813,7 @@ class PF_Cleaner {
      */
     removeStoriesTray(rootNode) {
         // 1. Map Check
-        this.hideTarget(rootNode, PF_SELECTOR_MAP.storiesTray, "Stories Target Array");
+        this.hideTarget(rootNode, PF_SELECTOR_MAP.storiesTray, 'Stories Target Array');
 
         // 2. Text Heuristic Check
         // Stories bar almost always contains exactly "Create story"
@@ -1824,7 +1824,7 @@ class PF_Cleaner {
                 // FB uses many nested divs, we want to find the one bounding the entire strip.
                 const storyWrap = PF_Helpers.getClosest(node, 'div[data-pagelet]') || node.parentElement.parentElement.parentElement.parentElement.parentElement;
                 if (storyWrap && !storyWrap.dataset.pfHidden) {
-                    this._hidePostNode(storyWrap, "Stories Tray Heuristic");
+                    this._hidePostNode(storyWrap, 'Stories Tray Heuristic');
                 }
             }
         });
@@ -2036,11 +2036,11 @@ class PF_Cleaner {
      */
     removeMetaAI(rootNode) {
         // 1. Top Search Bar
-        this.hideTarget(rootNode, PF_SELECTOR_MAP.metaAISearchIcon, "Meta AI Search Icon");
+        this.hideTarget(rootNode, PF_SELECTOR_MAP.metaAISearchIcon, 'Meta AI Search Icon');
         
         // 2. Messenger Sparkle & AI Chats
-        this.hideTarget(rootNode, PF_SELECTOR_MAP.metaAIMessengerSparkle, "Meta AI Messenger Sparkle");
-        this.hideTarget(rootNode, PF_SELECTOR_MAP.metaAIHeader, "Meta AI Header");
+        this.hideTarget(rootNode, PF_SELECTOR_MAP.metaAIMessengerSparkle, 'Meta AI Messenger Sparkle');
+        this.hideTarget(rootNode, PF_SELECTOR_MAP.metaAIHeader, 'Meta AI Header');
 
         // 3. Left navigation AI modules (Meta AI / Manus AI / similar)
         const leftNav = this._resolveLeftNavigationContainer(rootNode);
@@ -2123,16 +2123,16 @@ class PF_Cleaner {
         // Direct SuggestedUnit_ pagelet targeting — FB uses these for all recommended
         // content injections that aren't in a FeedUnit_ wrapper.
         rootNode.querySelectorAll('[data-pagelet^="SuggestedUnit_"]').forEach(node => {
-            this._hidePostNode(node, "Suggested Posts");
+            this._hidePostNode(node, 'Suggested Posts');
         });
 
         // Named pagelet for the primary "Suggested for you" feed injection
         const suggestedWrapper = rootNode.querySelectorAll(PF_SELECTOR_MAP.suggestedForYouWrapper);
-        suggestedWrapper.forEach(node => this._hidePostNode(node, "Suggested Posts"));
+        suggestedWrapper.forEach(node => this._hidePostNode(node, 'Suggested Posts'));
 
         if (this.settings.filters.removePYMK) {
             const pymkWrapper = rootNode.querySelectorAll(PF_SELECTOR_MAP.peopleYouMayKnow);
-            pymkWrapper.forEach(node => this._hidePostNode(node, "People You May Know"));
+            pymkWrapper.forEach(node => this._hidePostNode(node, 'People You May Know'));
         }
 
         if (this.settings.filters.removeGroupSuggestions) {
@@ -2151,7 +2151,7 @@ class PF_Cleaner {
                 targets.forEach(node => {
                     // Try to find the bounding pagelet or post container
                     const wrap = PF_Helpers.getClosest(node, 'div[data-pagelet]') || node;
-                    this._hidePostNode(wrap, "Suggested Groups");
+                    this._hidePostNode(wrap, 'Suggested Groups');
                 });
             }
         }
@@ -2343,7 +2343,7 @@ class PF_Cleaner {
             if (clickbaitRegex.test(textContent)) {
                 const postWrapper = PF_Helpers.getClosest(textContainer, PF_SELECTOR_MAP.postContainer);
                 if (postWrapper && !this._isAllowlistedPost(postWrapper, textContent.toLowerCase(), false)) {
-                    this._collapsePost(postWrapper, "Clickbait Blocked", false);
+                    this._collapsePost(postWrapper, 'Clickbait Blocked', false);
                 }
             }
         });
@@ -2408,7 +2408,7 @@ class PF_Cleaner {
                     || textContent.includes('sponsored')
                     || textContent.includes('join group')
                 ) {
-                    this._hidePostNode(postWrapper, "Friends Only Mode: Group/Page Hidden");
+                    this._hidePostNode(postWrapper, 'Friends Only Mode: Group/Page Hidden');
                     return;
                 }
             }
@@ -2416,7 +2416,7 @@ class PF_Cleaner {
             // Fundraiser hide check
             if (this.settings.filters.hideFundraisers) {
                 if (textContent.includes('fundraiser') || textContent.includes('donate')) {
-                    this._hidePostNode(postWrapper, "Fundraiser Module");
+                    this._hidePostNode(postWrapper, 'Fundraiser Module');
                 }
             }
         });

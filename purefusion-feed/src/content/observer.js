@@ -55,14 +55,14 @@ class PF_Observer {
         });
 
         this.isObserving = true;
-        PF_Logger.info("PF_Observer DOM listener attached.");
+        PF_Logger.info('PF_Observer DOM listener attached.');
     }
 
     stop() {
         if (this.observer) {
             this.observer.disconnect();
             this.isObserving = false;
-            PF_Logger.info("PF_Observer paused.");
+            PF_Logger.info('PF_Observer paused.');
         }
     }
 

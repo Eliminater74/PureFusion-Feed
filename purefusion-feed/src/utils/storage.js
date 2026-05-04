@@ -28,7 +28,7 @@ const PF_Storage = {
     async init() {
         const current = await this.getSettings();
         if (!current || Object.keys(current).length === 0) {
-            PF_Logger.info("No existing settings found, initializing defaults.");
+            PF_Logger.info('No existing settings found, initializing defaults.');
             await this.updateSettings(PF_DEFAULT_SETTINGS);
             return PF_DEFAULT_SETTINGS;
         }

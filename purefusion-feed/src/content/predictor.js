@@ -479,9 +479,9 @@ class PF_Predictor {
         // WITHOUT destroying Facebook's React Virtual DOM hooks.
         const feedWrapper = PF_Helpers.getClosest(postNode, '[role="feed"]');
         if (feedWrapper && !feedWrapper.dataset.pfFlexReady) {
-            feedWrapper.dataset.pfFlexReady = "true";
-            feedWrapper.style.display = "flex";
-            feedWrapper.style.flexDirection = "column"; 
+            feedWrapper.dataset.pfFlexReady = 'true';
+            feedWrapper.style.display = 'flex';
+            feedWrapper.style.flexDirection = 'column'; 
         }
 
         // CSS flex order: lower numbers appear first. 
@@ -614,7 +614,7 @@ class PF_Predictor {
             let rageHits = 0;
             const tLower = textContent.toLowerCase();
             
-            for (let word of rageWords) {
+            for (const word of rageWords) {
                 if (tLower.includes(word)) rageHits++;
             }
 
@@ -622,7 +622,7 @@ class PF_Predictor {
                 // High outrage vocabulary found directly in the text! 
                 // Severely penalize it to break engagement farming.
                 score -= 40; 
-                postNode.dataset.pfRagebait = "true";
+                postNode.dataset.pfRagebait = 'true';
                 reasonSignals.push({ short: '-40 ragebait', detail: `-40 ragebait signal (${rageHits} trigger terms)` });
             }
 
@@ -642,7 +642,7 @@ class PF_Predictor {
 
             if (baitHits > 0) {
                 score -= 30;
-                postNode.dataset.pfEngagementBait = "true";
+                postNode.dataset.pfEngagementBait = 'true';
                 reasonSignals.push({ short: '-30 engagement-bait', detail: `-30 engagement manipulation pattern detected (${baitHits} matches)` });
             }
         }
@@ -810,7 +810,7 @@ class PF_Predictor {
         let scoreColor = '#aaaaaa';
         let flair = '';
 
-        if (postNode.dataset.pfRagebait === "true") {
+        if (postNode.dataset.pfRagebait === 'true') {
             scoreColor = '#ff4444'; 
             flair = ' ⚠️ Rage-Bait';
         } else if (score >= this.settings.predictions.highThreshold) {
@@ -848,7 +848,7 @@ class PF_Predictor {
         // Find a safe place to inject inline (Header area near Author)
         const authorNodes = postNode.querySelectorAll('h3, h4, strong');
         if (authorNodes && authorNodes.length > 0) {
-            let container = authorNodes[0];
+            const container = authorNodes[0];
             // Walk up safely if needed, or simply append after the strong tag
             container.parentElement.appendChild(badge);
         } else {
@@ -943,17 +943,17 @@ class PF_Predictor {
         const chipContentConf = String(postNode.dataset.pfContentConfidence || '').trim();
         const showClassification = (chipContentType && chipContentType !== 'Personal' && chipContentConf !== 'Low') || authorAllowlisted;
         const trustedBadge = authorAllowlisted
-            ? `<span class="pf-insight-trusted-badge">Trusted Source</span>`
+            ? '<span class="pf-insight-trusted-badge">Trusted Source</span>'
             : '';
         const classificationHtml = showClassification
-            ? `<div class="pf-insight-classification">` +
+            ? '<div class="pf-insight-classification">' +
               trustedBadge +
               (chipContentType && chipContentType !== 'Personal' && chipContentConf !== 'Low'
                   ? `<span class="pf-insight-type-badge">${this._escapeHtml(chipContentType)}</span>` +
                     `<span class="pf-insight-tone-badge">${this._escapeHtml(chipContentTone)}</span>` +
                     `<span class="pf-insight-conf-label">Confidence: ${this._escapeHtml(chipContentConf)}</span>`
                   : '') +
-              `</div>`
+              '</div>'
             : '';
 
         chip.innerHTML = `
@@ -2700,12 +2700,12 @@ class PF_Predictor {
             // Usually the first strong or h3 is the author
             return authorHeaders[0].textContent.trim();
         }
-        return "Unknown";
+        return 'Unknown';
     }
 
     _extractText(postNode) {
         const messageContainer = postNode.querySelector(PF_SELECTOR_MAP.postTextBody);
-        return messageContainer ? messageContainer.textContent : "";
+        return messageContainer ? messageContainer.textContent : '';
     }
 
     /**
@@ -2746,8 +2746,8 @@ class PF_Predictor {
 
         // Calculate Echo Chamber Metric (if top 2 authors represent > 80% of all interactions)
         let totalInteractions = 0;
-        let topCounts = [];
-        for (const [author, data] of Object.entries(this.engagementProfiles)) {
+        const topCounts = [];
+        for (const [, data] of Object.entries(this.engagementProfiles)) {
             const interactions = data.reactions + data.comments + data.clicks;
             totalInteractions += interactions;
             topCounts.push(interactions);
@@ -2759,7 +2759,7 @@ class PF_Predictor {
             const topTwo = (topCounts[0] || 0) + (topCounts[1] || 0);
             if (topTwo / totalInteractions > 0.8) {
                 isEchoChamber = true;
-                PF_Logger.warn("PF_Predictor: ⚠️ Local Echo Chamber Detected.");
+                PF_Logger.warn('PF_Predictor: ⚠️ Local Echo Chamber Detected.');
             }
         }
 

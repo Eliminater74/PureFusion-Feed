@@ -45,7 +45,7 @@ class PF_LLMEngine {
             const rawMessage = error && error.message ? String(error.message) : 'Unknown error';
             const isFetchFailure = /failed to fetch|networkerror|network request failed/i.test(rawMessage);
             if (isFetchFailure) {
-                return "⚠️ AI Error - Network or permission blocked. Re-save AI provider in settings.";
+                return '⚠️ AI Error - Network or permission blocked. Re-save AI provider in settings.';
             }
 
             const safeMessage = rawMessage.length > 110 ? `${rawMessage.slice(0, 110)}...` : rawMessage;
@@ -115,38 +115,38 @@ class PF_LLMEngine {
 
     async _callOpenAI(system, prompt) {
         const apiKey = this.settings.llm.openAIApiKey;
-        const url = "https://api.openai.com/v1/chat/completions";
+        const url = 'https://api.openai.com/v1/chat/completions';
         
         const payload = {
-            model: "gpt-4o-mini", // Cost efficient by default
+            model: 'gpt-4o-mini', // Cost efficient by default
             messages: [
-                { role: "system", content: system },
-                { role: "user", content: prompt }
+                { role: 'system', content: system },
+                { role: 'user', content: prompt }
             ],
             temperature: 0.3 // Keep it factual for summaries
         };
 
         const res = await fetch(url, {
-            method: "POST",
+            method: 'POST',
             headers: { 
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${apiKey}`
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify(payload)
         });
 
-        if (!res.ok) throw new Error("OpenAI API HTTP Error: " + res.status);
+        if (!res.ok) throw new Error('OpenAI API HTTP Error: ' + res.status);
         const data = await res.json();
         
         if (data && data.choices && data.choices.length > 0) {
             return data.choices[0].message.content;
         }
-        throw new Error("Invalid OpenAI response format.");
+        throw new Error('Invalid OpenAI response format.');
     }
 
     async _callWindowAI(system, prompt) {
         // Experimental Chrome built-in Gemini Nano API
-        if (!('ai' in window)) throw new Error("window.ai is not available.");
+        if (!('ai' in window)) throw new Error('window.ai is not available.');
         const session = await window.ai.createTextSession();
         const response = await session.prompt(`[SYSTEM]: ${system}\n[USER]: ${prompt}`);
         session.destroy();

@@ -154,7 +154,7 @@ class PF_InPageUI {
         }, { once: true });
         this.fab.appendChild(logo);
         
-        const fabLabel = chrome.i18n.getMessage("inpage_fab_title");
+        const fabLabel = chrome.i18n.getMessage('inpage_fab_title');
         const version = chrome.runtime?.getManifest?.().version;
         this.fab.title = version ? `${fabLabel} (v${version})` : fabLabel;
         
@@ -215,37 +215,37 @@ class PF_InPageUI {
         this.modalOverlay.innerHTML = `
             <div class="pf-modal">
                 <div class="pf-modal-header">
-                    <div class="pf-modal-title">${chrome.i18n.getMessage("inpage_modal_title")}</div>
+                    <div class="pf-modal-title">${chrome.i18n.getMessage('inpage_modal_title')}</div>
                     <div class="pf-close" id="pf-modal-close">&times;</div>
                 </div>
                 
                 <div class="pf-modal-row">
-                    <span>${chrome.i18n.getMessage("inpage_modal_ads")}</span>
+                    <span>${chrome.i18n.getMessage('inpage_modal_ads')}</span>
                     <input type="checkbox" id="pfm_ads" class="pf-modal-toggle" ${this.settings.filters.removeAds ? 'checked' : ''}>
                 </div>
                 <div class="pf-modal-row">
-                    <span>${chrome.i18n.getMessage("inpage_modal_sponsored")}</span>
+                    <span>${chrome.i18n.getMessage('inpage_modal_sponsored')}</span>
                     <input type="checkbox" id="pfm_sponsored" class="pf-modal-toggle" ${this.settings.filters.removeSponsored ? 'checked' : ''}>
                 </div>
                 <div class="pf-modal-row">
-                    <span>${chrome.i18n.getMessage("inpage_modal_sugg")}</span>
+                    <span>${chrome.i18n.getMessage('inpage_modal_sugg')}</span>
                     <input type="checkbox" id="pfm_sugg" class="pf-modal-toggle" ${this.settings.filters.removeSuggested ? 'checked' : ''}>
                 </div>
                 <div class="pf-modal-row">
-                    <span>${chrome.i18n.getMessage("inpage_modal_stories")}</span>
+                    <span>${chrome.i18n.getMessage('inpage_modal_stories')}</span>
                     <input type="checkbox" id="pfm_stor" class="pf-modal-toggle" ${this.settings.filters.hideStories ? 'checked' : ''}>
                 </div>
                 <div class="pf-modal-row">
-                    <span>${chrome.i18n.getMessage("inpage_modal_ai")}</span>
+                    <span>${chrome.i18n.getMessage('inpage_modal_ai')}</span>
                     <input type="checkbox" id="pfm_ai" class="pf-modal-toggle" ${this.settings.wellbeing.ragebaitDetector ? 'checked' : ''}>
                 </div>
                 <div class="pf-modal-row">
-                    <span>${chrome.i18n.getMessage("inpage_modal_gray")}</span>
+                    <span>${chrome.i18n.getMessage('inpage_modal_gray')}</span>
                     <input type="checkbox" id="pfm_gray" class="pf-modal-toggle" ${this.settings.wellbeing.grayscaleMode ? 'checked' : ''}>
                 </div>
                 
-                <button class="pf-btn-full" id="pfm_opt">${chrome.i18n.getMessage("common_open_dashboard")}</button>
-                <a href="${this.settings.supportUrl}" target="_blank" rel="noopener noreferrer" class="pf-btn-full pf-btn-support">💖 ${chrome.i18n.getMessage("common_support_developer")}</a>
+                <button class="pf-btn-full" id="pfm_opt">${chrome.i18n.getMessage('common_open_dashboard')}</button>
+                <a href="${this.settings.supportUrl}" target="_blank" rel="noopener noreferrer" class="pf-btn-full pf-btn-support">💖 ${chrome.i18n.getMessage('common_support_developer')}</a>
             </div>
         `;
         

@@ -21,7 +21,7 @@ class PureFusionMessengerApp {
             this.setupEventListeners();
             this._startLifecycleGuard();
         } catch (error) {
-            PF_Logger.error("Failed to initialize PureFusion Messenger app:", error);
+            PF_Logger.error('Failed to initialize PureFusion Messenger app:', error);
         }
     }
 
@@ -49,7 +49,7 @@ class PureFusionMessengerApp {
             chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 if (request.type === 'PF_SETTINGS_UPDATED') {
                     this.updateSettings();
-                    if (sendResponse) sendResponse({ status: "success" });
+                    if (sendResponse) sendResponse({ status: 'success' });
                     return;
                 }
 

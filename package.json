@@ -1,0 +1,15 @@
+{
+  "name": "purefusion-feed-dev",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Dev tooling for PureFusion Feed Chrome Extension",
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.0"
+  },
+  "scripts": {
+    "lint": "eslint \"purefusion-feed/src/**/*.js\"",
+    "lint:fix": "eslint \"purefusion-feed/src/**/*.js\" --fix",
+    "format": "prettier --write \"purefusion-feed/src/**/*.js\""
+  }
+}

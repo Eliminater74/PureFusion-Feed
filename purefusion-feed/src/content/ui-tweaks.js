@@ -826,7 +826,7 @@ class PF_UiTweaks {
             if (preset.font) css += `body, [role="main"], [role="feed"] { font-family: ${preset.font} !important; }\n`;
             if (preset.accent) {
                 css += `:root { --pf-custom-accent: ${preset.accent}; }\n`;
-                css += `a, [role="link"] { color: var(--pf-custom-accent) !important; }\n`;
+                css += 'a, [role="link"] { color: var(--pf-custom-accent) !important; }\n';
             }
             if (preset.text) css += `body, [role="main"], [role="feed"], [role="article"] { color: ${preset.text} !important; }\n`;
             if (preset.cardBg) css += `[role="feed"] [role="article"], [data-pagelet^="FeedUnit_"] [role="article"] { background-color: ${preset.cardBg} !important; }\n`;
@@ -844,20 +844,20 @@ class PF_UiTweaks {
         const accent = this._normalizeColor(ui.customAccentColor);
         if (accent) {
             css += `:root { --pf-custom-accent: ${accent}; }\n`;
-            css += `a, [role="link"] { color: var(--pf-custom-accent) !important; }\n`;
-            css += `[role="button"]:focus-visible, button:focus-visible { outline-color: var(--pf-custom-accent) !important; }\n`;
+            css += 'a, [role="link"] { color: var(--pf-custom-accent) !important; }\n';
+            css += '[role="button"]:focus-visible, button:focus-visible { outline-color: var(--pf-custom-accent) !important; }\n';
         }
 
         const textColor = this._normalizeColor(ui.customTextColor);
         if (textColor) {
             css += `:root { --pf-custom-text-color: ${textColor}; }\n`;
-            css += `body, [role="main"], [role="feed"], [role="article"] { color: var(--pf-custom-text-color) !important; }\n`;
+            css += 'body, [role="main"], [role="feed"], [role="article"] { color: var(--pf-custom-text-color) !important; }\n';
         }
 
         const cardBackground = this._normalizeColor(ui.customCardBackground);
         if (cardBackground) {
             css += `:root { --pf-custom-card-bg: ${cardBackground}; }\n`;
-            css += `[role="feed"] [role="article"], [data-pagelet^="FeedUnit_"] [role="article"] { background-color: var(--pf-custom-card-bg) !important; }\n`;
+            css += '[role="feed"] [role="article"], [data-pagelet^="FeedUnit_"] [role="article"] { background-color: var(--pf-custom-card-bg) !important; }\n';
         }
 
         const background = this._sanitizeBackgroundValue(ui.customBackground);

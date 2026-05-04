@@ -6,16 +6,16 @@
  */
 
 chrome.runtime.onInstalled.addListener(async (details) => {
-    if (details.reason === "install") {
-        console.log("PureFusion Feed Initialized");
+    if (details.reason === 'install') {
+        console.log('PureFusion Feed Initialized');
         // Open welcome page on first install
         chrome.tabs.create({
             url: chrome.runtime.getURL('src/welcome/welcome.html')
         });
         await setupDNRRules();
         await setupQuickActionMenus();
-    } else if (details.reason === "update") {
-        console.log("PureFusion Feed Updated");
+    } else if (details.reason === 'update') {
+        console.log('PureFusion Feed Updated');
         await setupDNRRules();
         await setupQuickActionMenus();
     }
@@ -648,7 +648,7 @@ async function setupDNRRules() {
         const result = await chrome.storage.sync.get('pf_settings');
         settings = result?.pf_settings;
     } catch (err) {
-        console.error("Failed to load settings for DNR setup:", err);
+        console.error('Failed to load settings for DNR setup:', err);
     }
 
     const isGhostModeDisabled = !settings || settings.enabled === false;
@@ -657,45 +657,45 @@ async function setupDNRRules() {
 
     const _rules = [
         {
-            "id": 1,
-            "priority": 1,
-            "action": { "type": "block" },
-            "condition": {
-                "urlFilter": "*://*.facebook.com/tr/*",
-                "resourceTypes": ["xmlhttprequest", "image"]
+            'id': 1,
+            'priority': 1,
+            'action': { 'type': 'block' },
+            'condition': {
+                'urlFilter': '*://*.facebook.com/tr/*',
+                'resourceTypes': ['xmlhttprequest', 'image']
             }
         },
         {
-            "id": 2,
-            "priority": 1,
-            "action": { "type": "block" },
-            "condition": {
-                "urlFilter": "*://*.facebook.com/ajax/bz*",
-                "resourceTypes": ["xmlhttprequest", "script"]
+            'id': 2,
+            'priority': 1,
+            'action': { 'type': 'block' },
+            'condition': {
+                'urlFilter': '*://*.facebook.com/ajax/bz*',
+                'resourceTypes': ['xmlhttprequest', 'script']
             }
         }
     ];
 
     if (hideSeen) {
         _rules.push({
-            "id": 3,
-            "priority": 1,
-            "action": { "type": "block" },
-            "condition": {
-                "urlFilter": "*/ajax/mercury/mark_read.php*",
-                "resourceTypes": ["xmlhttprequest"]
+            'id': 3,
+            'priority': 1,
+            'action': { 'type': 'block' },
+            'condition': {
+                'urlFilter': '*/ajax/mercury/mark_read.php*',
+                'resourceTypes': ['xmlhttprequest']
             }
         });
     }
 
     if (hideTyping) {
         _rules.push({
-            "id": 4,
-            "priority": 1,
-            "action": { "type": "block" },
-            "condition": {
-                "urlFilter": "*/ajax/messaging/typ.php*",
-                "resourceTypes": ["xmlhttprequest"]
+            'id': 4,
+            'priority': 1,
+            'action': { 'type': 'block' },
+            'condition': {
+                'urlFilter': '*/ajax/messaging/typ.php*',
+                'resourceTypes': ['xmlhttprequest']
             }
         });
     }
@@ -711,7 +711,7 @@ async function setupDNRRules() {
         });
         console.log(`DNR Privacy rules updated. Active rules: ${_rules.length}`);
     } catch (e) {
-        console.error("Failed to update DNR rules:", e);
+        console.error('Failed to update DNR rules:', e);
     }
 }
 

@@ -93,7 +93,7 @@ class PF_CommentFetcher {
 
     static _getDtsg() {
         // Method 1: Hidden input
-        let token = document.querySelector('input[name="fb_dtsg"]')?.value;
+        const token = document.querySelector('input[name="fb_dtsg"]')?.value;
         if (token) return token;
 
         // Method 2: Script dump (Regex)

@@ -22,12 +22,12 @@ class PureFusionApp {
     }
 
     async boot() {
-        PF_Logger.info("Booting PureFusion Feed Engine...");
+        PF_Logger.info('Booting PureFusion Feed Engine...');
 
         try {
             // Await settings load from storage abstraction
             this.settings = await PF_Storage.init();
-            PF_Logger.log("Settings successfully loaded.");
+            PF_Logger.log('Settings successfully loaded.');
 
             const initialSettings = this.getEffectiveSettings();
 
@@ -71,17 +71,17 @@ class PureFusionApp {
                 // Start MutationObserver for dynamically injected feed elements
                 this.observer.start();
             } else {
-                PF_Logger.info("PureFusion is disabled from settings.");
+                PF_Logger.info('PureFusion is disabled from settings.');
             }
 
-            PF_Logger.info("PureFusion Main initialized.", this.settings);
+            PF_Logger.info('PureFusion Main initialized.', this.settings);
 
             this._checkChronologicalEnforcement();
 
-            PF_Logger.info("PureFusion is active and monitoring.");
+            PF_Logger.info('PureFusion is active and monitoring.');
 
         } catch (error) {
-            PF_Logger.error("Failed to initialize PureFusion app: ", error);
+            PF_Logger.error('Failed to initialize PureFusion app: ', error);
         }
     }
 
@@ -95,7 +95,7 @@ class PureFusionApp {
                             && !window.location.search.includes('sk=h_chr');
                             
         if (isBareNewsfeed) {
-            PF_Logger.info("PureFusion: Chronological enforcement active. Redirecting feed...");
+            PF_Logger.info('PureFusion: Chronological enforcement active. Redirecting feed...');
             window.location.replace('/?filter=all&sk=h_chr');
         }
 
@@ -147,9 +147,9 @@ class PureFusionApp {
             try {
                 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     if (request.type === 'PF_SETTINGS_UPDATED') {
-                        PF_Logger.log("Settings update detected. Re-syncing.");
+                        PF_Logger.log('Settings update detected. Re-syncing.');
                         this.updateSettingsAndResweep();
-                        if (sendResponse) sendResponse({ status: "success" });
+                        if (sendResponse) sendResponse({ status: 'success' });
                         return;
                     }
 
@@ -193,18 +193,18 @@ class PureFusionApp {
 
                     if (request.type === 'PF_ZAP_ELEMENT') {
                         this._handleZapCommand();
-                        if (sendResponse) sendResponse({ status: "success" });
+                        if (sendResponse) sendResponse({ status: 'success' });
                         return;
                     }
 
                     if (request.type === 'PF_SAVE_FOR_LATER') {
                         this._handleSaveForLater();
-                        if (sendResponse) sendResponse({ status: "success" });
+                        if (sendResponse) sendResponse({ status: 'success' });
                         return;
                     }
                 });
             } catch (e) {
-                PF_Logger.warn("PureFusion: Extension context invalidated. Hot-reloading disabled.");
+                PF_Logger.warn('PureFusion: Extension context invalidated. Hot-reloading disabled.');
             }
         }
 
@@ -214,7 +214,7 @@ class PureFusionApp {
                 && (event.data.type === 'PF_LOCAL_SETTINGS_UPDATE' || event.data.type === 'PF_LOCAL_SETTINGS_UDPATE');
 
             if (isUpdateMessage) {
-                PF_Logger.log("In-Page Settings update detected. Resweeping.");
+                PF_Logger.log('In-Page Settings update detected. Resweeping.');
                 this.updateSettingsAndResweep();
             }
         });

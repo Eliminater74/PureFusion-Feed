@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // 1. Load Settings
-    let settings = await PF_Storage.init();
+    const settings = await PF_Storage.init();
 
     // 2. Map Elements
     const elements = {
@@ -246,10 +246,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 broadcastUpdate();
             } else {
                 elements.statusMsg.textContent = t('popup_keyword_exists', 'Keyword already exists.');
-                elements.statusMsg.style.color = "#ffaa00";
+                elements.statusMsg.style.color = '#ffaa00';
                 setTimeout(() => { 
                     elements.statusMsg.textContent = ''; 
-                    elements.statusMsg.style.color = "#4CAF50";
+                    elements.statusMsg.style.color = '#4CAF50';
                 }, 2500);
             }
         }
@@ -276,9 +276,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (
                 tabs[0]
                 && typeof tabs[0].url === 'string'
-                && (tabs[0].url.includes("facebook.com") || tabs[0].url.includes("messenger.com"))
+                && (tabs[0].url.includes('facebook.com') || tabs[0].url.includes('messenger.com'))
             ) {
-                chrome.tabs.sendMessage(tabs[0].id, { type: "PF_SETTINGS_UPDATED" });
+                chrome.tabs.sendMessage(tabs[0].id, { type: 'PF_SETTINGS_UPDATED' });
             }
         });
     }

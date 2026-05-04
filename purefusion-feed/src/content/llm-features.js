@@ -56,10 +56,10 @@ class PF_LLMFeatures {
             
             // Only inject TL;DR if post is long enough to benefit from summarization
             if (textContent.length > 260) {
-                postHost.dataset.pfTldrInjected = "true";
+                postHost.dataset.pfTldrInjected = 'true';
 
                 const btn = document.createElement('div');
-                btn.className = "pf-tldr-btn";
+                btn.className = 'pf-tldr-btn';
                 btn.style.cssText = `
                     display: inline-flex; align-items: center; 
                     background: linear-gradient(90deg, #6C3FC5, #00D4FF);
@@ -68,7 +68,7 @@ class PF_LLMFeatures {
                     margin-bottom: 8px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
                     transition: transform 0.2s;
                 `;
-                btn.innerHTML = `<span style="margin-right: 4px;">✨</span> Summarize with AI`;
+                btn.innerHTML = '<span style="margin-right: 4px;">✨</span> Summarize with AI';
                 
                 // Add hover effect
                 btn.onmouseenter = () => btn.style.transform = 'scale(1.05)';
@@ -86,7 +86,7 @@ class PF_LLMFeatures {
                         return;
                     }
                     
-                    btn.innerHTML = `<span style="margin-right: 4px;">⏳</span> Analyzing...`;
+                    btn.innerHTML = '<span style="margin-right: 4px;">⏳</span> Analyzing...';
                     btn.style.opacity = '0.7';
                     btn.style.pointerEvents = 'none';
 
@@ -194,8 +194,8 @@ class PF_LLMFeatures {
             const parent = box.closest('form') || box.parentElement;
             if (!parent || parent.dataset.pfCopilotInjected) return;
             
-            box.dataset.pfWandInjected = "true";
-            parent.dataset.pfCopilotInjected = "true";
+            box.dataset.pfWandInjected = 'true';
+            parent.dataset.pfCopilotInjected = 'true';
 
             const wand = document.createElement('div');
             wand.style.cssText = `
@@ -211,7 +211,7 @@ class PF_LLMFeatures {
 
             // Instead of absolute positioning which gets clipped, inject it safely OUTSIDE the input box
             // For FB dialogs, the input is usually deeply wrapped. Let's find the nearest large container.
-            let safeContainer = box.closest('.x1i10hfl') || box.parentElement.parentElement;
+            const safeContainer = box.closest('.x1i10hfl') || box.parentElement.parentElement;
             if (safeContainer && safeContainer.parentNode) {
                 // Insert it as a sibling AFTER the main text input cluster
                 safeContainer.parentNode.insertBefore(wand, safeContainer.nextSibling);
@@ -244,7 +244,7 @@ class PF_LLMFeatures {
 
                 wand.innerHTML = '⏳';
                 try {
-                    const systemContext = "You are a helpful social media assistant writing a short, friendly, and engaging response to the provided post. Make it sound natural, empathetic, and human. Under 2 sentences.";
+                    const systemContext = 'You are a helpful social media assistant writing a short, friendly, and engaging response to the provided post. Make it sound natural, empathetic, and human. Under 2 sentences.';
                     const draft = await this.engine.prompt(systemContext, postContext);
                     
                     // Note: Copy to clipboard because React blocks direct innerHTML manipulation on Draft.js/Lexical inputs often
@@ -269,7 +269,7 @@ class PF_LLMFeatures {
         const collapsedItems = rootNode.querySelectorAll('[data-pf-collapsed="true"]');
         collapsedItems.forEach(item => {
             if (item.dataset.pfDecoded) return;
-            item.dataset.pfDecoded = "true";
+            item.dataset.pfDecoded = 'true';
 
             // If we injected an overlay, find the "Show Anyway" button and inject a "De-Sensationalize" button
             const btnContainer = item.querySelector('button') ? item.querySelector('button').parentNode : null;
@@ -292,7 +292,7 @@ class PF_LLMFeatures {
                         const textContainer = item.querySelector(window.PF_SELECTOR_MAP.postTextBody);
                         const content = textContainer ? textContainer.textContent : '';
                         
-                        const sys = "You decode clickbait. The user provides a sensationalized, low-information headline/post. Read between the lines and state what the post is ACTUALLY about in one blunt, un-emotional sentence.";
+                        const sys = 'You decode clickbait. The user provides a sensationalized, low-information headline/post. Read between the lines and state what the post is ACTUALLY about in one blunt, un-emotional sentence.';
                         const answer = await this.engine.prompt(sys, content);
                         
                         decodeBtn.style.background = '#00D4FF';

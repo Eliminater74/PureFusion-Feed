@@ -31,8 +31,6 @@ class PF_FeedManager {
     }
 
     _enforceChronologicalSort() {
-        const currentURL = window.location.href;
-        
         // If we are on the base URL and not already sorting by recent
         // NOTE: Redirecting to ?sk=h_chr removes Stories and 'What's on your mind', so we disable this aggressive redirect per user request.
         /*

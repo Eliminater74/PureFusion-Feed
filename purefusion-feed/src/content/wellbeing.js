@@ -58,7 +58,7 @@ class PF_Wellbeing {
         if (this.settings.wellbeing.grayscaleMode) {
             document.documentElement.style.setProperty('filter', 'grayscale(100%)', 'important');
             // To ensure photos don't flash in color during load, we slap it on the root HTML
-            PF_Logger.info("PF_Wellbeing: Grayscale Mode Activated");
+            PF_Logger.info('PF_Wellbeing: Grayscale Mode Activated');
         } else {
             document.documentElement.style.removeProperty('filter');
         }
@@ -1345,7 +1345,7 @@ class PF_Wellbeing {
         // Hide Facebook's native loading spinner aggressively so it doesn't try pushing content down anyway
         const styleBlock = document.createElement('style');
         styleBlock.id = 'pf-stopper-css';
-        styleBlock.textContent = `[role="progressbar"] { display: none !important; }`;
+        styleBlock.textContent = '[role="progressbar"] { display: none !important; }';
         document.head.appendChild(styleBlock);
 
         // Resume functionality
@@ -1356,7 +1356,7 @@ class PF_Wellbeing {
             // Reset count and unpause
             this.scrollCount = 0;
             this.isPaused = false;
-            PF_Logger.info("PF_Wellbeing: User bypassed scroll stopper.");
+            PF_Logger.info('PF_Wellbeing: User bypassed scroll stopper.');
         });
 
         PF_Logger.info(`PF_Wellbeing: Scroll stopper hit at ${this.scrollCount} posts`);
@@ -1381,7 +1381,7 @@ class PF_Wellbeing {
         `;
         
         const dot = document.createElement('div');
-        dot.style.cssText = `width: 8px; height: 8px; border-radius: 50%; background: #00D4FF; box-shadow: 0 0 8px #00D4FF;`;
+        dot.style.cssText = 'width: 8px; height: 8px; border-radius: 50%; background: #00D4FF; box-shadow: 0 0 8px #00D4FF;';
         
         const timeText = document.createElement('span');
         const sessionLabel = this._t('wellbeing_session_timer_prefix', 'Session');

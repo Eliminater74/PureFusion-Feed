@@ -70,7 +70,7 @@ const PF_Helpers = {
      * @param {HTMLElement} node 
      * @param {string} reason Optional string explaining why it was hidden (for debugging)
      */
-    hideElement(node, reason = "Filtered") {
+    hideElement(node, reason = 'Filtered') {
         if (!node) return;
         if (node.matches && node.matches('html, body, [role="main"], [role="feed"], [role="banner"], [role="navigation"], [role="complementary"]')) return;
         if (node.querySelector && (node.querySelector('[role="feed"]') || node.querySelector('[role="main"]') || node.querySelector('[role="navigation"]') || node.querySelector('[role="complementary"]'))) return;
@@ -302,8 +302,8 @@ const PF_Helpers = {
      * @returns {string} selector
      */
     generateSelector(el) {
-        if (!(el instanceof HTMLElement)) return "";
-        let path = [];
+        if (!(el instanceof HTMLElement)) return '';
+        const path = [];
         while (el.nodeType === Node.ELEMENT_NODE) {
             let selector = el.nodeName.toLowerCase();
             if (el.id) {
@@ -313,14 +313,14 @@ const PF_Helpers = {
             } else {
                 let sib = el, nth = 1;
                 while (sib = sib.previousElementSibling) {
-                    if (sib.nodeName.toLowerCase() == selector) nth++;
+                    if (sib.nodeName.toLowerCase() === selector) nth++;
                 }
-                if (nth != 1) selector += ":nth-of-type(" + nth + ")";
+                if (nth !== 1) selector += ':nth-of-type(' + nth + ')';
             }
             path.unshift(selector);
             el = el.parentNode;
         }
-        return path.join(" > ");
+        return path.join(' > ');
     }
 };
 

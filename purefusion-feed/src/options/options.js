@@ -15,8 +15,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const providerOrigins = {
-        openai: ["https://api.openai.com/*"],
-        gemini: ["https://generativelanguage.googleapis.com/*"]
+        openai: ['https://api.openai.com/*'],
+        gemini: ['https://generativelanguage.googleapis.com/*']
     };
 
     async function hasOriginPermission(origins) {
@@ -529,6 +529,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const customCssTextarea = document.getElementById('opt_uiMode_customCss');
     const customStylingToggle = document.getElementById('opt_uiMode_customStylingEnabled');
     const btnQuickModeSmart = document.getElementById('btnQuickModeSmart');
+    const btnQuickModeClean = document.getElementById('btnQuickModeClean');
+    const btnQuickModeFast = document.getElementById('btnQuickModeFast');
 
     // Rule Engine UI
     const btnAddNewRule = document.getElementById('btnAddNewRule');
@@ -1191,9 +1193,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function broadcastUpdate() {
         if (typeof chrome === 'undefined' || !chrome.tabs) return;
-        chrome.tabs.query({ url: ["*://*.facebook.com/*", "*://*.messenger.com/*"] }, (tabs) => {
+        chrome.tabs.query({ url: ['*://*.facebook.com/*', '*://*.messenger.com/*'] }, (tabs) => {
             tabs.forEach(tab => {
-                chrome.tabs.sendMessage(tab.id, { type: "PF_SETTINGS_UPDATED" });
+                chrome.tabs.sendMessage(tab.id, { type: 'PF_SETTINGS_UPDATED' });
             });
         });
     }
@@ -1321,7 +1323,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             blocklist: Array.isArray(blocklist) ? blocklist : [],
             allowlist: Array.isArray(allowlist) ? allowlist : []
         };
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backup, null, 2));
+        const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(backup, null, 2));
         const anchor = document.createElement('a');
         anchor.href = dataStr;
         anchor.download = `purefusion_backup_${dateStr}.json`;
@@ -1530,7 +1532,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (countEl) countEl.textContent = `${items.length} saved`;
 
         if (!items.length) {
-            listEl.innerHTML = `<p class="pf-source-empty pf-desc">No posts saved yet. Right-click any post on Facebook and choose "Save to Read Later".</p>`;
+            listEl.innerHTML = '<p class="pf-source-empty pf-desc">No posts saved yet. Right-click any post on Facebook and choose "Save to Read Later".</p>';
             return;
         }
 

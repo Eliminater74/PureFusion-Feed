@@ -22,7 +22,7 @@ class PF_SocialTools {
 
         // Passive mapping: check if user is on their own friends tab
         if (url.includes('/friends') && !url.includes('/friends/suggestions')) {
-            PF_Logger.info("PF_SocialTools: User is on Friends page. Passive mapping engaged.");
+            PF_Logger.info('PF_SocialTools: User is on Friends page. Passive mapping engaged.');
             this._startPassiveMapping();
         }
     }

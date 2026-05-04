@@ -1,0 +1,60 @@
+{
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "webextensions": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "script"
+  },
+  "globals": {
+    "PF_Logger": "readonly",
+    "PF_Helpers": "readonly",
+    "PF_Storage": "readonly",
+    "PF_LLMEngine": "readonly",
+    "PF_I18n": "readonly",
+    "PF_DEFAULT_SETTINGS": "readonly",
+    "PF_SELECTOR_MAP": "readonly",
+    "PF_RuleEngine": "readonly"
+  },
+  "rules": {
+    "no-unused-vars": ["warn", { "args": "none", "ignoreRestSiblings": true }],
+    "no-undef": "error",
+    "no-console": "off",
+    "eqeqeq": ["error", "always", { "null": "ignore" }],
+    "no-var": "error",
+    "prefer-const": "warn",
+    "no-duplicate-case": "error",
+    "no-empty": ["warn", { "allowEmptyCatch": true }],
+    "no-unreachable": "error",
+    "semi": ["error", "always"],
+    "quotes": ["error", "single", { "avoidEscape": true }]
+  },
+  "overrides": [
+    {
+      "files": ["purefusion-feed/src/data/*.js"],
+      "env": {
+        "commonjs": true
+      }
+    },
+    {
+      "files": ["purefusion-feed/src/background/*.js"],
+      "env": {
+        "browser": false,
+        "serviceworker": true,
+        "webextensions": true
+      },
+      "globals": {
+        "PF_Logger": "off",
+        "PF_Helpers": "off",
+        "PF_Storage": "off",
+        "PF_LLMEngine": "off",
+        "PF_I18n": "off",
+        "PF_DEFAULT_SETTINGS": "off",
+        "PF_SELECTOR_MAP": "off"
+      }
+    }
+  ],
+  "ignorePatterns": ["TEMP/", "node_modules/", "*.min.js"]
+}
