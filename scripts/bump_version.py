@@ -152,13 +152,19 @@ def _help_banner(current_version: str) -> str:
 {BOLD}Options:{RESET}
   {YELLOW}--note {DIM}"text"{RESET}     One-line summary written into CHANGELOG.md
   {YELLOW}--dry-run{RESET}          Preview every change — nothing is written
+  {YELLOW}--verify{RESET}           After bump, scan all source files for any remaining
+                     occurrences of the OLD version string. Warns about files
+                     not in the registry that may need to be added.
+  {YELLOW}--list-files{RESET}       Print the registry (all files this script updates)
+                     with current version status — write nothing.
   {YELLOW}--help{RESET}             Show this message
 
 {BOLD}Examples:{RESET}
   python scripts/bump_version.py --patch
+  python scripts/bump_version.py --patch --verify
   python scripts/bump_version.py --minor --dry-run
   python scripts/bump_version.py --set 2.0.0 --note "Complete rewrite"
-  python scripts/bump_version.py --patch --note "Fix session filter edge case"
+  python scripts/bump_version.py --list-files
 
 {BOLD}Files updated automatically:{RESET}
   {GREEN}●{RESET} manifest.json                   {DIM}("version" JSON field){RESET}
@@ -223,6 +229,132 @@ def _prepend_changelog(path: str, new_section: str, dry_run: bool) -> bool:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# --list-files helper
+# ─────────────────────────────────────────────────────────────────────────────
+def _do_list_files(registry, current_version):
+    print()
+    print(f"  {BOLD}Registry — files updated by bump_version.py{RESET}")
+    print(f"  {DIM}{'─' * 52}{RESET}")
+    ver_re = re.compile(re.escape(current_version))
+    for label, full_path, _pat in registry:
+        if not os.path.exists(full_path):
+            _skip(f"{label:<44} (file not found)")
+            continue
+        if label == "manifest.json":
+            with open(full_path, encoding="utf-8") as f:
+                found_ver = json.load(f).get("version", "")
+            marker = f"{DIM}v{found_ver}{RESET}" if found_ver == current_version else f"{RED}v{found_ver} — mismatch!{RESET}"
+            _ok(f"{label:<44} {marker}")
+        elif _pat is not None:
+            text = open(full_path, encoding="utf-8").read()
+            m = _pat.search(text)
+            found_ver = m.group(0).split("v")[-1] if m else None
+            if found_ver == current_version:
+                _ok(f"{label:<44} {DIM}v{found_ver}{RESET}")
+            elif found_ver:
+                _err(f"{label:<44} {RED}v{found_ver} — mismatch!{RESET}")
+            else:
+                _warn(f"{label:<44} {DIM}pattern not found{RESET}")
+        else:
+            # CHANGELOG — just confirm it exists
+            _ok(f"{label:<44} {DIM}(exists){RESET}")
+    print()
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# --verify helper
+# ─────────────────────────────────────────────────────────────────────────────
+_VERIFY_SKIP_DIRS  = {".git", "node_modules", "__pycache__", "TEMP", "temp",
+                      ".opencode", ".claude", ".vscode", ".idea"}
+_VERIFY_SKIP_EXTS  = {".zip", ".crx", ".pem", ".png", ".ico", ".jpg", ".jpeg",
+                      ".svg", ".woff", ".woff2", ".ttf", ".pyc", ".pyo",
+                      ".lock", ".map"}
+
+def _scan_for_version(ver, skip_dirs=_VERIFY_SKIP_DIRS, skip_exts=_VERIFY_SKIP_EXTS):
+    """Walk the repo and return a list of (fpath, line_number) for each hit."""
+    ver_re = re.compile(re.escape(ver))
+    hits = []
+    scan_roots = [_EXT_ROOT, _REPO_ROOT]
+    visited = set()
+    for root_dir in scan_roots:
+        for dirpath, dirnames, filenames in os.walk(root_dir):
+            dirnames[:] = [d for d in dirnames if d not in skip_dirs]
+            for fname in filenames:
+                ext = os.path.splitext(fname)[1].lower()
+                if ext in skip_exts:
+                    continue
+                fpath = os.path.normpath(os.path.join(dirpath, fname))
+                if fpath in visited:
+                    continue
+                visited.add(fpath)
+                try:
+                    with open(fpath, encoding="utf-8", errors="ignore") as f:
+                        text = f.read()
+                except OSError:
+                    continue
+                if ver_re.search(text):
+                    hits.append(fpath)
+    return hits
+
+
+def _do_verify(old_ver, registry):
+    """Scan every text file in the repo for the old (pre-bump) version string.
+
+    Files in the registry are expected to have had it replaced already — any
+    remaining hit is an error.  Files outside the registry that still contain
+    the old string are flagged so the developer can decide whether to add them.
+    """
+    registry_paths = {os.path.normpath(p) for _, p, _ in registry}
+    hits = _scan_for_version(old_ver)
+
+    print()
+    print(f"  {BOLD}Verify — scanning for remaining '{old_ver}' occurrences{RESET}")
+    print(f"  {DIM}{'─' * 52}{RESET}")
+
+    unregistered = [p for p in hits if p not in registry_paths]
+    registry_still = [p for p in hits if p in registry_paths]
+
+    if registry_still:
+        for p in registry_still:
+            _err(f"Registry file still has old version: {DIM}{p}{RESET}")
+
+    if unregistered:
+        for p in unregistered:
+            _warn(f"Unregistered file contains '{old_ver}': {DIM}{p}{RESET}")
+        print()
+        _warn(f"{len(unregistered)} file(s) outside the registry contain '{old_ver}'.")
+        _warn("Add them to _build_registry() in bump_version.py if they embed the version.")
+    elif not registry_still:
+        _ok(f"No files contain the old version string '{old_ver}'.")
+
+    print()
+    return len(registry_still) == 0
+
+
+def _do_verify_standalone(current_ver, registry):
+    """Standalone --verify (no bump): report any file that contains the current
+    version string but is NOT in the registry.  These are candidates to add."""
+    registry_paths = {os.path.normpath(p) for _, p, _ in registry}
+    hits = _scan_for_version(current_ver)
+
+    unregistered = [p for p in hits if p not in registry_paths]
+
+    print()
+    print(f"  {BOLD}Verify — files containing '{current_ver}' outside the registry{RESET}")
+    print(f"  {DIM}{'─' * 52}{RESET}")
+
+    if unregistered:
+        for p in unregistered:
+            _warn(f"Contains version but not in registry: {DIM}{p}{RESET}")
+        print()
+        _warn("These files embed the version string but bump_version.py will NOT update them.")
+        _warn("Add them to _build_registry() if they should be bumped automatically.")
+    else:
+        _ok(f"All files containing '{current_ver}' are in the registry. Nothing to add.")
+    print()
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Main
 # ─────────────────────────────────────────────────────────────────────────────
 def main():
@@ -252,17 +384,29 @@ def main():
         add_help=False,
     )
     group = parser.add_mutually_exclusive_group()
-    group.add_argument("--patch",   action="store_true")
-    group.add_argument("--minor",   action="store_true")
-    group.add_argument("--major",   action="store_true")
-    group.add_argument("--set",     metavar="X.Y.Z")
-    parser.add_argument("--dry-run", action="store_true")
-    parser.add_argument("--note",    metavar="TEXT")
-    parser.add_argument("--help",    action="store_true")
+    group.add_argument("--patch",      action="store_true")
+    group.add_argument("--minor",      action="store_true")
+    group.add_argument("--major",      action="store_true")
+    group.add_argument("--set",        metavar="X.Y.Z")
+    parser.add_argument("--dry-run",   action="store_true")
+    parser.add_argument("--note",      metavar="TEXT")
+    parser.add_argument("--verify",    action="store_true")
+    parser.add_argument("--list-files", action="store_true", dest="list_files")
+    parser.add_argument("--help",      action="store_true")
     args = parser.parse_args()
 
     if args.help:
         print(_help_banner(current_version))
+        sys.exit(0)
+
+    # --list-files: standalone mode — no bump needed
+    if args.list_files:
+        _do_list_files(registry, current_version)
+        sys.exit(0)
+
+    # --verify standalone (no bump command): check the current version
+    if args.verify and not any([args.patch, args.minor, args.major, args.set]):
+        _do_verify_standalone(current_version, registry)
         sys.exit(0)
 
     if not any([args.patch, args.minor, args.major, args.set]):
@@ -354,6 +498,10 @@ def main():
         if not args.note:
             print(f"  {DIM}Tip: fill in the CHANGELOG.md entry for v{new_ver} before committing.{RESET}")
     print()
+
+    # --verify: scan for any remaining old-version strings after the bump
+    if args.verify and not args.dry_run:
+        _do_verify(old_ver, registry)
 
 
 if __name__ == "__main__":
