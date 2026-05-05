@@ -71,6 +71,7 @@ jobs:
       # ── 5. Build the release zip via build_release.py ─────────────────────
       - name: Build release zip
         run: |
+          mkdir -p /tmp/release
           python scripts/build_release.py --output /tmp/release
         # build_release.py exits non-zero if version badges are inconsistent
 
