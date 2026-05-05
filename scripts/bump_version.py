@@ -300,19 +300,22 @@ def _scan_for_version(ver, skip_dirs=_VERIFY_SKIP_DIRS, skip_exts=_VERIFY_SKIP_E
 def _do_verify(old_ver, registry):
     """Scan every text file in the repo for the old (pre-bump) version string.
 
-    Files in the registry are expected to have had it replaced already — any
-    remaining hit is an error.  Files outside the registry that still contain
-    the old string are flagged so the developer can decide whether to add them.
+    Only regex-pattern files (pattern != None) are expected to have had the
+    old string replaced.  Files with pattern=None (manifest — JSON-rewritten;
+    CHANGELOG — append-only history) are excluded from the "still has old
+    version" error check.  Files outside the registry that still contain the
+    old string are flagged so the developer can decide whether to add them.
     """
-    registry_paths = {os.path.normpath(p) for _, p, _ in registry}
+    all_registry_paths = {os.path.normpath(p) for _, p, _ in registry}
+    checkable_paths = {os.path.normpath(p) for _, p, pat in registry if pat is not None}
     hits = _scan_for_version(old_ver)
 
     print()
     print(f"  {BOLD}Verify — scanning for remaining '{old_ver}' occurrences{RESET}")
     print(f"  {DIM}{'─' * 52}{RESET}")
 
-    unregistered = [p for p in hits if p not in registry_paths]
-    registry_still = [p for p in hits if p in registry_paths]
+    unregistered = [p for p in hits if p not in all_registry_paths]
+    registry_still = [p for p in hits if p in checkable_paths]
 
     if registry_still:
         for p in registry_still:
