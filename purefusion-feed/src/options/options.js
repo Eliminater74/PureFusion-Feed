@@ -1284,6 +1284,138 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    // =========================================================================
+    // Custom Presets (save / apply / export / delete / import)
+    // =========================================================================
+
+    const CUSTOM_PRESET_MAX = 5;
+    const CUSTOM_PRESET_KEY = 'pf_custom_presets';
+
+    async function loadCustomPresets() {
+        const saved = await PF_Storage.getLocalData(CUSTOM_PRESET_KEY);
+        return Array.isArray(saved) ? saved : [];
+    }
+
+    async function saveCustomPresets(presets) {
+        await PF_Storage.setLocalData(CUSTOM_PRESET_KEY, presets);
+    }
+
+    function renderCustomPresets(presets) {
+        const container = document.getElementById('pf-custom-presets-list');
+        if (!container) return;
+        container.innerHTML = '';
+        if (!presets.length) return;
+
+        presets.forEach((preset, idx) => {
+            const date = preset.savedAt ? new Date(preset.savedAt).toLocaleDateString() : '';
+            const item = document.createElement('div');
+            item.className = 'pf-custom-preset-item';
+            item.innerHTML = `
+                <span class="pf-preset-name" title="${preset.name}">${preset.name}</span>
+                <span class="pf-preset-date">${date}</span>
+                <div class="pf-preset-actions">
+                    <button class="pf-btn-xs" data-action="apply" data-idx="${idx}">Apply</button>
+                    <button class="pf-btn-xs" data-action="export" data-idx="${idx}">Export</button>
+                    <button class="pf-btn-xs pf-btn-xs-danger" data-action="delete" data-idx="${idx}">Delete</button>
+                </div>`;
+            container.appendChild(item);
+        });
+
+        container.addEventListener('click', async (e) => {
+            const btn = e.target.closest('[data-action]');
+            if (!btn) return;
+            const action = btn.dataset.action;
+            const idx = parseInt(btn.dataset.idx, 10);
+            const presets = await loadCustomPresets();
+            const preset = presets[idx];
+            if (!preset) return;
+
+            if (action === 'apply') {
+                currentSettings = mergeDeep(JSON.parse(JSON.stringify(PF_DEFAULT_SETTINGS)), preset.settings);
+                loadUIFromSettings();
+                await saveSettingsFromUI(t('options_toast_preset_applied', 'Preset applied successfully.'));
+            } else if (action === 'export') {
+                const dateStr = new Date().toISOString().slice(0, 10);
+                const safeName = preset.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                const payload = {
+                    _pfPreset: true,
+                    name: preset.name,
+                    savedAt: preset.savedAt,
+                    settings: preset.settings
+                };
+                const anchor = document.createElement('a');
+                anchor.href = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(payload, null, 2));
+                anchor.download = `purefusion_preset_${safeName}_${dateStr}.json`;
+                anchor.click();
+            } else if (action === 'delete') {
+                presets.splice(idx, 1);
+                await saveCustomPresets(presets);
+                renderCustomPresets(presets);
+                showSaveToast(t('options_toast_preset_deleted', 'Preset deleted.'));
+            }
+        }, { once: false });
+    }
+
+    // Initialize the list on load
+    loadCustomPresets().then(renderCustomPresets);
+
+    const btnSaveCustomPreset = document.getElementById('btnSaveCustomPreset');
+    const customPresetNameInput = document.getElementById('opt_custom_preset_name');
+    if (btnSaveCustomPreset && customPresetNameInput) {
+        btnSaveCustomPreset.addEventListener('click', async () => {
+            const name = customPresetNameInput.value.trim();
+            if (!name) {
+                showSaveToast(t('options_toast_preset_name_required', 'Enter a name for this preset.'), true);
+                customPresetNameInput.focus();
+                return;
+            }
+            const presets = await loadCustomPresets();
+            if (presets.length >= CUSTOM_PRESET_MAX) {
+                showSaveToast(t('options_toast_preset_max', `Maximum ${CUSTOM_PRESET_MAX} custom presets reached. Delete one first.`), true);
+                return;
+            }
+            await saveSettingsFromUI();
+            presets.push({ name, savedAt: new Date().toISOString(), settings: JSON.parse(JSON.stringify(currentSettings)) });
+            await saveCustomPresets(presets);
+            renderCustomPresets(presets);
+            customPresetNameInput.value = '';
+            showSaveToast(t('options_toast_preset_saved', `Preset "${name}" saved.`).replace('{name}', name));
+        });
+    }
+
+    const btnImportCustomPreset = document.getElementById('btnImportCustomPreset');
+    const importCustomPresetFile = document.getElementById('btnImportCustomPresetFile');
+    if (btnImportCustomPreset && importCustomPresetFile) {
+        btnImportCustomPreset.addEventListener('click', () => importCustomPresetFile.click());
+        importCustomPresetFile.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                try {
+                    const raw = JSON.parse(event.target.result);
+                    if (!raw._pfPreset || !raw.name || !raw.settings) {
+                        showSaveToast(t('options_toast_preset_invalid', 'Not a valid PureFusion preset file.'), true);
+                        return;
+                    }
+                    const presets = await loadCustomPresets();
+                    if (presets.length >= CUSTOM_PRESET_MAX) {
+                        showSaveToast(t('options_toast_preset_max', `Maximum ${CUSTOM_PRESET_MAX} custom presets reached. Delete one first.`), true);
+                        return;
+                    }
+                    presets.push({ name: raw.name, savedAt: raw.savedAt || new Date().toISOString(), settings: raw.settings });
+                    await saveCustomPresets(presets);
+                    renderCustomPresets(presets);
+                    showSaveToast(t('options_toast_preset_imported', `Preset "${raw.name}" imported.`).replace('{name}', raw.name));
+                } catch (err) {
+                    showSaveToast(t('options_toast_preset_invalid', 'Not a valid PureFusion preset file.'), true);
+                }
+                importCustomPresetFile.value = '';
+            };
+            reader.readAsText(file);
+        });
+    }
+
     if (btnApplyCustomCssSnippet && customCssSnippetSelect && customCssTextarea) {
         btnApplyCustomCssSnippet.addEventListener('click', () => {
             const selected = customCssSnippetSelect.value;

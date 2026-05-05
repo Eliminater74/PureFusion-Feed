@@ -96,6 +96,20 @@
 
                 <hr class="pf-hr">
 
+                <h3>Custom Presets</h3>
+                <p class="pf-desc">Save your current settings as a named preset (up to 5 slots). Export to share with others, or import a preset file.</p>
+                <div class="pf-setting-row auto-height">
+                    <div class="pf-inline-controls">
+                        <input type="text" id="opt_custom_preset_name" class="pf-input-text" maxlength="40" placeholder="Name this preset...">
+                        <button id="btnSaveCustomPreset" class="pf-btn pf-btn-secondary">Save Current</button>
+                        <button id="btnImportCustomPreset" class="pf-btn pf-btn-secondary">Import</button>
+                        <input type="file" id="btnImportCustomPresetFile" accept=".json" style="display:none">
+                    </div>
+                </div>
+                <div id="pf-custom-presets-list" class="pf-custom-presets-list"></div>
+
+                <hr class="pf-hr">
+
                 <h3 data-i18n="options_mode_title">Feed Experience Mode</h3>
                 <p class="pf-desc" data-i18n="options_mode_desc">Apply a persistent behavior profile on top of your saved toggles.</p>
                 <div class="pf-setting-row auto-height">
