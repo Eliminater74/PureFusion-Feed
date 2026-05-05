@@ -2,6 +2,13 @@
 
 All notable changes to PureFusion Feed are documented in this file.
 
+## v2.2.0 - 2026-05-05
+
+### Changed
+- Custom presets, lifetime stats, update banner, keyboard shortcut discoverability, load-order guards, pytest + Node.js test suites, GitHub Actions CI
+
+---
+
 ## v2.1.2 - 2026-04-23
 
 ### Changed
