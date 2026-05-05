@@ -9,6 +9,8 @@
  * Must be loaded AFTER cleaner-core.js.
  */
 
+if (!window.PF_Cleaner) throw new Error('PF: cleaner-core.js must be loaded before cleaner-ads.js');
+
 // Extends PF_Cleaner — defined in cleaner-core.js
 Object.assign(window.PF_Cleaner.prototype, {
 

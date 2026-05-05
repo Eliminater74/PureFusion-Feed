@@ -9,6 +9,8 @@
  * Must be loaded AFTER predictor-engine.js (and predictor-sources.js).
  */
 
+if (!window.PF_Predictor) throw new Error('PF: predictor-engine.js must be loaded before predictor-ui.js');
+
 // Extends PF_Predictor — defined in predictor-engine.js
 Object.assign(window.PF_Predictor.prototype, {
 
