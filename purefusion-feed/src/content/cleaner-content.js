@@ -1,475 +1,16 @@
 /**
- * PureFusion Feed - Cleaner Engine
- * 
- * Handles the logic required to identify Spam, Ads, and clutter and remove them.
- * Relies on PF_SELECTOR_MAP and settings defined by user.
+ * PureFusion Feed - Cleaner Content
+ *
+ * Extends PF_Cleaner (defined in cleaner-core.js) with all content-filter methods:
+ * story-activity filters, post-type filters, sidebar/topbar navigation filters,
+ * Reels/Stories/Memories tray removal, image subject filters, keyword filters,
+ * suggested/game/clickbait post removal, and associated helper utilities.
+ *
+ * Must be loaded AFTER cleaner-core.js.
  */
 
-class PF_Cleaner {
-    constructor(settings) {
-        this.settings = settings;
-        this.ruleEngine = new PF_RuleEngine(settings);
-        this._undoStyleInjected = false;
-        this._panicMode = false;
-        this._recoveryIntervalId = null;
-        this._reelsSeenCount = 0;
-        this._reelsTrackedNodes = new WeakSet();
-        this._reelsLimitNoticeShown = false;
-        this._lastSurfaceScopeSkipKey = '';
-        this.sponsoredTokens = [
-            'sponsored',
-            'publicidad',
-            'patrocinado',
-            'patrocinada',
-            'sponsorise',
-            'sponsorisee',
-            'sponsorizzato',
-            'gesponsert',
-            'gesponsord',   // NL
-            'sponsrad',     // SV
-            'sponsoreret',  // DA
-            'sponset',      // NO
-        ];
-        this._processedNodes = new WeakSet();
-        this._nodeQueue = [];
-        this._processingChunks = false;
-        this._seenPostIds = new Set();
-
-        this._injectUndoChipStyles();
-        this._startRecoveryWatchdog();
-    }
-
-    updateSettings(settings) {
-        const prevLimiterEnabled = !!this.settings?.wellbeing?.reelsLimiterEnabled;
-        const prevLimit = Number(this.settings?.wellbeing?.reelsSessionLimit || 3);
-        const prevDedup = !!this.settings?.filters?.deduplicatePosts;
-
-        this.settings = settings;
-        this.ruleEngine.updateSettings(settings);
-
-        const nextLimiterEnabled = !!this.settings?.wellbeing?.reelsLimiterEnabled;
-        const nextLimit = Number(this.settings?.wellbeing?.reelsSessionLimit || 3);
-
-        if (!nextLimiterEnabled || !prevLimiterEnabled || nextLimit !== prevLimit) {
-            this._resetReelsLimiterSession();
-        }
-
-        // Clear dedup history when the toggle is re-enabled so a fresh session starts.
-        if (!prevDedup && !!this.settings?.filters?.deduplicatePosts) {
-            this._seenPostIds.clear();
-        }
-    }
-
-    _injectUndoChipStyles() {
-        if (this._undoStyleInjected || document.getElementById('pf-undo-chip-styles')) return;
-
-        const style = document.createElement('style');
-        style.id = 'pf-undo-chip-styles';
-        style.textContent = `
-            .pf-hidden-chip {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                gap: 10px;
-                margin: 8px 0;
-                padding: 10px 12px;
-                border-radius: 10px;
-                border: 1px solid rgba(120, 132, 154, 0.3);
-                background: rgba(25, 29, 39, 0.88);
-                color: #e8edf8;
-                font: 600 12px/1.3 "Segoe UI Variable Text", "Segoe UI", sans-serif;
-            }
-
-            .pf-hidden-chip-actions {
-                display: inline-flex;
-                gap: 8px;
-                flex-wrap: wrap;
-            }
-
-            .pf-hidden-chip button {
-                border: 1px solid rgba(120, 132, 154, 0.4);
-                background: rgba(35, 41, 56, 0.9);
-                color: #dbe6fa;
-                border-radius: 999px;
-                padding: 4px 10px;
-                font-size: 11px;
-                font-weight: 700;
-                cursor: pointer;
-            }
-
-            .pf-hidden-chip button:hover {
-                border-color: rgba(18, 200, 220, 0.7);
-                color: #9deeff;
-            }
-        `;
-        document.head.appendChild(style);
-        this._undoStyleInjected = true;
-    }
-
-    /**
-     * Run a full sweep on the entire document body (usually done on navigation end).
-     */
-    sweepDocument() {
-        PF_Logger.log('Running initial document sweep...');
-        this._applyAllFilters(document.body);
-        this._checkFeedRecovery();
-    }
-
-    /**
-     * Sweep specific nodes recently added by the observer.
-     * @param {Array<HTMLElement>} nodes 
-     */
-    sweepNodes(nodes) {
-        if (!nodes || !nodes.length) return;
-        
-        // Push nodes into the processing queue
-        this._nodeQueue.push(...nodes);
-        
-        if (!this._processingChunks) {
-            this._startChunkedProcessing();
-        }
-    }
-
-    _startChunkedProcessing() {
-        this._processingChunks = true;
-        this._processNextChunk();
-    }
-
-    _processNextChunk() {
-        if (this._nodeQueue.length === 0) {
-            this._processingChunks = false;
-            this._checkFeedRecovery();
-            return;
-        }
-
-        const startTime = performance.now();
-        const chunkSize = 15;
-        const chunk = this._nodeQueue.splice(0, chunkSize);
-
-        for (const node of chunk) {
-            this._applyAllFilters(node);
-        }
-
-        const duration = performance.now() - startTime;
-        
-        // Report chunk metrics to diagnostics if needed
-        this._dispatchPipelineTelemetry(chunk.length, duration);
-
-        // Schedule next chunk using the browser's idle time or a microtask fallback
-        if (typeof requestIdleCallback !== 'undefined') {
-            requestIdleCallback(() => this._processNextChunk(), { timeout: 250 });
-        } else {
-            setTimeout(() => this._processNextChunk(), 4);
-        }
-    }
-
-    _dispatchPipelineTelemetry(nodeCount, duration) {
-        window.dispatchEvent(new CustomEvent('pf:pipeline_latency', {
-            detail: { nodes: nodeCount, durationMs: duration, ts: Date.now() }
-        }));
-    }
-
-    _applyAllFilters(rootNode) {
-        if (!rootNode || !rootNode.querySelectorAll) return;
-        
-        // Skip already processed atomic nodes (Posts, Ads, Feed Units)
-        // This prevents expensive recursive re-scans.
-        if (this._isProcessedNode(rootNode)) return;
-
-        this._restoreCriticalContainers();
-        if (this._panicMode) return;
-
-        if (!this._shouldApplyForCurrentSurface()) {
-            return;
-        }
-
-        // Phase 58 — Post Deduplication
-        // Run before other filters so duplicates are caught regardless of their content.
-        if (this.settings?.filters?.deduplicatePosts) {
-            const article = rootNode.matches?.('[role="article"]')
-                ? rootNode
-                : rootNode.querySelector?.('[role="article"]');
-            if (article) {
-                const postId = this._extractPostId(article);
-                if (postId) {
-                    if (this._seenPostIds.has(postId)) {
-                        const wrapper = PF_Helpers.getClosest(article, PF_SELECTOR_MAP.postContainer) || article;
-                        this._hidePostNode(wrapper, 'Duplicate Post');
-                        this._markNodeAsProcessed(rootNode);
-                        return;
-                    }
-                    this._seenPostIds.add(postId);
-                }
-            }
-        }
-
-        // Phase 61 — Post Age Filter
-        if ((this.settings?.filters?.postAgeMaxHours || 0) > 0) {
-            const article = rootNode.matches?.('[role="article"]')
-                ? rootNode
-                : rootNode.querySelector?.('[role="article"]');
-            if (article && this._filterByPostAge(article, rootNode)) return;
-        }
-
-        if (this.settings.filters.removeAds) {
-            this._removeAdsByHardSignals(rootNode);
-            this.removeRightRailAds(rootNode);
-        }
-        if (this.settings.filters.removeSponsored) {
-            this._removeSponsoredByLabels(rootNode);
-        }
-
-        // Apply Power-User Rules (Phase 12)
-        this.ruleEngine.applyRules(rootNode);
-        
-        if (this.settings.filters.removeSuggested) this.removeSuggestedPosts(rootNode);
-        if (this.settings.filters.removePageSuggestions) this.removePageSuggestions(rootNode);
-        if (this.settings.filters.removeGameInvites) this.removeGameInvitePosts(rootNode);
-
-        if (this._hasPostTypeFiltersEnabled()) {
-            this.removePostTypePosts(rootNode);
-        }
-
-        if (this._hasStoryActivityFiltersEnabled()) {
-            this.removeStoryActivityPosts(rootNode);
-        }
-
-        if (this.settings.filters.removeColoredBackgrounds) this.removeColoredBackgrounds(rootNode);
-        
-        if (this._hasSidebarVisibilityFilters()) {
-            this.removeNavigationModules(rootNode);
-        }
-
-        if (this._hasTopbarFiltersEnabled()) {
-            this.removeTopbarModules(rootNode);
-        }
-
-        // Apply "Soul-Soother" notification jewel styling
-        this._applyNotificationJewelStyle(rootNode);
-
-        if (this._hasReelsSessionLimiterEnabled()) {
-            this.applyReelsSessionLimiter(rootNode);
-        }
-        
-        // Hide features like Reels, Marketplace, Stories, Memories if toggled
-        if (this.settings.filters.hideReels) this.removeReelsTray(rootNode);
-        if (this.settings.filters.hideStories) this.removeStoriesTray(rootNode);
-        if (this.settings.filters.hideMemories) this.removeMemoriesPosts(rootNode);
-        if (this.settings.filters.hideMarketplace) this.hideTarget(rootNode, PF_SELECTOR_MAP.marketplaceTray || '[data-pagelet*="Marketplace"]', 'Marketplace Tray');
-        if (this.settings.filters.hideMarketplace) {
-            // General marketplace injections in the feed often share the 'suggested' wrappers or a specific aria-label
-            // For safety we catch strings here
-            const marketplaceNodes = PF_Helpers.findContains(rootNode, '[role="article"]', 'Marketplace');
-            marketplaceNodes.forEach(node => this._hidePostNode(PF_Helpers.getClosest(node, PF_SELECTOR_MAP.postContainer), 'Marketplace Unit'));
-        }
-
-        // F.B. Purity Parity Feature: Algorithmic Friend Activity (X liked this, Y commented on this)
-        // This targets Facebook's attempt to force unrelated posts into your feed based on what your friends interact with.
-        if (this.settings.social.hideMetaAI) {
-            this.removeMetaAI(rootNode);
-        }
-
-        // Apply advanced Clickbait filtering (Phase 10)
-        if (this.settings.wellbeing && this.settings.wellbeing.clickbaitBlocker) {
-            this.removeClickbait(rootNode);
-        }
-
-        // Apply Image Subject Filtering (FBP Parity)
-        if (this._hasImageSubjectFiltersEnabled()) {
-            this.applyImageSubjectFilters(rootNode);
-        }
-
-        // Apply keyword sweeping
-        this.applyKeywordFilters(rootNode);
-
-        // Messenger Privacy (Ghost Mode Title Suppression)
-        this._applyMessengerPrivacyFilters();
-
-        // Mark as processed
-        this._markNodeAsProcessed(rootNode);
-    }
-
-    _isProcessedNode(node) {
-        if (this._processedNodes.has(node)) return true;
-        if (node.dataset && node.dataset.pfProcessed === 'true') return true;
-        
-        // We only mark specific "Atomic" units as processed to allow containers
-        // like the feed root to be swept multiple times for children.
-        return false;
-    }
-
-    _markNodeAsProcessed(node) {
-        // Only mark atomic units or elements reasonably deep in the tree.
-        // We don't want to mark document.body or the main feed wrapper.
-        const atomicSelectors = '[role="article"], [data-pagelet*="FeedUnit"], [data-pagelet*="AdUnit"], [role="complementary"]';
-        
-        if (node.matches && node.matches(atomicSelectors)) {
-            this._processedNodes.add(node);
-            node.setAttribute('data-pf-processed', 'true');
-        }
-    }
-
-    _hasStoryActivityFiltersEnabled() {
-        if (this._panicMode) return false;
-
-        const sf = this.settings?.storyFilters;
-        if (!sf) return false;
-
-        return !!(
-            sf.hideBecameFriends
-            || sf.hideJoinedGroups
-            || sf.hideCommentedOnThis
-            || sf.hideLikedThis
-            || sf.hideAttendingEvents
-            || sf.hideSharedMemories
-            || sf.hideProfilePhotoUpdates
-            || sf.hideCoverPhotoUpdates
-            || sf.hideLifeEvents
-            || sf.hideCheckIns
-            || sf.hideMilestones
-            || sf.hideJobWorkUpdates
-            || sf.hideRelationshipUpdates
-            || sf.hideGroupActivityPosts
-        );
-    }
-
-    _hasImageSubjectFiltersEnabled() {
-        if (this._panicMode) return false;
-
-        const imageFilters = this.settings?.imageFilters;
-        if (!imageFilters || !imageFilters.enabled) return false;
-
-        return !!(
-            imageFilters.hideSports
-            || imageFilters.hideFood
-            || imageFilters.hidePets
-            || imageFilters.hideVehicles
-            || imageFilters.hideScreenshotsMemes
-            || imageFilters.hideTravelScenery
-        );
-    }
-
-    _hasSidebarVisibilityFilters() {
-        if (this._panicMode) return false;
-
-        const sidebar = this.settings?.sidebar;
-        if (!sidebar || !sidebar.enableModuleFilters) return false;
-
-        return !!(
-            sidebar.hideLeftMarketplace
-            || sidebar.hideLeftGaming
-            || sidebar.hideLeftWatch
-            || sidebar.hideLeftMemories
-            || sidebar.hideLeftMetaAI
-            || sidebar.hideLeftManusAI
-            || sidebar.hideRightTrending
-            || sidebar.hideRightContacts
-            || sidebar.hideRightMetaAIContact
-            || sidebar.hideRightManusAIContact
-            || sidebar.hideRightEvents
-            || sidebar.hideRightBirthdays
-        );
-    }
-
-    _hasPostTypeFiltersEnabled() {
-        if (this._panicMode) return false;
-
-        const filters = this.settings?.filters;
-        if (!filters) return false;
-
-        return !!(
-            filters.hideVideoPosts
-            || filters.hidePhotoPosts
-            || filters.hideLinkPosts
-            || filters.hideTextOnlyPosts
-            || filters.hideLiveVideoPosts
-            || filters.hideShareReposts
-            || filters.hidePollPosts
-        );
-    }
-
-    _getCurrentSurfaceKey() {
-        const pathname = String(window?.location?.pathname || '/').toLowerCase();
-
-        if (pathname === '/' || pathname === '/home.php') return 'home';
-        if (pathname.startsWith('/groups')) return 'groups';
-        if (pathname.startsWith('/watch')) return 'watch';
-        if (pathname.startsWith('/marketplace')) return 'marketplace';
-        return 'other';
-    }
-
-    _shouldApplyForCurrentSurface() {
-        const surfaceControls = this.settings?.surfaceControls;
-        if (!surfaceControls || !surfaceControls.enabled) {
-            this._lastSurfaceScopeSkipKey = '';
-            return true;
-        }
-
-        const surfaceKey = this._getCurrentSurfaceKey();
-        let allowed = true;
-
-        switch (surfaceKey) {
-            case 'home':
-                allowed = surfaceControls.applyHome !== false;
-                break;
-            case 'groups':
-                allowed = surfaceControls.applyGroups !== false;
-                break;
-            case 'watch':
-                allowed = surfaceControls.applyWatch !== false;
-                break;
-            case 'marketplace':
-                allowed = surfaceControls.applyMarketplace !== false;
-                break;
-            default:
-                allowed = surfaceControls.applyOther !== false;
-                break;
-        }
-
-        if (allowed) {
-            this._lastSurfaceScopeSkipKey = '';
-            return true;
-        }
-
-        const skipKey = `${surfaceKey}:${window.location.pathname}`;
-        if (skipKey !== this._lastSurfaceScopeSkipKey) {
-            this._lastSurfaceScopeSkipKey = skipKey;
-            PF_Logger.log(`Surface scope active: filters skipped on '${surfaceKey}' surface.`);
-        }
-
-        return false;
-    }
-
-    _hasTopbarFiltersEnabled() {
-        if (this._panicMode) return false;
-
-        const topbar = this.settings?.topbarFilters;
-        if (!topbar || !topbar.enabled) return false;
-
-        return !!(
-            topbar.hideHome
-            || topbar.hideFriends
-            || topbar.hideWatch
-            || topbar.hideMarketplace
-            || topbar.hideGroups
-            || topbar.hideMessenger
-            || topbar.hideNotifications
-            || topbar.hideMenu
-            || topbar.hideCreate
-            || topbar.hideGaming
-        );
-    }
-
-    _hasReelsSessionLimiterEnabled() {
-        if (this._panicMode) return false;
-        if (this.settings?.filters?.hideReels) return false;
-
-        const wellbeing = this.settings?.wellbeing;
-        if (!wellbeing) return false;
-
-        return !!wellbeing.reelsLimiterEnabled;
-    }
-
+// Extends PF_Cleaner — defined in cleaner-core.js
+Object.assign(window.PF_Cleaner.prototype, {
     removeStoryActivityPosts(rootNode) {
         const sf = this.settings?.storyFilters;
         if (!sf) return;
@@ -601,8 +142,7 @@ class PF_Cleaner {
         matchedPosts.forEach(({ node, reason }) => {
             this._hidePostNode(node, reason);
         });
-    }
-
+    },
     removePostTypePosts(rootNode) {
         const filters = this.settings?.filters;
         if (!filters) return;
@@ -671,8 +211,7 @@ class PF_Cleaner {
         matchedPosts.forEach(({ node, reason }) => {
             this._hidePostNode(node, reason);
         });
-    }
-
+    },
     removeNavigationModules(rootNode) {
         const sidebar = this.settings?.sidebar;
         if (!sidebar || !sidebar.enableModuleFilters) return;
@@ -815,8 +354,7 @@ class PF_Cleaner {
                 this._hideRightModuleByLink(rightNav, ['/events/birthdays/', '/birthdays/'], 'Right Sidebar: Birthdays');
             }
         }
-    }
-
+    },
     _resolveScopedContainer(rootNode, selector) {
         if (!selector) return null;
 
@@ -835,8 +373,7 @@ class PF_Cleaner {
         }
 
         return document.querySelector(selector);
-    }
-
+    },
     _resolveLeftNavigationContainer(rootNode) {
         const strictSelector = PF_SELECTOR_MAP.leftSidebar || '[role="navigation"][aria-label="Facebook"]';
 
@@ -852,8 +389,7 @@ class PF_Cleaner {
         if (withShortcuts) return withShortcuts;
 
         return candidates[0] || null;
-    }
-
+    },
     _isLikelyLeftNavRegion(node) {
         if (!node || !node.getBoundingClientRect) return false;
 
@@ -866,8 +402,7 @@ class PF_Cleaner {
 
         const linkCount = node.querySelectorAll('a[role="link"], a[href], [role="link"]').length;
         return linkCount >= 6;
-    }
-
+    },
     _hasShortcutsHeading(node) {
         if (!node || !node.querySelectorAll) return false;
 
@@ -896,14 +431,7 @@ class PF_Cleaner {
             const text = this._normalizeComparableText(el.textContent || '');
             return tokens.has(text);
         });
-    }
-
-    /**
-     * Resolves the main right sidebar `[role="complementary"]` container.
-     * When multiple complementary regions exist (e.g. a chat panel + the main
-     * sidebar), picks the one on the right side of the viewport rather than
-     * blindly taking the first DOM match.
-     */
+    },
     _resolveRightSidebarContainer(rootNode) {
         const selector = PF_SELECTOR_MAP.rightSidebar || '[role="complementary"]';
 
@@ -937,8 +465,7 @@ class PF_Cleaner {
         // Prefer the one furthest to the right
         candidates.sort((a, b) => b.getBoundingClientRect().left - a.getBoundingClientRect().left);
         return candidates[0];
-    }
-
+    },
     removeTopbarModules(rootNode) {
         const topbar = this.settings?.topbarFilters;
         if (!topbar || !topbar.enabled) return;
@@ -1042,8 +569,7 @@ class PF_Cleaner {
             ], 'Topbar: Gaming');
             this._hideTopbarByHrefTokens(topbarScopes, ['/gaming', '/games', '/play'], 'Topbar: Gaming');
         }
-    }
-
+    },
     _resolveTopbarBanner(rootNode) {
         const banner = this._resolveScopedContainer(rootNode, '[role="banner"]');
         if (!banner || !banner.getBoundingClientRect) return banner;
@@ -1051,8 +577,7 @@ class PF_Cleaner {
         const rect = banner.getBoundingClientRect();
         if (rect.width < 280 || rect.height < 36 || rect.height > 320) return null;
         return banner;
-    }
-
+    },
     _resolveTopbarScopes(banner) {
         if (!banner || !banner.querySelectorAll) return [];
 
@@ -1078,8 +603,7 @@ class PF_Cleaner {
         });
 
         return scopes.length ? scopes : [banner];
-    }
-
+    },
     _isLikelyTopbarScope(node, banner) {
         if (!node || !node.querySelectorAll || !banner) return false;
         if (node !== banner && !banner.contains(node)) return false;
@@ -1097,8 +621,7 @@ class PF_Cleaner {
         if (rect.top < bannerRect.top - 16 || rect.bottom > bannerRect.bottom + 28) return false;
 
         return true;
-    }
-
+    },
     _iterateTopbarScopes(scopeNodes, visitor) {
         const scopes = Array.isArray(scopeNodes) ? scopeNodes : [scopeNodes];
         const seen = new Set();
@@ -1108,8 +631,7 @@ class PF_Cleaner {
             seen.add(scopeNode);
             visitor(scopeNode);
         });
-    }
-
+    },
     _extractTopbarLabelSignals(node) {
         const signals = [];
         const seen = new Set();
@@ -1135,8 +657,7 @@ class PF_Cleaner {
         }
 
         return signals;
-    }
-
+    },
     _matchesTopbarLabels(labelSignals, normalizedLabels) {
         if (!Array.isArray(labelSignals) || !labelSignals.length) return false;
         if (!Array.isArray(normalizedLabels) || !normalizedLabels.length) return false;
@@ -1160,8 +681,7 @@ class PF_Cleaner {
                 || stripped.startsWith(`${label} `)
             );
         });
-    }
-
+    },
     _hideTopbarByHrefTokens(scopeNodes, hrefTokens, reason) {
         if (!Array.isArray(hrefTokens) || hrefTokens.length === 0) return;
 
@@ -1182,13 +702,7 @@ class PF_Cleaner {
                 this._hideNodeSafely(target, reason);
             });
         });
-    }
-
-    /**
-     * Like _hideTopbarByHrefTokens but performs an exact href match rather than
-     * a substring includes check.  Needed for the Home button whose href is
-     * simply "/" — too short and common to use as a substring token.
-     */
+    },
     _hideTopbarByExactHref(scopeNodes, exactHrefs, reason) {
         if (!Array.isArray(exactHrefs) || exactHrefs.length === 0) return;
 
@@ -1211,8 +725,7 @@ class PF_Cleaner {
                 this._hideNodeSafely(target, reason);
             });
         });
-    }
-
+    },
     _hideTopbarByAriaLabels(scopeNodes, labels, reason) {
         if (!Array.isArray(labels) || labels.length === 0) return;
 
@@ -1238,8 +751,7 @@ class PF_Cleaner {
                 this._hideNodeSafely(target, reason);
             });
         });
-    }
-
+    },
     _findTopbarHideTarget(node, scopeNode) {
         if (!node) return null;
 
@@ -1262,8 +774,7 @@ class PF_Cleaner {
         if (!inBanner) return null;
 
         return clickable;
-    }
-
+    },
     _hideLeftNavByHref(scopeNode, hrefTokens, reason) {
         if (!scopeNode || !scopeNode.querySelectorAll || !Array.isArray(hrefTokens) || hrefTokens.length === 0) return;
 
@@ -1275,8 +786,7 @@ class PF_Cleaner {
             const target = this._findCompactNavContainer(anchor, scopeNode);
             this._hideNodeSafely(target, reason);
         });
-    }
-
+    },
     _hideLeftNavByExactLabel(scopeNode, labels, reason) {
         if (!scopeNode || !scopeNode.querySelectorAll || !Array.isArray(labels) || labels.length === 0) return;
 
@@ -1294,8 +804,7 @@ class PF_Cleaner {
             const target = this._findCompactNavContainer(anchor, scopeNode);
             this._hideNodeSafely(target, reason);
         });
-    }
-
+    },
     _hideLeftAIModules(scopeNode, reason, config = {}) {
         const labels = Array.isArray(config.labels) ? config.labels : [];
         const hrefTokens = Array.isArray(config.hrefTokens) ? config.hrefTokens : [];
@@ -1337,8 +846,7 @@ class PF_Cleaner {
                 this._hideNodeSafely(target, reason);
             });
         });
-    }
-
+    },
     _findLeftNavRowContainer(entry, navScope) {
         if (!entry) return null;
 
@@ -1357,8 +865,7 @@ class PF_Cleaner {
         }
 
         return clickable;
-    }
-
+    },
     _isVisibleNavRow(node) {
         if (!node || !node.getBoundingClientRect) return false;
 
@@ -1368,8 +875,7 @@ class PF_Cleaner {
         if (rect.bottom < 0 || rect.top > window.innerHeight) return false;
 
         return true;
-    }
-
+    },
     _isLikelyLeftAIItem(text, href, labels = [], hrefTokens = []) {
         if (!text) return false;
 
@@ -1395,8 +901,7 @@ class PF_Cleaner {
         }
 
         return false;
-    }
-
+    },
     _hideRightModuleByAriaLabel(scopeNode, labels, reason) {
         if (!scopeNode || !scopeNode.querySelectorAll || !Array.isArray(labels) || labels.length === 0) return;
 
@@ -1413,8 +918,7 @@ class PF_Cleaner {
             const target = this._findRightModuleContainer(node, scopeNode);
             this._hideNodeSafely(target, reason);
         });
-    }
-
+    },
     _hideRightModuleByHeading(scopeNode, labels, reason) {
         if (!scopeNode || !scopeNode.querySelectorAll || !Array.isArray(labels) || labels.length === 0) return;
 
@@ -1433,8 +937,7 @@ class PF_Cleaner {
             const target = this._findRightModuleContainer(heading, scopeNode);
             this._hideNodeSafely(target, reason);
         });
-    }
-
+    },
     _hideRightModuleByLink(scopeNode, hrefTokens, reason) {
         if (!scopeNode || !scopeNode.querySelectorAll || !Array.isArray(hrefTokens) || hrefTokens.length === 0) return;
 
@@ -1446,8 +949,7 @@ class PF_Cleaner {
             const target = this._findRightModuleContainer(anchor, scopeNode);
             this._hideNodeSafely(target, reason);
         });
-    }
-
+    },
     _hideRightContactsByNames(scopeNode, names, reason) {
         if (!scopeNode || !scopeNode.querySelectorAll || !Array.isArray(names) || names.length === 0) return;
 
@@ -1495,8 +997,7 @@ class PF_Cleaner {
             if (!normalized.some((value) => text === value || text.startsWith(`${value} `))) return;
             hideEntry(entry);
         });
-    }
-
+    },
     _findRightModuleContainer(node, scopeNode) {
         if (!node) return null;
 
@@ -1506,8 +1007,7 @@ class PF_Cleaner {
         }
 
         return this._findCompactNavContainer(node, scopeNode);
-    }
-
+    },
     _findCompactNavContainer(node, scopeNode) {
         if (!node) return null;
 
@@ -1538,15 +1038,13 @@ class PF_Cleaner {
 
         if (node.matches && node.matches('[role="listitem"], li')) return node;
         return null;
-    }
-
+    },
     _hideNodeSafely(node, reason) {
         if (!node || node.dataset.pfHidden === 'true') return;
         if (reason && reason.startsWith('Topbar:') && !this._isReasonableTopbarTarget(node)) return;
         if (!this._isSafeHideTargetNode(node)) return;
         PF_Helpers.hideElement(node, reason);
-    }
-
+    },
     _isReasonableTopbarTarget(node) {
         if (!node || !node.getBoundingClientRect) return false;
         if (node.matches && node.matches('[role="banner"]')) return false;
@@ -1571,125 +1069,7 @@ class PF_Cleaner {
         }
 
         return true;
-    }
-
-    /**
-     * Hunt for side-rail specific ads which Facebook generates using different logic than Feed units.
-     * @param {HTMLElement} rootNode 
-     */
-    removeRightRailAds(rootNode) {
-        // Find the right column container
-        const rightCol = rootNode.matches('[role="complementary"]') ? rootNode : rootNode.querySelector('[role="complementary"]');
-        if (!rightCol) return;
-
-        // 1. Static known containers
-        const staticAds = rightCol.querySelectorAll('[data-pagelet="RightRailAdUnits"], [data-pagelet="EgoPane"]');
-        staticAds.forEach((ad) => {
-            if (this._looksLikeContactsModule(ad)) return;
-            this._hideNodeSafely(ad, 'Right Rail Target');
-        });
-
-        // 2. Deep traverse for obfuscated text injection.
-        // Driven from this.sponsoredTokens so all supported locales (EN/ES/FR/DE/IT/NL/SV/DA/NO)
-        // are covered automatically — no hardcoded locale list here.
-        const adSpans = this.sponsoredTokens.reduce((acc, token) => {
-            // Use the display-form token for findContains (case-insensitive text match).
-            // sponsoredTokens stores lowercase normalized forms so we capitalize first char
-            // to match FB's title-case label, e.g. "Gesponsord", "Sponsrad".
-            const display = token.charAt(0).toUpperCase() + token.slice(1);
-            return acc.concat(PF_Helpers.findContains(rightCol, 'span, div, h2, h3', display));
-        }, []);
-        adSpans.forEach(el => {
-            // Verify exact match to prevent false positives if someone's name contains the word
-            if (this._isSponsoredLabel(el.textContent)) {
-                const targetWrap = this._findRightRailAdContainer(el, rightCol);
-                if (targetWrap && !targetWrap.dataset.pfHidden) {
-                    this._hideNodeSafely(targetWrap, 'Right Rail Heuristics');
-                }
-            }
-        });
-    }
-
-    _findRightRailAdContainer(markerNode, rightCol) {
-        if (!markerNode) return null;
-
-        const strictPagelet = PF_Helpers.getClosest(markerNode, '[data-pagelet="RightRailAdUnits"], [data-pagelet="EgoPane"]', 8);
-        if (strictPagelet && !this._looksLikeContactsModule(strictPagelet)) {
-            return strictPagelet;
-        }
-
-        const listItem = PF_Helpers.getClosest(markerNode, '[role="listitem"], li', 6);
-        if (listItem && !this._looksLikeContactsModule(listItem) && this._isLikelyAdCardContainer(listItem)) {
-            return listItem;
-        }
-
-        let current = markerNode.parentElement;
-        let depth = 0;
-        while (current && current !== rightCol && depth < 9) {
-            if (this._looksLikeContactsModule(current)) return null;
-            if (this._isLikelyAdCardContainer(current)) return current;
-            current = current.parentElement;
-            depth += 1;
-        }
-
-        return null;
-    }
-
-    _looksLikeContactsModule(node) {
-        if (!node || !node.querySelector) return false;
-
-        // Aria-label exact match (all locale variants)
-        const contactsAriaSelector = [
-            '[aria-label="Contacts"]',
-            '[aria-label="Contactos"]',
-            '[aria-label="Kontakte"]',
-            '[aria-label="Contatti"]',
-            '[aria-label="Contacten"]',
-            '[aria-label="Kontakter"]'
-        ].join(', ');
-        if (node.querySelector(contactsAriaSelector)) return true;
-
-        // Heading text match
-        const heading = node.querySelector('h2, h3, [role="heading"]');
-        const headingText = this._normalizeComparableText(heading?.textContent || '');
-        const contactsHeadings = new Set([
-            'contacts', 'contactos', 'kontakte', 'contatti', 'contacten', 'kontakter'
-        ]);
-        if (contactsHeadings.has(headingText)) return true;
-
-        // Body text + link count heuristic
-        const text = this._normalizeComparableText((node.textContent || '').slice(0, 800));
-        if (!text) return false;
-
-        const hasContactsToken = [
-            'contacts', 'contactos', 'kontakte', 'contatti', 'contacten', 'kontakter'
-        ].some((token) => text.includes(token));
-
-        const manyLinks = node.querySelectorAll('a[role="link"], a[href]').length >= 8;
-        return hasContactsToken && manyLinks;
-    }
-
-    _isLikelyAdCardContainer(node) {
-        if (!node || !node.getBoundingClientRect) return false;
-
-        const rect = node.getBoundingClientRect();
-        if (rect.width < 140 || rect.width > 560) return false;
-        if (rect.height < 40 || rect.height > 760) return false;
-
-        const text = this._normalizeComparableText((node.textContent || '').slice(0, 900));
-        const hasSponsoredToken = this.sponsoredTokens.some((token) => text.includes(this._normalizeComparableText(token)));
-        const hasOutboundLinks = node.querySelectorAll('a[href]').length >= 1;
-        const hasMedia = !!node.querySelector('img, video, canvas');
-
-        if (this._looksLikeContactsModule(node)) return false;
-        if (hasSponsoredToken) return true;
-
-        return hasOutboundLinks && hasMedia;
-    }
-
-    /**
-     * More aggressive hunt for the Reels Tray since Facebook constantly changes the data-pagelet names.
-     */
+    },
     removeReelsTray(rootNode) {
         // 1. Map Check
         this.hideTarget(rootNode, PF_SELECTOR_MAP.reelsTray, 'Reels Target Array');
@@ -1723,8 +1103,7 @@ class PF_Cleaner {
                 }
             }
         });
-    }
-
+    },
     applyReelsSessionLimiter(rootNode) {
         const wellbeing = this.settings?.wellbeing;
         if (!wellbeing?.reelsLimiterEnabled) return;
@@ -1760,8 +1139,7 @@ class PF_Cleaner {
                 PF_Helpers.showToast(message, 'info', 4200);
             }
         });
-    }
-
+    },
     _findReelLimiterCandidates(rootNode) {
         if (!rootNode || !rootNode.querySelectorAll) return [];
 
@@ -1800,17 +1178,12 @@ class PF_Cleaner {
         });
 
         return Array.from(found).filter((node) => this._isSafeHideTargetNode(node));
-    }
-
+    },
     _resetReelsLimiterSession() {
         this._reelsSeenCount = 0;
         this._reelsTrackedNodes = new WeakSet();
         this._reelsLimitNoticeShown = false;
-    }
-
-    /**
-     * Aggressively hunts the Stories bar which lacks distinct wrapper names.
-     */
+    },
     removeStoriesTray(rootNode) {
         // 1. Map Check
         this.hideTarget(rootNode, PF_SELECTOR_MAP.storiesTray, 'Stories Target Array');
@@ -1828,142 +1201,7 @@ class PF_Cleaner {
                 }
             }
         });
-    }
-
-    /**
-     * Hunt for sponsored elements, tracking up to their feed post parent to eradicate.
-     * @param {HTMLElement} rootNode 
-     */
-    /**
-     * Hard ad-infrastructure signal scan (controlled by filters.removeAds).
-     * Only matches FB ad-exclusive href markers and testid attributes.
-     * These never appear on organic posts — zero false-positive risk.
-     */
-    _removeAdsByHardSignals(rootNode) {
-        // Step 1: Direct AdUnit_ pagelet targeting.
-        // Facebook uses [data-pagelet^="AdUnit_"] exclusively for feed ad units.
-        // Hiding the pagelet wrapper (not just the inner article) prevents blank-space
-        // artifacts and catches all ad formats — native, carousel, and video — with
-        // zero false-positive risk. No inner scan needed for these containers.
-        rootNode.querySelectorAll('[data-pagelet^="AdUnit_"]').forEach((adUnit) => {
-            if (adUnit.dataset.pfHidden) return;
-            this._hidePostNode(adUnit, 'Ad (Hard Signal)');
-        });
-
-        // Step 2: Article-level scan for ads not enclosed in an AdUnit_ pagelet.
-        // Some FB variants serve sponsored content inside FeedUnit_ wrappers with
-        // no dedicated pagelet identifier — these must be detected via inner signals.
-        rootNode.querySelectorAll('[role="article"]').forEach((article) => {
-            if (article.parentElement?.closest('[role="article"]')) return; // nested/comment
-            if (article.closest('[role="complementary"]')) return;          // sidebar
-            if (article.dataset.pfHidden) return;
-            if (article.closest('[data-pagelet^="AdUnit_"]')) return;       // handled in Step 1
-
-            const adSignal = article.querySelector([
-                // Ad explanation page links (various FB domains)
-                'a[href*="/ads/about"]',
-                'a[href*="ad_preferences"]',
-                'a[href*="about_ads"]',
-                'a[href*="adchoices"]',
-                'a[href*="adabouturl"]',
-                'a[href*="facebook.com/ads"]',
-                'a[href*="fb.com/ads"]',
-                // Content Flow Token (_cft_) in href = Facebook ad tracking parameter.
-                // FB appends this exclusively to links inside sponsored posts.
-                // Both uppercase (%5B) and lowercase (%5b) percent-encoding variants covered.
-                'a[href*="_cft_[0]"]',
-                'a[href*="_cft_%5B0%5D"]',
-                'a[href*="_cft_%5b0%5d"]',
-                // testid fallbacks — confirmed FB ad container markers.
-                '[data-testid="fbfeed_ads_native_container"]',
-                '[data-testid="ad_boundary"]',
-                // NOTE: [attributionsrc], [data-ad-rendering-role] removed —
-                // both appear on organic comment profile links, not exclusive to ads.
-            ].join(', '));
-
-            if (adSignal) this._hidePostNode(article, 'Ad (Hard Signal)');
-        });
-    }
-
-    /**
-     * Soft "Sponsored" label detection (controlled by filters.removeSponsored).
-     * Uses locale-aware text selectors, aria-labelledby, and post-level fallback.
-     * More aggressive but less precise — kept separate for independent testing/tuning.
-     *
-     * data-ad-preview scan — DISABLED.
-     * Facebook uses data-ad-preview on both ad post bodies AND comment text containers.
-     * There is no reliable way to distinguish the two without false-positive comment hiding.
-     */
-    _removeSponsoredByLabels(rootNode) {
-        let targets = [];
-
-        // 1. Standard selector / locale token heuristic
-        for (const selector of PF_SELECTOR_MAP.sponsoredIndicators) {
-            if (selector.includes(':contains')) {
-                const text = selector.match(/:contains\("([^"]+)"\)/)[1];
-                const parts = selector.split(':');
-                const baseSelector = parts[0];
-                targets = targets.concat(PF_Helpers.findContains(rootNode, baseSelector, text));
-            } else {
-                targets = targets.concat(Array.from(rootNode.querySelectorAll(selector)));
-            }
-        }
-
-        // 2a. aria-labelledby heuristic
-        // FB often uses: <span aria-labelledby="some-id"></span> ... <span id="some-id">Sponsored</span>
-        const labeledElements = rootNode.querySelectorAll('[aria-labelledby]');
-        labeledElements.forEach(el => {
-            const labelId = el.getAttribute('aria-labelledby');
-            const labelNode = document.getElementById(labelId);
-            if (labelNode && this._isSponsoredLabel(labelNode.textContent.trim())) {
-                targets.push(el);
-            }
-        });
-
-        // 2b. aria-describedby heuristic — FB's second obfuscation variant.
-        // aria-describedby can list multiple IDs separated by spaces; check each.
-        const describedElements = rootNode.querySelectorAll('[aria-describedby]');
-        describedElements.forEach(el => {
-            const ids = (el.getAttribute('aria-describedby') || '').split(/\s+/);
-            for (const id of ids) {
-                if (!id) continue;
-                const descNode = document.getElementById(id);
-                if (descNode && this._isSponsoredLabel(descNode.textContent.trim())) {
-                    targets.push(el);
-                    break;
-                }
-            }
-        });
-
-        // 3. Post-level fallback scan for localized Sponsored markers
-        const postCandidates = this._getPostCandidates(rootNode);
-        postCandidates.forEach((post) => {
-            if (!post || post.dataset.pfHidden) return;
-            const marker = this._findSponsoredMarkerInPost(post);
-            if (marker) targets.push(marker);
-        });
-
-        for (const indicator of targets) {
-            // Skip indicators inside comment dialogs — FB uses identical markup for both.
-            if (indicator.closest('[role="dialog"]')) continue;
-
-            const postWrapper = PF_Helpers.getClosest(indicator, PF_SELECTOR_MAP.postContainer);
-            if (postWrapper) {
-                this._hidePostNode(postWrapper, 'Sponsored Post (Label Heuristic)');
-            }
-        }
-    }
-
-    /** @deprecated Use _removeAdsByHardSignals / _removeSponsoredByLabels directly. */
-    removeSponsored(rootNode) {
-        this._removeAdsByHardSignals(rootNode);
-        this._removeSponsoredByLabels(rootNode);
-    }
-
-    /**
-     * Messenger Privacy: Suppresses 'Is typing...' in window title and 
-     * other non-CSS signals.
-     */
+    },
     _applyMessengerPrivacyFilters() {
         if (!this.settings?.social?.hideMessengerTyping) return;
 
@@ -1976,12 +1214,7 @@ class PF_Cleaner {
                 document.title = newTitle;
             }
         }
-    }
-
-    /**
-     * Scans posts for images with AI-generated alt text and hides them
-     * if they match blocked categories (Sports, Food, Pets, etc).
-     */
+    },
     applyImageSubjectFilters(rootNode) {
         const posts = rootNode.querySelectorAll?.(PF_SELECTOR_MAP.postContainer) || [];
         
@@ -2008,8 +1241,7 @@ class PF_Cleaner {
                 }
             }
         });
-    }
-
+    },
     _checkImageAgainstBlockedCategories(altText) {
         const tokens = PF_SELECTOR_MAP.imageSubjectTokens;
         if (!tokens) return null;
@@ -2024,16 +1256,11 @@ class PF_Cleaner {
         if (filters.hideTravelScenery && this._matchesAnyToken(altText, tokens.travel)) return 'Travel/Scenery';
 
         return null;
-    }
-
+    },
     _matchesAnyToken(text, tokenList) {
         if (!text || !tokenList) return false;
         return tokenList.some(token => text.includes(token));
-    }
-
-    /**
-     * Nuke Meta AI gradient icons and sparkle buttons.
-     */
+    },
     removeMetaAI(rootNode) {
         // 1. Top Search Bar
         this.hideTarget(rootNode, PF_SELECTOR_MAP.metaAISearchIcon, 'Meta AI Search Icon');
@@ -2064,11 +1291,7 @@ class PF_Cleaner {
             this._hideRightContactsByNames(rightNav, ['meta ai', 'meta ia'], 'Social: Hide Meta AI');
             this._hideRightContactsByNames(rightNav, ['manus ai', 'manus'], 'Social: Hide Meta AI (Manus)');
         }
-    }
-
-    /**
-     * Notification Soul-Soother: Styles or hides red alert jewels in the header.
-     */
+    },
     _applyNotificationJewelStyle(rootNode) {
         const style = this.settings?.uiMode?.notificationJewelStyle;
         if (!style || style === 'classic') return;
@@ -2084,8 +1307,7 @@ class PF_Cleaner {
                 this._applyJewelStyleToNode(el, style);
             }
         });
-    }
-
+    },
     _isNotificationJewel(el) {
         if (!el || !el.classList || el.children.length > 0) return false;
 
@@ -2103,8 +1325,7 @@ class PF_Cleaner {
 
         // Context check: Must be inside a button-like or nav-like container in topbar
         return !!el.closest('[role="button"], [role="link"], a');
-    }
-
+    },
     _applyJewelStyleToNode(node, style) {
         node.classList.remove('pf-jewel-blue', 'pf-jewel-purple', 'pf-jewel-grey', 'pf-jewel-hidden');
         
@@ -2117,8 +1338,7 @@ class PF_Cleaner {
         } else if (style === 'grey') {
             node.classList.add('pf-jewel-grey');
         }
-    }
-
+    },
     removeSuggestedPosts(rootNode) {
         // Direct SuggestedUnit_ pagelet targeting — FB uses these for all recommended
         // content injections that aren't in a FeedUnit_ wrapper.
@@ -2165,14 +1385,7 @@ class PF_Cleaner {
                 this._hidePostNode(post, 'Suggested Posts');
             }
         });
-    }
-
-    /**
-     * Hides "Suggested Pages" (Like Page cards) injected into the feed.
-     * Controlled by filters.removePageSuggestions, separate from removeSuggested.
-     * Uses the same subheader label heuristic but emits a distinct reason string
-     * so toggle-OFF restoration operates independently.
-     */
+    },
     removePageSuggestions(rootNode) {
         // Speculative pagelet names — add confirmed variants as observed.
         [
@@ -2193,17 +1406,7 @@ class PF_Cleaner {
                 this._hidePostNode(post, 'Page Suggestion');
             }
         });
-    }
-
-    /**
-     * Returns true if the post's header area contains a locale-aware
-     * "Suggested for you" or "Recommended for you" label.
-     * Scans the first ~120 px of the article to avoid matching body text.
-     *
-     * Tokens are pre-normalized (NFD decomposed + diacritics stripped + lower-case)
-     * to match the output of _normalizeComparableText:
-     *   é→e, ü→u, ö→o, å→a, ñ→n; æ and ø are unchanged (no NFD decomposition).
-     */
+    },
     _hasSuggestedSubheaderLabel(postNode) {
         const tokens = [
             'suggested for you', 'recommended for you',      // EN
@@ -2244,8 +1447,7 @@ class PF_Cleaner {
         }
 
         return false;
-    }
-
+    },
     removeFriendActivity(rootNode) {
         // Find headers indicating friend algorithmic activity
         const activityPatterns = ['commented on', 'liked', 'replied to', 'was mentioned in', 'is interested in'];
@@ -2264,8 +1466,7 @@ class PF_Cleaner {
                 }
             }
         });
-    }
-
+    },
     removeColoredBackgrounds(rootNode) {
         const coloredWrappers = rootNode.querySelectorAll(PF_SELECTOR_MAP.postColoredBackground);
         coloredWrappers.forEach(bg => {
@@ -2275,8 +1476,7 @@ class PF_Cleaner {
             bg.style.color = 'var(--primary-text)';
             // Note: Facebook uses complex nested DOM, so this will strip styles but text may need sizing fixed which we handle in UI tweaks.
         });
-    }
-
+    },
     removeGameInvitePosts(rootNode) {
         // Pagelet-level signal — FB injects Gaming units with a recognisable data-pagelet value.
         const pageletGamingPattern = /\bGaming\b|GameUnit/i;
@@ -2329,8 +1529,7 @@ class PF_Cleaner {
                 this._hidePostNode(post, 'Game Invite/Post');
             }
         });
-    }
-
+    },
     removeClickbait(rootNode) {
         // Regex patterns matching traditional high-volume viral clickbait
         const clickbaitRegex = /(you won.?t believe|this one trick|what happens next|will shock you|leave you speechless|reason why|this is why)/i;
@@ -2347,8 +1546,7 @@ class PF_Cleaner {
                 }
             }
         });
-    }
-
+    },
     applyKeywordFilters(rootNode) {
         const autohide = this.settings.keywords.autohide || [];
         const blocklist = this.settings.keywords.blocklist || [];
@@ -2420,17 +1618,7 @@ class PF_Cleaner {
                 }
             }
         });
-    }
-
-    /**
-     * Hides Facebook Memories / "On This Day" injection cards.
-     *
-     * Detection: any feed post containing a link whose href starts with "/memories"
-     * or contains "/memories/" — these hrefs are exclusive to Memories cards and
-     * never appear in organic friend content, so the false-positive risk is
-     * negligible.  Multi-locale text phrases are added as a secondary signal for
-     * cases where the href is absent (e.g. some mobile-web render variants).
-     */
+    },
     removeMemoriesPosts(rootNode) {
         const candidates = this._getFilterablePostCandidates(rootNode);
         let matched = 0;
@@ -2464,17 +1652,7 @@ class PF_Cleaner {
                 if (this._exceedsSafetyBailout(matched, candidates.length, 0.4, 'Memories filter')) break;
             }
         }
-    }
-
-    /**
-     * Phase 19 consolidation helper.
-     * Returns post candidates from rootNode that pass the standard pre-flight
-     * checks shared by all per-post filter methods.
-     * Replaces the identical inline filter chain that was copy-pasted across
-     * removeStoryActivityPosts, removePostTypePosts, and removeImageSubjectPosts.
-     * @param {HTMLElement} rootNode
-     * @returns {HTMLElement[]}
-     */
+    },
     _getFilterablePostCandidates(rootNode) {
         return this._getPostCandidates(rootNode).filter((postWrapper) => {
             if (!postWrapper || postWrapper.dataset.pfHidden) return false;
@@ -2482,20 +1660,7 @@ class PF_Cleaner {
             if (!this._isLikelySingleFeedPost(postWrapper)) return false;
             return true;
         });
-    }
-
-    /**
-     * Phase 19 consolidation helper.
-     * Returns true when the number of matched posts exceeds the safety threshold
-     * and the caller should abort the current filter pass.
-     * Replaces the identically-structured bailout block in three filter methods.
-     * @param {number} matchedCount
-     * @param {number} scannedCount
-     * @param {number} threshold  fraction of scannedCount (e.g. 0.45)
-     * @param {string} label      used in the warning log
-     * @param {number} [minFloor=3] minimum absolute cap before threshold kicks in
-     * @returns {boolean}
-     */
+    },
     _exceedsSafetyBailout(matchedCount, scannedCount, threshold, label, minFloor = 3) {
         const maxHide = Math.max(minFloor, Math.floor(scannedCount * threshold));
         if ((scannedCount > 2 && matchedCount >= scannedCount) || matchedCount > maxHide) {
@@ -2503,8 +1668,7 @@ class PF_Cleaner {
             return true;
         }
         return false;
-    }
-
+    },
     _getPostCandidates(rootNode) {
         const results = [];
         const seen = new Set();
@@ -2536,149 +1700,7 @@ class PF_Cleaner {
         }
 
         return results;
-    }
-
-    _findSponsoredMarkerInPost(postNode) {
-        const postRect = postNode.getBoundingClientRect ? postNode.getBoundingClientRect() : null;
-
-        // Pass 1: aria-label and single-node textContent scan (fast path).
-        // 400px height limit covers tall posts where the label sits below a large image.
-        // 48 char limit allows "Sponsored · 3 hours ago" style combined labels through.
-        const candidates = postNode.querySelectorAll('[aria-label], [role="link"], a, span, div');
-        for (const node of candidates) {
-            const text = this._normalizeComparableText(
-                node.getAttribute('aria-label')
-                || node.textContent
-                || ''
-            );
-
-            if (!text || text.length > 48) continue;
-            if (!this._isSponsoredLabel(text)) continue;
-
-            // Prefer markers near the top header area of a post.
-            if (postRect && node.getBoundingClientRect) {
-                const rect = node.getBoundingClientRect();
-                if (rect.top - postRect.top > 400) continue;
-            }
-
-            return node;
-        }
-
-        // Pass 2: TreeWalker deep text reconstruction.
-        // FB sometimes splits "Sponsored" across many tiny adjacent text nodes so
-        // that no single node's textContent equals the full word.  TreeWalker
-        // reconstructs the concatenated string and strips ZWC before matching.
-        const strip = (s) => s.replace(/[\u00ad\u200b-\u200f\u2028\u2029\u202a-\u202f\u2060\u2061\ufeff]/g, '');
-        const walker = document.createTreeWalker(postNode, NodeFilter.SHOW_TEXT, null, false);
-        let rebuilt = '';
-        let lastNode = null;
-        while (walker.nextNode()) {
-            const raw = walker.currentNode.nodeValue || '';
-            rebuilt += strip(raw);
-            // Once we accumulate enough chars to potentially contain a token, check.
-            // Reset after 80 chars to avoid matching across unrelated text blocks.
-            if (rebuilt.length > 80) rebuilt = rebuilt.slice(-40);
-            if (this._isSponsoredLabel(rebuilt.trim())) return walker.currentNode.parentElement || postNode;
-            lastNode = walker.currentNode;
-        }
-        void lastNode; // suppress unused-var lint
-
-        return null;
-    }
-
-    _isSponsoredLabel(text) {
-        // Strip zero-width and invisible Unicode chars FB injects between letters
-        // (e.g. U+200B ZERO WIDTH SPACE, U+200C/D, U+2060, U+FEFF) to defeat text
-        // matching. Then strip diacritics so accented forms match the token list.
-        const cleaned = String(text || '').replace(/[\u00ad\u200b-\u200f\u2028\u2029\u202a-\u202f\u2060\u2061\ufeff]/g, '');
-        // Normalize separators: U+2022 BULLET (•) and U+00B7 MIDDLE DOT (·) are used
-        // interchangeably by FB across locales and UI variants. Collapse all to ' · '.
-        const normalized = this._normalizeComparableText(cleaned).replace(/\s*[•·]\s*/g, ' · ');
-        if (!normalized) return false;
-
-        return this.sponsoredTokens.some((token) => {
-            // Exact match or "Sponsored" is a prefix (e.g. "Sponsored · 3h ago")
-            if (normalized === token) return true;
-            if (normalized.startsWith(`${token} `)) return true;
-            if (normalized.startsWith(`${token} ·`)) return true;
-            if (normalized.startsWith(`${token}:`)) return true;
-            // "Sponsored" at end — FB can prefix with a page badge or dot separator
-            // e.g. "Page Name · Sponsored" or "Promoted · Sponsored"
-            if (normalized.endsWith(` ${token}`)) return true;
-            if (normalized.endsWith(` · ${token}`)) return true;
-            // Mid-string: "Posted by Page · Sponsored · Follow"
-            if (normalized.includes(` · ${token} ·`)) return true;
-            if (normalized.includes(` · ${token}`)) return true;
-            return false;
-        });
-    }
-
-    _hidePostNode(node, reason) {
-        if (!node || node.dataset.pfHidden === 'true') return;
-        if (node.matches && node.matches('html, body, [role="main"], [role="feed"]')) return;
-        if (!this._isSafeHideTargetNode(node)) return;
-        if (this._isAllowlistedPost(node)) return;
-
-        if (this._isUndoEligible(node)) {
-            this._insertUndoChip(node, reason);
-        }
-
-        PF_Helpers.hideElement(node, reason);
-    }
-
-    _isUndoEligible(node) {
-        if (!node || !node.matches) return false;
-        if (node.matches('[role="dialog"]')) return false;
-
-        return node.matches('[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"]')
-            || !!PF_Helpers.getClosest(node, '[role="feed"]', 8);
-    }
-
-    _insertUndoChip(node, reason) {
-        if (!node || !node.parentElement) return;
-        if (node.dataset.pfUndoChip === 'true') return;
-
-        const sourceName = this._extractPostSource(node);
-        const i18n = (key, fallback) => {
-            if (typeof chrome === 'undefined' || !chrome.i18n) return fallback;
-            return chrome.i18n.getMessage(key) || fallback;
-        };
-        const chip = document.createElement('div');
-        chip.className = 'pf-hidden-chip';
-        chip.innerHTML = `
-            <span>${i18n('content_hidden_chip_label', 'Hidden by PureFusion')}: ${reason}</span>
-            <div class="pf-hidden-chip-actions">
-                <button type="button" data-action="show">${i18n('content_hidden_chip_show_once', 'Show once')}</button>
-                <button type="button" data-action="allow">${i18n('content_hidden_chip_allow_source', 'Always allow source')}</button>
-            </div>
-        `;
-
-        chip.querySelector('[data-action="show"]').addEventListener('click', () => {
-            this._restorePost(node, chip);
-        });
-
-        chip.querySelector('[data-action="allow"]').addEventListener('click', async () => {
-            if (sourceName && sourceName !== 'Unknown') {
-                await this._addSourceToAllowlist(sourceName);
-            }
-            this._restorePost(node, chip);
-        });
-
-        node.parentElement.insertBefore(chip, node);
-        node.dataset.pfUndoChip = 'true';
-    }
-
-    _restorePost(node, chip) {
-        if (!node) return;
-
-        node.style.removeProperty('display');
-        delete node.dataset.pfHidden;
-        delete node.dataset.pfReason;
-        delete node.dataset.pfUndoChip;
-
-        if (chip && chip.remove) chip.remove();
-    }
-
+    },
     _extractPostSource(node) {
         if (!node || !node.querySelector) return 'Unknown';
 
@@ -2700,8 +1722,7 @@ class PF_Cleaner {
         }
 
         return 'Unknown';
-    }
-
+    },
     _isAllowlistedPost(node, cachedText = null, includeKeywordAllowlist = false) {
         if (!node) return false;
 
@@ -2726,8 +1747,7 @@ class PF_Cleaner {
         }
 
         return false;
-    }
-
+    },
     _extractStoryHeaderSignals(node) {
         if (!node || !node.querySelectorAll) return [];
 
@@ -2756,8 +1776,7 @@ class PF_Cleaner {
         });
 
         return parts;
-    }
-
+    },
     _looksLikeStoryActivitySignal(text) {
         if (!text) return false;
 
@@ -2791,8 +1810,7 @@ class PF_Cleaner {
 
         const lp = localePatterns[locale];
         return lp ? lp.test(text) : false;
-    }
-
+    },
     _classifyPostType(node) {
         if (!node || !node.querySelectorAll) return null;
 
@@ -2908,8 +1926,7 @@ class PF_Cleaner {
             shareRepost,
             poll
         };
-    }
-
+    },
     _extractPostTypeAnchors(node) {
         if (!node || !node.querySelectorAll) return [];
 
@@ -2938,16 +1955,14 @@ class PF_Cleaner {
         });
 
         return parts;
-    }
-
+    },
     _countPostMediaNodes(node) {
         if (!node || !node.querySelectorAll) return 0;
 
         return node.querySelectorAll(
             'video, img, [role="img"], image, canvas, svg image, iframe, a[href*="/photo/"], a[href*="/videos/"], a[href*="/watch/"]'
         ).length;
-    }
-
+    },
     _looksLikePostTypeAnchor(text) {
         if (!text) return false;
 
@@ -2980,8 +1995,7 @@ class PF_Cleaner {
 
         const lp = localePatterns[locale];
         return lp ? lp.test(text) : false;
-    }
-
+    },
     _hasExternalLinkTarget(node) {
         if (!node || !node.querySelectorAll) return false;
 
@@ -3015,8 +2029,7 @@ class PF_Cleaner {
         }
 
         return false;
-    }
-
+    },
     _looksLikeImageDescriptor(text) {
         if (!text) return false;
 
@@ -3025,8 +2038,7 @@ class PF_Cleaner {
         }
 
         return /(soccer|football|basketball|food|pizza|dog|cat|car|truck|beach|mountain|atardecer|viaje|comida|mascota)/.test(text);
-    }
-
+    },
     _containsAnyToken(text, tokens) {
         if (!text || !Array.isArray(tokens) || tokens.length === 0) return false;
 
@@ -3034,14 +2046,7 @@ class PF_Cleaner {
             const normalizedToken = this._normalizeComparableText(token);
             return normalizedToken && text.includes(normalizedToken);
         });
-    }
-
-    /**
-     * Returns true if `postWrapper` is a valid feed post scope for post-type
-     * filtering. Accepts both pagelet-wrapped posts (classic FB feed) and
-     * top-level article posts (current Facebook Comet layout, which no longer
-     * wraps posts in [data-pagelet] containers).
-     */
+    },
     _isValidPostScope(postWrapper) {
         if (!postWrapper || !postWrapper.matches) return false;
 
@@ -3060,8 +2065,7 @@ class PF_Cleaner {
         }
 
         return false;
-    }
-
+    },
     _isLikelySingleFeedPost(node) {
         if (!node || !node.querySelectorAll) return false;
 
@@ -3075,8 +2079,7 @@ class PF_Cleaner {
         if (textLength > 9000) return false;
 
         return true;
-    }
-
+    },
     _extractPostText(node) {
         if (!node || !node.querySelectorAll) return '';
 
@@ -3105,22 +2108,7 @@ class PF_Cleaner {
         }
 
         return this._normalizeText(node.textContent || '');
-    }
-
-    // ── Phase 58 — Post Deduplication ───────────────────────────────────────────
-    /**
-     * Extract a stable post ID from an article node using three fallback strategies
-     * mirroring PF_PostIDResolver in comment-preview.js.
-     *   1. data-pagelet attribute — FeedUnit_<id> or AdUnit_<id>
-     *   2. Share button href — contains story_fbid= or id= parameters
-     *   3. Permalink/post link in the article — /posts/<id> or /permalink/<id>
-     */
-
-    // Phase 61 — Post Age Filter helpers
-
-    /**
-     * Returns true and hides the post if it is older than the configured threshold.
-     */
+    },
     _filterByPostAge(article, rootNode) {
         const maxMs = (this.settings?.filters?.postAgeMaxHours || 0) * 3600000;
         if (!maxMs) return false;
@@ -3134,14 +2122,7 @@ class PF_Cleaner {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Extracts an absolute Date from a post article using three strategies:
-     *   1. <time datetime="..."> — ISO timestamp, most reliable
-     *   2. [data-utime] — Unix timestamp in seconds (legacy FB)
-     *   3. .pf-post-date-chip text — injected by Phase 46 fixTimestamps
-     */
+    },
     _extractPostTimestamp(article) {
         if (!article) return null;
 
@@ -3172,8 +2153,7 @@ class PF_Cleaner {
         }
 
         return null;
-    }
-
+    },
     _extractPostId(articleNode) {
         if (!articleNode) return null;
 
@@ -3205,359 +2185,4 @@ class PF_Cleaner {
         return null;
     }
 
-    _restoreCriticalContainers() {
-        const hidden = document.querySelectorAll('[data-pf-hidden="true"]');
-        hidden.forEach((node) => {
-            if (!node) return;
-
-            const reason = String(node.dataset.pfReason || '');
-            const isNavReason = reason.startsWith('Left Nav:') || reason.startsWith('Right Sidebar:');
-            if (isNavReason && !this._shouldKeepNavReasonHidden(reason)) {
-                node.style.removeProperty('display');
-                delete node.dataset.pfHidden;
-                delete node.dataset.pfReason;
-                return;
-            }
-
-            if (reason.startsWith('Right Rail') && this._looksLikeContactsModule(node)) {
-                node.style.removeProperty('display');
-                delete node.dataset.pfHidden;
-                delete node.dataset.pfReason;
-                return;
-            }
-
-            if (reason.startsWith('Topbar:') && !this._shouldKeepTopbarReasonHidden(reason)) {
-                node.style.removeProperty('display');
-                delete node.dataset.pfHidden;
-                delete node.dataset.pfReason;
-                return;
-            }
-
-            if (reason.startsWith('Social: Hide Meta AI') && !this.settings?.social?.hideMetaAI) {
-                node.style.removeProperty('display');
-                delete node.dataset.pfHidden;
-                delete node.dataset.pfReason;
-                return;
-            }
-
-            if (reason === 'Memories Post' && !this.settings?.filters?.hideMemories) {
-                node.style.removeProperty('display');
-                delete node.dataset.pfHidden;
-                delete node.dataset.pfReason;
-                return;
-            }
-
-            // Restore ad-hidden posts when removeAds is toggled OFF.
-            if (reason === 'Ad (Hard Signal)' && !this.settings?.filters?.removeAds) {
-                node.style.removeProperty('display');
-                delete node.dataset.pfHidden;
-                delete node.dataset.pfReason;
-                return;
-            }
-
-            // Restore sponsored-label-hidden posts when removeSponsored is toggled OFF.
-            // Also handles legacy 'Sponsored Post (Heuristic)' reason from before the split.
-            if (
-                (reason === 'Sponsored Post (Label Heuristic)' || reason === 'Sponsored Post (Heuristic)')
-                && !this.settings?.filters?.removeSponsored
-            ) {
-                node.style.removeProperty('display');
-                delete node.dataset.pfHidden;
-                delete node.dataset.pfReason;
-                return;
-            }
-
-            // ── Toggle-OFF Restoration — Feed Filters (Phase 35) ─────────────────────
-            // Every filter that can hide content must have a corresponding restore guard.
-            // Without these, hidden posts persist in the session after the user toggles
-            // the setting back off (DoD regression rule #3).
-            {
-                const f  = this.settings?.filters;
-                const sf = this.settings?.storyFilters;
-                const imgf = this.settings?.imageFilters;
-
-                // Helper — unhide node and clear markers, then signal caller to return.
-                const _pfUnhide = () => {
-                    node.style.removeProperty('display');
-                    delete node.dataset.pfHidden;
-                    delete node.dataset.pfReason;
-                };
-
-                // -- Simple feed-filter toggles --
-                if (reason === 'Duplicate Post'        && !f?.deduplicatePosts)       { _pfUnhide(); this._seenPostIds.clear(); return; }
-                if (reason === 'Old Post'              && !((f?.postAgeMaxHours || 0) > 0)) { _pfUnhide(); return; }
-                if (reason === 'Suggested Posts'       && !f?.removeSuggested)        { _pfUnhide(); return; }
-                if (reason === 'Page Suggestion'       && !f?.removePageSuggestions)  { _pfUnhide(); return; }
-                if (reason === 'People You May Know'   && !f?.removePYMK)             { _pfUnhide(); return; }
-                if (reason === 'Suggested Groups'      && !f?.removeGroupSuggestions) { _pfUnhide(); return; }
-                if (reason === 'Game Invite/Post'      && !f?.removeGameInvites)      { _pfUnhide(); return; }
-                if (reason === 'Marketplace Unit'      && !f?.hideMarketplace)        { _pfUnhide(); return; }
-                if (reason === 'Fundraiser Module'     && !f?.hideFundraisers)        { _pfUnhide(); return; }
-                if ((reason === 'Reels Target Array' || reason === 'Reels Tray Heuristic')
-                    && !f?.hideReels) { _pfUnhide(); return; }
-                if ((reason === 'Stories Tray Heuristic' || reason === 'Stories Tray')
-                    && !f?.hideStories) { _pfUnhide(); return; }
-
-                // -- Post type filters --
-                const postTypeMap = {
-                    'Post Type: Video':        f?.hideVideoPosts,
-                    'Post Type: Photo':        f?.hidePhotoPosts,
-                    'Post Type: Link Share':   f?.hideLinkPosts,
-                    'Post Type: Text Only':    f?.hideTextOnlyPosts,
-                    'Post Type: Live Video':   f?.hideLiveVideoPosts,
-                    'Post Type: Share/Repost': f?.hideShareReposts,
-                    'Post Type: Poll':         f?.hidePollPosts,
-                };
-                if (Object.prototype.hasOwnProperty.call(postTypeMap, reason) && !postTypeMap[reason]) {
-                    _pfUnhide(); return;
-                }
-
-                // -- Story activity type filters --
-                const storyTypeMap = {
-                    'Story Type: Became Friends':       sf?.hideBecameFriends,
-                    'Story Type: Joined Groups':        sf?.hideJoinedGroups,
-                    'Story Type: Commented On This':    sf?.hideCommentedOnThis,
-                    'Story Type: Liked This':           sf?.hideLikedThis,
-                    'Story Type: Event Attendance':     sf?.hideAttendingEvents,
-                    'Story Type: Shared Memory':        sf?.hideSharedMemories,
-                    'Story Type: Profile Photo Update': sf?.hideProfilePhotoUpdates,
-                    'Story Type: Cover Photo Update':   sf?.hideCoverPhotoUpdates,
-                    'Story Type: Life Event':           sf?.hideLifeEvents,
-                    'Story Type: Check-In':             sf?.hideCheckIns,
-                    'Story Type: Milestone':            sf?.hideMilestones,
-                    'Story Type: Job/Work Update':      sf?.hideJobWorkUpdates,
-                    'Story Type: Relationship Update':  sf?.hideRelationshipUpdates,
-                    'Story Type: Group Activity Post':  sf?.hideGroupActivityPosts,
-                };
-                if (Object.prototype.hasOwnProperty.call(storyTypeMap, reason) && !storyTypeMap[reason]) {
-                    _pfUnhide(); return;
-                }
-
-                // -- Image subject filters --
-                if (reason.startsWith('Image Subject Filter:')) {
-                    const cat = reason.slice(21).trim();
-                    const shouldKeep = imgf && (
-                        (cat === 'Sports'            && imgf.hideSports) ||
-                        (cat === 'Food'              && imgf.hideFood) ||
-                        (cat === 'Pets'              && imgf.hidePets) ||
-                        (cat === 'Vehicles'          && imgf.hideVehicles) ||
-                        (cat === 'Memes/Screenshots' && imgf.hideScreenshotsMemes) ||
-                        (cat === 'Travel/Scenery'    && imgf.hideTravelScenery)
-                    );
-                    if (!shouldKeep) { _pfUnhide(); return; }
-                }
-            }
-            // ── End Toggle-OFF Restoration ──────────────────────────────────────────────
-
-            const isCritical = node.matches && node.matches('html, body, [role="main"], [role="feed"]');
-            const containsFeed = !!(node.querySelector && node.querySelector('[role="feed"]'));
-            const containsMain = !!(node.querySelector && node.querySelector('[role="main"]'));
-            const articleCount = node.querySelectorAll ? node.querySelectorAll('[role="article"]').length : 0;
-
-            let isHugeShell = false;
-            if (node.getBoundingClientRect) {
-                const rect = node.getBoundingClientRect();
-                isHugeShell = rect.width > window.innerWidth * 0.7 && rect.height > window.innerHeight * 0.5;
-            }
-
-            if (!isCritical && !containsFeed && !containsMain && articleCount <= 2 && !isHugeShell) return;
-
-            node.style.removeProperty('display');
-            delete node.dataset.pfHidden;
-            delete node.dataset.pfReason;
-        });
-    }
-
-    _shouldKeepNavReasonHidden(reason) {
-        if (!reason) return false;
-
-        const sidebar = this.settings?.sidebar;
-        if (!sidebar || !sidebar.enableModuleFilters) return false;
-
-        if (reason.startsWith('Left Nav: Marketplace')) return !!sidebar.hideLeftMarketplace;
-        if (reason.startsWith('Left Nav: Watch')) return !!sidebar.hideLeftWatch;
-        if (reason.startsWith('Left Nav: Gaming')) return !!sidebar.hideLeftGaming;
-        if (reason.startsWith('Left Nav: Memories')) return !!sidebar.hideLeftMemories;
-        if (reason.startsWith('Left Nav: Meta AI')) return !!sidebar.hideLeftMetaAI;
-        if (reason.startsWith('Left Nav: Manus AI')) return !!sidebar.hideLeftManusAI;
-
-        if (reason.startsWith('Right Sidebar: Trending')) return !!sidebar.hideRightTrending;
-        if (reason.startsWith('Right Sidebar: Contacts')) return !!sidebar.hideRightContacts;
-        if (reason.startsWith('Right Sidebar: Meta AI Contact')) return !!sidebar.hideRightMetaAIContact;
-        if (reason.startsWith('Right Sidebar: Manus AI Contact')) return !!sidebar.hideRightManusAIContact;
-        if (reason.startsWith('Right Sidebar: Events')) return !!sidebar.hideRightEvents;
-        if (reason.startsWith('Right Sidebar: Birthdays')) return !!sidebar.hideRightBirthdays;
-
-        return false;
-    }
-
-    _shouldKeepTopbarReasonHidden(reason) {
-        if (!reason) return false;
-
-        const topbar = this.settings?.topbarFilters;
-        if (!topbar || !topbar.enabled) return false;
-
-        if (reason.startsWith('Topbar: Home')) return !!topbar.hideHome;
-        if (reason.startsWith('Topbar: Friends')) return !!topbar.hideFriends;
-        if (reason.startsWith('Topbar: Watch')) return !!topbar.hideWatch;
-        if (reason.startsWith('Topbar: Marketplace')) return !!topbar.hideMarketplace;
-        if (reason.startsWith('Topbar: Groups')) return !!topbar.hideGroups;
-        if (reason.startsWith('Topbar: Messenger')) return !!topbar.hideMessenger;
-        if (reason.startsWith('Topbar: Notifications')) return !!topbar.hideNotifications;
-        if (reason.startsWith('Topbar: Menu')) return !!topbar.hideMenu;
-        if (reason.startsWith('Topbar: Create')) return !!topbar.hideCreate;
-
-        return false;
-    }
-
-    _startRecoveryWatchdog() {
-        if (this._recoveryIntervalId) return;
-
-        this._recoveryIntervalId = setInterval(() => {
-            if (document.hidden) return;
-            this._restoreCriticalContainers();
-            this._checkFeedRecovery();
-        }, 1500);
-    }
-
-    _checkFeedRecovery() {
-        if (this._panicMode) return;
-
-        const feed = document.querySelector('[role="feed"]');
-        if (!feed) return;
-
-        const hiddenByPF = feed.querySelectorAll('[data-pf-hidden="true"]').length;
-        if (!hiddenByPF) return;
-
-        const visibleArticles = Array.from(feed.querySelectorAll('[role="article"]')).filter((node) => {
-            if (!node || node.dataset.pfHidden === 'true') return false;
-            const rect = node.getBoundingClientRect ? node.getBoundingClientRect() : null;
-            return !!rect && rect.width > 0 && rect.height > 0;
-        }).length;
-
-        if (visibleArticles > 0) return;
-
-        PF_Logger.warn(`Cleaner panic recovery activated. Hidden feed nodes: ${hiddenByPF}.`);
-        this._panicMode = true;
-
-        document.querySelectorAll('[data-pf-hidden="true"]').forEach((node) => {
-            if (!node) return;
-            node.style.removeProperty('display');
-            delete node.dataset.pfHidden;
-            delete node.dataset.pfReason;
-        });
-    }
-
-    _isSafeHideTargetNode(node) {
-        if (!node || !node.matches) return false;
-        if (node.matches('html, body, [role="main"], [role="feed"], [role="banner"], [role="navigation"], [role="complementary"]')) return false;
-        if (node.querySelector && (node.querySelector('[role="feed"]') || node.querySelector('[role="main"]') || node.querySelector('[role="navigation"]') || node.querySelector('[role="complementary"]'))) return false;
-
-        const role = (node.getAttribute && node.getAttribute('role')) || '';
-        if (role === 'main' || role === 'feed' || role === 'banner' || role === 'navigation' || role === 'complementary') return false;
-
-        const articleCount = node.querySelectorAll ? node.querySelectorAll('[role="article"]').length : 0;
-        if (articleCount > 2) return false;
-
-        if (node.getBoundingClientRect) {
-            const rect = node.getBoundingClientRect();
-            if (rect.width > window.innerWidth * 0.8 && rect.height > window.innerHeight * 0.7) {
-                return false;
-            }
-            if (rect.width > window.innerWidth * 0.45 && rect.height > window.innerHeight * 0.55) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    async _addSourceToAllowlist(sourceName) {
-        const normalized = String(sourceName || '').trim();
-        if (!normalized) return;
-
-        const current = this.settings?.keywords?.allowlistFriends || [];
-        const exists = current.some((v) => String(v).toLowerCase() === normalized.toLowerCase());
-        if (exists) {
-            PF_Helpers.showToast(`"${normalized}" ${this._i18n('content_allow_source_exists', 'is already in Never Hide Sources.')}`, 'info');
-            return;
-        }
-
-        this.settings.keywords.allowlistFriends = [...current, normalized];
-        await PF_Storage.updateSettings(this.settings);
-        PF_Helpers.showToast(`${this._i18n('content_allow_source_added', 'Added')} "${normalized}" ${this._i18n('content_allow_source_added_suffix', 'to Never Hide Sources.')}`, 'success');
-
-        window.postMessage({ type: 'PF_LOCAL_SETTINGS_UPDATE' }, '*');
-    }
-
-    _i18n(key, fallback) {
-        if (typeof chrome === 'undefined' || !chrome.i18n) return fallback;
-        return chrome.i18n.getMessage(key) || fallback;
-    }
-
-    _normalizeText(text) {
-        return String(text || '')
-            .replace(/\s+/g, ' ')
-            .trim()
-            .toLowerCase();
-    }
-
-    _normalizeComparableText(text) {
-        return String(text || '')
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .replace(/\s+/g, ' ')
-            .trim()
-            .toLowerCase();
-    }
-
-    _collapsePost(postNode, matchedKeyword, includeKeywordAllowlist = false) {
-        // Rather than hiding it completely, we dim it out and inject a "Show anyway" button
-        if (postNode.dataset.pfCollapsed) return;
-        if (this._isAllowlistedPost(postNode, null, includeKeywordAllowlist)) return;
-        
-        // Hide the children
-        postNode.dataset.pfCollapsed = 'true';
-        postNode.style.position = 'relative';
-        
-        const overlay = document.createElement('div');
-        overlay.style.cssText = `
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--disabled-background, rgba(0,0,0,0.8));
-            backdrop-filter: blur(8px); z-index: 10;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            border-radius: 8px; font-family: sans-serif; color: white;
-        `;
-        
-        overlay.innerHTML = `
-            <div style="margin-bottom: 15px; font-weight: bold;">Filtered by keyword: "${matchedKeyword}"</div>
-            <button style="
-                background: #6C3FC5; color: white; border: none; padding: 8px 16px; 
-                border-radius: 4px; cursor: pointer; font-weight: bold;
-            ">Show Anyway</button>
-        `;
-        
-        overlay.querySelector('button').addEventListener('click', () => {
-            postNode.removeChild(overlay);
-        }, { once: true });
-
-        postNode.appendChild(overlay);
-    }
-
-    destroy() {
-        if (this._recoveryIntervalId) {
-            clearInterval(this._recoveryIntervalId);
-            this._recoveryIntervalId = null;
-        }
-    }
-
-    hideTarget(rootNode, selector, reason) {
-        const targets = rootNode.querySelectorAll(selector);
-        targets.forEach((node) => {
-            if (!this._isSafeHideTargetNode(node)) return;
-            PF_Helpers.hideElement(node, reason);
-        });
-    }
-}
-
-window.PF_Cleaner = PF_Cleaner;
+});
