@@ -206,6 +206,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     elements.statAds.textContent = sessionStats.ads;
     elements.statSpam.textContent = sessionStats.spam;
 
+    // Load and display cumulative lifetime stats
+    const lifetimeStats = await PF_Storage.getLocalData('pf_lifetime_stats');
+    if (lifetimeStats && typeof lifetimeStats === 'object') {
+        const lifetimeRow = document.getElementById('pf-lifetime-row');
+        const lifetimeTotal = document.getElementById('pf-lifetime-total');
+        if (lifetimeRow && lifetimeTotal) {
+            const total = (Number(lifetimeStats.ads) || 0) + (Number(lifetimeStats.spam) || 0);
+            if (total > 0) {
+                lifetimeTotal.textContent = total.toLocaleString();
+                lifetimeRow.hidden = false;
+            }
+        }
+    }
+
     // 4. Bind Toggle Events
     const handleToggle = async () => {
         settings.enabled = elements.master.checked;

@@ -19,6 +19,7 @@ class PureFusionApp {
         this.quickContextCaptureBound = false;
         this._sessionStats = { ads: 0, spam: 0 };
         this._sessionStatsFlushTimer = null;
+        this._lifetimeStats = null;
         this._pipelineBusy = false;
         this._pendingPipelineNodes = [];
     }
@@ -30,6 +31,13 @@ class PureFusionApp {
             // Await settings load from storage abstraction
             this.settings = await PF_Storage.init();
             PF_Logger.log('Settings successfully loaded.');
+
+            // Load or initialize lifetime stats (persists across sessions / page reloads)
+            const savedLifetime = await PF_Storage.getLocalData('pf_lifetime_stats');
+            this._lifetimeStats = savedLifetime && typeof savedLifetime === 'object'
+                ? savedLifetime
+                : { ads: 0, spam: 0, firstInstall: Date.now() };
+            if (!this._lifetimeStats.firstInstall) this._lifetimeStats.firstInstall = Date.now();
 
             const initialSettings = this.getEffectiveSettings();
 
@@ -236,17 +244,22 @@ class PureFusionApp {
             }
         });
 
-        // 3. Track hidden elements for popup session stats
+        // 3. Track hidden elements for popup session stats + persistent lifetime totals
         window.addEventListener('pf:element_hidden', (e) => {
             const reason = String(e?.detail?.reason || '');
             if (/\bAd\b|Sponsored/i.test(reason)) {
                 this._sessionStats.ads++;
+                if (this._lifetimeStats) this._lifetimeStats.ads++;
             } else {
                 this._sessionStats.spam++;
+                if (this._lifetimeStats) this._lifetimeStats.spam++;
             }
             if (this._sessionStatsFlushTimer) clearTimeout(this._sessionStatsFlushTimer);
             this._sessionStatsFlushTimer = setTimeout(() => {
                 PF_Storage.setLocalData('pf_session_stats', { ...this._sessionStats });
+                if (this._lifetimeStats) {
+                    PF_Storage.setLocalData('pf_lifetime_stats', { ...this._lifetimeStats });
+                }
             }, 600);
         });
 
