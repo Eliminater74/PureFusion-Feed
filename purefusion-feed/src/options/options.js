@@ -1512,6 +1512,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
+    document.getElementById('btnOpenWelcome')?.addEventListener('click', () => {
+        chrome.tabs.create({ url: chrome.runtime.getURL('src/welcome/welcome.html') });
+    });
+
     // =========================================================================
     // AI Source Manager — pf_blocklist / pf_allowlist
     // These are stored directly in local storage (not in the main settings
