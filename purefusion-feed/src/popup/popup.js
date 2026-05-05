@@ -21,6 +21,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 1. Load Settings
     const settings = await PF_Storage.init();
 
+    // Check for one-time post-update notice set by the service worker
+    const updateVersion = await PF_Storage.getLocalData('pf_pending_update_notice');
+    if (updateVersion) {
+        await chrome.storage.local.remove('pf_pending_update_notice');
+        const banner = document.getElementById('pf-update-banner');
+        if (banner) {
+            const msgEl = banner.querySelector('.pf-update-msg');
+            if (msgEl) msgEl.textContent = `Updated to v${updateVersion} — see what changed`;
+            banner.hidden = false;
+            banner.querySelector('.pf-update-explore')?.addEventListener('click', () => {
+                chrome.runtime.openOptionsPage();
+            });
+            banner.querySelector('.pf-update-dismiss')?.addEventListener('click', () => {
+                banner.hidden = true;
+            });
+        }
+    }
+
     // 2. Map Elements
     const elements = {
         master: document.getElementById('masterToggle'),

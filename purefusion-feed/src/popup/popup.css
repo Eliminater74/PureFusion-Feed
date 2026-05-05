@@ -444,6 +444,49 @@ h2 {
 }
 
 /* Footer / Action */
+/* Update Notice Banner */
+.pf-update-banner {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: #b86e00;
+    color: #fff3d4;
+    font-size: 12px;
+    font-weight: 500;
+    border-bottom: 1px solid rgba(255, 200, 80, 0.25);
+}
+
+.pf-update-banner[hidden] {
+    display: none;
+}
+
+.pf-update-msg {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pf-update-explore,
+.pf-update-dismiss {
+    flex-shrink: 0;
+    background: transparent;
+    border: 1px solid rgba(255, 200, 80, 0.45);
+    color: #fff3d4;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11px;
+    padding: 2px 7px;
+    transition: background 0.15s;
+}
+
+.pf-update-explore:hover,
+.pf-update-dismiss:hover {
+    background: rgba(255, 200, 80, 0.2);
+}
+
 .pf-footer {
     padding: 14px 16px 16px;
     text-align: center;

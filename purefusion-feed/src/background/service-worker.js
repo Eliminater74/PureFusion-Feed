@@ -16,6 +16,8 @@ chrome.runtime.onInstalled.addListener(async (details) => {
         await setupQuickActionMenus();
     } else if (details.reason === 'update') {
         console.log('PureFusion Feed Updated');
+        const newVersion = chrome.runtime.getManifest().version;
+        chrome.storage.local.set({ pf_pending_update_notice: newVersion }).catch(() => {});
         await setupDNRRules();
         await setupQuickActionMenus();
     }
