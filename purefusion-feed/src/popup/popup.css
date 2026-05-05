@@ -464,6 +464,67 @@ h2 {
     min-height: 14px;
 }
 
+/* Keyboard Shortcuts collapsible */
+.pf-shortcuts {
+    border-top: 1px solid rgba(122, 132, 156, 0.18);
+}
+
+.pf-shortcuts-toggle {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--pf-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.pf-shortcuts-toggle::-webkit-details-marker { display: none; }
+
+.pf-shortcuts-toggle::after {
+    content: '›';
+    font-size: 14px;
+    transition: transform 0.2s;
+}
+
+details[open] .pf-shortcuts-toggle::after {
+    transform: rotate(90deg);
+}
+
+.pf-shortcuts-list {
+    list-style: none;
+    padding: 4px 16px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.pf-shortcuts-list li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--pf-text-secondary);
+}
+
+.pf-shortcuts-list kbd {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(122, 132, 156, 0.35);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 10px;
+    font-family: monospace;
+    color: var(--pf-cyan);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
 /* Footer / Action */
 /* Update Notice Banner */
 .pf-update-banner {
