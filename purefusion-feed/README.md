@@ -31,7 +31,7 @@ PureFusion Feed is a Chrome extension focused on restoring control over Facebook
 
 ## Release Notes
 
-- Current: `v1.4.0`
+- Current: `v2.2.0`
 - Full history: `CHANGELOG.md`
 
 ---

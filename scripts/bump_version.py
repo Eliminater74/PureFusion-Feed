@@ -86,6 +86,7 @@ def _build_registry():
     return [
         ("manifest.json",               _abs("manifest.json"),               None),
         ("README.md",                   _abs("README.md"),                   re.compile(r"(PureFusion Feed v)\d+\.\d+\.\d+")),
+        ("README.md (release notes)",   _abs("README.md"),                   re.compile(r"(Current: `v)\d+\.\d+\.\d+")),
         ("../README.md",                _repo("README.md"),                  re.compile(r"(PureFusion Feed v)\d+\.\d+\.\d+")),
         ("CHROME_STORE_LISTING.md",     _abs("CHROME_STORE_LISTING.md"),     re.compile(r"(PureFusion Feed v)\d+\.\d+\.\d+")),
         ("src/popup/popup.html",        _abs("src/popup/popup.html"),        re.compile(r'(pf-version">v)\d+\.\d+\.\d+')),

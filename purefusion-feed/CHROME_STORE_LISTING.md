@@ -32,6 +32,7 @@ PureFusion Feed gives you full control over your Facebook feed. It removes clutt
 ### 2. Reading and Focus Tools
 
 - **Distraction-Free Mode** (`Alt+Shift+F`) — hides both sidebars, centers feed to 680 px for a clean reading view; also accessible from the popup quick toggle
+- **Keyboard Shortcuts** — `Alt+Shift+D` opens the in-page Dashboard, `Alt+Shift+H` opens Diagnostics, `Alt+Shift+R` shows the Daily Feed Report; all shortcuts listed in the popup
 - **Reply-Only Mode** — collapses post body text, leaving only comment threads visible; useful for engagement-bait avoidance
 - **Auto-Expand "See More"** — automatically dismisses Facebook's artificial text truncation in all 21 supported languages
 - **Image Hover Expand** — hover over feed images to see a full-size preview with Save and Open actions
@@ -79,6 +80,7 @@ PureFusion Feed gives you full control over your Facebook feed. It removes clutt
 - Full options dashboard with tabbed layout (Core Filters / Story Filters / AI / UI Tweaks / Social / Sidebar / Data)
 - Import/Export configuration — enhanced format includes blocklist + allowlist with datestamped filename; legacy flat-format backups also accepted
 - Feed Mode Presets: Clean / Focus / Ultra Fast / Smart / Classic — one-click feed personality
+- **Custom Presets** — save your current settings as a named preset (up to 5 slots), export to JSON, and import presets across devices
 - Power-User Rule Engine: create persistent CSS or text-matching rules
 - Context Menu "Zap": right-click any element to instantly hide it with one-click undo
 
