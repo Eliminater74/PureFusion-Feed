@@ -184,8 +184,7 @@ def _collect_files(root: Path):
         rel_str = rel.as_posix()
         if _should_exclude(rel_str):
             continue
-        # Archive path = purefusion-feed/<rel> so it unzips into its own folder
-        yield str(Path("purefusion-feed") / rel), abs_path
+        yield rel.as_posix(), abs_path
 
 
 def _sha256(path: Path) -> str:
@@ -252,7 +251,7 @@ def _help_banner(version):
 {BOLD}What it does:{RESET}
   {GREEN}1{RESET} Reads version from manifest.json
   {GREEN}2{RESET} Verifies all version badges match (same files as bump_version.py)
-  {GREEN}3{RESET} Zips purefusion-feed/ → purefusion-feed-vX.Y.Z-YYYYMMDD.zip
+  {GREEN}3{RESET} Zips contents of purefusion-feed/ → purefusion-feed-vX.Y.Z-YYYYMMDD.zip (manifest.json at root)
   {GREEN}4{RESET} Prints SHA-256 hash of the produced zip
 
 {BOLD}Excluded from zip:{RESET}
