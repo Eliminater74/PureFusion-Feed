@@ -96,11 +96,26 @@ class PF_CommentFetcher {
         const token = document.querySelector('input[name="fb_dtsg"]')?.value;
         if (token) return token;
 
-        // Method 2: Script dump (Regex)
+        // Method 2: Require hook (modern Comet)
+        try {
+            if (window.require) {
+                const dtsgData = window.require('DTSGInitialData');
+                if (dtsgData && dtsgData.token) return dtsgData.token;
+            }
+        } catch (e) {}
+
+        // Method 3: Script dump (Regex)
         for (const s of document.scripts) {
-            const m = s.textContent.match(/"DTSGInitialData",\[\],\{"token":"(.*?)"\}/);
+            const m = s.textContent.match(/"DTSGInitialData",\[\],\{"token":"(.*?)"\}/) || s.textContent.match(/"DTSGInitialData",\[\],\{"token":"([^"]+)"\}/);
             if (m) return m[1];
         }
+
+        // Method 4: Document content regex fallback
+        try {
+            const docMatch = document.documentElement.innerHTML.match(/"DTSGInitialData",\[\],\{"token":"([^"]+)"\}/);
+            if (docMatch) return docMatch[1];
+        } catch (e) {}
+
         return null;
     }
 
@@ -479,6 +494,12 @@ class PF_CommentPreview {
             return;
         }
 
+        this._tryExpandClick(post);
+    }
+
+    _tryExpandClick(post) {
+        if (!this._isEnabled() || !post || !document.contains(post)) return;
+
         const attempts = (this.postAttempts.get(post) || 0) + 1;
         this.postAttempts.set(post, attempts);
 
@@ -539,8 +560,8 @@ class PF_CommentPreview {
 
         const postId = PF_PostIDResolver.resolve(post);
         if (!postId) {
-            post.dataset.pfCpStatus = 'err-no-id';
-            this._finalizePost(post);
+            post.dataset.pfCpStatus = 'fallback-click';
+            this._tryExpandClick(post);
             return;
         }
 
@@ -561,12 +582,12 @@ class PF_CommentPreview {
             this.fetchCache.set(postId, comments);
             this._updateCommentShell(post, shell, comments);
             post.dataset.pfCpStatus = 'fetched';
+            this._finalizePost(post);
         } else {
-            post.dataset.pfCpStatus = 'err-fetch-empty';
+            post.dataset.pfCpStatus = 'fallback-click';
             if (shell) shell.remove();
+            this._tryExpandClick(post);
         }
-
-        this._finalizePost(post);
     }
 
     _injectCommentShell(post, comments) {
@@ -584,8 +605,11 @@ class PF_CommentPreview {
         shell.className = 'pf-comment-preview-shell';
         shell.innerHTML = `
             <div class="pf-comment-preview-header">
-                <span class="pf-comment-preview-title">Quick Insight</span>
-                <span class="pf-comment-preview-meta">Top Comments</span>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span class="pf-comment-preview-title">Quick Insight</span>
+                    <span class="pf-comment-preview-meta">· Top Comments</span>
+                </div>
+                <span class="pf-comment-preview-expand-btn" title="Open full comments section">Expand All ▾</span>
             </div>
             <div class="pf-comment-preview-body">
                 <div class="pf-comment-preview-loader"></div>
@@ -595,6 +619,16 @@ class PF_CommentPreview {
         this._applyShellStyles(shell);
         actionBar.parentElement.insertBefore(shell, actionBar.nextSibling);
         
+        const expandBtn = shell.querySelector('.pf-comment-preview-expand-btn');
+        if (expandBtn) {
+            expandBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                shell.remove();
+                this._tryExpandClick(post);
+            });
+        }
+
         if (comments) {
             this._updateCommentShell(post, shell, comments);
         }
@@ -644,6 +678,8 @@ class PF_CommentPreview {
                 .pf-comment-preview-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px; }
                 .pf-comment-preview-title { font-weight: 700; font-size: 11px; text-transform: uppercase; color: #1877f2; letter-spacing: 0.5px; }
                 .pf-comment-preview-meta { font-size: 10px; color: #b0b3b8; }
+                .pf-comment-preview-expand-btn { font-size: 11px; color: #1877f2; cursor: pointer; font-weight: 600; padding: 2px 6px; border-radius: 4px; transition: background 0.15s; }
+                .pf-comment-preview-expand-btn:hover { background: rgba(24, 119, 242, 0.15); }
                 .pf-comment-item { display: flex; gap: 10px; margin-bottom: 8px; }
                 .pf-comment-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); }
                 .pf-comment-author { font-weight: 700; font-size: 12px; color: #e4e6eb; }
