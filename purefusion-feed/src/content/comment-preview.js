@@ -25,25 +25,37 @@ class PF_PostIDResolver {
     static resolve(post) {
         if (!post || !post.querySelector) return null;
 
-        // 1. Data-pagelet (usually contains 'FeedUnit_' followed by numeric ID)
-        const pagelet = post.dataset.pagelet || '';
-        const pageletMatch = pagelet.match(/\d{10,}/);
-        if (pageletMatch) return pageletMatch[0];
+        // 1. Check data-pagelet or id attributes on post directly
+        const pagelet = post.dataset.pagelet || post.id || '';
+        const pageletMatch = pagelet.match(/(?:FeedUnit_|post_|story_ring_|\b_)(\d{10,})/);
+        if (pageletMatch) return pageletMatch[1];
 
-        // 2. Share button data / href
-        const shareBtn = post.querySelector('div[aria-label="Send this to friends or post it on your profile."] button, a[href*="sharer.php"]');
-        if (shareBtn) {
-            const href = shareBtn.getAttribute('href') || '';
-            const idMatch = href.match(/[&\?]id=(\d+)/) || href.match(/%2Fposts%2F(\d+)/);
-            if (idMatch) return idMatch[1];
+        // 2. Check data-ft or React props
+        const ftData = post.getAttribute('data-ft') || '';
+        const ftMatch = ftData.match(/"(?:mf_story_key|top_level_post_id|story_fbid)":"?(\d{8,})"?/);
+        if (ftMatch) return ftMatch[1];
+
+        // 3. Comprehensive scan across ALL links inside the post
+        const allLinks = post.querySelectorAll('a[href]');
+        for (const link of allLinks) {
+            const href = link.getAttribute('href') || '';
+            if (!href || href.startsWith('#') || href.includes('javascript:')) continue;
+
+            // Pattern A: fbid / story_fbid / multi_permalinks queries
+            const queryMatch = href.match(/[?&](?:fbid|story_fbid|multi_permalinks|id|v)=(\d{8,})/);
+            if (queryMatch) return queryMatch[1];
+
+            // Pattern B: path-based /posts/123456, /permalink/123456, /videos/123456, /photo/123456
+            const pathMatch = href.match(/\/(?:posts|permalink|videos|photo|watch|story)\/(?:[^/]+\/)?(\d{8,})/);
+            if (pathMatch) return pathMatch[1];
         }
 
-        // 3. Post timestamp link
-        const tsLink = post.querySelector('a[href*="/posts/"], a[href*="/groups/"]');
-        if (tsLink) {
-            const href = tsLink.getAttribute('href') || '';
-            const idMatch = href.match(/\/posts\/(\d+)/) || href.match(/\/permalink\/(\d+)/) || href.match(/multi_permalinks=(\d+)/);
-            if (idMatch) return idMatch[1];
+        // 4. Fallback check for any long 10+ digit ID in share button or comment elements
+        const anyIdEl = post.querySelector('[data-ft*="top_level_post_id"], [name="ft_ent_identifier"]');
+        if (anyIdEl) {
+            const idVal = anyIdEl.getAttribute('name') === 'ft_ent_identifier' ? anyIdEl.value : anyIdEl.getAttribute('data-ft');
+            const idMatch = (idVal || '').match(/\d{8,}/);
+            if (idMatch) return idMatch[0];
         }
 
         return null;
