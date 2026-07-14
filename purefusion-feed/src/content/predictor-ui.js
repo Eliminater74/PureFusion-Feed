@@ -666,18 +666,25 @@ Object.assign(window.PF_Predictor.prototype, {
     },
 
     _insertCredibilityElement(postNode, element) {
-        if (!postNode || !element) return;
+        if (!postNode || !element || (this._isCommentNode && this._isCommentNode(postNode))) return;
+
+        const visualHost = this._resolvePostVisualHost(postNode);
+        if (visualHost && visualHost !== postNode && (!this._isCommentNode || !this._isCommentNode(visualHost))) {
+            const inlineAnchor = this._ensureInlineCredAnchor(visualHost);
+            this._upsertCredElement(inlineAnchor, element);
+            return;
+        }
 
         const dialogHost = this._getDialogHost(postNode);
-
-        if (dialogHost) {
+        if (dialogHost && postNode.matches && postNode.matches('[role="dialog"]')) {
             this._insertIntoDialogAnchor(dialogHost, element);
             return;
         }
 
-        const visualHost = this._resolvePostVisualHost(postNode);
-        if (!visualHost) {
-            postNode.prepend(element);
+        if (!visualHost || (this._isCommentNode && this._isCommentNode(visualHost))) {
+            if (!this._isCommentNode || !this._isCommentNode(postNode)) {
+                postNode.prepend(element);
+            }
             return;
         }
 
@@ -800,6 +807,7 @@ Object.assign(window.PF_Predictor.prototype, {
 
     _resolvePostVisualHost(postNode) {
         if (!postNode) return null;
+        if (this._isCommentNode && this._isCommentNode(postNode)) return null;
 
         if (!postNode.matches || !postNode.matches('[role="dialog"]')) {
             return postNode;
@@ -808,6 +816,7 @@ Object.assign(window.PF_Predictor.prototype, {
         const dialogCandidates = Array.from(postNode.querySelectorAll('[role="article"], [data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"]'));
         for (const candidate of dialogCandidates) {
             if (!candidate || !candidate.querySelector) continue;
+            if (this._isCommentNode && this._isCommentNode(candidate)) continue;
             const hasText = !!candidate.querySelector(PF_SELECTOR_MAP.postTextBody);
             const hasMedia = !!candidate.querySelector('img, video');
             const hasHeader = !!candidate.querySelector('h3, h4');

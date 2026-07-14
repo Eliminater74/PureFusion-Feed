@@ -602,6 +602,24 @@ class PF_UiTweaks {
         return null;
     }
 
+    _isCommentElement(node) {
+        if (!node || !node.closest) return false;
+        if (node.closest('[aria-label*="Comment by" i], [aria-label*="Reply by" i], [aria-label*="Comentario de" i], [aria-label*="Respuesta de" i], .x1y1aw1k')) {
+            return true;
+        }
+        const article = node.closest('[role="article"]');
+        if (article) {
+            const parentArticleOrFeed = article.parentElement && article.parentElement.closest('[role="article"], [data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"], [role="dialog"]');
+            if (parentArticleOrFeed) {
+                if (parentArticleOrFeed.getAttribute('role') === 'article') return true;
+                const isCommentSection = article.closest('[aria-label*="comment" i], [aria-label*="comentario" i], [role="complementary"], [data-visualcompletion="ignore-dynamic"]');
+                if (isCommentSection) return true;
+                if (article !== parentArticleOrFeed.querySelector('[role="article"]')) return true;
+            }
+        }
+        return false;
+    }
+
     _syncAbsoluteTimestamps(nodes = null) {
         const roots = this._resolveTimestampRoots(nodes);
 
@@ -612,6 +630,11 @@ class PF_UiTweaks {
             root.querySelectorAll('a.pf-abs-date-anchor').forEach((legacyAnchor) => {
                 this._clearAnchorAbsoluteLabel(legacyAnchor);
             });
+            root.querySelectorAll('.pf-post-date-chip').forEach((chip) => {
+                if (this._isCommentElement(chip) || this._isCommentElement(chip.closest('[role="article"]'))) {
+                    chip.remove();
+                }
+            });
 
             const anchors = root.querySelectorAll('a[role="link"][aria-label], a[href][aria-label]');
             anchors.forEach((anchor) => {
@@ -619,12 +642,12 @@ class PF_UiTweaks {
                 if (anchor.closest('.pf-insight-chip, #pf-feed-report-panel, #pf-session-timer')) return;
 
                 const host = this._resolveTimestampHost(anchor);
-                if (!host) {
+                if (!host && !this._isCommentElement(anchor)) {
                     this._clearAnchorAbsoluteLabel(anchor);
                     return;
                 }
 
-                if (!this._isLikelyTimestampAnchor(anchor, host)) {
+                if (host && !this._isLikelyTimestampAnchor(anchor, host)) {
                     this._clearAnchorAbsoluteLabel(anchor);
                     return;
                 }
@@ -636,6 +659,15 @@ class PF_UiTweaks {
                 }
 
                 const currentText = String(anchor.getAttribute('data-pf-abs-date') || '');
+                if (this._isCommentElement(anchor) || (host && this._isCommentElement(host))) {
+                    if (anchor.title !== absoluteText) anchor.title = absoluteText;
+                    if (!anchor.classList.contains('pf-abs-date-anchor') || currentText !== absoluteText) {
+                        anchor.classList.add('pf-abs-date-anchor');
+                        anchor.setAttribute('data-pf-abs-date', absoluteText);
+                    }
+                    return;
+                }
+
                 if (currentText === absoluteText && anchor.classList.contains('pf-abs-date-anchor')) {
                     this._upsertPostDateChip(host, absoluteText);
                     return;
@@ -650,19 +682,21 @@ class PF_UiTweaks {
 
     _resolveTimestampHost(anchor) {
         if (!anchor || !anchor.closest) return null;
+        if (this._isCommentElement(anchor)) return null;
 
         const postHost = anchor.closest('[data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"], [role="article"]');
-        if (postHost) return postHost;
+        if (postHost && !this._isCommentElement(postHost)) return postHost;
 
         const dialog = anchor.closest('[role="dialog"]');
         if (!dialog) return null;
 
         const dialogArticle = dialog.querySelector('[role="article"], [data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"]');
-        return dialogArticle || dialog;
+        if (dialogArticle && !this._isCommentElement(dialogArticle)) return dialogArticle;
+        return null;
     }
 
     _upsertPostDateChip(host, absoluteText) {
-        if (!host || !host.querySelector) return null;
+        if (!host || !host.querySelector || this._isCommentElement(host)) return null;
 
         let chip = host.querySelector('.pf-post-date-chip');
         if (!chip) {

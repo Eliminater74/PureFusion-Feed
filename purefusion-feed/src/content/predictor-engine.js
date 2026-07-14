@@ -179,16 +179,35 @@ class PF_Predictor {
         }
     }
 
+    _isCommentNode(node) {
+        if (!node || !node.closest) return false;
+        if (node.closest('[aria-label*="Comment by" i], [aria-label*="Reply by" i], [aria-label*="Comentario de" i], [aria-label*="Respuesta de" i], .x1y1aw1k')) {
+            return true;
+        }
+        const article = node.closest('[role="article"]');
+        if (article) {
+            const parentArticleOrFeed = article.parentElement && article.parentElement.closest('[role="article"], [data-pagelet^="FeedUnit_"], [data-pagelet^="AdUnit_"], [role="dialog"]');
+            if (parentArticleOrFeed) {
+                if (parentArticleOrFeed.getAttribute('role') === 'article') return true;
+                const isCommentSection = article.closest('[aria-label*="comment" i], [aria-label*="comentario" i], [role="complementary"], [data-visualcompletion="ignore-dynamic"]');
+                if (isCommentSection) return true;
+                if (article !== parentArticleOrFeed.querySelector('[role="article"]')) return true;
+            }
+        }
+        return false;
+    }
+
     _dedupeNestedPosts(posts) {
         if (!Array.isArray(posts) || posts.length <= 1) return Array.isArray(posts) ? posts : [];
 
         return posts.filter((candidate) => {
-            return !posts.some((other) => other !== candidate && candidate.contains && candidate.contains(other));
+            if (this._isCommentNode(candidate)) return false;
+            return !posts.some((other) => other !== candidate && other.contains && other.contains(candidate));
         });
     }
 
     _isLikelyFeedPost(postNode) {
-        if (!postNode || !postNode.matches) return false;
+        if (!postNode || !postNode.matches || this._isCommentNode(postNode)) return false;
 
         const pagelet = String(postNode.getAttribute('data-pagelet') || '');
         if (pagelet.startsWith('FeedUnit_') || pagelet.startsWith('AdUnit_')) return true;

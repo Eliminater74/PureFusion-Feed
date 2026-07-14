@@ -199,24 +199,35 @@ class PF_LLMFeatures {
 
             const wand = document.createElement('div');
             wand.style.cssText = `
-                display: flex; align-items: center; justify-content: center;
-                cursor: pointer; font-size: 20px; z-index: 100;
-                background: transparent; padding: 4px; border-radius: 50%;
-                margin-top: 4px; margin-left: 8px; transition: transform 0.2s;
+                display: inline-flex; align-items: center; justify-content: center;
+                cursor: pointer; font-size: 18px; z-index: 100;
+                background: transparent; padding: 6px; border-radius: 50%;
+                margin: 0 4px; transition: transform 0.2s, background-color 0.2s;
             `;
             wand.innerHTML = '🪄';
             wand.title = 'Draft a smart response via AI';
-            wand.onmouseenter = () => wand.style.transform = 'scale(1.2)';
-            wand.onmouseleave = () => wand.style.transform = 'scale(1)';
+            wand.onmouseenter = () => {
+                wand.style.transform = 'scale(1.15)';
+                wand.style.backgroundColor = 'rgba(128, 128, 128, 0.15)';
+            };
+            wand.onmouseleave = () => {
+                wand.style.transform = 'scale(1)';
+                wand.style.backgroundColor = 'transparent';
+            };
 
-            // Instead of absolute positioning which gets clipped, inject it safely OUTSIDE the input box
-            // For FB dialogs, the input is usually deeply wrapped. Let's find the nearest large container.
-            const safeContainer = box.closest('.x1i10hfl') || box.parentElement.parentElement;
-            if (safeContainer && safeContainer.parentNode) {
-                // Insert it as a sibling AFTER the main text input cluster
-                safeContainer.parentNode.insertBefore(wand, safeContainer.nextSibling);
+            const composer = box.closest('form') || box.closest('[role="presentation"]') || box.closest('.x1i10hfl') || box.parentElement?.parentElement?.parentElement || document;
+            const actionIcon = composer.querySelector('[aria-label*="emoji" i], [aria-label*="Attach a photo" i], [aria-label*="GIF" i], [aria-label*="sticker" i], [aria-label*="Comment" i][role="button"], [aria-label*="Comentar" i][role="button"]');
+            const iconToolbar = actionIcon ? actionIcon.parentElement : null;
+
+            if (iconToolbar) {
+                iconToolbar.insertBefore(wand, iconToolbar.firstChild);
             } else {
-                parent.appendChild(wand); // Fallback
+                const safeContainer = box.closest('.x1i10hfl') || box.parentElement.parentElement;
+                if (safeContainer && safeContainer.parentNode) {
+                    safeContainer.parentNode.insertBefore(wand, safeContainer.nextSibling);
+                } else {
+                    parent.appendChild(wand);
+                }
             }
 
             wand.addEventListener('click', async (e) => {
