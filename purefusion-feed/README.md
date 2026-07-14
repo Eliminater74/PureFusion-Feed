@@ -1,4 +1,4 @@
-# PureFusion Feed v2.2.0
+# PureFusion Feed v2.2.1
 
 > Your Facebook. Filtered. Predicted. Perfected.
 
@@ -31,7 +31,7 @@ PureFusion Feed is a Chrome extension focused on restoring control over Facebook
 
 ## Release Notes
 
-- Current: `v2.2.0`
+- Current: `v2.2.1`
 - Full history: `CHANGELOG.md`
 
 ---

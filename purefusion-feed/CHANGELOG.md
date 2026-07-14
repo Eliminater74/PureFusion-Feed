@@ -2,6 +2,13 @@
 
 All notable changes to PureFusion Feed are documented in this file.
 
+## v2.2.1 - 2026-07-14
+
+### Changed
+- Fixed Facebook comment detection and date-chip injection, enhanced auto comment preview with Smart Inject v3 and full-depth link resolver, updated attribution to Eliminater74.
+
+---
+
 ## v2.2.0 - 2026-05-05
 
 ### Changed
