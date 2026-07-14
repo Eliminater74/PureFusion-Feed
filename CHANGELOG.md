@@ -2,6 +2,18 @@
 
 All notable changes to the PureFusion Feed extension will be documented in this file.
 
+## [2.2.1] - 2026-07-14
+### Added
+- **Auto Comment Preview (Smart Inject v3):** Hardened multi-layer `fb_dtsg` auth token extraction (`require('DTSGInitialData')` and document fallback) to reliably fetch GraphQL top comments on modern Facebook Comet feeds.
+- **Full-Depth Post ID Resolver:** Expanded `PF_PostIDResolver` to inspect all embedded links (`fbid=`, `story_fbid=`, `multi_permalinks=`, `/permalink/`, `/photo/`) and React attributes, enabling instant comment previews across almost 100% of feed posts, group posts, photos, and video cards.
+- **Interactive "Expand All ▾" Trigger:** Added a one-click `Expand All ▾` button inside the Quick Insight comment preview card to instantly open the full live comment thread inline without leaving the feed.
+- **Automatic Click Fallback:** Added seamless fallback routing from GraphQL fetching to progressive DOM click expansion whenever posts have restricted privacy or unresolvable IDs.
+
+### Changed
+- **Comment Section Isolation:** Updated `ui-tweaks.js`, `predictor-engine.js`, and `predictor-ui.js` with precise comment detectors (`_isCommentElement`, `_isCommentNode`) to completely prevent stray `Posted: ...` date chips and credibility badges from injecting into comment threads or over modal close (`X`) buttons.
+- **AI Wand Composer Integration:** Refactored `llm-features.js` to insert the AI response wand (`🪄`) directly inside the Lexical comment composer action bar alongside emoji/GIF icons instead of floating on its own line.
+- **Attribution & i18n:** Updated all welcome screen and 21 internationalized `messages.json` locale translations to attribute development to `Eliminater74`.
+
 ## [1.0.0] - Launch Candidate 1
 ### Added
 - **Core Engine:** Ported complete filter map targeting modern React-based Facebook DOM.

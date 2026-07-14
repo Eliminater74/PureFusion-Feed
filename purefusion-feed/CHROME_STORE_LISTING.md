@@ -32,6 +32,8 @@ PureFusion Feed gives you full control over your Facebook feed. It removes clutt
 ### 2. Reading and Focus Tools
 
 - **Distraction-Free Mode** (`Alt+Shift+F`) — hides both sidebars, centers feed to 680 px for a clean reading view; also accessible from the popup quick toggle
+- **Smart Inline Comment Previews (v3)** — preview top comments ("Quick Insight") directly below posts without clicking, complete with an interactive `Expand All ▾` button and automatic DOM click fallback
+- **Precision Comment Protection** — strict DOM boundaries ensure comment threads stay 100% clean and free of misplaced chips or header tags
 - **Keyboard Shortcuts** — `Alt+Shift+D` opens the in-page Dashboard, `Alt+Shift+H` opens Diagnostics, `Alt+Shift+R` shows the Daily Feed Report; all shortcuts listed in the popup
 - **Reply-Only Mode** — collapses post body text, leaving only comment threads visible; useful for engagement-bait avoidance
 - **Auto-Expand "See More"** — automatically dismisses Facebook's artificial text truncation in all 21 supported languages

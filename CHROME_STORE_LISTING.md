@@ -20,6 +20,8 @@ With a massive suite of features mapped into a beautiful, native settings dashbo
 
 **🖥️ Layout & UI Enhancements**
 - **Widescreen Mode:** Unlock Facebook's center column to stretch across your entire ultrawide monitor.
+- **Smart Inline Comment Previews (v3):** Instantly displays top comments ("Quick Insight") directly below visible feed posts with an interactive `Expand All ▾` button and automatic DOM click fallback.
+- **Precision Comment Protection:** Advanced DOM boundaries guarantee pristine comment threads without stray timestamp chips or UI collisions.
 - **Auto-Expand Comments:** Seamlessly expands "View X Comments" links as you scroll so the whole conversation is always visible.
 - **Forced "All Comments" Sorting:** Automatically switches Facebook's annoying default "Most Relevant" filter back to "All Comments" so nothing is hidden.
 - True Destination Links: Exposes where outbound links actually lead before you click them.
@@ -27,11 +29,11 @@ With a massive suite of features mapped into a beautiful, native settings dashbo
 **🧠 Bring-Your-Own-Key AI (Optional)**
 Plug in your own OpenAI or Google Gemini API keys (saved safely offline in local storage) to unlock advanced features directly in the feed:
 - **TL;DR Summarizer:** Adds an AI button to long posts that generates a 1-sentence summary.
-- **Smart Comment Co-Pilot:** A magical wand next to comment boxes drafts friendly, intelligent replies for you based on the post context.
+- **Smart Comment Co-Pilot:** A magical wand (`🪄`) integrated cleanly into comment boxes drafts friendly, intelligent replies for you based on the post context.
 - **Clickbait Decoder:** Instantly rewrites sensational, rage-bait headlines.
 
 **🧘 Digital Wellbeing**
 Fighting doom-scrolling? Enable Dopamine Breakers like Grayscale Mode, Infinite Scroll Limits (which block posts from loading after a certain limit), and visible session clocks.
 
 **🔒 Zero Tracking. Total Privacy.**
-PureFusion is open source and telemetry-free. We don't read your timeline, we don't harvest metadata, and we don't connect to remote servers. The app lives and operates 100% locally inside your Chrome browser.
+PureFusion Feed is open source and telemetry-free. We don't read your timeline, we don't harvest metadata, and we don't connect to remote servers. The app lives and operates 100% locally inside your Chrome browser across 21 supported languages. Built with ❤️ by Eliminater74.
