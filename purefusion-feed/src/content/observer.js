@@ -18,24 +18,42 @@ class PF_Observer {
         this.processBatch = PF_Helpers.debounce(this._processBatch.bind(this), 150);
         this.queuedNodes = new Set();
         this.pendingMutationRecords = 0;
+        this._feedNode = null;
+        this._feedReplacementPending = false;
     }
 
     start() {
         if (this.isObserving) return;
 
-        // Try to attach directly to the main feed wrapper to limit scope,
-        // but fallback to body if navigation hasn't finished.
-        const target = document.querySelector(PF_SELECTOR_MAP.mainFeedRegion) || document.body;
+        // Watch the document root, not the current [role="feed"] node.
+        // Clicking the Facebook logo (far left) is an in-page route change:
+        // React throws away the feed node and mounts a new one. An observer
+        // attached to the old node never sees that new feed, so every filter
+        // looks like it turned off after returning home.
+        const target = document.documentElement || document.body;
+        this._feedNode = this._currentFeedNode();
 
         this.observer = new MutationObserver((mutations) => {
             let shouldProcess = false;
             this.pendingMutationRecords += mutations.length;
+
+            if (this._feedIdentityChanged()) {
+                this._feedReplacementPending = true;
+                shouldProcess = true;
+                const feed = this._feedNode;
+                if (feed && this.queuedNodes.size < this.maxQueuedNodes) {
+                    this.queuedNodes.add(feed);
+                }
+            }
 
             for (const mutation of mutations) {
                 if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
                     mutation.addedNodes.forEach(node => {
                         // Only process element nodes that might contain content
                         if (node.nodeType === Node.ELEMENT_NODE && this._isProcessableObserverNode(node)) {
+                            if (this._isFeedShellNode(node)) {
+                                this._feedReplacementPending = true;
+                            }
                             if (this.queuedNodes.size >= this.maxQueuedNodes) return;
                             this.queuedNodes.add(node);
                             shouldProcess = true;
@@ -55,19 +73,44 @@ class PF_Observer {
         });
 
         this.isObserving = true;
-        PF_Logger.info('PF_Observer DOM listener attached.');
+        PF_Logger.info('PF_Observer DOM listener attached to document root.');
     }
 
     stop() {
         if (this.observer) {
             this.observer.disconnect();
             this.isObserving = false;
+            this._feedNode = null;
+            this._feedReplacementPending = false;
             PF_Logger.info('PF_Observer paused.');
         }
     }
 
+    _currentFeedNode() {
+        return document.querySelector('[role="feed"]')
+            || document.querySelector('[role="main"]')
+            || null;
+    }
+
+    _feedIdentityChanged() {
+        const next = this._currentFeedNode();
+        if (next === this._feedNode) return false;
+        this._feedNode = next;
+        return !!next;
+    }
+
+    _isFeedShellNode(node) {
+        if (!node || !node.matches) return false;
+        if (node.matches('[role="feed"], [role="main"]')) return true;
+        if (!node.querySelector || node.childElementCount < 4) return false;
+        return !!node.querySelector('[role="feed"], [role="main"]');
+    }
+
     _processBatch() {
-        if (this.queuedNodes.size === 0) return;
+        const feedReplaced = this._feedReplacementPending;
+        this._feedReplacementPending = false;
+
+        if (this.queuedNodes.size === 0 && !feedReplaced) return;
 
         const queued = Array.from(this.queuedNodes);
         const nodeCount = queued.length;
@@ -75,8 +118,14 @@ class PF_Observer {
         this.queuedNodes.clear();
         this.pendingMutationRecords = 0;
 
-        const nodesToProcess = this._prioritizeNodesForDispatch(queued);
-        if (!nodesToProcess.length) return;
+        let nodesToProcess = this._prioritizeNodesForDispatch(queued);
+        if (feedReplaced) {
+            const feed = this._currentFeedNode();
+            if (feed && !nodesToProcess.includes(feed)) {
+                nodesToProcess = [feed].concat(nodesToProcess).slice(0, this.maxDispatchNodes);
+            }
+        }
+        if (!nodesToProcess.length && !feedReplaced) return;
         const dispatchedCount = nodesToProcess.length;
         const droppedCount = Math.max(0, nodeCount - dispatchedCount);
 
@@ -86,8 +135,18 @@ class PF_Observer {
             ? performance.now()
             : Date.now();
 
-        const event = new CustomEvent('pf:nodes_added', { detail: { nodes: nodesToProcess } });
-        document.dispatchEvent(event);
+        if (nodesToProcess.length) {
+            const event = new CustomEvent('pf:nodes_added', {
+                detail: { nodes: nodesToProcess, feedReplaced }
+            });
+            document.dispatchEvent(event);
+        }
+
+        if (feedReplaced) {
+            document.dispatchEvent(new CustomEvent('pf:feed_replaced', {
+                detail: { ts: Date.now() }
+            }));
+        }
 
         const endedAt = (typeof performance !== 'undefined' && performance.now)
             ? performance.now()
