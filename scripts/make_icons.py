@@ -15,14 +15,13 @@ Requires Pillow.
 import math
 import os
 
-from PIL import Image, ImageEnhance, ImageFilter
+from PIL import Image, ImageDraw, ImageEnhance
 
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 _ICONS_DIR = os.path.normpath(os.path.join(_SCRIPT_DIR, "..", "purefusion-feed", "icons"))
 _SOURCE = os.path.normpath(os.path.join(_SCRIPT_DIR, "assets", "mark-source.png"))
 
 SIZES = (16, 32, 48, 128)
-MASTER = 512
 
 
 def _ensure_source():
@@ -56,61 +55,88 @@ def _knock_out(image):
 
 
 def _disc(size):
-    """Solid circular badge. Transparent corners, so Chrome's round button is filled."""
+    """Full-bleed circle. The outer pixels are bright so they do not vanish on a dark toolbar."""
     image = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     pixels = image.load()
     center = (size - 1) / 2.0
-    radius = size / 2.0 - 0.35
+    radius = size / 2.0
     for y in range(size):
         for x in range(size):
             distance = math.hypot(x - center, y - center)
             if distance > radius:
                 continue
-            t = distance / radius
-            # Indigo center, brighter violet rim so the edge reads on a dark toolbar.
-            red = int(36 + t * 78)
-            green = int(18 + t * 28)
-            blue = int(92 + t * 120)
-            if t > 0.86:
-                edge = (t - 0.86) / 0.14
-                red = int(red * (1 - edge) + 120 * edge)
-                green = int(green * (1 - edge) + 210 * edge)
-                blue = int(blue * (1 - edge) + 255 * edge)
-            pixels[x, y] = (red, green, blue, 255)
+            t = distance / max(radius, 0.001)
+            # Light violet body. The rim is near-white cyan so the full circle reads.
+            red = int(92 + t * 40)
+            green = int(48 + t * 150)
+            blue = int(210 + t * 40)
+            if t > 0.72:
+                edge = (t - 0.72) / 0.28
+                red = int(red * (1 - edge) + 236 * edge)
+                green = int(green * (1 - edge) + 252 * edge)
+                blue = 255
+            pixels[x, y] = (min(255, red), min(255, green), min(255, blue), 255)
     return image
 
 
-def _build_master():
+def _swirl_layer(size):
+    """Oversized swirl, cropped by the canvas so the bright lines reach the rim."""
     source = Image.open(_SOURCE).convert("RGBA")
-    # The faint horizontal streaks pad the artwork. Crop the square body of the swirl.
-    side = int(source.width * 0.62)
+    side = int(source.width * 0.5)
     left = (source.width - side) // 2
-    top = int(source.height * 0.16)
+    top = int(source.height * 0.2)
     mark = _knock_out(source.crop((left, top, left + side, top + side)))
-    mark = ImageEnhance.Contrast(mark).enhance(1.35)
-    mark = ImageEnhance.Color(mark).enhance(1.25)
+    mark = ImageEnhance.Contrast(mark).enhance(1.6)
+    mark = ImageEnhance.Brightness(mark).enhance(1.35)
+    mark = ImageEnhance.Color(mark).enhance(1.4)
 
-    plate = _disc(MASTER)
-    mark_size = int(MASTER * 0.92)
-    mark = mark.resize((mark_size, mark_size), Image.Resampling.LANCZOS)
-    offset = (MASTER - mark_size) // 2
-    plate.alpha_composite(mark, (offset, offset))
+    blown = int(size * 1.55)
+    mark = mark.resize((blown, blown), Image.Resampling.LANCZOS)
+    layer = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    offset = (size - blown) // 2
+    layer.paste(mark, (offset, offset), mark)
+    return layer
 
-    # A soft bloom so the core stays visible after the image is shrunk to 16px.
-    glow = plate.filter(ImageFilter.GaussianBlur(radius=MASTER * 0.012))
-    return Image.blend(glow, plate, 0.82)
+
+def _bold_strokes(image):
+    """Thick arcs on top of the photo swirl so 16px still fills the button."""
+    size = image.size[0]
+    draw = ImageDraw.Draw(image)
+    stroke = max(2, round(size * 0.16))
+    pad = max(0, round(size * 0.06))
+    box = [pad, pad, size - 1 - pad, size - 1 - pad]
+    draw.arc(box, start=200, end=40, fill=(255, 255, 255, 255), width=stroke)
+    inner = pad + round(stroke * 0.85)
+    if inner * 2 < size - 2:
+        box_inner = [inner, inner, size - 1 - inner, size - 1 - inner]
+        draw.arc(box_inner, start=10, end=190, fill=(186, 255, 255, 255), width=max(2, stroke - 1))
+    return image
+
+
+def _mask_circle(image):
+    size = image.size[0]
+    mask = Image.new("L", (size, size), 0)
+    ImageDraw.Draw(mask).ellipse((0, 0, size - 1, size - 1), fill=255)
+    result = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    result.paste(image, (0, 0), mask)
+    return result
+
+
+def _render(size):
+    plate = _disc(size)
+    plate.alpha_composite(_swirl_layer(size))
+    plate = _bold_strokes(plate)
+    return _mask_circle(plate)
 
 
 def main():
     os.makedirs(_ICONS_DIR, exist_ok=True)
     _ensure_source()
-    master = _build_master()
 
     for size in SIZES:
-        icon = master.resize((size, size), Image.Resampling.LANCZOS)
-        if size <= 32:
-            icon = ImageEnhance.Contrast(icon).enhance(1.18)
-            icon = ImageEnhance.Sharpness(icon).enhance(1.4)
+        # Draw at 4x and downscale so the 16px icon stays a solid disc, not a blurry speck.
+        scale = 4 if size <= 32 else 2
+        icon = _render(size * scale).resize((size, size), Image.Resampling.LANCZOS)
         out_path = os.path.join(_ICONS_DIR, f"icon{size}.png")
         icon.save(out_path, format="PNG")
         print(f"Wrote {out_path}")
