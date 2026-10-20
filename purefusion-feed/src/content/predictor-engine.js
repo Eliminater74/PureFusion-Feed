@@ -111,7 +111,9 @@ class PF_Predictor {
         const root = document.body || document.documentElement;
         if (!root || !root.querySelectorAll) return;
 
-        const feedRoot = document.querySelector(PF_SELECTOR_MAP.mainFeedRegion) || root;
+        const feedRoot = (typeof PF_queryFeedRoot === 'function' && PF_queryFeedRoot())
+            || document.querySelector(PF_SELECTOR_MAP.mainFeedRegion)
+            || root;
 
         // Performance: only run full leaked chip cleanup if the document seems busy or specifically on forceRescore
         if (forceRescore || (Math.random() > 0.82)) {
@@ -218,7 +220,7 @@ class PF_Predictor {
 
         const role = String(postNode.getAttribute('role') || '').toLowerCase();
         if (role === 'article') {
-            const insideFeed = !!postNode.closest(PF_SELECTOR_MAP.mainFeedRegion);
+            const insideFeed = !!postNode.closest('[role="feed"], [role="main"]');
             const insideDialog = !!postNode.closest('[role="dialog"]');
             const hasPostText = !!postNode.querySelector(PF_SELECTOR_MAP.postTextBody);
             const hasHeader = !!postNode.querySelector('h3, h4');
@@ -917,7 +919,8 @@ class PF_Predictor {
     }
 
     _countRenderableFeedPosts(sampleNode) {
-        const scopeRoot = (sampleNode && sampleNode.closest && sampleNode.closest(PF_SELECTOR_MAP.mainFeedRegion))
+        const scopeRoot = (sampleNode && sampleNode.closest && sampleNode.closest('[role="feed"], [role="main"]'))
+            || (typeof PF_queryFeedRoot === 'function' && PF_queryFeedRoot())
             || document.querySelector(PF_SELECTOR_MAP.mainFeedRegion)
             || document.body
             || document.documentElement;

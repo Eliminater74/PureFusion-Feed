@@ -35,6 +35,7 @@ class PF_Cleaner {
             'sponsrad',     // SV
             'sponsoreret',  // DA
             'sponset',      // NO
+            'paid partnership',
         ];
         this._processedNodes = new WeakSet();
         this._nodeQueue = [];
@@ -233,12 +234,16 @@ class PF_Cleaner {
         if (this.settings.filters.hideReels) this.removeReelsTray(rootNode);
         if (this.settings.filters.hideStories) this.removeStoriesTray(rootNode);
         if (this.settings.filters.hideMemories) this.removeMemoriesPosts(rootNode);
-        if (this.settings.filters.hideMarketplace) this.hideTarget(rootNode, PF_SELECTOR_MAP.marketplaceTray || '[data-pagelet*="Marketplace"]', 'Marketplace Tray');
+        if (this.settings.filters.hideMarketplace) this.removeMarketplaceInjections(rootNode);
         if (this.settings.filters.hideMarketplace) {
             // General marketplace injections in the feed often share the 'suggested' wrappers or a specific aria-label
             // For safety we catch strings here
             const marketplaceNodes = PF_Helpers.findContains(rootNode, '[role="article"]', 'Marketplace');
-            marketplaceNodes.forEach(node => this._hidePostNode(PF_Helpers.getClosest(node, PF_SELECTOR_MAP.postContainer), 'Marketplace Unit'));
+            marketplaceNodes.forEach(node => {
+                if (node.closest('[role="navigation"], [role="banner"], [role="complementary"]')) return;
+                const wrap = this._resolveFeedPostWrapper(node);
+                if (wrap) this._hidePostNode(wrap, 'Marketplace Unit');
+            });
         }
 
         // F.B. Purity Parity Feature: Algorithmic Friend Activity (X liked this, Y commented on this)
@@ -484,6 +489,36 @@ class PF_Cleaner {
             clearInterval(this._recoveryIntervalId);
             this._recoveryIntervalId = null;
         }
+    }
+
+    /**
+     * Pagelet wrappers are gone on the feed Facebook mounts after a logo
+     * click. Fall back to the outermost article so a sponsored label or
+     * reel link still hides the card instead of nothing.
+     */
+    _resolveFeedPostWrapper(node) {
+        if (!node || !node.closest) return null;
+
+        const inChrome = node.closest('[role="complementary"], [role="navigation"], [role="banner"]');
+        const pagelet = (typeof PF_Helpers !== 'undefined' && PF_SELECTOR_MAP)
+            ? PF_Helpers.getClosest(node, PF_SELECTOR_MAP.postContainer)
+            : null;
+
+        if (inChrome) return pagelet || null;
+        if (pagelet) return pagelet;
+
+        let article = node.matches && node.matches('[role="article"]')
+            ? node
+            : node.closest('[role="article"]');
+        if (!article) return null;
+
+        let parentArticle = article.parentElement && article.parentElement.closest('[role="article"]');
+        while (parentArticle) {
+            article = parentArticle;
+            parentArticle = article.parentElement && article.parentElement.closest('[role="article"]');
+        }
+
+        return article;
     }
 
     hideTarget(rootNode, selector, reason) {

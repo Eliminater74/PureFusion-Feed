@@ -16,6 +16,7 @@
     "PF_I18n": "readonly",
     "PF_DEFAULT_SETTINGS": "readonly",
     "PF_SELECTOR_MAP": "readonly",
+    "PF_queryFeedRoot": "readonly",
     "PF_RuleEngine": "readonly"
   },
   "rules": {

@@ -1310,7 +1310,8 @@ class PF_Wellbeing {
         this.isPaused = true;
         
         // Find the bottom of the feed and inject a massive break wall
-        const feed = document.querySelector(PF_SELECTOR_MAP.mainFeedRegion);
+        const feed = (typeof PF_queryFeedRoot === 'function' && PF_queryFeedRoot())
+            || document.querySelector(PF_SELECTOR_MAP.mainFeedRegion);
         if (!feed) return;
 
         const breakWall = document.createElement('div');

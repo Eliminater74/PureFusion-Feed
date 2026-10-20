@@ -1073,8 +1073,18 @@ Object.assign(window.PF_Cleaner.prototype, {
         return true;
     },
     removeReelsTray(rootNode) {
-        // 1. Map Check
-        this.hideTarget(rootNode, PF_SELECTOR_MAP.reelsTray, 'Reels Target Array');
+        // 1. Map check. Skip the left nav "Reels" shortcut — that is a sidebar
+        // toggle, not an injected feed tray. Resolve to the post card when
+        // the label sits on an inner node of the new Home feed.
+        if (rootNode && rootNode.querySelectorAll && PF_SELECTOR_MAP.reelsTray) {
+            rootNode.querySelectorAll(PF_SELECTOR_MAP.reelsTray).forEach((node) => {
+                if (node.closest('[role="navigation"], [role="banner"], [role="complementary"]')) return;
+                const postWrapper = this._resolveFeedPostWrapper(node) || node;
+                if (postWrapper && !postWrapper.dataset.pfHidden) {
+                    this._hidePostNode(postWrapper, 'Reels Tray Heuristic');
+                }
+            });
+        }
 
         // 2. Aria-label structural scan — catches FB layouts without data-pagelet
         const ariaReels = rootNode.querySelectorAll
@@ -1082,11 +1092,11 @@ Object.assign(window.PF_Cleaner.prototype, {
             : [];
         ariaReels.forEach(node => {
             const label = (node.getAttribute('aria-label') || '').trim();
-            if (/^reels\b/i.test(label)) {
-                const postWrapper = PF_Helpers.getClosest(node, PF_SELECTOR_MAP.postContainer) || node;
-                if (postWrapper && !postWrapper.dataset.pfHidden) {
-                    this._hidePostNode(postWrapper, 'Reels Tray Heuristic');
-                }
+            if (!/^reels\b/i.test(label)) return;
+            if (node.closest('[role="navigation"], [role="banner"], [role="complementary"]')) return;
+            const postWrapper = this._resolveFeedPostWrapper(node) || node;
+            if (postWrapper && !postWrapper.dataset.pfHidden) {
+                this._hidePostNode(postWrapper, 'Reels Tray Heuristic');
             }
         });
 
@@ -1097,7 +1107,8 @@ Object.assign(window.PF_Cleaner.prototype, {
             // "Reels" (exact), "Reels and short videos", "Reels for you", etc.
             // /^reels\b/i guards against matching unrelated longer sentences.
             if (/^reels\b/i.test(text) && text.length < 60) {
-                const postWrapper = PF_Helpers.getClosest(node, PF_SELECTOR_MAP.postContainer)
+                if (node.closest('[role="navigation"], [role="banner"], [role="complementary"]')) return;
+                const postWrapper = this._resolveFeedPostWrapper(node)
                     || node.closest('[data-pagelet]')
                     || node.parentElement?.parentElement?.parentElement?.parentElement;
                 if (postWrapper && !postWrapper.dataset.pfHidden) {
@@ -1149,9 +1160,8 @@ Object.assign(window.PF_Cleaner.prototype, {
 
         const addCandidate = (node) => {
             if (!node) return;
-            const wrapper = PF_Helpers.getClosest(node, PF_SELECTOR_MAP.postContainer, 8)
-                || PF_Helpers.getClosest(node, '[data-pagelet*="Reels"], [data-pagelet*="Shorts"]', 8)
-                || (node.matches && node.matches(PF_SELECTOR_MAP.postContainer) ? node : null);
+            const wrapper = this._resolveFeedPostWrapper(node)
+                || PF_Helpers.getClosest(node, '[data-pagelet*="Reels"], [data-pagelet*="Shorts"]', 8);
             if (!wrapper) return;
             if (wrapper.dataset?.pfHidden === 'true') return;
             found.add(wrapper);
@@ -1187,20 +1197,48 @@ Object.assign(window.PF_Cleaner.prototype, {
         this._reelsLimitNoticeShown = false;
     },
     removeStoriesTray(rootNode) {
-        // 1. Map Check
-        this.hideTarget(rootNode, PF_SELECTOR_MAP.storiesTray, 'Stories Target Array');
-
-        // 2. Text Heuristic Check
-        // Stories bar almost always contains exactly "Create story"
-        const spans = PF_Helpers.findContains(rootNode, 'span, div', 'Create story');
-        spans.forEach(node => {
-            if (node.textContent.trim() === 'Create story') {
-                // Find the main horizontal scrolling wrapper
-                // FB uses many nested divs, we want to find the one bounding the entire strip.
-                const storyWrap = PF_Helpers.getClosest(node, 'div[data-pagelet]') || node.parentElement.parentElement.parentElement.parentElement.parentElement;
+        if (rootNode && rootNode.querySelectorAll && PF_SELECTOR_MAP.storiesTray) {
+            rootNode.querySelectorAll(PF_SELECTOR_MAP.storiesTray).forEach((node) => {
+                if (node.closest('[role="navigation"], [role="banner"], [role="complementary"]')) return;
+                const storyWrap = this._resolveFeedPostWrapper(node)
+                    || PF_Helpers.getClosest(node, 'div[data-pagelet]')
+                    || node;
                 if (storyWrap && !storyWrap.dataset.pfHidden) {
                     this._hidePostNode(storyWrap, 'Stories Tray Heuristic');
                 }
+            });
+        }
+
+        // Stories bar still contains a create control. Newer Home copy is
+        // "Create a story" and the control is often only an aria-label.
+        const spans = PF_Helpers.findContains(rootNode, 'span, div', 'Create story')
+            .concat(PF_Helpers.findContains(rootNode, 'span, div', 'Create a story'));
+        spans.forEach(node => {
+            const text = (node.textContent || '').trim().toLowerCase();
+            if (text !== 'create story' && text !== 'create a story') return;
+            if (node.closest('[role="navigation"], [role="banner"], [role="complementary"]')) return;
+            const storyWrap = this._resolveFeedPostWrapper(node)
+                || PF_Helpers.getClosest(node, 'div[data-pagelet]')
+                || node.parentElement?.parentElement?.parentElement?.parentElement?.parentElement;
+            if (storyWrap && !storyWrap.dataset.pfHidden) {
+                this._hidePostNode(storyWrap, 'Stories Tray Heuristic');
+            }
+        });
+    },
+    removeMarketplaceInjections(rootNode) {
+        if (!rootNode || !rootNode.querySelectorAll) return;
+
+        const selectors = [
+            PF_SELECTOR_MAP.marketplaceTray,
+            '[aria-label="Marketplace"]',
+            '[aria-label^="Marketplace,"]'
+        ].filter(Boolean);
+
+        rootNode.querySelectorAll(selectors.join(', ')).forEach((node) => {
+            if (node.closest('[role="navigation"], [role="banner"], [role="complementary"]')) return;
+            const wrap = this._resolveFeedPostWrapper(node) || node;
+            if (wrap && !wrap.dataset.pfHidden) {
+                this._hidePostNode(wrap, 'Marketplace Unit');
             }
         });
     },
@@ -1218,7 +1256,15 @@ Object.assign(window.PF_Cleaner.prototype, {
         }
     },
     applyImageSubjectFilters(rootNode) {
-        const posts = rootNode.querySelectorAll?.(PF_SELECTOR_MAP.postContainer) || [];
+        const posts = [];
+        if (rootNode && rootNode.querySelectorAll) {
+            rootNode.querySelectorAll(PF_SELECTOR_MAP.postContainer).forEach((post) => posts.push(post));
+            rootNode.querySelectorAll('[role="article"]').forEach((article) => {
+                if (article.parentElement?.closest('[role="article"]')) return;
+                if (article.closest('[role="complementary"], [role="navigation"], [role="banner"]')) return;
+                posts.push(article);
+            });
+        }
         
         posts.forEach(post => {
             if (post.dataset?.pfHidden === 'true') return;
@@ -1436,7 +1482,7 @@ Object.assign(window.PF_Cleaner.prototype, {
                 // If both rects are zero (off-screen / background tab) skip the guard
                 // and rely solely on text-length + token matching.
                 const bothZero = postRect.top === 0 && rect.top === 0 && postRect.height === 0;
-                if (!bothZero && rect.top - postRect.top > 120) continue;
+                if (!bothZero && rect.top - postRect.top > 180) continue;
             }
 
             if (tokens.some(token =>

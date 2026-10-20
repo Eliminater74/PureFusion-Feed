@@ -46,8 +46,13 @@ Object.assign(window.PF_Cleaner.prototype, {
                 'a[href*="about_ads"]',
                 'a[href*="adchoices"]',
                 'a[href*="adabouturl"]',
+                'a[href*="ad_id="]',
+                'a[href*="ad_imp"]',
+                'a[href*="entry_product=ad"]',
                 'a[href*="facebook.com/ads"]',
                 'a[href*="fb.com/ads"]',
+                '[aria-label*="Why am I seeing this ad" i]',
+                '[aria-label*="Why you\'re seeing this ad" i]',
                 // Content Flow Token (_cft_) in href = Facebook ad tracking parameter.
                 // FB appends this exclusively to links inside sponsored posts.
                 // Both uppercase (%5B) and lowercase (%5b) percent-encoding variants covered.
@@ -126,8 +131,9 @@ Object.assign(window.PF_Cleaner.prototype, {
         for (const indicator of targets) {
             // Skip indicators inside comment dialogs — FB uses identical markup for both.
             if (indicator.closest('[role="dialog"]')) continue;
+            if (indicator.closest('[role="navigation"], [role="banner"]')) continue;
 
-            const postWrapper = PF_Helpers.getClosest(indicator, PF_SELECTOR_MAP.postContainer);
+            const postWrapper = this._resolveFeedPostWrapper(indicator);
             if (postWrapper) {
                 this._hidePostNode(postWrapper, 'Sponsored Post (Label Heuristic)');
             }

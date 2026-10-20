@@ -15,7 +15,10 @@ const SELECTOR_MAP = {
     // FEED & POST CONTAINERS
     // ------------------------------------------------------------------------
     
-    // The main scrollable feed container (typically role="feed" or main content area)
+    // The main scrollable feed container.
+    // Current Comet often omits role="feed" after a client-side return to Home
+    // and leaves the posts inside role="main". Callers that need one node
+    // should use PF_queryFeedRoot(), which prefers the feed role.
     mainFeedRegion: '[role="feed"]',
     
     // An individual post within the feed, or a popup modal containing a post.
@@ -97,6 +100,12 @@ const SELECTOR_MAP = {
         'a[href*="ad_preferences"]',
         'a[href*="about_ads"]',
         'a[href*="adabouturl"]',
+        'a[href*="ad_id="]',
+        'a[href*="ad_imp"]',
+        'a[href*="entry_product=ad"]',
+        '[aria-label*="Sponsored" i]',
+        '[aria-label*="Paid partnership" i]',
+        '[aria-label*="Why am I seeing this ad" i]',
         // NOTE: [attributionsrc*="privacy_sandbox"] and [attributionsrc*="comet/register"] removed.
         // Both appear on organic comment profile links (every commenter's avatar/name),
         // not exclusive to ads. Caused every comment to be falsely hidden.
@@ -132,8 +141,22 @@ const SELECTOR_MAP = {
         '[aria-label^="Reels,"]',
         '[role="region"][aria-label*="Reels" i]',
         '[aria-label*="Reels and short videos" i]',
+        '[aria-label="Reel"]',
+        '[aria-label^="Reel,"]',
     ].join(', '),
-    storiesTray: '[data-pagelet="Stories"]',
+    storiesTray: [
+        '[data-pagelet="Stories"]',
+        '[data-pagelet*="Stories"]',
+        '[aria-label="Stories"]',
+        '[aria-label^="Stories,"]',
+        '[role="region"][aria-label*="Stories" i]',
+        '[aria-label="Create story"]',
+        '[aria-label="Create a story"]',
+    ].join(', '),
+    marketplaceTray: [
+        '[data-pagelet*="Marketplace"]',
+        '[role="region"][aria-label*="Marketplace" i]',
+    ].join(', '),
 
     // ------------------------------------------------------------------------
     // LAYOUT PIECES (SIDEBARS, HEADER)
@@ -348,6 +371,16 @@ const SELECTOR_MAP = {
     }
 };
 
+// Prefer role="feed" when Facebook still renders one. After a logo click back
+// to Home, Comet often keeps posts only under role="main".
+function PF_queryFeedRoot(scope) {
+    const root = scope && typeof scope.querySelector === 'function' ? scope : document;
+    return root.querySelector('[role="feed"]') || root.querySelector('[role="main"]') || null;
+}
+
 // Make available globally
-if (typeof module !== 'undefined') module.exports = { SELECTOR_MAP };
-if (typeof window !== 'undefined') window.PF_SELECTOR_MAP = SELECTOR_MAP;
+if (typeof module !== 'undefined') module.exports = { SELECTOR_MAP, PF_queryFeedRoot };
+if (typeof window !== 'undefined') {
+    window.PF_SELECTOR_MAP = SELECTOR_MAP;
+    window.PF_queryFeedRoot = PF_queryFeedRoot;
+}
