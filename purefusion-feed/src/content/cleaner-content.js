@@ -1116,6 +1116,28 @@ Object.assign(window.PF_Cleaner.prototype, {
                 }
             }
         });
+
+        // A horizontal reel carousel on the new Home feed is one article that
+        // links to several different /reel/ URLs. A single shared reel stays.
+        if (rootNode.querySelectorAll) {
+            rootNode.querySelectorAll('[role="article"]').forEach((article) => {
+                if (article.dataset.pfHidden === 'true') return;
+                if (article.parentElement?.closest('[role="article"]')) return;
+                if (article.closest('[role="navigation"], [role="banner"], [role="complementary"]')) return;
+
+                const hrefs = new Set();
+                article.querySelectorAll('a[href*="/reel/"], a[href*="/reels/"]').forEach((link) => {
+                    const href = (link.getAttribute('href') || '').split('?')[0];
+                    if (href) hrefs.add(href);
+                });
+                if (hrefs.size < 2) return;
+
+                const wrapper = this._resolveFeedPostWrapper(article) || article;
+                if (wrapper && !wrapper.dataset.pfHidden) {
+                    this._hidePostNode(wrapper, 'Reels Tray Heuristic');
+                }
+            });
+        }
     },
     applyReelsSessionLimiter(rootNode) {
         const wellbeing = this.settings?.wellbeing;
@@ -1458,7 +1480,11 @@ Object.assign(window.PF_Cleaner.prototype, {
     _hasSuggestedSubheaderLabel(postNode) {
         const tokens = [
             'suggested for you', 'recommended for you',      // EN
+            'suggested post', 'suggested posts', 'suggested reel', 'suggested reels',
+            'posts you might like', 'reels you might like',
+            'we think you might like',
             'sugerido para ti', 'recomendado para ti',        // ES
+            'publicacion sugerida', 'publicaciones sugeridas',
             'suggere pour vous', 'recommande pour vous',      // FR
             'fur dich empfohlen', 'empfohlen fur dich',       // DE
             'consigliato per te', 'raccomandato per te',      // IT
