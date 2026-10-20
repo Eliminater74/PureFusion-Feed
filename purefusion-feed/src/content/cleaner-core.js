@@ -459,30 +459,23 @@ class PF_Cleaner {
     }
 
     _checkFeedRecovery() {
-        if (this._panicMode) return;
+        // Only undo a hide that swallowed the page itself (feed, main, or the
+        // top bar). Do not treat a home feed whose first paint is all ads,
+        // reels, and suggestions as a broken feed.
+        //
+        // The old check did that: zero visible articles plus any hidden node
+        // unhid every filter and latched _panicMode, so later sweeps returned
+        // immediately. That fired every time the Facebook logo rebuilt Home,
+        // which is why blocked content came back and stayed back.
+        const structural = document.querySelectorAll(
+            '[role="feed"][data-pf-hidden="true"], [role="main"][data-pf-hidden="true"], [role="banner"][data-pf-hidden="true"]'
+        );
 
-        const feed = document.querySelector('[role="feed"]');
-        if (!feed) return;
-
-        const hiddenByPF = feed.querySelectorAll('[data-pf-hidden="true"]').length;
-        if (!hiddenByPF) return;
-
-        const visibleArticles = Array.from(feed.querySelectorAll('[role="article"]')).filter((node) => {
-            if (!node || node.dataset.pfHidden === 'true') return false;
-            const rect = node.getBoundingClientRect ? node.getBoundingClientRect() : null;
-            return !!rect && rect.width > 0 && rect.height > 0;
-        }).length;
-
-        if (visibleArticles > 0) return;
-
-        PF_Logger.warn(`Cleaner panic recovery activated. Hidden feed nodes: ${hiddenByPF}.`);
-        this._panicMode = true;
-
-        document.querySelectorAll('[data-pf-hidden="true"]').forEach((node) => {
-            if (!node) return;
+        structural.forEach((node) => {
             node.style.removeProperty('display');
             delete node.dataset.pfHidden;
             delete node.dataset.pfReason;
+            PF_Logger.warn('Restored a structural container that a filter had hidden.');
         });
     }
 
