@@ -2,6 +2,12 @@
 
 All notable changes to the PureFusion Feed extension will be documented in this file.
 
+## [2.3.0] - 2026-10-20
+### Fixed
+- **Home return from the Facebook logo:** Clicking the Facebook logo on the far left (or Home) no longer drops feed filters. That control is a client-side route change: Facebook destroys the feed node and mounts a new one. The observer was attached to the old node, so ads, reels, suggestions, and the other blocks never ran on the feed that came back.
+- **Recovery watchdog:** A home feed whose first paint was only ads, reels, and suggestions used to look "empty." The watchdog then unhid every filtered post and latched panic mode, so later sweeps did nothing. Recovery now only restores the feed, main column, or top bar if a filter hid one of those containers.
+- **Current Home markup:** Sponsored labels, Reels, Stories, and Marketplace injections are resolved to the post card when Facebook omits `FeedUnit` pagelets and `role="feed"`. Paid partnership labels and current ad-link markers are included. Left-nav Reels and Marketplace shortcuts are left alone.
+
 ## [2.2.1] - 2026-07-14
 ### Added
 - **Auto Comment Preview (Smart Inject v3):** Hardened multi-layer `fb_dtsg` auth token extraction (`require('DTSGInitialData')` and document fallback) to reliably fetch GraphQL top comments on modern Facebook Comet feeds.
