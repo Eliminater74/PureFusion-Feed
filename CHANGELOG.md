@@ -2,6 +2,20 @@
 
 All notable changes to the PureFusion Feed extension will be documented in this file.
 
+## [2.4.0] - 2026-10-20
+### Added
+- **Friend-activity filter:** Hides posts Facebook inserted only because a friend liked, commented, or replied ("Jane liked this"). On by default. Ordinary posts stay. Toggle it from the popup or Options.
+- **Stories quick switch:** The popup Reels row no longer pretends to hide Stories. Stories has its own switch and stays off until you turn it on.
+
+### Fixed
+- **Sponsored labels on the main ad blocker:** Home ads that only show Sponsored or Paid partnership, with no `/ads/about` link, are hidden while Block Ads is on. Turning ads off restores them.
+- **Reel carousels:** A Home card that links to two or more different `/reel/` URLs is hidden with Reels. A single reel a friend shared is left alone.
+- **Newer Suggested headings:** "Suggested post", "Suggested reel", and "Posts you might like" are treated like "Suggested for you".
+- **Popup toggles that did not save:** The Enhanced Ad Filter switch, and the new Liked-this switch, now persist when you flip them.
+
+### Changed
+- Ad blocker status copy now says it covers Sponsored and Paid partnership labels.
+
 ## [2.3.0] - 2026-10-20
 ### Fixed
 - **Home return from the Facebook logo:** Clicking the Facebook logo on the far left (or Home) no longer drops feed filters. That control is a client-side route change: Facebook destroys the feed node and mounts a new one. The observer was attached to the old node, so ads, reels, suggestions, and the other blocks never ran on the feed that came back.
