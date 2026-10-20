@@ -47,6 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         suggested: document.getElementById('tgl_removeSuggested'),
         friendActivity: document.getElementById('tgl_hideFriendActivity'),
         reels: document.getElementById('tgl_hideReelsStories'),
+        stories: document.getElementById('tgl_hideStories'),
         chronological: document.getElementById('tgl_forceChronological'),
         groups: document.getElementById('tgl_removeGroups'),
         ghost: document.getElementById('tgl_ghostMode'),
@@ -82,6 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         elements.suggested,
         elements.friendActivity,
         elements.reels,
+        elements.stories,
         elements.chronological,
         elements.groups,
         elements.ghost,
@@ -96,6 +98,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     elements.suggested.checked = settings.filters.removeSuggested;
     elements.friendActivity.checked = settings.filters.hideFriendActivity !== false;
     elements.reels.checked = !!settings.filters.hideReels;
+    elements.stories.checked = !!settings.filters.hideStories;
     elements.chronological.checked = !!settings.uiMode.enforceChronologicalFeed;
     elements.groups.checked = settings.filters.removeGroupSuggestions;
     // Ghost mode is on if both sub-settings are on
@@ -234,7 +237,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         settings.filters.hideFriendActivity = elements.friendActivity.checked;
 
         settings.filters.hideReels = elements.reels.checked;
-        // hideStories has its own default (false) — do not couple it to the reels toggle
+        settings.filters.hideStories = elements.stories.checked;
         
         settings.uiMode.forceMostRecent = elements.chronological.checked;
         settings.uiMode.enforceChronologicalFeed = elements.chronological.checked;
@@ -258,8 +261,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     elements.ads.addEventListener('change', handleToggle);
+    elements.sponsored.addEventListener('change', handleToggle);
     elements.suggested.addEventListener('change', handleToggle);
+    elements.friendActivity.addEventListener('change', handleToggle);
     elements.reels.addEventListener('change', handleToggle);
+    elements.stories.addEventListener('change', handleToggle);
     elements.chronological.addEventListener('change', handleToggle);
     elements.groups.addEventListener('change', handleToggle);
     elements.ghost.addEventListener('change', handleToggle);

@@ -85,6 +85,12 @@
   "popup_hide_reels_desc": {
     "message": "Removes Reels trays injected into the feed"
   },
+  "popup_hide_stories": {
+    "message": "Hide Stories"
+  },
+  "popup_hide_stories_desc": {
+    "message": "Removes the Stories bar at the top of the feed"
+  },
   "popup_force_recent": {
     "message": "Force Most Recent"
   },
