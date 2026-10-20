@@ -205,6 +205,7 @@ Object.assign(window.PF_Cleaner.prototype, {
                 if (reason === 'People You May Know'   && !f?.removePYMK)             { _pfUnhide(); return; }
                 if (reason === 'Suggested Groups'      && !f?.removeGroupSuggestions) { _pfUnhide(); return; }
                 if (reason === 'Game Invite/Post'      && !f?.removeGameInvites)      { _pfUnhide(); return; }
+                if (reason === 'Friend Activity'       && f?.hideFriendActivity === false) { _pfUnhide(); return; }
                 if (reason === 'Marketplace Unit'      && !f?.hideMarketplace)        { _pfUnhide(); return; }
                 if (reason === 'Fundraiser Module'     && !f?.hideFundraisers)        { _pfUnhide(); return; }
                 if ((reason === 'Reels Target Array' || reason === 'Reels Tray Heuristic')

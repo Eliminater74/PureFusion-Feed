@@ -309,6 +309,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         'opt_filters_removeGroupSuggestions': { obj: 'filters', prop: 'removeGroupSuggestions', type: 'checkbox' },
         'opt_filters_removePageSuggestions': { obj: 'filters', prop: 'removePageSuggestions', type: 'checkbox' },
         'opt_filters_removeGameInvites':     { obj: 'filters', prop: 'removeGameInvites', type: 'checkbox' },
+        'opt_filters_hideFriendActivity':    { obj: 'filters', prop: 'hideFriendActivity', type: 'checkbox' },
         'opt_filters_hideReels': { obj: 'filters', prop: 'hideReels', type: 'checkbox' },
         'opt_filters_hideStories': { obj: 'filters', prop: 'hideStories', type: 'checkbox' },
         'opt_filters_hideMemories': { obj: 'filters', prop: 'hideMemories', type: 'checkbox' },

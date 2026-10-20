@@ -1497,23 +1497,49 @@ Object.assign(window.PF_Cleaner.prototype, {
         return false;
     },
     removeFriendActivity(rootNode) {
-        // Find headers indicating friend algorithmic activity
-        const activityPatterns = ['commented on', 'liked', 'replied to', 'was mentioned in', 'is interested in'];
-        
-        const authorHeaders = rootNode.querySelectorAll('h3, h4, span > strong');
-        authorHeaders.forEach(header => {
-            const text = header.parentElement.textContent.toLowerCase();
-            for (const pattern of activityPatterns) {
-                if (text.includes(pattern)) {
-                    // Make sure it's not the user's actual post text. These headers usually sit above the actual post content.
-                    const postWrapper = PF_Helpers.getClosest(header, PF_SELECTOR_MAP.postContainer);
-                    if (postWrapper) {
-                        this._hidePostNode(postWrapper, `Friend Activity Filter: ${pattern}`);
-                    }
-                    break;
-                }
-            }
+        if (!rootNode || !rootNode.querySelectorAll) return;
+
+        // These phrases are the header Facebook adds when it inserts a post
+        // because a friend interacted with it ("Jane liked this"). Matching
+        // the bare word "liked" also hits ordinary posts, so the phrase has
+        // to be one of these header forms.
+        const patterns = [
+            'liked this', 'likes this', 'reacted to this',
+            'commented on this', 'commented on a post', 'commented on a photo',
+            'commented on a video', 'commented on a reel',
+            'replied to this', 'replied to a comment',
+            'is interested in this', 'was mentioned in this', 'was mentioned in a post',
+            'follows this',
+            'le gusta esto', 'le gusto esto', 'comento esto', 'comento sobre esto',
+            'a aime ca', 'a aime ceci', 'a commente',
+            'gefallt das', 'hat das kommentiert'
+        ];
+
+        this._getPostCandidates(rootNode).forEach((post) => {
+            if (!post || post.dataset.pfHidden === 'true') return;
+            if (!this._hasFriendActivityHeader(post, patterns)) return;
+            this._hidePostNode(post, 'Friend Activity');
         });
+    },
+    _hasFriendActivityHeader(post, patterns) {
+        const postRect = post.getBoundingClientRect ? post.getBoundingClientRect() : null;
+        const headings = post.querySelectorAll('h3, h4, h5, [role="heading"]');
+
+        for (const heading of headings) {
+            const raw = heading.getAttribute('aria-label') || heading.textContent || '';
+            const text = this._normalizeComparableText(raw);
+            if (!text || text.length < 8 || text.length > 120) continue;
+
+            if (postRect && heading.getBoundingClientRect) {
+                const rect = heading.getBoundingClientRect();
+                const bothZero = postRect.height === 0 && rect.height === 0;
+                if (!bothZero && rect.top - postRect.top > 160) continue;
+            }
+
+            if (patterns.some((pattern) => text.includes(pattern))) return true;
+        }
+
+        return false;
     },
     removeColoredBackgrounds(rootNode) {
         const coloredWrappers = rootNode.querySelectorAll(PF_SELECTOR_MAP.postColoredBackground);

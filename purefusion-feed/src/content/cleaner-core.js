@@ -204,6 +204,7 @@ class PF_Cleaner {
         if (this.settings.filters.removeSuggested) this.removeSuggestedPosts(rootNode);
         if (this.settings.filters.removePageSuggestions) this.removePageSuggestions(rootNode);
         if (this.settings.filters.removeGameInvites) this.removeGameInvitePosts(rootNode);
+        if (this.settings.filters.hideFriendActivity !== false) this.removeFriendActivity(rootNode);
 
         if (this._hasPostTypeFiltersEnabled()) {
             this.removePostTypePosts(rootNode);

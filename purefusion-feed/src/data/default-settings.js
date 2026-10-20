@@ -20,6 +20,7 @@ const DEFAULT_SETTINGS = {
         removeGroupSuggestions: true,   // "Suggested Groups"
         removePageSuggestions: true,    // "Suggested Pages"
         removeGameInvites: true,        // Web game notifications/invites
+        hideFriendActivity: true,       // "Jane liked this" / "John commented on this"
         hideReels: true,                // Reels injected into feed
         hideMarketplace: true,          // Marketplace injected into feed
         hideStories: false,             // Stories bar top of feed

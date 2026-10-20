@@ -67,6 +67,18 @@
   "popup_hide_suggested_desc": {
     "message": "Removes algorithmic suggestions"
   },
+  "popup_hide_friend_activity": {
+    "message": "Hide \"Liked this\" posts"
+  },
+  "popup_hide_friend_activity_desc": {
+    "message": "Removes posts a friend only liked or commented on"
+  },
+  "options_filters_hide_friend_activity": {
+    "message": "Hide \"Liked this\" / \"Commented on this\""
+  },
+  "options_filters_hide_friend_activity_desc": {
+    "message": "Removes posts Facebook inserted only because a friend liked, commented, or replied. Ordinary posts stay."
+  },
   "popup_hide_reels": {
     "message": "Hide Reels"
   },

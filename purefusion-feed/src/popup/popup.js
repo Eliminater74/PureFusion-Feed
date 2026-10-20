@@ -45,6 +45,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         ads: document.getElementById('tgl_removeAds'),
         sponsored: document.getElementById('tgl_removeSponsored'),
         suggested: document.getElementById('tgl_removeSuggested'),
+        friendActivity: document.getElementById('tgl_hideFriendActivity'),
         reels: document.getElementById('tgl_hideReelsStories'),
         chronological: document.getElementById('tgl_forceChronological'),
         groups: document.getElementById('tgl_removeGroups'),
@@ -79,6 +80,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         elements.ads,
         elements.sponsored,
         elements.suggested,
+        elements.friendActivity,
         elements.reels,
         elements.chronological,
         elements.groups,
@@ -92,6 +94,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     elements.ads.checked = settings.filters.removeAds;
     elements.sponsored.checked = !!settings.filters.removeSponsored;
     elements.suggested.checked = settings.filters.removeSuggested;
+    elements.friendActivity.checked = settings.filters.hideFriendActivity !== false;
     elements.reels.checked = !!settings.filters.hideReels;
     elements.chronological.checked = !!settings.uiMode.enforceChronologicalFeed;
     elements.groups.checked = settings.filters.removeGroupSuggestions;
@@ -228,7 +231,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         settings.filters.removeAds = elements.ads.checked;
         settings.filters.removeSponsored = elements.sponsored.checked;
         settings.filters.removeSuggested = elements.suggested.checked;
-        
+        settings.filters.hideFriendActivity = elements.friendActivity.checked;
+
         settings.filters.hideReels = elements.reels.checked;
         // hideStories has its own default (false) — do not couple it to the reels toggle
         
