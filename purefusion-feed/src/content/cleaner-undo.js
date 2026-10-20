@@ -162,7 +162,7 @@ Object.assign(window.PF_Cleaner.prototype, {
             }
 
             // Restore ad-hidden posts when removeAds is toggled OFF.
-            if (reason === 'Ad (Hard Signal)' && !this.settings?.filters?.removeAds) {
+            if ((reason === 'Ad (Hard Signal)' || reason === 'Ad (Sponsored Label)') && !this.settings?.filters?.removeAds) {
                 node.style.removeProperty('display');
                 delete node.dataset.pfHidden;
                 delete node.dataset.pfReason;

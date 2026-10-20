@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const active = elements.ads.checked;
         if (section) section.classList.toggle('ads-active', active);
         if (statusEl) statusEl.textContent = active
-            ? t('popup_ad_blocker_on', '✓ Blocking ads via infrastructure signals')
+            ? t('popup_ad_blocker_on', '✓ Blocking ads, including Sponsored and Paid partnership labels')
             : t('popup_ad_blocker_off', '⚠ Ad blocker is off — click to enable');
     };
 

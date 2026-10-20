@@ -50,13 +50,13 @@
     "message": "Blocks ads via infrastructure signals"
   },
   "popup_ad_blocker_on": {
-    "message": "✓ Blocking ads via infrastructure signals"
+    "message": "✓ Blocking ads, including Sponsored and Paid partnership labels"
   },
   "popup_ad_blocker_off": {
     "message": "⚠ Ad blocker is off — click to enable"
   },
   "options_filters_removeAds": {
-    "message": "Block Ads (infrastructure signals)"
+    "message": "Block Ads (infrastructure signals and Sponsored labels)"
   },
   "options_filters_removeSponsored": {
     "message": "Enhanced Ad Filter (label detection)"

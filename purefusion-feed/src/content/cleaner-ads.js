@@ -68,6 +68,35 @@ Object.assign(window.PF_Cleaner.prototype, {
 
             if (adSignal) this._hidePostNode(article, 'Ad (Hard Signal)');
         });
+
+        // 2025–2026 Home ads often have no /ads/about link at all. The visible
+        // "Sponsored" or "Paid partnership" label in the header is the signal.
+        // This stays on the main Ad Blocker. The Enhanced toggle still runs
+        // the wider label scan.
+        this._removeHeaderSponsoredLabels(rootNode);
+    },
+
+    _removeHeaderSponsoredLabels(rootNode) {
+        const posts = typeof this._getPostCandidates === 'function'
+            ? this._getPostCandidates(rootNode)
+            : [];
+
+        posts.forEach((post) => {
+            if (!post || post.dataset.pfHidden === 'true') return;
+            if (post.closest && post.closest('[role="complementary"], [role="navigation"], [role="banner"]')) return;
+
+            const marker = this._findSponsoredMarkerInPost(post);
+            if (!marker) return;
+
+            const postRect = post.getBoundingClientRect ? post.getBoundingClientRect() : null;
+            const markerRect = marker.getBoundingClientRect ? marker.getBoundingClientRect() : null;
+            if (postRect && markerRect && postRect.height > 0 && markerRect.height > 0) {
+                if (markerRect.top - postRect.top > 180) return;
+            }
+
+            const wrapper = this._resolveFeedPostWrapper(marker) || post;
+            this._hidePostNode(wrapper, 'Ad (Sponsored Label)');
+        });
     },
 
     /**
