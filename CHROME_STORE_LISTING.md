@@ -4,7 +4,7 @@
 PureFusion Feed: Privacy, AI & Ad-Blocker
 
 ## Short Description (Maximum 132 characters limit)
-Take control of your Facebook. Block ads, hide reels, force widescreen, and use local AI to summarize posts & draft comments.
+Block Sponsored posts, Reels, and "liked this" filler. Filters stay on when you click the Facebook logo. Optional local AI.
 
 ## Detailed Description
 **Your Facebook. Filtered. Predicted. Perfected.**
@@ -14,9 +14,11 @@ PureFusion Feed isn't just an ad-blocker—it's a complete restructuring engine 
 With a massive suite of features mapped into a beautiful, native settings dashboard, you take absolute control over what your browser renders. 
 
 **🛡️ Core Cleanup Features**
-- Instantly block "Sponsored" posts, even those obfuscated by complex React injections.
-- Eradicate "Suggested for You", "People You May Know", and unwanted Group Recommendations.
-- **Aggressive Reels & Stories Blocking**: PureFusion physically hunts the screen for dynamically injected trays and destroys them. 
+- Block Sponsored and Paid partnership posts from the header label, including ads that no longer carry an ads link.
+- Remove "Suggested for you", "Suggested post", "People You May Know", and group recommendations.
+- Hide "Jane liked this" and "John commented on this" cards. Posts from people you follow stay.
+- Hide Reels trays and reel carousels. Stories has its own switch.
+- Clicking the Facebook logo to go Home keeps every filter on. Facebook rebuilds that screen without a page reload. 
 
 **🖥️ Layout & UI Enhancements**
 - **Widescreen Mode:** Unlock Facebook's center column to stretch across your entire ultrawide monitor.

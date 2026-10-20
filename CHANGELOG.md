@@ -15,6 +15,7 @@ All notable changes to the PureFusion Feed extension will be documented in this 
 
 ### Changed
 - Ad blocker status copy now says it covers Sponsored and Paid partnership labels.
+- Store listing and README describe the Home-logo filter fix, Sponsored labels, friend-activity cards, reel carousels, and the separate Stories switch.
 
 ## [2.3.0] - 2026-10-20
 ### Fixed

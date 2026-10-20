@@ -8,20 +8,26 @@ Use this file as copy-ready content for your Chrome Web Store submission.
 
 ### Summary (max 150 chars)
 
-Clean up Facebook with smart feed filters, AI post scoring, Read-Later queue, 21-locale support, and optional BYOK AI tools — fully local and private.
+Clean your Facebook feed. Filters stay on after the logo click, block Sponsored labels, and run on-device. Private.
 
 ### Description
 
-PureFusion Feed gives you full control over your Facebook feed. It removes clutter, scores posts by relevance using on-device AI, lets you permanently block or trust sources, and now ships with 21-language interface support and a full reading toolset — all without sending any data outside your browser.
+PureFusion Feed gives you full control over your Facebook feed. It removes clutter, scores posts by relevance using on-device AI, lets you permanently block or trust sources, and ships with 21-language interface support and a full reading toolset. Nothing is sent outside your browser.
+
+v2.4.0 keeps those filters working on the feed Facebook builds when you click the logo to go Home, and it blocks the Sponsored labels, reel carousels, and "liked this" cards that the current Home screen injects.
 
 ---
 
 ### 1. Feed Cleanup and Filters
 
 - Removes Suggested Posts, People You May Know, Group injection modules, and Reels trays
-- Removes Stories bar, Memories posts, Fundraisers, and Page Suggestion modules
-- Ad blocker removes feed ads using infrastructure signals (zero false positives)
-- Enhanced ad filter adds label-heuristic scanning as a secondary pass
+- Hides "Jane liked this" and "John commented on this" cards. Ordinary posts stay. Popup switch, on by default
+- Hides reel carousels (one card linking to several reels). A single reel a friend shared stays
+- Matches current Suggested headings: "Suggested post", "Suggested reel", and "Posts you might like"
+- Stories bar has its own switch (off until you turn it on). Memories, Fundraisers, and Page Suggestions have their own toggles
+- Ad blocker removes feed ads from infrastructure signals and from Sponsored / Paid partnership labels in the post header
+- Enhanced ad filter adds a wider label scan as a secondary pass
+- Filters stay applied when you click the Facebook logo or Home. That click rebuilds the feed without reloading the page
 - **Post Age Filter** — hide posts older than 6 h, 12 h, 24 h, 2 d, 3 d, 1 week, 2 weeks, or 1 month
 - **Post Deduplication** — hide posts you have already seen in the current session
 - Keyword blocklist collapses posts; autohide list removes them entirely
@@ -71,6 +77,7 @@ PureFusion Feed gives you full control over your Facebook feed. It removes clutt
 ### 6. Popup Feed Intelligence
 
 - AI Scoring toggle directly in the popup — no need to open Full Settings
+- Quick switches for ads, Sponsored-label coverage, Suggested posts, "Liked this" cards, Reels, and Stories
 - Live session stats: real counts of ads blocked and spam hidden since page loaded
 - Live blocked/trusted source counts
 - Read-Later count badge with direct queue access
@@ -142,8 +149,9 @@ Facebook and Messenger interfaces change frequently. Filter results may vary by 
 ## Test Instructions for Reviewers
 
 1. Install the extension and open `https://www.facebook.com`.
-2. Open the extension popup. The **Hide Reels** toggle will be ON by default — Reels trays should already be hidden. Toggle off and on to confirm live effect.
-3. Confirm recommendation modules (People You May Know, Suggested Groups) are removed from the feed.
+2. Open the extension popup. **Hide Reels** is ON by default and Reels trays should already be hidden. **Hide Stories** is a separate switch and is OFF until you turn it on. **Hide "Liked this" posts** is ON by default.
+3. Confirm recommendation modules (People You May Know, Suggested Groups) are removed from the feed. Click the Facebook logo at the far left to return to Home and confirm those same modules stay hidden on the rebuilt feed.
+3b. Sponsored check: with Block Ads on, a post whose header says Sponsored or Paid partnership should be hidden even when it has no ads-about link.
 4. In the popup **Feed Intelligence** section, confirm the AI Scoring toggle is present and changes the subtitle text when toggled.
 5. Open full settings and apply a preset pack from Core Filters. Verify the feed updates without a page reload.
 6. Context Menu "Zap" test:

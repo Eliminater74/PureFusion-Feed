@@ -6,7 +6,7 @@
 
 **Your Facebook. Filtered. Predicted. Perfected.**
 
-[![Version](https://img.shields.io/badge/version-1.8.1-6C3FC5?style=for-the-badge&logo=googlechrome&logoColor=white)](https://github.com/Eliminater74/PureFusion-Feed/releases)
+[![Version](https://img.shields.io/badge/version-2.4.0-6C3FC5?style=for-the-badge&logo=googlechrome&logoColor=white)](https://github.com/Eliminater74/PureFusion-Feed/releases)
 [![Manifest V3](https://img.shields.io/badge/Manifest-V3-00D4FF?style=for-the-badge&logo=googlechrome&logoColor=white)](https://developer.chrome.com/docs/extensions/develop/migrate/what-is-mv3)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white)](https://www.facebook.com)
@@ -27,24 +27,24 @@ PureFusion Feed is an advanced, **privacy-first Chrome extension** that gives yo
 
 ---
 
-## What's New in v1.8.1
+## What's New in v2.4.0
 
-| Phase | Feature |
-|-------|---------|
-| **40** | **Word-Boundary Classification** — eliminates false-positive content tagging (e.g. "bill" in "billboard"). **Persistent Allowlist** — "Always show source" now survives page reloads; allowlisted authors are immune to session content filters. |
-| **39** | **Persistent Author Blocklist** — "Block source" is now permanent across page reloads, stored in `chrome.storage.local`. |
-| **38** | **Session Content-Type Filters** — "Hide similar posts" now hides all matching content types feed-wide for the session. |
-| **37** | **Insight Chip UX Overhaul** — replaced "Neutral Relevance" with context-aware labels: Political Opinion, News/Report, Opinion/Editorial, Promotional, and more. |
+| Version | What changed |
+|---------|----------------|
+| **2.4.0** | The main ad blocker hides **Sponsored** and **Paid partnership** headers. **"Liked this" / "Commented on this"** cards are hidden by default. Reel carousels (several `/reel/` links in one card) are hidden with Reels. **Stories** has its own popup switch. |
+| **2.3.0** | Clicking the **Facebook logo** to go Home keeps filters on. Facebook rebuilds that feed without a page reload, and PureFusion follows the new feed instead of the one it just removed. |
 
 ---
 
 ## 🚀 Core Features
 
 ### Feed Cleaner
-- **Algorithmic Disarmament** — removes Suggested For You, People You May Know, and Group injection modules
-- **Aggressive Reels & Stories Blocking** — fully removes horizontal distraction trays via heuristic text-node traversal (bypass-proof)
-- **Ad & Sponsored Content Eradication** — deep virtual-DOM inspection removes sponsored posts disguised as organic content; both hard-signal (`AdUnit_` pagelet) and label-heuristic detection
-- **Multilingual Support** — 9-locale coverage (EN / ES / FR / DE / IT / NL / SV / DA / NO) across all filter paths
+- **Algorithmic disarmament** — removes Suggested for you, Suggested post, People You May Know, and group injection modules
+- **Friend-activity cards** — hides "Jane liked this" and "John commented on this". Posts from people you follow stay
+- **Reels and Stories** — hides Reels trays and reel carousels. Stories is a separate switch
+- **Sponsored labels** — the main ad blocker hides Sponsored and Paid partnership headers, including ads that no longer include an ads link
+- **Home button** — filters stay on when you click the Facebook logo. That click rebuilds the feed in place
+- **21 languages** — English, Spanish, French, German, Italian, Dutch, Swedish, Danish, Norwegian, Portuguese, Indonesian, Vietnamese, Filipino, Turkish, Arabic, Hindi, Korean, Japanese, Traditional Chinese, Polish, and Russian
 
 ### AI Prediction Engine (100% On-Device)
 - **Local-first ML scoring** — ranks posts by predicted relevance based entirely on your own engagement history
@@ -152,9 +152,9 @@ PureFusion-Feed/
 ├── purefusion-feed/              # Chrome extension root (load this folder)
 │   ├── src/
 │   │   ├── content/              # Content scripts
-│   │   │   ├── predictor.js      # AI scoring engine (Model F classification)
-│   │   │   ├── cleaner.js        # Feed filter engine
-│   │   │   ├── observer.js       # MutationObserver loop
+│   │   │   ├── cleaner-core.js   # Feed filter pipeline
+│   │   │   ├── cleaner-ads.js    # Sponsored and ad detection
+│   │   │   ├── observer.js       # Watches the page, including Home rebuilds
 │   │   │   └── ...
 │   │   ├── background/           # MV3 service worker
 │   │   ├── popup/                # Quick-toggle popup UI

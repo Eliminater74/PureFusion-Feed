@@ -9,8 +9,10 @@ PureFusion Feed is a Chrome extension focused on restoring control over Facebook
 ## Highlights
 
 ### Feed Control
-- Removes sponsored posts and right-rail ads.
-- Hides suggested content, PYMK, reels, stories, and other noisy injections.
+- Removes Sponsored and Paid partnership posts, including ads that only show the header label, plus right-rail ads.
+- Hides suggested content, People You May Know, reel trays, reel carousels, and other injected modules.
+- Hides "liked this" and "commented on this" cards. Ordinary posts stay. Stories is its own switch.
+- Keeps those filters on when you click the Facebook logo to return Home.
 - Adds preset packs (Work Focus, Friends Only, Minimal, News Heavy, Messenger Privacy).
 - Adds keyword modes: autohide, blocklist, allowlist, and never-hide sources.
 - Includes undo chips for hidden posts with one-click restore or allow-source action.
@@ -27,11 +29,13 @@ PureFusion Feed is a Chrome extension focused on restoring control over Facebook
 - In-page dashboard button and quick toggles.
 
 ### Internationalization
-- English and Spanish locale support for popup, options, welcome, and runtime controls.
+- 21 locales for popup, options, welcome, and runtime controls: English, Spanish, French, German, Italian, Dutch, Swedish, Danish, Norwegian, Portuguese, Indonesian, Vietnamese, Filipino, Turkish, Arabic, Hindi, Korean, Japanese, Traditional Chinese, Polish, and Russian.
 
 ## Release Notes
 
 - Current: `v2.4.0`
+- **v2.4.0** — Sponsored-label ads, friend-activity cards, reel carousels, and a separate Stories switch.
+- **v2.3.0** — Filters stay on after you click the Facebook logo to go Home.
 - Full history: `CHANGELOG.md`
 
 ---
