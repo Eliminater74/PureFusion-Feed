@@ -22,6 +22,9 @@ class PureFusionApp {
         this._lifetimeStats = null;
         this._pipelineBusy = false;
         this._pendingPipelineNodes = [];
+        this._navigationResweepTimers = [];
+        this._navigationWatchBound = false;
+        this._lastNavigationUrl = '';
     }
 
     async boot() {
@@ -90,6 +93,7 @@ class PureFusionApp {
 
             PF_Logger.info('PureFusion Main initialized.', this.settings);
 
+            this._startNavigationWatch();
             this._checkChronologicalEnforcement();
 
             PF_Logger.info('PureFusion is active and monitoring.');
@@ -114,6 +118,108 @@ class PureFusionApp {
         }
 
         this._applyNavigationHardening();
+    }
+
+    _startNavigationWatch() {
+        if (this._navigationWatchBound) return;
+        this._navigationWatchBound = true;
+        this._lastNavigationUrl = window.location.href;
+
+        const onRoute = (reason) => {
+            const href = window.location.href;
+            const changed = href !== this._lastNavigationUrl;
+            this._lastNavigationUrl = href;
+            // The logo click refreshes Home even when the URL is already "/".
+            if (!changed && reason !== 'home-control' && reason !== 'feed-replaced') return;
+            this._handleFeedNavigation(reason);
+        };
+
+        const wrapHistory = (name) => {
+            const original = history[name];
+            if (typeof original !== 'function' || original.__pfWrapped) return;
+            const wrapped = function () {
+                const result = original.apply(this, arguments);
+                onRoute(name);
+                return result;
+            };
+            wrapped.__pfWrapped = true;
+            history[name] = wrapped;
+        };
+
+        wrapHistory('pushState');
+        wrapHistory('replaceState');
+        window.addEventListener('popstate', () => onRoute('popstate'));
+
+        // Capture phase runs before React's router handles the logo click.
+        document.addEventListener('click', (event) => {
+            if (!this._findHomeNavigationTrigger(event.target)) return;
+            setTimeout(() => onRoute('home-control'), 0);
+        }, true);
+
+        document.addEventListener('pf:feed_replaced', () => {
+            onRoute('feed-replaced');
+        });
+    }
+
+    _findHomeNavigationTrigger(target) {
+        if (!target || !target.closest) return null;
+
+        // Far-left Facebook logo in the top bar. It is not always an <a>.
+        const logo = target.closest('[aria-label="Facebook"], [aria-label="Meta"]');
+        if (logo && logo.closest('[role="banner"]')) return logo;
+
+        const link = target.closest('a[href], [role="link"]');
+        if (!link) return null;
+
+        const href = (link.getAttribute('href') || '').trim();
+        const label = (link.getAttribute('aria-label') || '').trim().toLowerCase();
+        const inBanner = !!link.closest('[role="banner"]');
+        const isHomeHref = href === '/'
+            || href === '/home.php'
+            || href.startsWith('/?')
+            || href.startsWith('/home.php?');
+        const isHomeLabel = label === 'home'
+            || label === 'inicio'
+            || label === 'accueil'
+            || label === 'startseite'
+            || label === 'hem'
+            || label === 'hjem';
+
+        if (inBanner && isHomeHref) return link;
+        if (isHomeLabel && isHomeHref) return link;
+        return null;
+    }
+
+    _handleFeedNavigation(reason) {
+        if (!this.isEnabled()) return;
+
+        if (this.cleaner && typeof this.cleaner.prepareForFeedNavigation === 'function') {
+            this.cleaner.prepareForFeedNavigation();
+        }
+
+        this._checkChronologicalEnforcement();
+        this._scheduleNavigationResweep(reason);
+    }
+
+    _clearNavigationResweeps() {
+        if (!Array.isArray(this._navigationResweepTimers)) return;
+        this._navigationResweepTimers.forEach((id) => clearTimeout(id));
+        this._navigationResweepTimers = [];
+    }
+
+    _scheduleNavigationResweep(reason) {
+        this._clearNavigationResweeps();
+
+        // The replacement feed paints in several waves. A single sweep races
+        // the skeleton and misses the posts, reels, and ads that land after it.
+        const delays = [80, 400, 1000, 2000, 3500];
+        delays.forEach((delay) => {
+            const id = setTimeout(() => {
+                if (!this.isEnabled()) return;
+                this._runLiveResweepPass(`navigation-${reason}`);
+            }, delay);
+            this._navigationResweepTimers.push(id);
+        });
     }
 
     _applyNavigationHardening() {
@@ -1299,6 +1405,7 @@ class PureFusionApp {
 
         // Clear follow-up resweep timers
         this._clearFollowupResweeps();
+        this._clearNavigationResweeps();
 
         // Delegate to each module's own cleanup
         const destroyable = [

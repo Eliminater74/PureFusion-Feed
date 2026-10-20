@@ -67,6 +67,24 @@ class PF_Cleaner {
     }
 
     /**
+     * Facebook reuses feed shells when the logo or Home control returns to
+     * the main screen. Those shells still carry data-pf-processed from the
+     * previous visit, so a resweep would skip them and leave the new
+     * unfiltered content on screen. Drop the processed marks. Nodes that
+     * are already hidden stay hidden.
+     */
+    prepareForFeedNavigation() {
+        this._processedNodes = new WeakSet();
+
+        const scope = document.body || document.documentElement;
+        if (!scope || !scope.querySelectorAll) return;
+
+        scope.querySelectorAll('[data-pf-processed="true"]').forEach((node) => {
+            node.removeAttribute('data-pf-processed');
+        });
+    }
+
+    /**
      * Run a full sweep on the entire document body (usually done on navigation end).
      */
     sweepDocument() {
