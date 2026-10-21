@@ -50,13 +50,13 @@
     "message": "इन्फ्रास्ट्रक्चर संकेतों के ज़रिए विज्ञापन ब्लॉक करता है"
   },
   "popup_ad_blocker_on": {
-    "message": "✓ इन्फ्रास्ट्रक्चर संकेतों के ज़रिए विज्ञापन ब्लॉक हो रहे हैं"
+    "message": "✓ विज्ञापन ब्लॉक हो रहे हैं, जिनमें प्रायोजित और सशुल्क साझेदारी लेबल शामिल हैं"
   },
   "popup_ad_blocker_off": {
     "message": "⚠ विज्ञापन अवरोधक बंद है — सक्षम करने के लिए क्लिक करें"
   },
   "options_filters_removeAds": {
-    "message": "विज्ञापन ब्लॉक करें (इन्फ्रास्ट्रक्चर संकेत)"
+    "message": "विज्ञापन ब्लॉक करें (इन्फ्रास्ट्रक्चर संकेत और प्रायोजित लेबल)"
   },
   "options_filters_removeSponsored": {
     "message": "Enhanced Ad Filter (label detection)"
@@ -67,11 +67,29 @@
   "popup_hide_suggested_desc": {
     "message": "एल्गोरिदमिक सुझाव हटाता है"
   },
+  "popup_hide_friend_activity": {
+    "message": "\"इसे पसंद किया\" पोस्ट छिपाएं"
+  },
+  "popup_hide_friend_activity_desc": {
+    "message": "उन पोस्ट को हटाता है जिन्हें किसी मित्र ने केवल पसंद किया या उन पर टिप्पणी की"
+  },
+  "options_filters_hide_friend_activity": {
+    "message": "\"इसे पसंद किया\" / \"इस पर टिप्पणी की\" छिपाएं"
+  },
+  "options_filters_hide_friend_activity_desc": {
+    "message": "वे पोस्ट हटाता है जिन्हें Facebook ने केवल इसलिए डाला क्योंकि किसी मित्र ने पसंद किया, टिप्पणी की या जवाब दिया। सामान्य पोस्ट रहती हैं।"
+  },
   "popup_hide_reels": {
     "message": "रील्स छिपाएं"
   },
   "popup_hide_reels_desc": {
     "message": "फ़ीड में इंजेक्ट की गई रील्स ट्रे हटाता है"
+  },
+  "popup_hide_stories": {
+    "message": "स्टोरीज़ छिपाएं"
+  },
+  "popup_hide_stories_desc": {
+    "message": "फ़ीड के ऊपर वाली स्टोरी बार हटाता है"
   },
   "popup_force_recent": {
     "message": "सबसे हाल का पहले"

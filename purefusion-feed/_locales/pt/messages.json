@@ -50,13 +50,13 @@
     "message": "Bloqueia anúncios via sinais de infraestrutura"
   },
   "popup_ad_blocker_on": {
-    "message": "✓ Bloqueando anúncios via sinais de infraestrutura"
+    "message": "✓ Bloqueando anúncios, incluindo rótulos de Patrocinado e Parceria paga"
   },
   "popup_ad_blocker_off": {
     "message": "⚠ Bloqueador de anúncios desativado — clique para ativar"
   },
   "options_filters_removeAds": {
-    "message": "Bloquear Anúncios (sinais de infraestrutura)"
+    "message": "Bloquear Anúncios (sinais de infraestrutura e rótulos de Patrocinado)"
   },
   "options_filters_removeSponsored": {
     "message": "Enhanced Ad Filter (label detection)"
@@ -67,11 +67,29 @@
   "popup_hide_suggested_desc": {
     "message": "Remove sugestões algorítmicas"
   },
+  "popup_hide_friend_activity": {
+    "message": "Ocultar publicações de \"Curtiu isto\""
+  },
+  "popup_hide_friend_activity_desc": {
+    "message": "Remove publicações que um amigo apenas curtiu ou comentou"
+  },
+  "options_filters_hide_friend_activity": {
+    "message": "Ocultar \"Curtiu isto\" / \"Comentou isto\""
+  },
+  "options_filters_hide_friend_activity_desc": {
+    "message": "Remove publicações que o Facebook inseriu só porque um amigo curtiu, comentou ou respondeu. As publicações normais permanecem."
+  },
   "popup_hide_reels": {
     "message": "Ocultar Reels"
   },
   "popup_hide_reels_desc": {
     "message": "Remove bandejas de Reels injetadas no feed"
+  },
+  "popup_hide_stories": {
+    "message": "Ocultar Stories"
+  },
+  "popup_hide_stories_desc": {
+    "message": "Remove a barra de Stories no topo do feed"
   },
   "popup_force_recent": {
     "message": "Forçar Mais Recentes"

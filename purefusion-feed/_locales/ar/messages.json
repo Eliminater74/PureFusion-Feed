@@ -50,13 +50,13 @@
     "message": "يحجب الإعلانات عبر إشارات البنية التحتية"
   },
   "popup_ad_blocker_on": {
-    "message": "✓ جارٍ حجب الإعلانات عبر إشارات البنية التحتية"
+    "message": "✓ جارٍ حجب الإعلانات، بما في ذلك تسميات «برعاية» والشراكة المدفوعة"
   },
   "popup_ad_blocker_off": {
     "message": "⚠ مانع الإعلانات معطّل — انقر للتفعيل"
   },
   "options_filters_removeAds": {
-    "message": "حجب الإعلانات (إشارات البنية التحتية)"
+    "message": "حجب الإعلانات (إشارات البنية التحتية وتسميات الرعاية)"
   },
   "options_filters_removeSponsored": {
     "message": "Enhanced Ad Filter (label detection)"
@@ -67,11 +67,29 @@
   "popup_hide_suggested_desc": {
     "message": "يزيل الاقتراحات الخوارزمية"
   },
+  "popup_hide_friend_activity": {
+    "message": "إخفاء منشورات «أعجب بهذا»"
+  },
+  "popup_hide_friend_activity_desc": {
+    "message": "يزيل المنشورات التي أعجب بها صديق أو علّق عليها فقط"
+  },
+  "options_filters_hide_friend_activity": {
+    "message": "إخفاء «أعجب بهذا» / «علّق على هذا»"
+  },
+  "options_filters_hide_friend_activity_desc": {
+    "message": "يزيل المنشورات التي أدرجها فيسبوك فقط لأن صديقًا أعجب بها أو علّق عليها أو رد عليها. تبقى المنشورات العادية."
+  },
   "popup_hide_reels": {
     "message": "إخفاء ريلز"
   },
   "popup_hide_reels_desc": {
     "message": "يزيل أدراج ريلز المحقونة في الخلاصة"
+  },
+  "popup_hide_stories": {
+    "message": "إخفاء القصص"
+  },
+  "popup_hide_stories_desc": {
+    "message": "يزيل شريط القصص أعلى الخلاصة"
   },
   "popup_force_recent": {
     "message": "فرض الأحدث أولًا"

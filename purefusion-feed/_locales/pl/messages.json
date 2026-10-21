@@ -50,13 +50,13 @@
     "message": "Blokuje reklamy za pomocą sygnałów infrastruktury"
   },
   "popup_ad_blocker_on": {
-    "message": "✓ Blokuję reklamy za pomocą sygnałów infrastruktury"
+    "message": "✓ Blokuję reklamy, w tym etykiety Sponsorowane i Płatne partnerstwo"
   },
   "popup_ad_blocker_off": {
     "message": "⚠ Blokowanie reklam wyłączone — kliknij, aby włączyć"
   },
   "options_filters_removeAds": {
-    "message": "Blokuj reklamy (sygnały infrastruktury)"
+    "message": "Blokuj reklamy (sygnały infrastruktury i etykiety Sponsorowane)"
   },
   "options_filters_removeSponsored": {
     "message": "Enhanced Ad Filter (label detection)"
@@ -67,11 +67,29 @@
   "popup_hide_suggested_desc": {
     "message": "Usuwa algorytmiczne sugestie"
   },
+  "popup_hide_friend_activity": {
+    "message": "Ukryj posty „Polubił to”"
+  },
+  "popup_hide_friend_activity_desc": {
+    "message": "Usuwa posty, które znajomy tylko polubił lub skomentował"
+  },
+  "options_filters_hide_friend_activity": {
+    "message": "Ukryj „Polubił to” / „Skomentował to”"
+  },
+  "options_filters_hide_friend_activity_desc": {
+    "message": "Usuwa posty, które Facebook wstawił tylko dlatego, że znajomy je polubił, skomentował lub na nie odpowiedział. Zwykłe posty zostają."
+  },
   "popup_hide_reels": {
     "message": "Ukryj Reels"
   },
   "popup_hide_reels_desc": {
     "message": "Usuwa zasobniki Reels wstrzykiwane do kanału"
+  },
+  "popup_hide_stories": {
+    "message": "Ukryj Stories"
+  },
+  "popup_hide_stories_desc": {
+    "message": "Usuwa pasek Stories u góry kanału"
   },
   "popup_force_recent": {
     "message": "Wymuś najnowsze"

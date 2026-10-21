@@ -50,13 +50,13 @@
     "message": "Blokkerer annonser via infrastruktursignaler"
   },
   "popup_ad_blocker_on": {
-    "message": "✓ Blokkerer annonser via infrastruktursignaler"
+    "message": "✓ Blokkerer annonser, inkludert etiketter for Sponset og Betalt partnerskap"
   },
   "popup_ad_blocker_off": {
     "message": "⚠ Annonseblokker er av — klikk for å aktivere"
   },
   "options_filters_removeAds": {
-    "message": "Blokker annonser (infrastruktursignaler)"
+    "message": "Blokker annonser (infrastruktursignaler og Sponset-etiketter)"
   },
   "options_filters_removeSponsored": {
     "message": "Enhanced Ad Filter (label detection)"
@@ -67,11 +67,29 @@
   "popup_hide_suggested_desc": {
     "message": "Fjerner algoritmiske forslag"
   },
+  "popup_hide_friend_activity": {
+    "message": "Skjul innlegg med «Likte dette»"
+  },
+  "popup_hide_friend_activity_desc": {
+    "message": "Fjerner innlegg en venn bare likte eller kommenterte"
+  },
+  "options_filters_hide_friend_activity": {
+    "message": "Skjul «Likte dette» / «Kommenterte dette»"
+  },
+  "options_filters_hide_friend_activity_desc": {
+    "message": "Fjerner innlegg Facebook bare la inn fordi en venn likte, kommenterte eller svarte. Vanlige innlegg blir."
+  },
   "popup_hide_reels": {
     "message": "Skjul Reels"
   },
   "popup_hide_reels_desc": {
     "message": "Fjerner Reels-brett som injiseres i feeden"
+  },
+  "popup_hide_stories": {
+    "message": "Skjul Stories"
+  },
+  "popup_hide_stories_desc": {
+    "message": "Fjerner Stories-linjen øverst i feeden"
   },
   "popup_force_recent": {
     "message": "Tving nyeste"

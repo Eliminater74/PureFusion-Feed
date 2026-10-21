@@ -50,13 +50,13 @@
     "message": "Blockerar annonser via infrastruktursignaler"
   },
   "popup_ad_blocker_on": {
-    "message": "✓ Blockerar annonser via infrastruktursignaler"
+    "message": "✓ Blockerar annonser, inklusive etiketter för Sponsrad och Betalt partnerskap"
   },
   "popup_ad_blocker_off": {
     "message": "⚠ Annonsblockerare är av — klicka för att aktivera"
   },
   "options_filters_removeAds": {
-    "message": "Blockera annonser (infrastruktursignaler)"
+    "message": "Blockera annonser (infrastruktursignaler och Sponsrad-etiketter)"
   },
   "options_filters_removeSponsored": {
     "message": "Enhanced Ad Filter (label detection)"
@@ -67,11 +67,29 @@
   "popup_hide_suggested_desc": {
     "message": "Tar bort algoritmiska förslag"
   },
+  "popup_hide_friend_activity": {
+    "message": "Dölj inlägg med \"Gillade det här\""
+  },
+  "popup_hide_friend_activity_desc": {
+    "message": "Tar bort inlägg som en vän bara gillade eller kommenterade"
+  },
+  "options_filters_hide_friend_activity": {
+    "message": "Dölj \"Gillade det här\" / \"Kommenterade det här\""
+  },
+  "options_filters_hide_friend_activity_desc": {
+    "message": "Tar bort inlägg som Facebook bara lade in för att en vän gillade, kommenterade eller svarade. Vanliga inlägg blir kvar."
+  },
   "popup_hide_reels": {
     "message": "Dölj Reels"
   },
   "popup_hide_reels_desc": {
     "message": "Tar bort Reels-fack som injiceras i flödet"
+  },
+  "popup_hide_stories": {
+    "message": "Dölj Stories"
+  },
+  "popup_hide_stories_desc": {
+    "message": "Tar bort Stories-fältet högst upp i flödet"
   },
   "popup_force_recent": {
     "message": "Tvinga senaste"

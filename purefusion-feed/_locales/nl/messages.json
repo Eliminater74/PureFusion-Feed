@@ -50,13 +50,13 @@
     "message": "Blokkeert advertenties via infrastructuursignalen"
   },
   "popup_ad_blocker_on": {
-    "message": "✓ Advertenties geblokkeerd via infrastructuursignalen"
+    "message": "✓ Advertenties geblokkeerd, inclusief labels Gesponsord en Betaald partnerschap"
   },
   "popup_ad_blocker_off": {
     "message": "⚠ Advertentieblokker is uit — klik om in te schakelen"
   },
   "options_filters_removeAds": {
-    "message": "Advertenties blokkeren (infrastructuursignalen)"
+    "message": "Advertenties blokkeren (infrastructuursignalen en Gesponsord-labels)"
   },
   "options_filters_removeSponsored": {
     "message": "Enhanced Ad Filter (label detection)"
@@ -67,11 +67,29 @@
   "popup_hide_suggested_desc": {
     "message": "Verwijdert algoritmische suggesties"
   },
+  "popup_hide_friend_activity": {
+    "message": "Verberg \"Vindt dit leuk\"-berichten"
+  },
+  "popup_hide_friend_activity_desc": {
+    "message": "Verwijdert berichten die een vriend alleen leuk vond of waarop alleen is gereageerd"
+  },
+  "options_filters_hide_friend_activity": {
+    "message": "Verberg \"Vindt dit leuk\" / \"Heeft dit becommentarieerd\""
+  },
+  "options_filters_hide_friend_activity_desc": {
+    "message": "Verwijdert berichten die Facebook alleen invoegde omdat een vriend ze leuk vond, becommentarieerde of beantwoordde. Gewone berichten blijven staan."
+  },
   "popup_hide_reels": {
     "message": "Reels verbergen"
   },
   "popup_hide_reels_desc": {
     "message": "Verwijdert Reels-laden die in de feed worden ingevoegd"
+  },
+  "popup_hide_stories": {
+    "message": "Verberg Stories"
+  },
+  "popup_hide_stories_desc": {
+    "message": "Verwijdert de Stories-balk bovenaan de feed"
   },
   "popup_force_recent": {
     "message": "Meest recente afdwingen"

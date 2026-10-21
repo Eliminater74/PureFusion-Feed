@@ -50,13 +50,13 @@
     "message": "インフラシグナルで広告をブロック"
   },
   "popup_ad_blocker_on": {
-    "message": "✓ インフラシグナルで広告をブロック中"
+    "message": "✓ 広告をブロック中（スポンサーと有料パートナーシップのラベルを含む）"
   },
   "popup_ad_blocker_off": {
     "message": "⚠ 広告ブロッカーがオフです — クリックして有効化"
   },
   "options_filters_removeAds": {
-    "message": "広告をブロック（インフラシグナル）"
+    "message": "広告をブロック（インフラシグナルとスポンサーのラベル）"
   },
   "options_filters_removeSponsored": {
     "message": "Enhanced Ad Filter (label detection)"
@@ -67,11 +67,29 @@
   "popup_hide_suggested_desc": {
     "message": "アルゴリズムによる提案を削除"
   },
+  "popup_hide_friend_activity": {
+    "message": "「いいね！」した投稿を非表示"
+  },
+  "popup_hide_friend_activity_desc": {
+    "message": "友だちがいいねまたはコメントしただけの投稿を削除"
+  },
+  "options_filters_hide_friend_activity": {
+    "message": "「いいね！」/「コメントしました」を非表示"
+  },
+  "options_filters_hide_friend_activity_desc": {
+    "message": "友だちがいいね、コメント、または返信したためだけに Facebook が挿入した投稿を削除します。通常の投稿は残ります。"
+  },
   "popup_hide_reels": {
     "message": "リールを非表示"
   },
   "popup_hide_reels_desc": {
     "message": "フィードに挿入されたリールトレイを削除"
+  },
+  "popup_hide_stories": {
+    "message": "ストーリーズを非表示"
+  },
+  "popup_hide_stories_desc": {
+    "message": "フィード上部のストーリーズバーを削除"
   },
   "popup_force_recent": {
     "message": "最新順を強制"

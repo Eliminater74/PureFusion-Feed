@@ -50,13 +50,13 @@
     "message": "Nagha-block ng mga ad sa pamamagitan ng mga infrastructure signal"
   },
   "popup_ad_blocker_on": {
-    "message": "✓ Nagha-block ng mga ad sa pamamagitan ng mga infrastructure signal"
+    "message": "✓ Nagha-block ng mga ad, kasama ang mga label na Sponsored at Paid partnership"
   },
   "popup_ad_blocker_off": {
     "message": "⚠ Naka-off ang ad blocker — i-click para i-enable"
   },
   "options_filters_removeAds": {
-    "message": "I-block ang Mga Ad (mga infrastructure signal)"
+    "message": "I-block ang Mga Ad (mga infrastructure signal at Sponsored na label)"
   },
   "options_filters_removeSponsored": {
     "message": "Enhanced Ad Filter (label detection)"
@@ -67,11 +67,29 @@
   "popup_hide_suggested_desc": {
     "message": "Nag-aalis ng mga algorithmic na mungkahi"
   },
+  "popup_hide_friend_activity": {
+    "message": "Itago ang mga post na \"Ni-like ito\""
+  },
+  "popup_hide_friend_activity_desc": {
+    "message": "Nag-aalis ng mga post na ni-like o kinomentuhan lang ng kaibigan"
+  },
+  "options_filters_hide_friend_activity": {
+    "message": "Itago ang \"Ni-like ito\" / \"Nagkomento dito\""
+  },
+  "options_filters_hide_friend_activity_desc": {
+    "message": "Nag-aalis ng mga post na idinagdag ng Facebook dahil lang may kaibigang nag-like, nagkomento, o sumagot. Nanatili ang mga ordinaryong post."
+  },
   "popup_hide_reels": {
     "message": "Itago ang Mga Reels"
   },
   "popup_hide_reels_desc": {
     "message": "Nag-aalis ng mga Reels tray na ini-inject sa feed"
+  },
+  "popup_hide_stories": {
+    "message": "Itago ang Mga Stories"
+  },
+  "popup_hide_stories_desc": {
+    "message": "Nag-aalis ng Stories bar sa itaas ng feed"
   },
   "popup_force_recent": {
     "message": "Pilitin ang Pinakabago"

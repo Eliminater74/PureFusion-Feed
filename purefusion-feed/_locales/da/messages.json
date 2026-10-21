@@ -50,13 +50,13 @@
     "message": "Blokerer annoncer via infrastruktursignaler"
   },
   "popup_ad_blocker_on": {
-    "message": "✓ Blokerer annoncer via infrastruktursignaler"
+    "message": "✓ Blokerer annoncer, herunder etiketter for Sponsoreret og Betalt partnerskab"
   },
   "popup_ad_blocker_off": {
     "message": "⚠ Annonceblokering er slået fra — klik for at aktivere"
   },
   "options_filters_removeAds": {
-    "message": "Bloker annoncer (infrastruktursignaler)"
+    "message": "Bloker annoncer (infrastruktursignaler og Sponsoreret-etiketter)"
   },
   "options_filters_removeSponsored": {
     "message": "Enhanced Ad Filter (label detection)"
@@ -67,11 +67,29 @@
   "popup_hide_suggested_desc": {
     "message": "Fjerner algoritmiske forslag"
   },
+  "popup_hide_friend_activity": {
+    "message": "Skjul opslag med \"Syntes godt om dette\""
+  },
+  "popup_hide_friend_activity_desc": {
+    "message": "Fjerner opslag, som en ven kun har syntes godt om eller kommenteret"
+  },
+  "options_filters_hide_friend_activity": {
+    "message": "Skjul \"Syntes godt om dette\" / \"Kommenterede dette\""
+  },
+  "options_filters_hide_friend_activity_desc": {
+    "message": "Fjerner opslag, som Facebook kun indsatte, fordi en ven syntes godt om, kommenterede eller svarede. Almindelige opslag bliver."
+  },
   "popup_hide_reels": {
     "message": "Skjul Reels"
   },
   "popup_hide_reels_desc": {
     "message": "Fjerner Reels-bakker der injiceres i feedet"
+  },
+  "popup_hide_stories": {
+    "message": "Skjul Stories"
+  },
+  "popup_hide_stories_desc": {
+    "message": "Fjerner Stories-linjen øverst i feedet"
   },
   "popup_force_recent": {
     "message": "Tving nyeste"

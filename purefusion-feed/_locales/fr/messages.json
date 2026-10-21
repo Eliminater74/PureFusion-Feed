@@ -50,13 +50,13 @@
     "message": "Bloque les publicités via les signaux d'infrastructure"
   },
   "popup_ad_blocker_on": {
-    "message": "✓ Blocage des publicités via les signaux d'infrastructure"
+    "message": "✓ Blocage des publicités, y compris les libellés Sponsorisé et Partenariat rémunéré"
   },
   "popup_ad_blocker_off": {
     "message": "⚠ Bloqueur de publicités désactivé — cliquez pour activer"
   },
   "options_filters_removeAds": {
-    "message": "Bloquer les publicités (signaux d'infrastructure)"
+    "message": "Bloquer les publicités (signaux d'infrastructure et libellés Sponsorisé)"
   },
   "options_filters_removeSponsored": {
     "message": "Enhanced Ad Filter (label detection)"
@@ -67,11 +67,29 @@
   "popup_hide_suggested_desc": {
     "message": "Supprime les suggestions algorithmiques"
   },
+  "popup_hide_friend_activity": {
+    "message": "Masquer les publications « a aimé »"
+  },
+  "popup_hide_friend_activity_desc": {
+    "message": "Supprime les publications qu'un ami a seulement aimées ou commentées"
+  },
+  "options_filters_hide_friend_activity": {
+    "message": "Masquer « a aimé » / « a commenté »"
+  },
+  "options_filters_hide_friend_activity_desc": {
+    "message": "Supprime les publications que Facebook a insérées seulement parce qu'un ami a aimé, commenté ou répondu. Les publications ordinaires restent."
+  },
   "popup_hide_reels": {
     "message": "Masquer les Reels"
   },
   "popup_hide_reels_desc": {
     "message": "Supprime les bacs Reels injectés dans le fil"
+  },
+  "popup_hide_stories": {
+    "message": "Masquer les Stories"
+  },
+  "popup_hide_stories_desc": {
+    "message": "Supprime la barre Stories en haut du fil"
   },
   "popup_force_recent": {
     "message": "Forcer les plus récents"

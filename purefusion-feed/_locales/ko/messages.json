@@ -50,13 +50,13 @@
     "message": "인프라 신호를 통해 광고 차단"
   },
   "popup_ad_blocker_on": {
-    "message": "✓ 인프라 신호를 통해 광고 차단 중"
+    "message": "✓ 광고 차단 중 (스폰서 및 유료 파트너십 라벨 포함)"
   },
   "popup_ad_blocker_off": {
     "message": "⚠ 광고 차단기가 꺼져 있습니다 — 클릭하여 활성화"
   },
   "options_filters_removeAds": {
-    "message": "광고 차단 (인프라 신호)"
+    "message": "광고 차단 (인프라 신호 및 스폰서 라벨)"
   },
   "options_filters_removeSponsored": {
     "message": "Enhanced Ad Filter (label detection)"
@@ -67,11 +67,29 @@
   "popup_hide_suggested_desc": {
     "message": "알고리즘 추천 제거"
   },
+  "popup_hide_friend_activity": {
+    "message": "\"좋아합니다\" 게시물 숨기기"
+  },
+  "popup_hide_friend_activity_desc": {
+    "message": "친구가 좋아요만 누르거나 댓글만 단 게시물을 제거"
+  },
+  "options_filters_hide_friend_activity": {
+    "message": "\"좋아합니다\" / \"댓글을 남겼습니다\" 숨기기"
+  },
+  "options_filters_hide_friend_activity_desc": {
+    "message": "친구가 좋아요, 댓글 또는 답글을 남겼기 때문에 Facebook이 넣은 게시물만 제거합니다. 일반 게시물은 남습니다."
+  },
   "popup_hide_reels": {
     "message": "릴스 숨기기"
   },
   "popup_hide_reels_desc": {
     "message": "피드에 삽입된 릴스 트레이 제거"
+  },
+  "popup_hide_stories": {
+    "message": "스토리 숨기기"
+  },
+  "popup_hide_stories_desc": {
+    "message": "피드 상단의 스토리 막대를 제거"
   },
   "popup_force_recent": {
     "message": "최신순 강제 적용"

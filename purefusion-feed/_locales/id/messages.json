@@ -50,13 +50,13 @@
     "message": "Memblokir iklan melalui sinyal infrastruktur"
   },
   "popup_ad_blocker_on": {
-    "message": "✓ Memblokir iklan melalui sinyal infrastruktur"
+    "message": "✓ Memblokir iklan, termasuk label Bersponsor dan Kemitraan berbayar"
   },
   "popup_ad_blocker_off": {
     "message": "⚠ Pemblokir iklan nonaktif — klik untuk mengaktifkan"
   },
   "options_filters_removeAds": {
-    "message": "Blokir Iklan (sinyal infrastruktur)"
+    "message": "Blokir Iklan (sinyal infrastruktur dan label Bersponsor)"
   },
   "options_filters_removeSponsored": {
     "message": "Enhanced Ad Filter (label detection)"
@@ -67,11 +67,29 @@
   "popup_hide_suggested_desc": {
     "message": "Menghapus saran algoritmik"
   },
+  "popup_hide_friend_activity": {
+    "message": "Sembunyikan postingan \"Menyukai ini\""
+  },
+  "popup_hide_friend_activity_desc": {
+    "message": "Menghapus postingan yang hanya disukai atau dikomentari teman"
+  },
+  "options_filters_hide_friend_activity": {
+    "message": "Sembunyikan \"Menyukai ini\" / \"Mengomentari ini\""
+  },
+  "options_filters_hide_friend_activity_desc": {
+    "message": "Menghapus postingan yang Facebook sisipkan hanya karena teman menyukai, mengomentari, atau membalas. Postingan biasa tetap ada."
+  },
   "popup_hide_reels": {
     "message": "Sembunyikan Reels"
   },
   "popup_hide_reels_desc": {
     "message": "Menghapus baki Reels yang disuntikkan ke feed"
+  },
+  "popup_hide_stories": {
+    "message": "Sembunyikan Stories"
+  },
+  "popup_hide_stories_desc": {
+    "message": "Menghapus bilah Stories di atas feed"
   },
   "popup_force_recent": {
     "message": "Paksa Terbaru"

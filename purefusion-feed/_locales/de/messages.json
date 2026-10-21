@@ -50,13 +50,13 @@
     "message": "Blockiert Anzeigen über Infrastruktursignale"
   },
   "popup_ad_blocker_on": {
-    "message": "✓ Anzeigen werden über Infrastruktursignale blockiert"
+    "message": "✓ Anzeigen werden blockiert, einschließlich Kennzeichnungen für Gesponsert und Bezahlte Partnerschaft"
   },
   "popup_ad_blocker_off": {
     "message": "⚠ Werbeblocker deaktiviert — zum Aktivieren klicken"
   },
   "options_filters_removeAds": {
-    "message": "Anzeigen blockieren (Infrastruktursignale)"
+    "message": "Anzeigen blockieren (Infrastruktursignale und Gesponsert-Kennzeichnungen)"
   },
   "options_filters_removeSponsored": {
     "message": "Enhanced Ad Filter (label detection)"
@@ -67,11 +67,29 @@
   "popup_hide_suggested_desc": {
     "message": "Entfernt algorithmische Vorschläge"
   },
+  "popup_hide_friend_activity": {
+    "message": "„Gefällt das“-Beiträge ausblenden"
+  },
+  "popup_hide_friend_activity_desc": {
+    "message": "Entfernt Beiträge, die ein Freund nur mit „Gefällt mir“ markiert oder kommentiert hat"
+  },
+  "options_filters_hide_friend_activity": {
+    "message": "„Gefällt das“ / „Hat das kommentiert“ ausblenden"
+  },
+  "options_filters_hide_friend_activity_desc": {
+    "message": "Entfernt Beiträge, die Facebook nur eingefügt hat, weil ein Freund sie mit „Gefällt mir“ markiert, kommentiert oder beantwortet hat. Normale Beiträge bleiben."
+  },
   "popup_hide_reels": {
     "message": "Reels ausblenden"
   },
   "popup_hide_reels_desc": {
     "message": "Entfernt in den Feed eingefügte Reels-Leisten"
+  },
+  "popup_hide_stories": {
+    "message": "Stories ausblenden"
+  },
+  "popup_hide_stories_desc": {
+    "message": "Entfernt die Stories-Leiste oben im Feed"
   },
   "popup_force_recent": {
     "message": "Neueste Beiträge erzwingen"

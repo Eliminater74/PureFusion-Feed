@@ -50,13 +50,13 @@
     "message": "Altyapı sinyalleri aracılığıyla reklamları engeller"
   },
   "popup_ad_blocker_on": {
-    "message": "✓ Altyapı sinyalleri aracılığıyla reklamlar engelleniyor"
+    "message": "✓ Reklamlar engelleniyor, Sponsorlu ve Ücretli ortaklık etiketleri dahil"
   },
   "popup_ad_blocker_off": {
     "message": "⚠ Reklam engelleyici kapalı — etkinleştirmek için tıklayın"
   },
   "options_filters_removeAds": {
-    "message": "Reklamları Engelle (altyapı sinyalleri)"
+    "message": "Reklamları Engelle (altyapı sinyalleri ve Sponsorlu etiketler)"
   },
   "options_filters_removeSponsored": {
     "message": "Enhanced Ad Filter (label detection)"
@@ -67,11 +67,29 @@
   "popup_hide_suggested_desc": {
     "message": "Algoritmik önerileri kaldırır"
   },
+  "popup_hide_friend_activity": {
+    "message": "\"Bunu beğendi\" gönderilerini gizle"
+  },
+  "popup_hide_friend_activity_desc": {
+    "message": "Bir arkadaşın yalnızca beğendiği veya yorum yaptığı gönderileri kaldırır"
+  },
+  "options_filters_hide_friend_activity": {
+    "message": "\"Bunu beğendi\" / \"Bunu yorumladı\" öğesini gizle"
+  },
+  "options_filters_hide_friend_activity_desc": {
+    "message": "Facebook'un yalnızca bir arkadaş beğendiği, yorum yaptığı veya yanıt verdiği için eklediği gönderileri kaldırır. Normal gönderiler kalır."
+  },
   "popup_hide_reels": {
     "message": "Reels'ı Gizle"
   },
   "popup_hide_reels_desc": {
     "message": "Feed'e enjekte edilen Reels tepsilerini kaldırır"
+  },
+  "popup_hide_stories": {
+    "message": "Hikayeleri gizle"
+  },
+  "popup_hide_stories_desc": {
+    "message": "Akışın üstündeki Hikayeler çubuğunu kaldırır"
   },
   "popup_force_recent": {
     "message": "En Yenileri Zorla"

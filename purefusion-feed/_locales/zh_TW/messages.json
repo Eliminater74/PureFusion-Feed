@@ -50,13 +50,13 @@
     "message": "透過基礎架構訊號封鎖廣告"
   },
   "popup_ad_blocker_on": {
-    "message": "✓ 正透過基礎架構訊號封鎖廣告"
+    "message": "✓ 正在封鎖廣告，包括贊助和付費合作標籤"
   },
   "popup_ad_blocker_off": {
     "message": "⚠ 廣告封鎖器已關閉 — 點擊以啟用"
   },
   "options_filters_removeAds": {
-    "message": "封鎖廣告（基礎架構訊號）"
+    "message": "封鎖廣告（基礎架構訊號和贊助標籤）"
   },
   "options_filters_removeSponsored": {
     "message": "Enhanced Ad Filter (label detection)"
@@ -67,11 +67,29 @@
   "popup_hide_suggested_desc": {
     "message": "移除演算法推薦"
   },
+  "popup_hide_friend_activity": {
+    "message": "隱藏「對此按讚」的貼文"
+  },
+  "popup_hide_friend_activity_desc": {
+    "message": "移除朋友只按讚或留言的貼文"
+  },
+  "options_filters_hide_friend_activity": {
+    "message": "隱藏「對此按讚」/「留言了」"
+  },
+  "options_filters_hide_friend_activity_desc": {
+    "message": "移除 Facebook 只因為朋友按讚、留言或回覆而插入的貼文。一般貼文會保留。"
+  },
   "popup_hide_reels": {
     "message": "隱藏 Reels"
   },
   "popup_hide_reels_desc": {
     "message": "移除插入訊息流中的 Reels 匣"
+  },
+  "popup_hide_stories": {
+    "message": "隱藏限時動態"
+  },
+  "popup_hide_stories_desc": {
+    "message": "移除訊息流頂端的限時動態列"
   },
   "popup_force_recent": {
     "message": "強制最新順序"

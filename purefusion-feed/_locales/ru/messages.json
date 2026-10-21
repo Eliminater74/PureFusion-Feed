@@ -50,13 +50,13 @@
     "message": "Блокирует рекламу через инфраструктурные сигналы"
   },
   "popup_ad_blocker_on": {
-    "message": "✓ Блокирую рекламу через инфраструктурные сигналы"
+    "message": "✓ Блокирую рекламу, включая метки «Реклама» и «Платное партнёрство»"
   },
   "popup_ad_blocker_off": {
     "message": "⚠ Блокировщик рекламы отключён — нажмите для включения"
   },
   "options_filters_removeAds": {
-    "message": "Блокировать рекламу (инфраструктурные сигналы)"
+    "message": "Блокировать рекламу (инфраструктурные сигналы и метки «Реклама»)"
   },
   "options_filters_removeSponsored": {
     "message": "Enhanced Ad Filter (label detection)"
@@ -67,11 +67,29 @@
   "popup_hide_suggested_desc": {
     "message": "Удаляет алгоритмические предложения"
   },
+  "popup_hide_friend_activity": {
+    "message": "Скрыть публикации «Нравится»"
+  },
+  "popup_hide_friend_activity_desc": {
+    "message": "Удаляет публикации, которые друг только лайкнул или прокомментировал"
+  },
+  "options_filters_hide_friend_activity": {
+    "message": "Скрыть «Нравится» / «Прокомментировал»"
+  },
+  "options_filters_hide_friend_activity_desc": {
+    "message": "Удаляет публикации, которые Facebook вставил только потому, что друг поставил отметку «Нравится», прокомментировал или ответил. Обычные публикации остаются."
+  },
   "popup_hide_reels": {
     "message": "Скрыть Reels"
   },
   "popup_hide_reels_desc": {
     "message": "Удаляет блоки Reels, встроенные в ленту"
+  },
+  "popup_hide_stories": {
+    "message": "Скрыть Истории"
+  },
+  "popup_hide_stories_desc": {
+    "message": "Удаляет панель историй вверху ленты"
   },
   "popup_force_recent": {
     "message": "Принудительно: Самые новые"

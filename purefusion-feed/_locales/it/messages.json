@@ -50,13 +50,13 @@
     "message": "Blocca annunci tramite segnali infrastrutturali"
   },
   "popup_ad_blocker_on": {
-    "message": "✓ Annunci bloccati tramite segnali infrastrutturali"
+    "message": "✓ Annunci bloccati, incluse le etichette Sponsorizzato e Partnership a pagamento"
   },
   "popup_ad_blocker_off": {
     "message": "⚠ Blocco annunci disattivato — clicca per attivare"
   },
   "options_filters_removeAds": {
-    "message": "Blocca annunci (segnali infrastrutturali)"
+    "message": "Blocca annunci (segnali infrastrutturali ed etichette Sponsorizzato)"
   },
   "options_filters_removeSponsored": {
     "message": "Enhanced Ad Filter (label detection)"
@@ -67,11 +67,29 @@
   "popup_hide_suggested_desc": {
     "message": "Rimuove i suggerimenti algoritmici"
   },
+  "popup_hide_friend_activity": {
+    "message": "Nascondi i post \"Ha messo Mi piace\""
+  },
+  "popup_hide_friend_activity_desc": {
+    "message": "Rimuove i post a cui un amico ha solo messo Mi piace o che ha commentato"
+  },
+  "options_filters_hide_friend_activity": {
+    "message": "Nascondi \"Ha messo Mi piace\" / \"Ha commentato\""
+  },
+  "options_filters_hide_friend_activity_desc": {
+    "message": "Rimuove i post che Facebook ha inserito solo perché un amico ha messo Mi piace, ha commentato o ha risposto. I post normali restano."
+  },
   "popup_hide_reels": {
     "message": "Nascondi Reels"
   },
   "popup_hide_reels_desc": {
     "message": "Rimuove le barre Reels iniettate nel feed"
+  },
+  "popup_hide_stories": {
+    "message": "Nascondi Storie"
+  },
+  "popup_hide_stories_desc": {
+    "message": "Rimuove la barra delle Storie in cima al feed"
   },
   "popup_force_recent": {
     "message": "Forza i più recenti"

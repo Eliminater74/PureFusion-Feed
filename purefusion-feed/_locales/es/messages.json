@@ -38,7 +38,7 @@
     "message": "Filtros Rápidos"
   },
   "popup_hide_sponsored_posts": {
-    "message": "Enhanced Ad Filter"
+    "message": "Filtro avanzado de anuncios"
   },
   "popup_hide_sponsored_posts_desc": {
     "message": "Detección por etiqueta — desactivada por defecto"
@@ -50,16 +50,16 @@
     "message": "Bloquea anuncios por señales de infraestructura"
   },
   "popup_ad_blocker_on": {
-    "message": "✓ Bloqueando anuncios por señales de infraestructura"
+    "message": "✓ Bloqueando anuncios, incluidas las etiquetas de Patrocinado y Colaboración pagada"
   },
   "popup_ad_blocker_off": {
     "message": "⚠ Bloqueador desactivado — haz clic para activar"
   },
   "options_filters_removeAds": {
-    "message": "Bloquear anuncios (señales de infraestructura)"
+    "message": "Bloquear anuncios (señales de infraestructura y etiquetas de Patrocinado)"
   },
   "options_filters_removeSponsored": {
-    "message": "Enhanced Ad Filter (label detection)"
+    "message": "Filtro avanzado de anuncios (detección por etiqueta)"
   },
   "popup_hide_suggested": {
     "message": "Ocultar Sugeridos/PYMK"
@@ -67,11 +67,29 @@
   "popup_hide_suggested_desc": {
     "message": "Elimina sugerencias algorítmicas"
   },
+  "popup_hide_friend_activity": {
+    "message": "Ocultar publicaciones de «Le gusta esto»"
+  },
+  "popup_hide_friend_activity_desc": {
+    "message": "Elimina publicaciones que un amigo solo marcó con me gusta o comentó"
+  },
+  "options_filters_hide_friend_activity": {
+    "message": "Ocultar «Le gusta esto» / «Comentó esto»"
+  },
+  "options_filters_hide_friend_activity_desc": {
+    "message": "Elimina publicaciones que Facebook insertó solo porque un amigo indicó me gusta, comentó o respondió. Las publicaciones normales se mantienen."
+  },
   "popup_hide_reels": {
     "message": "Ocultar Reels"
   },
   "popup_hide_reels_desc": {
     "message": "Elimina bandejas de Reels del feed"
+  },
+  "popup_hide_stories": {
+    "message": "Ocultar Historias"
+  },
+  "popup_hide_stories_desc": {
+    "message": "Elimina la barra de historias de la parte superior del feed"
   },
   "popup_force_recent": {
     "message": "Forzar Más Recientes"
@@ -104,7 +122,7 @@
     "message": "Ocultar Visto y Escritura"
   },
   "popup_nuke_meta_ai": {
-    "message": "Niquilar Meta AI"
+    "message": "Eliminar Meta AI"
   },
   "popup_nuke_meta_ai_desc": {
     "message": "Eliminar botones y destellos de IA"
@@ -218,7 +236,7 @@
     "message": "Solo amigos"
   },
   "options_presets_minimal": {
-    "message": "Minimal"
+    "message": "Mínimo"
   },
   "options_presets_news_heavy": {
     "message": "Noticias intensas"
@@ -929,7 +947,7 @@
     "message": "Esta mini vista previa se actualiza al cambiar el tema y la escala de fuente."
   },
   "options_theme_preview_chip_filtered": {
-    "message": "Ads Filtered"
+    "message": "Anuncios filtrados"
   },
   "options_theme_preview_chip_score": {
     "message": "Puntuación PF 88"
@@ -1416,13 +1434,13 @@
     "message": "Modo Clean aplicado."
   },
   "options_toast_mode_smart_applied": {
-    "message": "Modo Smart aplicado."
+    "message": "Modo inteligente aplicado."
   },
   "options_reset_confirm": {
     "message": "¿Seguro? Esto borrará sus preferencias y todos los datos locales de seguimiento de IA."
   },
   "options_sidebar_filters": {
-    "message": "🚫 Filtros Core"
+    "message": "🚫 Filtros principales"
   },
   "options_sidebar_wellbeing": {
     "message": "🧘 Bienestar Digital"
@@ -1440,52 +1458,7 @@
     "message": "🤝 Social y privacidad"
   },
   "options_sidebar_data": {
-    "message": "💾 Datos y Backup"
-  },
-  "options_sidebar_poweruser": {
-    "message": "⚡ Reglas Avanzadas"
-  },
-  "options_poweruser_title": {
-    "message": "Motor de Reglas Avanzado"
-  },
-  "options_poweruser_desc": {
-    "message": "Apunta y oculta cualquier elemento de la página con selectores CSS o coincidencia de texto. Sé preciso para evitar ocultar contenido que deseas ver."
-  },
-  "options_poweruser_add_rule": {
-    "message": "Añadir nueva regla de ocultación"
-  },
-  "options_poweruser_rule_list": {
-    "message": "Reglas activas"
-  },
-  "options_poweruser_no_rules": {
-    "message": "Aún no hay reglas personalizadas. Usa el botón '+' o haz clic derecho en elementos de Facebook para 'Zapearlos'."
-  },
-  "options_poweruser_type_label": {
-    "message": "Tipo de regla"
-  },
-  "options_poweruser_type_selector": {
-    "message": "Selector CSS"
-  },
-  "options_poweruser_type_text": {
-    "message": "Coincidencia de texto"
-  },
-  "options_poweruser_rule_label": {
-    "message": "Etiqueta de regla (nombre interno)"
-  },
-  "options_poweruser_rule_value": {
-    "message": "Selector o frase"
-  },
-  "options_poweruser_rule_wrapper_label": {
-    "message": "Ámbito (selector de contenedor)"
-  },
-  "options_poweruser_rule_wrapper_placeholder": {
-    "message": "p.ej. [role='article'] (Opcional)"
-  },
-  "options_poweruser_save_rule": {
-    "message": "Guardar regla"
-  },
-  "options_poweruser_cancel": {
-    "message": "Cancelar"
+    "message": "💾 Datos y copia de seguridad"
   },
   "welcome_title": {
     "message": "Bienvenido a PureFusion Feed"
@@ -1494,16 +1467,16 @@
     "message": "Un Facebook más limpio, rápido y privado."
   },
   "welcome_god_mode": {
-    "message": "Modo Dios Core"
+    "message": "Núcleo del Modo Dios"
   },
   "welcome_god_mode_desc": {
-    "message": "Erradicación total de anuncios y basura algorítmica."
+    "message": "Erradicación total de anuncios, reels sugeridos y basura algorítmica."
   },
   "welcome_privacy_ai": {
     "message": "Privacidad e IA"
   },
   "welcome_privacy_ai_desc": {
-    "message": "Resuma posts largos y bloquee clickbait localmente."
+    "message": "Resume las publicaciones largas y bloquea el clickbait en el dispositivo."
   },
   "welcome_dopamine": {
     "message": "Rompe Dopamina"
@@ -1551,10 +1524,10 @@
     "message": "Bloquear Anuncios"
   },
   "inpage_modal_sponsored": {
-    "message": "Enhanced Ad Filter"
+    "message": "Filtro avanzado de anuncios"
   },
   "inpage_modal_sugg": {
-    "message": "Ocultar Sugeridos"
+    "message": "Ocultar sugeridos y Reels"
   },
   "inpage_modal_stories": {
     "message": "Ocultar Historias"
@@ -1612,6 +1585,78 @@
   },
   "messenger_ai_provider_required": {
     "message": "Configura primero un proveedor de IA en PureFusion."
+  },
+  "options_sidebar_poweruser": {
+    "message": "⚡ Reglas Avanzadas"
+  },
+  "options_poweruser_title": {
+    "message": "Motor de Reglas Avanzado"
+  },
+  "options_poweruser_desc": {
+    "message": "Apunta y oculta cualquier elemento de la página con selectores CSS o coincidencia de texto. Sé preciso para evitar ocultar contenido que deseas ver."
+  },
+  "options_poweruser_add_rule": {
+    "message": "Añadir nueva regla de ocultación"
+  },
+  "options_poweruser_rule_list": {
+    "message": "Reglas activas"
+  },
+  "options_poweruser_no_rules": {
+    "message": "Aún no hay reglas personalizadas. Usa el botón '+' o haz clic derecho en elementos de Facebook para 'Zapearlos'."
+  },
+  "options_poweruser_type_label": {
+    "message": "Tipo de regla"
+  },
+  "options_poweruser_type_selector": {
+    "message": "Selector CSS"
+  },
+  "options_poweruser_type_text": {
+    "message": "Coincidencia de texto"
+  },
+  "options_poweruser_rule_label": {
+    "message": "Etiqueta de regla (nombre interno)"
+  },
+  "options_poweruser_rule_value": {
+    "message": "Selector o frase"
+  },
+  "options_poweruser_rule_wrapper_label": {
+    "message": "Ámbito (selector de contenedor)"
+  },
+  "options_poweruser_rule_wrapper_placeholder": {
+    "message": "p.ej. [role='article'] (Opcional)"
+  },
+  "options_poweruser_save_rule": {
+    "message": "Guardar regla"
+  },
+  "options_poweruser_cancel": {
+    "message": "Cancelar"
+  },
+  "options_poweruser_rule_enabled": {
+    "message": "Activado"
+  },
+  "options_poweruser_delete_rule": {
+    "message": "Eliminar"
+  },
+  "options_poweruser_edit_rule": {
+    "message": "Editar"
+  },
+  "quick_action_menu_zap_element": {
+    "message": "Ocultar elemento"
+  },
+  "options_poweruser_delete_confirm": {
+    "message": "¿Estás seguro de que quieres eliminar esta regla?"
+  },
+  "options_toast_rule_updated": {
+    "message": "Regla actualizada."
+  },
+  "options_toast_rule_deleted": {
+    "message": "Regla eliminada."
+  },
+  "options_toast_rules_saved": {
+    "message": "Reglas personalizadas guardadas correctamente."
+  },
+  "options_toast_rule_value_required": {
+    "message": "El valor de la regla (selector/texto) es obligatorio."
   },
   "quick_action_save_later": {
     "message": "Guardar para leer después"
@@ -1684,32 +1729,5 @@
   },
   "options_ui_reply_only_desc": {
     "message": "Colapsa el cuerpo de las publicaciones en el feed — oculta el texto de la publicación e historias adjuntas, dejando visibles solo los comentarios. Útil para ver el debate sin ver el contenido inflamatorio."
-  },
-  "options_poweruser_delete_confirm": {
-    "message": "¿Estás seguro de que quieres eliminar esta regla?"
-  },
-  "options_poweruser_delete_rule": {
-    "message": "Eliminar"
-  },
-  "options_poweruser_edit_rule": {
-    "message": "Editar"
-  },
-  "options_poweruser_rule_enabled": {
-    "message": "Activado"
-  },
-  "options_toast_rule_deleted": {
-    "message": "Regla eliminada."
-  },
-  "options_toast_rule_updated": {
-    "message": "Regla actualizada."
-  },
-  "options_toast_rule_value_required": {
-    "message": "El valor de la regla (selector/texto) es obligatorio."
-  },
-  "options_toast_rules_saved": {
-    "message": "Reglas personalizadas guardadas correctamente."
-  },
-  "quick_action_menu_zap_element": {
-    "message": "Ocultar elemento"
   }
 }

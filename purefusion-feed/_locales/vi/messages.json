@@ -50,13 +50,13 @@
     "message": "Chặn quảng cáo qua tín hiệu cơ sở hạ tầng"
   },
   "popup_ad_blocker_on": {
-    "message": "✓ Đang chặn quảng cáo qua tín hiệu cơ sở hạ tầng"
+    "message": "✓ Đang chặn quảng cáo, gồm nhãn Được tài trợ và Hợp tác trả phí"
   },
   "popup_ad_blocker_off": {
     "message": "⚠ Trình chặn quảng cáo đang tắt — nhấp để bật"
   },
   "options_filters_removeAds": {
-    "message": "Chặn quảng cáo (tín hiệu cơ sở hạ tầng)"
+    "message": "Chặn quảng cáo (tín hiệu cơ sở hạ tầng và nhãn Được tài trợ)"
   },
   "options_filters_removeSponsored": {
     "message": "Enhanced Ad Filter (label detection)"
@@ -67,11 +67,29 @@
   "popup_hide_suggested_desc": {
     "message": "Xóa các gợi ý thuật toán"
   },
+  "popup_hide_friend_activity": {
+    "message": "Ẩn bài viết \"Đã thích\""
+  },
+  "popup_hide_friend_activity_desc": {
+    "message": "Xóa bài viết mà bạn bè chỉ thích hoặc bình luận"
+  },
+  "options_filters_hide_friend_activity": {
+    "message": "Ẩn \"Đã thích\" / \"Đã bình luận\""
+  },
+  "options_filters_hide_friend_activity_desc": {
+    "message": "Xóa bài viết Facebook chỉ chèn vì bạn bè đã thích, bình luận hoặc trả lời. Bài viết thông thường vẫn được giữ lại."
+  },
   "popup_hide_reels": {
     "message": "Ẩn Reels"
   },
   "popup_hide_reels_desc": {
     "message": "Xóa các khay Reels được chèn vào feed"
+  },
+  "popup_hide_stories": {
+    "message": "Ẩn Stories"
+  },
+  "popup_hide_stories_desc": {
+    "message": "Xóa thanh Stories ở đầu feed"
   },
   "popup_force_recent": {
     "message": "Buộc hiển thị gần nhất"
