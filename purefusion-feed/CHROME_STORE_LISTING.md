@@ -1,4 +1,4 @@
-# Chrome Web Store Listing Package — PureFusion Feed v2.4.0
+# Chrome Web Store Listing Package — PureFusion Feed v2.4.1
 
 Use this file as copy-ready content for your Chrome Web Store submission.
 
@@ -14,7 +14,7 @@ Clean your Facebook feed. Filters stay on after the logo click, block Sponsored 
 
 PureFusion Feed gives you full control over your Facebook feed. It removes clutter, scores posts by relevance using on-device AI, lets you permanently block or trust sources, and ships with 21-language interface support and a full reading toolset. Nothing is sent outside your browser.
 
-v2.4.0 keeps those filters working on the feed Facebook builds when you click the logo to go Home, and it blocks the Sponsored labels, reel carousels, and "liked this" cards that the current Home screen injects.
+Filters stay on after you click the logo to go Home, and the blocker covers Sponsored labels, reel carousels, and "liked this" cards. v2.4.1 translates those controls in all 21 languages and uses the original toolbar icon.
 
 ---
 

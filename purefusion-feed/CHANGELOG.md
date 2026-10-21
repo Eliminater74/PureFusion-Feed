@@ -2,6 +2,14 @@
 
 All notable changes to PureFusion Feed are documented in this file.
 
+## v2.4.1 - 2026-10-20
+
+### Fixed
+- **Locales:** The friend-activity and Stories strings existed only in English, so those controls showed in English in every other language. They are now translated in all 21 locales. Spanish also had leftover English labels ("Enhanced Ad Filter", "Ads Filtered", "Minimal"), the broken label "Niquilar Meta AI", and a Suggestions row that dropped Reels. Ad-blocker copy mentions Sponsored labels in every language.
+- **Toolbar icon:** Restored the original blue swirl. The light redraws are gone.
+
+---
+
 ## v2.4.0 - 2026-10-20
 
 ### Added

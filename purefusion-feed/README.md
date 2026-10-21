@@ -1,4 +1,4 @@
-# PureFusion Feed v2.4.0
+# PureFusion Feed v2.4.1
 
 > Your Facebook. Filtered. Predicted. Perfected.
 
@@ -33,7 +33,8 @@ PureFusion Feed is a Chrome extension focused on restoring control over Facebook
 
 ## Release Notes
 
-- Current: `v2.4.0`
+- Current: `v2.4.1`
+- **v2.4.1** — Friend-activity and Stories strings in all 21 languages. Spanish labels match the English controls. Toolbar icon is the original blue swirl.
 - **v2.4.0** — Sponsored-label ads, friend-activity cards, reel carousels, and a separate Stories switch.
 - **v2.3.0** — Filters stay on after you click the Facebook logo to go Home.
 - Full history: `CHANGELOG.md`

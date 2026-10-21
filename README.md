@@ -2,11 +2,11 @@
 
 <img src="purefusion-feed/icons/icon128.png" alt="PureFusion Feed logo" width="96" height="96"/>
 
-# PureFusion Feed v2.4.0
+# PureFusion Feed v2.4.1
 
 **Your Facebook. Filtered. Predicted. Perfected.**
 
-[![Version](https://img.shields.io/badge/version-2.4.0-6C3FC5?style=for-the-badge&logo=googlechrome&logoColor=white)](https://github.com/Eliminater74/PureFusion-Feed/releases)
+[![Version](https://img.shields.io/badge/version-2.4.1-6C3FC5?style=for-the-badge&logo=googlechrome&logoColor=white)](https://github.com/Eliminater74/PureFusion-Feed/releases)
 [![Manifest V3](https://img.shields.io/badge/Manifest-V3-00D4FF?style=for-the-badge&logo=googlechrome&logoColor=white)](https://developer.chrome.com/docs/extensions/develop/migrate/what-is-mv3)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white)](https://www.facebook.com)
@@ -27,10 +27,11 @@ PureFusion Feed is an advanced, **privacy-first Chrome extension** that gives yo
 
 ---
 
-## What's New in v2.4.0
+## What's New in v2.4.1
 
 | Version | What changed |
 |---------|----------------|
+| **2.4.1** | Friend-activity and Stories controls are translated in all 21 languages. Spanish labels match the English controls. The toolbar icon is the original blue swirl. |
 | **2.4.0** | The main ad blocker hides **Sponsored** and **Paid partnership** headers. **"Liked this" / "Commented on this"** cards are hidden by default. Reel carousels (several `/reel/` links in one card) are hidden with Reels. **Stories** has its own popup switch. |
 | **2.3.0** | Clicking the **Facebook logo** to go Home keeps filters on. Facebook rebuilds that feed without a page reload, and PureFusion follows the new feed instead of the one it just removed. |
 
